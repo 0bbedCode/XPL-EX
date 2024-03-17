@@ -104,7 +104,7 @@ The most important functions of *hook* are:
 
 * *hook:getName()*
 * *hook:getClassName()*
-* For other functions, see [here](https://github.com/0bbedCode/XPL-EX/blob/new/app/src/main/java/eu/faircode/xlua/XHook.java) for the available public methods
+* For other functions, see [here](https://github.com/0bbedCode/XPL-EX/blob/new/app/src/main/java/eu/faircode/xlua/api/hook/XLuaHookBase.java) for the available public methods
 
 The most important functions of *param* are:
 
