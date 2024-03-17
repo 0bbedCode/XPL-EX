@@ -11,7 +11,7 @@
         Mümkünse, uygulamalar kısıtlamaların hemen uygulanması için otomatik olarak durdurulur,
         ancak bazı uygulamalara kısıtlamalar uygulamak, cihazın yeniden başlatılmasını gerektirir (aşağıdaki simgelere bakın).
         <![CDATA[<br><br>]]>Uygulamayı başlatmak için adına veya simgesine uzun basın.
-        <![CDATA[<br><br>]]>Daha fazla bilgi için <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">dokümantasyona</a>]]>        ve <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">sık sorulan sorular</a>]]> bölümüne bakın.
+        <![CDATA[<br><br>]]>Daha fazla bilgi için <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">dokümantasyona</a>]]>        ve <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">sık sorulan sorular</a>]]> bölümüne bakın.
     </string>
     <string name="title_help_installed">Kısıtlama uygulandı</string>
     <string name="title_help_system">Kısıtlamaları uygulamak sorunlara neden olabilir</string>

@@ -11,7 +11,7 @@
     <string name="title_help_instructions">        按下應用程式的圖示或名稱並勾選限制項目，從而將限制套用到應用程式。
         如果可以，應用程式會自動停止並立即套用 (或解除) 限制，但對某些應用程式，套用限制需要重啟設備(參見下面的圖示)。       
         <![CDATA[<br><br>]]>長按應用程式名稱或圖示啟動應用程式。
-        <![CDATA[<br><br>]]>參見 <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md"> 這份英文說明文件 </a>]]>        以及 <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">常見問題</a>]]>; 以了解更多資訊。
+        <![CDATA[<br><br>]]>參見 <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md"> 這份英文說明文件 </a>]]>        以及 <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">常見問題</a>]]>; 以了解更多資訊。
     </string>
     <string name="title_help_installed">限制已套用</string>
     <string name="title_help_system">套用限制可能會導致多種問題</string>

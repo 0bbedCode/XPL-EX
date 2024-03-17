@@ -12,7 +12,7 @@
         Jeśli to możliwe, aplikacje są automatycznie zatrzymywane w celu natychmiastowego zastosowania (lub usunięcia) ograniczeń,
         ale stosowanie ograniczeń dla niektórych aplikacji może wymagać uruchomienia ponownego (zobacz ikony poniżej).
         <![CDATA[<br><br>]]>Przytrzymaj ikonę lub nazwę aplikacji, aby ją uruchomić.
-        <![CDATA[<br><br>]]>Zobacz <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">dokumentację</a>]]>        i <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">często zadawane pytania</a>]]>, aby uzyskać więcej informacji.
+        <![CDATA[<br><br>]]>Zobacz <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">dokumentację</a>]]>        i <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">często zadawane pytania</a>]]>, aby uzyskać więcej informacji.
     </string>
     <string name="title_help_installed">Ograniczenie zastosowane</string>
     <string name="title_help_system">Stosowanie ograniczeń może powodować problemy</string>

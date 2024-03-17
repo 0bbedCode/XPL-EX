@@ -11,7 +11,7 @@
         Om möjligt stoppas appar automatiskt för att tillämpa (eller ta bort) begränsningar omedelbart,
         men att tillämpa begränsningar för vissa appar kräver en omstart av enheten (se ikoner nedan).
         <![CDATA[<br><br>]]>Tryck länge på ett appnamn eller en ikon för att starta appen.
-        <![CDATA[<br><br>]]>Se <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">dokumentationen</a>]]>        och <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">de vanliga frågorna</a>]]> för mer information.
+        <![CDATA[<br><br>]]>Se <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">dokumentationen</a>]]>        och <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">de vanliga frågorna</a>]]> för mer information.
     </string>
     <string name="title_help_installed">Begränsning installerad</string>
     <string name="title_help_system">Tillämpning av begränsningar kan leda till problem</string>

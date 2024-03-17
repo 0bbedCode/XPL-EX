@@ -11,7 +11,7 @@
          可能な場合アプリは自動的に停止して制限をすぐに適用(又は削除)しますが、
          但し一部のアプリに制限を適用するにはデバイスを再起動する必要があります(下のアイコンを参照)
          <![CDATA[<br><br>]]>アプリ名又はアイコンを長押しアプリを起動します
-         <![CDATA[<br><br>]<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">ドキュメントを参照してください</a>]]>         及び<![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">よくある質問</a>]]>で詳細を確認して下さい</string>
+         <![CDATA[<br><br>]<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">ドキュメントを参照してください</a>]]>         及び<![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">よくある質問</a>]]>で詳細を確認して下さい</string>
     <string name="title_help_installed">インストール制限</string>
     <string name="title_help_system">制限を適用すると問題が発生する可能性が有ります</string>
     <string name="title_help_settings">アプリ制限設定</string>

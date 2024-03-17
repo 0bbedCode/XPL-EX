@@ -12,7 +12,7 @@
         Kung posible, ang app na ito ay awtomatikong hihinto kaagad sa pag-apply (o sa pag tanggal) ng mga restriskyon,
         ngunit ang pag apply bilang restrikyon sa ilang apps ay nangngailangan ng pag-restart (tingnan ang aykon sa ibaba).
         <![CDATA[<br><br>]]>pindotin ng matagal sa pangalan ng app o aykon upang magsimula ang app.
-        <![CDATA[<br><br>]]>tingnan<![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">ang dokumentasyon</a>]]>        at<![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">ang madalas na mga tanong</a>]]>para sa impormasyon.
+        <![CDATA[<br><br>]]>tingnan<![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">ang dokumentasyon</a>]]>        at<![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">ang madalas na mga tanong</a>]]>para sa impormasyon.
     </string>
     <string name="title_help_installed">Ipinagbabawal na naka install</string>
     <string name="title_help_system">Pagpasaok sa mga ipinagababawal ay maaaring magresulta sa mga problema</string>

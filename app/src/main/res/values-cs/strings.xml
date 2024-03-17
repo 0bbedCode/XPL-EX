@@ -12,7 +12,7 @@
         Pokud je to možné, aplikace se automaticky zastaví, aby bylo možné okamžitě uplatnit (nebo odstranit) omezení,
         ale použití omezení některých aplikací vyžaduje restart zařízení (viz níže uvedené ikony).
         <![CDATA[<br><br>]]>Dlouhým stisknutím názvu aplikace nebo ikony spusťte aplikaci.
-        <![CDATA[<br><br>]]>Podívej se na<![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">dokumentace</a>]]>        a na <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">FAQ</a>]]> pro více informací.
+        <![CDATA[<br><br>]]>Podívej se na<![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">dokumentace</a>]]>        a na <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">FAQ</a>]]> pro více informací.
     </string>
     <string name="title_help_installed">Omezit nově instalované</string>
     <string name="title_help_system">Použití omezení může mít za následek problémy</string>

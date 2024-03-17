@@ -10,8 +10,8 @@
     <string name="title_force_stop">Forza arresto automatico</string>
     <string name="title_help_instructions">Clicca sull\'icona o il nome di un\'applicazione e seleziona le restrizioni per applicarle.
 Se possibile, le applicazioni vengono chiuse automaticamente per applicare (o rimuovere) le restrizioni immediatamente,
-Ma l\'applicazione delle restrizioni ad alcune applicazioni richiede un riavvio del dispositivo (vedi le icone qui sotto).<![CDATA[<br><br>]]>Premi a lungo sul nome o sull\'icona di un\'applicazione per avviarla.<![CDATA[<br><br>]]>Vedi<![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">qui</a>]]> per la documentazione
-e <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">qui</a>]]> per le FAQ.    </string>
+Ma l\'applicazione delle restrizioni ad alcune applicazioni richiede un riavvio del dispositivo (vedi le icone qui sotto).<![CDATA[<br><br>]]>Premi a lungo sul nome o sull\'icona di un\'applicazione per avviarla.<![CDATA[<br><br>]]>Vedi<![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">qui</a>]]> per la documentazione
+e <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">qui</a>]]> per le FAQ.    </string>
     <string name="title_help_installed">Restrizione applicata</string>
     <string name="title_help_system">Applicare queste restrizioni può dare problemi</string>
     <string name="title_help_settings">Impostazioni delle restrizioni</string>

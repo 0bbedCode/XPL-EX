@@ -6,7 +6,7 @@ The list below is [taken from](https://github.com/M66B/XPrivacy#restrictions) th
 * **Bold** means that XPrivacyLua supports the restriction
 * ~~Strike through~~ means that XPrivacyLua won't support the restriction
 
-Before asking questions, please read [this FAQ](https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md#user-content-faq4).
+Before asking questions, please read [this FAQ](https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md#user-content-faq4).
 
 <a name="accounts"></a>
 * Accounts
@@ -92,7 +92,7 @@ E-mail data is generally not accessible on recent Android versions anymore.
 	* ~~return fake disconnected state~~ not privacy related
 	* ~~return fake supplicant disconnected state~~ not privacy related
 
-If you want to fake offline state, see [the example definitions](https://github.com/M66B/XPrivacyLua/tree/master/examples) about how this can be done with a custom restriction definition.
+If you want to fake offline state, see [the example definitions](https://github.com/0bbedCode/XPL-EX/tree/new/examples) about how this can be done with a custom restriction definition.
 
 <a name="IPC"></a>
 * IPC
@@ -129,7 +129,7 @@ If you want to fake offline state, see [the example definitions](https://github.
 
 <a name="network"></a>
 * Network
-	* ~~return fake IP's~~ see [this FAQ](https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md#user-content-faq4)
+	* ~~return fake IP's~~ see [this FAQ](https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md#user-content-faq4)
 	* ~~return fake MAC's (network, Wi-Fi, bluetooth)~~ see remark below
 	* **return fake BSSID/SSID**
 	* **return an empty list of Wi-Fi scan results**
@@ -222,7 +222,7 @@ which apps should use to open files instead of opening files directly.
 Moreover, the supported Android versions provide [runtime permissions](https://developer.android.com/training/permissions/requesting.html),
 so you can always choose to not grant storage permission to an app.
 
-If you want to confine apps to their own folder, see [the example definitions](https://github.com/M66B/XPrivacyLua/tree/master/examples) about how this can be done with a custom restriction definition.
+If you want to confine apps to their own folder, see [the example definitions](https://github.com/0bbedCode/XPL-EX/tree/new/examples) about how this can be done with a custom restriction definition.
 
 <a name="system"></a>
 * System

@@ -12,8 +12,8 @@
         Hvis mulig, blir apper stoppet automatisk for å anvende (eller fjerne) restriksjoner umiddelbart,
         men anvendelsen av restriksjoner til noen få apper krever en omstart (se ikonene nedenfor).
         <![CDATA[<br><br>]]>Kjør en app ved å trykke og holde navnet eller ikonet til appen.
-        <![CDATA[<br><br>]]>Videre informasjon finnes i <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">dokumentasjonen</a>]]>;
-        og <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">ofte stilte spørsmål (FAQ)</a>]]>;.
+        <![CDATA[<br><br>]]>Videre informasjon finnes i <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">dokumentasjonen</a>]]>;
+        og <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">ofte stilte spørsmål (FAQ)</a>]]>;.
     </string>
   <string name="title_help_installed">Restriksjon installert</string>
   <string name="title_help_system">Anvendelsen av restriksjoner kan føre til problemer</string>

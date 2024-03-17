@@ -12,7 +12,7 @@
         If possible, apps are automatically stopped to apply (or remove) restrictions immediately,
         but applying restrictions to some apps requires a device restart (see icons below).
         <![CDATA[<br><br>]]>Long press on an app name or icon to start the app.
-        <![CDATA[<br><br>]]>See <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">the documentation</a>]]>        and <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">the frequently asked questions</a>]]> for more information.
+        <![CDATA[<br><br>]]>See <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">the documentation</a>]]>        and <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">the frequently asked questions</a>]]> for more information.
     </string>
     <string name="title_help_installed">Đã cài chặn</string>
     <string name="title_help_system">Tiến hành chặn có thể gây ra vấn đề</string>

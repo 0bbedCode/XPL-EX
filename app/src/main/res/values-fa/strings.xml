@@ -11,8 +11,8 @@
         ممکن است برنامه‌ها برای اعمال (یا حذف محدودیت‌ها) بلافاصله متوقف شوند,
         اما اعمال محدودیت برای برخی برنامه‌ها نیازمند راه‌اندازی مجدد دستگاه است (آیکون‌های زیر را ببینید).
         <![CDATA[<br><br>]]>;نام یا آیکون برنامه‌ها را برای اجرا لمس کرده و نگه دارید.
-        <![CDATA[<br><br>]]>;مشاهده <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">اسناد</a>]]>;
-        و <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">سوالات متداول</a>]]>; برای اطلاعات بیشتر.
+        <![CDATA[<br><br>]]>;مشاهده <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">اسناد</a>]]>;
+        و <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">سوالات متداول</a>]]>; برای اطلاعات بیشتر.
     </string>
     <string name="title_help_installed">محدودیت نصب شده است</string>
     <string name="title_help_system">اعمال محدودیت ممکن است باعث بروز مشکلاتی شود</string>

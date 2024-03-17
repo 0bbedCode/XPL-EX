@@ -12,7 +12,7 @@
         Dacă este posibil, aplicațiile sunt automat oprite pentru a aplica (sau elimina) restricţiile imediat,
         dar aplicarea restricţiilor la unele aplicaţii necesită un dispozitiv de repornire (vezi pictogramele mai jos).
         <![CDATA[<br><br>]]>țineți apăsat pe un nume de aplicație sau pictogramă pentru a porni aplicația.
-        <![CDATA[<br><br>]]> Vezi <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">documentaţia</a>]]>        și <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">întrebări frecvente</a>]]>, pentru mai multe informaţii.
+        <![CDATA[<br><br>]]> Vezi <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">documentaţia</a>]]>        și <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">întrebări frecvente</a>]]>, pentru mai multe informaţii.
     </string>
     <string name="title_help_installed">Restricțiile au fost instalate</string>
     <string name="title_help_system">Aplicarea restricţiilor poate duce la probleme</string>

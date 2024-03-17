@@ -104,7 +104,7 @@ The most important functions of *hook* are:
 
 * *hook:getName()*
 * *hook:getClassName()*
-* For other functions, see [here](https://github.com/M66B/XPrivacyLua/blob/master/app/src/main/java/eu/faircode/xlua/XHook.java) for the available public methods
+* For other functions, see [here](https://github.com/0bbedCode/XPL-EX/blob/new/app/src/main/java/eu/faircode/xlua/XHook.java) for the available public methods
 
 The most important functions of *param* are:
 
@@ -114,7 +114,7 @@ The most important functions of *param* are:
 * *param:setArgument(index, value)*
 * *param:getResult()*: only available after the hooked method has been executed
 * *param:setResult(value)*
-* For other functions, see [here](https://github.com/M66B/XPrivacyLua/blob/master/app/src/main/java/eu/faircode/xlua/XParam.java) for the available public methods
+* For other functions, see [here](https://github.com/0bbedCode/XPL-EX/blob/new/app/src/main/java/eu/faircode/xlua/XParam.java) for the available public methods
 
 The before/after function **must** return *true* when something was done and **must** return *false* otherwise.
 XPrivacyLua will show the last date/time of the last time *true* was returned.
@@ -179,7 +179,7 @@ The pro companion app can upload defintions to and download definitions from a [
 making it easy to share hook definitions with others and to use hook definitions provided by others.
 Note that you cannot upload hook definitions with the author name to set to someone else.
 
-You can find some example definitions [here](https://github.com/M66B/XPrivacyLua/tree/master/examples)
-and the definitions built into XPrivacyLua [here](https://github.com/M66B/XPrivacyLua/tree/master/app/src/main/assets).
+You can find some example definitions [here](https://github.com/0bbedCode/XPL-EX/tree/new/examples)
+and the definitions built into XPrivacyLua [here](https://github.com/0bbedCode/XPL-EX/tree/new/app/src/main/assets).
 
 If you have questions, you can ask them in [this XDA thread](https://forum.xda-developers.com/xposed/modules/xposed-developing-module-t3741692).

@@ -45,10 +45,9 @@ This repository will offer a modified version of the Pro Companion app, which wi
 Help
 ------------
 
-[XPL DEFINE](https://github.com/M66B/XPrivacyLua/blob/master/DEFINE.md) <br>
+[XPL DEFINE](https://github.com/0bbedCode/XPL-EX/blob/new/DEFINE.md) <br>
 [XPL-EX API](https://github.com/0bbedCode/XPL-EX/blob/new/APIHELP.md) <br>
 [XPL-EX Examples](https://github.com/0bbedCode/XPL-EX/blob/new/LUAHELP.md) <br>
-[Hooked Apis in XPL-EX](https://github.com/0bbedCode/XPL-EX/blob/main/HOOKED.md) <br>
 
 Do note for every Hook that is not re-created or added within the 'PrivacyEx' or XPL-EX Collection (it will be added) but you can use both Collections at once.<br>
 You cen switch between the two collections in the "XPrivacy-LUA Pro Companion App". Please Avoid Selecting Hook Groups with similar Hooks
@@ -154,7 +153,7 @@ Certificate fingerprints:
 Frequently Asked Questions
 --------------------------
 
-See [here](https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md) for a list of often asked questions. (XPrivacy-Lua)
+See [here](https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md) for a list of often asked questions. (XPrivacy-Lua)
 
 
 Donate ;)

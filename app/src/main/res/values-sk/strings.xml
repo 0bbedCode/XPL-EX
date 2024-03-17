@@ -10,7 +10,7 @@
     <string name="title_force_stop">Zastaviť automaticky</string>
     <string name="title_help_instructions">Stlačte na ikonu alebo názov a vyberte čo sa má blokovať.
 Ak je to možné, aplikácie sa automaticky zastavia kvôli okamžitej zmene blokovania,
- avšak pre niektoré aplikácie zmena blokovania vyžaduje reštart zariadenia (viď ikony nižšie).<![CDATA[<br><br>]]>Dlhým stlačením na ikonu alebo názov spustíte aplikáciu.<![CDATA[<br><br>]]>Viď <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">dokumentáciu</a>]]>a <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">najčastejšie otázky</a>]]> pre viac informácií.    </string>
+ avšak pre niektoré aplikácie zmena blokovania vyžaduje reštart zariadenia (viď ikony nižšie).<![CDATA[<br><br>]]>Dlhým stlačením na ikonu alebo názov spustíte aplikáciu.<![CDATA[<br><br>]]>Viď <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">dokumentáciu</a>]]>a <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">najčastejšie otázky</a>]]> pre viac informácií.    </string>
     <string name="title_help_installed">Blokovanie nainštalované</string>
     <string name="title_help_system">Blokovanie môže spôsobiť problémy</string>
     <string name="title_help_settings">Nastavenia blokovania aplikácie</string>

@@ -12,7 +12,7 @@
         Prem sobre la icona o sobre el nom de la app i selecciona les restriccions a aplicar.
         Si és possible, les apps s\'aturaran automàticament per tal d\'aplicar (o esborrar) les restriccions immediatament tot i que algunes aplicacions necessitaran que es reiniciï l\'equip per tal que les modificacions siguin efectives (veure les icones més a baix).
         <![CDATA[<br><br>]]>Mantingues premut sobre el nom o la icona d\'una app per tal d\'obrir-la.
-        <![CDATA[<br><br>]]>Mira\'t <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">la documentació</a>]]>        i <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">les preguntes freqüents</a>]]> per més informació.    </string>
+        <![CDATA[<br><br>]]>Mira\'t <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">la documentació</a>]]>        i <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">les preguntes freqüents</a>]]> per més informació.    </string>
     <string name="title_help_installed">Restricció instal·lada</string>
     <string name="title_help_system">Poden sorgir problemes després d\'aplicar restriccions</string>
     <string name="title_help_settings">Ajustaments de les restriccions de les apps</string>

@@ -11,8 +11,8 @@
         По возможности приложения будут автоматически остановлены для немедленного применения (или удаления) ограничений,
         однако для применения ограничений к некоторым приложениям требуется перезагрузка устройства (смотрите на ярлыки ниже).
         <![CDATA[<br><br>]]>;Нажмите на имя или ярлык приложения и удерживайте для его запуска.
-        <![CDATA[<br><br>]]>;Изучите <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">the документацию</a>]]>;
-        и <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">часто задаваемые вопросы</a>]]>; для получения более подробной информации.
+        <![CDATA[<br><br>]]>;Изучите <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">the документацию</a>]]>;
+        и <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">часто задаваемые вопросы</a>]]>; для получения более подробной информации.
     </string>
     <string name="title_help_installed">Ограничение установлено</string>
     <string name="title_help_system">Применение ограничений может вызвать проблемы</string>

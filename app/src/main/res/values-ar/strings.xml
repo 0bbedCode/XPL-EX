@@ -12,7 +12,7 @@
         إذا كان ذلك ممكناً، يتم إيقاف التطبيقات تلقائياً لتطبيق (أو إزالة) القيود فورا،
         ولكن تطبيق القيود على بعض تطبيقات يتطلب إعادة تشغيل الجهاز (انظر الرموز أدناه).
         <![CDATA[<br><br>]]> اضغط طويلاً على رمز التطبيق أو اسمه لتشغيل التطبيق.
-        <![CDATA[<br><br>]]>انظر<![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">التوثيق</a>]]>        و<![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">الأسئلة الأكثر شيوعاً</a>]]> للحصول على مزيد من المعلومات.
+        <![CDATA[<br><br>]]>انظر<![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">التوثيق</a>]]>        و<![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">الأسئلة الأكثر شيوعاً</a>]]> للحصول على مزيد من المعلومات.
     </string>
     <string name="title_help_installed">تم تثبيت القيد</string>
     <string name="title_help_system">تطبيق القيود يمكن أن يؤدي إلى مشاكل</string>

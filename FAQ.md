@@ -72,7 +72,7 @@ See also [question 7](#user-content-faq7).
 This error could mean that the downloaded file is corrupt, which could for example be caused by a connection problem or by a virus scanner.
 
 It could also mean that you are trying to install XPrivacyLua on an unsupported Android version.
-See [here](https://github.com/M66B/XPrivacyLua/blob/master/README.md#compatibility) for which Android versions are supported.
+See [here](https://github.com/0bbedCode/XPL-EX/blob/new/README.md#compatibility) for which Android versions are supported.
 
 <a name="faq6"></a>
 **(6) Why is a check box shown grey?**
@@ -80,7 +80,7 @@ See [here](https://github.com/M66B/XPrivacyLua/blob/master/README.md#compatibili
 An app level check box is shown grey when one of the restriction level check boxes is not ticked.
 
 A restriction level check box is shown grey
-if one of the hooks that [compose the restriction](https://github.com/M66B/XPrivacyLua/blob/master/app/src/main/assets/hooks.json) is not enabled
+if one of the hooks that [compose the restriction](https://github.com/0bbedCode/XPL-EX/blob/new/app/src/main/assets/hooks.json) is not enabled
 (hooks are not shown in the app to keep things simple).
 This can happen when a new version adds new hooks. These new hooks are not enabled by default to make sure your apps keeps working.
 You can enable the new hooks by toggling the check box once (turning it off and on once).
@@ -88,21 +88,21 @@ You can enable the new hooks by toggling the check box once (turning it off and 
 <a name="faq7"></a>
 **(7) How does XPrivacyLua compare to XPrivacy?**
 
-* XPrivacy supports Android 4.0.3 KitKat to Android 5.1.1 Lollipop and XPrivacyLua supports Android version 6.0 Marshmallow and later, see [here](https://github.com/M66B/XPrivacyLua/blob/master/README.md#compatibility) about compatibility
+* XPrivacy supports Android 4.0.3 KitKat to Android 5.1.1 Lollipop and XPrivacyLua supports Android version 6.0 Marshmallow and later, see [here](https://github.com/0bbedCode/XPL-EX/blob/new/README.md#compatibility) about compatibility
 * The user interface of XPrivacyLua is simpler than of XPrivacy, see also [question 4](#user-content-faq4)
 * The restrictions of XPrivacyLua are designed to prevent apps from crashing, while a number of XPrivacy restrictions can apps cause to crash, see also [question 4](#user-content-faq4)
 * XPrivacyLua has no on demand restricting for stability and maintenance reasons, see also [question 4](#user-content-faq4)
 * XPrivacyLua can unlike XPrivacy restrict analytics services like [Google Analytics](https://www.google.com/analytics/) and [Fabric/Crashlytics](https://get.fabric.io/)
-* XPrivacyLua [is user extensible](https://github.com/M66B/XPrivacyLua/blob/master/DEFINE.md) while XPrivacy is not
+* XPrivacyLua [is user extensible](https://github.com/0bbedCode/XPL-EX/blob/new/DEFINE.md) while XPrivacy is not
 * XPrivacyLua is easier to maintain than XPrivacy, so XPrivacyLua is easier to update for new Android versions
 
 In general XPrivacyLua and XPrivacy are comparable in protecting your privacy.
-For a detailed comparison with XPrivacy see [here](https://github.com/M66B/XPrivacyLua/blob/master/XPRIVACY.md).
+For a detailed comparison with XPrivacy see [here](https://github.com/0bbedCode/XPL-EX/blob/new/XPRIVACY.md).
 
 <a name="faq8"></a>
 **(8) How can I define custom restrictions?**
 
-Yes, see [here](https://github.com/M66B/XPrivacyLua/blob/master/DEFINE.md) for the documentation on defining hooks.
+Yes, see [here](https://github.com/0bbedCode/XPL-EX/blob/new/DEFINE.md) for the documentation on defining hooks.
 
 <a name="faq9"></a>
 **(9) Why can an app still access my accounts?**

@@ -10,8 +10,8 @@
     <string name="title_help_instructions">        点击应用程序的图标或名称来勾选并应用限制选项。    
         如可行, 应用程序会自动停止以立即应用 (或解除) 该限制，但对某些应用程序，应用限制需要重启(参见下面的图标)。       
         <![CDATA[<br><br>]]>长按应用程序名称或图标来启动应用程序。
-        <![CDATA[<br><br>]]>参见 <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md"> 这份文档 </a>]]>;
-        以及 <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">常见问答</a>]]>; 以了解更多信息。
+        <![CDATA[<br><br>]]>参见 <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md"> 这份文档 </a>]]>;
+        以及 <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">常见问答</a>]]>; 以了解更多信息。
     </string>
     <string name="title_help_installed">已限制</string>
     <string name="title_help_system">应用限制可能会导致出错</string>

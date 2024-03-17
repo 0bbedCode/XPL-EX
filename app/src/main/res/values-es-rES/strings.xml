@@ -11,7 +11,7 @@
         Si es posible, las apps se detienen automáticamente para aplicar (o eliminar) las restricciones inmediatamente,
         pero para poder aplicar restricciones a algunas apps se requiere un reinicio del dispositivo (ve los íconos abajo).
         <![CDATA[<br><br>]]>Pulsa y mantén presionado sobre el nombre de una app o su ícono para iniciarla.
-        <![CDATA[<br><br>]]>Para mayor información, revisa <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">la documentación</a>]]>        y <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">las preguntas más frecuentes</a>]]>. 
+        <![CDATA[<br><br>]]>Para mayor información, revisa <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">la documentación</a>]]>        y <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">las preguntas más frecuentes</a>]]>. 
     </string>
     <string name="title_help_installed">Restricción instalada</string>
     <string name="title_help_system">Aplicar las restricciones puede causar problemas</string>

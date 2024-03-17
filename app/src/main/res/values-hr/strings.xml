@@ -11,7 +11,7 @@
     <string name="title_help_instructions">Dodirnite ikonu aplikacije ili naziv i označite ograničenja da biste ih primijenili.
         Ako je moguće, aplikacije se automatski zaustavljaju kako bi odmah primijenili (ili uklonili)         ograničenja,  no primjena ograničenja za neke aplikacije zahtijeva ponovno pokretanje uređaja (pogledajte ikone u nastavku).
          <![CDATA[<br><br>]]>Dugi pritisak na naziv ili ikonu aplikacije za pokretanje aplikacije.
-         <![CDATA[<br><br>]]>Pogledajte <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">dokumentaciju</a>]]>         i <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">najčešća pitanja</a>]]> za više informacija.    </string>
+         <![CDATA[<br><br>]]>Pogledajte <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">dokumentaciju</a>]]>         i <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">najčešća pitanja</a>]]> za više informacija.    </string>
     <string name="title_help_installed">Ograničenja instalirana</string>
     <string name="title_help_system">Ograničenja mogu dovesti do problema</string>
     <string name="title_help_settings">Postavke ograničenja aplikacije</string>

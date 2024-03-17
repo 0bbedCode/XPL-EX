@@ -12,8 +12,8 @@
         Si possible, les applis sont automatiquement stoppées pour immédiatement appliquer (ou annuler) les restrictions,
         mais appliquer des restrictions à certaines applis requiert un redémarrage de l\'appareil (voir les icônes ci-dessous).
         <![CDATA[<br><br>]]>Faire un appui long sur le nom d\'une appli ou son icône pour lancer l\'appli.
-        <![CDATA[<br><br>]]>Voir <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">ici</a>]]>  pour la documentation
-        et <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">ici</a>]]> pour les questions fréquemment posées.
+        <![CDATA[<br><br>]]>Voir <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">ici</a>]]>  pour la documentation
+        et <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">ici</a>]]> pour les questions fréquemment posées.
     </string>
     <string name="title_help_installed">Restriction appliquée</string>
     <string name="title_help_system">L\'application de restrictions peut causer des problèmes</string>

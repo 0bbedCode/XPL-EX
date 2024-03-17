@@ -12,7 +12,7 @@
          Om muligt stoppes apps automatisk med det samme for at effektuere (eller fjerne) begrænsninger,
          men begrænsnings effektueringer på visse apps kræver en genstart af enheden (se ikoner nedenfor).
          <![CDATA[<br><br>]]> Langt tryk på et appn-avn eller -ikon for at starte app\'en.
-         <![CDATA[<br><br>]]>Se<![CDATA[<a href= "https://github.com/M66B/XPrivacyLua/blob/master/README.md">dokumentationen</a>]]>         og <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">ofte stillede spørgsmål</a>]]>for yderligere information.    </string>
+         <![CDATA[<br><br>]]>Se<![CDATA[<a href= "https://github.com/0bbedCode/XPL-EX/blob/new/README.md">dokumentationen</a>]]>         og <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">ofte stillede spørgsmål</a>]]>for yderligere information.    </string>
     <string name="title_help_installed">Begrænsning installeret</string>
     <string name="title_help_system">Effektuering af begrænsninger kan resultere i problemer</string>
     <string name="title_help_settings">Indstillinger for app-begrænsning</string>

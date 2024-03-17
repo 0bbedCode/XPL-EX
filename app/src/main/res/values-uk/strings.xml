@@ -12,7 +12,7 @@
         По можливості програми будуть автоматично зупинені для негайного застосування (або видалення) обмежень,
         однак для застосування обмежень до деяких додатків потрібне перезавантаження пристрою (дивіться на ярлики нижче).
         <![CDATA[<br><br>]]>Натисніть на назву або значок додатку, щоб запустити додаток.
-        <![CDATA[<br><br>]]>Дивіться <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">документацію</a>]]>        і <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">часто задавані питання</a>]]> для отримання додаткової інформації.
+        <![CDATA[<br><br>]]>Дивіться <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">документацію</a>]]>        і <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">часто задавані питання</a>]]> для отримання додаткової інформації.
     </string>
     <string name="title_help_installed">Обмеження встановлені</string>
     <string name="title_help_system">Застосування обмежень може призвести до проблем</string>

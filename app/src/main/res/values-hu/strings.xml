@@ -12,7 +12,7 @@
         Ha lehetséges, akkor az appok automatikusan leállnak és azonnal érvényre jutnak (vagy törlődnek) a korlátozások,
         de némely appok korlátozása az eszköz újraindítását igényli (lásd a lenti ikonokat).
         <![CDATA[<br><br>]]>Tartsd hosszan nyomva egy app nevét vagy ikonját az app elindításához.
-        <![CDATA[<br><br>]]>További információért lásd a <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">dokumentációt</a>]]> és a <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">gyakran ismételt kérdéseket</a>]]>.
+        <![CDATA[<br><br>]]>További információért lásd a <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">dokumentációt</a>]]> és a <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">gyakran ismételt kérdéseket</a>]]>.
     </string>
     <string name="title_help_installed">Korlátozás installálva</string>
     <string name="title_help_system">A korlátozások alkalmazása problémákat okozhat</string>

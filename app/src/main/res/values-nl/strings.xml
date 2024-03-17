@@ -9,8 +9,8 @@
     <string name="title_force_stop">Automatisch geforceerd stoppen</string>
     <string name="title_help_instructions">Klik op een app icoon of naam en vink een beperking aan om deze toe te passen.
 Indien mogelijk worden apps automatisch gestopt om de beperkingen direct toe te passen,
-maar soms is het nodig om het apparaat te herstarten (zie iconen hieronder).<![CDATA[<br><br>]]>Klik lang op een app icoon of naam om de app te starten.<![CDATA[<br><br>]]>Zie <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">hier</a>]]> voor de documentatie
-en <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">hier</a>]]> voor veelgestelde vragen.</string>
+maar soms is het nodig om het apparaat te herstarten (zie iconen hieronder).<![CDATA[<br><br>]]>Klik lang op een app icoon of naam om de app te starten.<![CDATA[<br><br>]]>Zie <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">hier</a>]]> voor de documentatie
+en <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">hier</a>]]> voor veelgestelde vragen.</string>
     <string name="title_help_installed">Beperking geïnstalleerd</string>
     <string name="title_help_system">Het toepassen van beperkingen kan resulteren in problemen</string>
     <string name="title_help_settings">App beperking instellingen</string>

@@ -12,8 +12,8 @@
         Αν γίνεται, οι εφαρμογές διακόπτονται αυτόματα για να εφαρμοστούν (ή να καταργηθούν) επι-τόπου οι περιορισμοί,
         ενώ εφαρμόζοντας περιορισμούς σε ορισμένες εφαρμογές απαιτεί επανεκκίνηση της συσκευής (βλ. εικόνες παρακάτω).
         <![CDATA[<br><br>]]>;Πατήστε παρατεταμένα σε ένα εικονίδιο ή όνομα εφαρμογής για να τρέξετε την εφαρμογή.
-        <![CDATA[<br><br>]]>;Δείτε<![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">τα τεκμήρια</a>]]>;
-        και <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">τις συχνές ερωτήσεις</a>]]>; για περισσότερες πληροφορίες.
+        <![CDATA[<br><br>]]>;Δείτε<![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">τα τεκμήρια</a>]]>;
+        και <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">τις συχνές ερωτήσεις</a>]]>; για περισσότερες πληροφορίες.
     </string>
     <string name="title_help_installed">Περιορισμός εγκατεστημένος</string>
     <string name="title_help_system">Η εφαρμογή περιορισμών μπορεί να οδηγήσει σε προβλήματα</string>

@@ -11,7 +11,7 @@
         Wenn möglich werden Apps automatisch angehalten, die Beschränkungen sofort anzuwenden (oder zu entfernen),
         aber die Anwendung von Einschränkungen für einige Apps erfordert einen Geräteneustart (siehe Symbole unten).
         <![CDATA[<br><br>]]>Lange Drücken auf einen App-Namen oder ein Icon, um die App zu starten.
-        <![CDATA[<br><br>]]><![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">die Dokumentation</a>]]>        und <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">die häufig gestellten Fragen</a>]]> für weitere Informationen.
+        <![CDATA[<br><br>]]><![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">die Dokumentation</a>]]>        und <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">die häufig gestellten Fragen</a>]]> für weitere Informationen.
     </string>
     <string name="title_help_installed">Beschränkung installiert</string>
     <string name="title_help_system">Beschränkungen können zu Problemen führen</string>

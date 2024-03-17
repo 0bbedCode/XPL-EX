@@ -14,8 +14,8 @@
         Se for possível, os apps serão fechados automaticamente para ativar (ou desativar) as restrições imediatamente,
         mas ativar restrições a certos apps exige reiniciar o dispositivo (veja a legenda dos ícones abaixo).
         <![CDATA[<br><br>]]>Toque e segure no nome do app ou no ícone iniciá-lo.
-        <![CDATA[<br><br>]]>Veja <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">a documentação</a>]]>
-        e <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">as perguntas frequentes</a>]]> para mais informações.
+        <![CDATA[<br><br>]]>Veja <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md">a documentação</a>]]>
+        e <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md">as perguntas frequentes</a>]]> para mais informações.
     </string>
     <string name="title_help_installed">Restrição instalada</string>
     <string name="title_help_system">A aplicação de restrições pode causar problemas</string>

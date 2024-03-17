@@ -11,7 +11,7 @@
          Jika memungkinkan, aplikasi secara otomatis dihentikan untuk menerapkan (atau menghapus) batasan dengan segera,
          tetapi menerapkan pembatasan ke beberapa aplikasi memerlukan perangkat dimulai ulang (lihat ikon di bawah).
          <![CDATA[<br> <br>]]>Tekan lama nama atau ikon aplikasi untuk memulai aplikasi.
-         <![CDATA[<br> <br>]]>Lihat<![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md"> dokumentasi</a>]]>         dan <![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md"> pertanyaan umum </a>]]> untuk informasi lebih lanjut.    </string>
+         <![CDATA[<br> <br>]]>Lihat<![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/README.md"> dokumentasi</a>]]>         dan <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/new/FAQ.md"> pertanyaan umum </a>]]> untuk informasi lebih lanjut.    </string>
     <string name="title_help_installed">Pembatasan dipasang</string>
     <string name="title_help_system">Applying restrictions can result in problems</string>
     <string name="title_help_settings">App restriction settings</string>
