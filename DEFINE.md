@@ -14,7 +14,7 @@ An easy way to do this is by toggling a definition off/on in XPrivacyLua.
 
 XPrivacyLua allows you to select which apps a definition should be applied to.
 
-You can edit hook definitions for free with the XPrivacyLua [pro companion app](https://play.google.com/apps/testing/eu.faircode.xlua.pro).
+You can edit hook definitions for free with the XPrivacyLua [pro companion app](https://github.com/0bbedCode/XPL-EX/releases).
 
 Definition
 ----------
