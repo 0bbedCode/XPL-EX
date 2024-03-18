@@ -175,7 +175,7 @@ Using the pro companion app you can edit built-in definitions, which will result
 You could for example enable usage notifications or change returned fake values.
 Deleting copied definitions will restore the built-in definitions.
 
-The pro companion app can upload defintions to and download definitions from a [hook definition repository](https://lua.xprivacy.eu/repo/),
+The pro companion app can upload defintions to and download definitions from a [hook definition repository](https://github.com/0bbedCode/XPL-EX/tree/new/repo),
 making it easy to share hook definitions with others and to use hook definitions provided by others.
 Note that you cannot upload hook definitions with the author name to set to someone else.
 

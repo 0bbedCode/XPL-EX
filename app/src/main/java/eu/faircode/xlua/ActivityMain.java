@@ -181,7 +181,7 @@ public class ActivityMain extends ActivityBase {
                 Intent companion = pm.getLaunchIntentForPackage(XUtil.PRO_PACKAGE_NAME);
                 if (companion == null) {
                     Intent browse = new Intent(Intent.ACTION_VIEW);
-                    browse.setData(Uri.parse("https://lua.xprivacy.eu/pro/"));
+                    browse.setData(Uri.parse("https://github.com/0bbedCode/XPL-EX/releases"));
                     if (browse.resolveActivity(pm) == null)
                         Snackbar.make(findViewById(android.R.id.content), getString(R.string.msg_no_browser), Snackbar.LENGTH_LONG).show();
                     else

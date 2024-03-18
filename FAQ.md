@@ -44,7 +44,7 @@ Disable and enable the module in the Xposed installer and hard reboot again to f
 * *Select contacts groups to allow/block*: the Android contacts provider doesn't support contact groups at all hierarchy levels and working around this has appeared to be not possible reliably.
 
 If you want to confine apps to their own folder, you can download the hook definition *BlockGuardOs.open*
-from the [hook definition repository](https://lua.xprivacy.eu/repo/) using the pro companion app.
+from the [hook definition repository](https://github.com/0bbedCode/XPL-EX/tree/new/repo) using the pro companion app.
 
 Apps having access to the IP address generally have access to the internet and therefore can get your IP address in a simple way,
 see for example [here](https://www.privateinternetaccess.com/pages/whats-my-ip/). Therefore an IP address restriction doesn't make sense.
@@ -55,9 +55,9 @@ Therefore internet restriction cannot properly be implemented.
 You are adviced to use a firewall app to control internet access, for example [NetGuard](https://forum.xda-developers.com/android/apps-games/app-netguard-root-firewall-t3233012).
 
 If you still want to fake offline state, you can download the hook definition *NetworkInfo.createFromParcel*
-from the [hook definition repository](https://lua.xprivacy.eu/repo/) using the pro companion app.
+from the [hook definition repository](https://github.com/0bbedCode/XPL-EX/tree/new/repo) using the pro companion app.
 
-To protect your MAC address, there are hooks available in the [hook definition repository](https://lua.xprivacy.eu/repo/). On Android 8 and higher, you should only protect *NetworkInterface.getHardwareAddress*, since *WifiInfo.getMacAddress* and *BluetoothAdapter.getAddress* are [disabled](https://developer.android.com/training/articles/user-data-ids.html#version_specific_details_identifiers_in_m). However, some manufacturers may override this behavior, so hooks for all 3 methods are available.
+To protect your MAC address, there are hooks available in the [hook definition repository](https://github.com/0bbedCode/XPL-EX/tree/new/repo). On Android 8 and higher, you should only protect *NetworkInterface.getHardwareAddress*, since *WifiInfo.getMacAddress* and *BluetoothAdapter.getAddress* are [disabled](https://developer.android.com/training/articles/user-data-ids.html#version_specific_details_identifiers_in_m). However, some manufacturers may override this behavior, so hooks for all 3 methods are available.
 
 Since XPrivacyLua version 1.22 it is possible to enable status bar notifications on applying restrictions using the pro companion app.
 This can be used as a replacement for on demand restricting by removing a restriction when needed.
