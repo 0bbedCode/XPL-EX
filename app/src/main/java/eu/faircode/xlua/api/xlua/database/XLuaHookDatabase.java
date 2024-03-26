@@ -132,12 +132,12 @@ public class XLuaHookDatabase {
             if(!DatabaseHelp.insertItem(db, "`group`",  report.createGroupObject(hook, used)))
                 Log.e(TAG, "Error inserting group: " + report);
 
-            ContentValues cv = new ContentValues();
-            cv.put("package", report.packageName);
-            cv.put("uid", report.getUserId());
-            cv.put("name", hook.getGroup());
-            cv.put("used", time);
-            long rows = db.insertWithOnConflict("`group`", null, cv, SQLiteDatabase.CONFLICT_REPLACE);
+            //ContentValues cv = new ContentValues();
+            //cv.put("package", report.packageName);
+            //cv.put("uid", report.getUserId());
+            //cv.put("name", hook.getGroup());
+            //cv.put("used", time);
+            //long rows = db.insertWithOnConflict("`group`", null, cv, SQLiteDatabase.CONFLICT_REPLACE);
 
         }
 
