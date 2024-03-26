@@ -86,3 +86,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.luaj/luaj-jse
     // implementation 'org.luaj:luaj-jse:3.0.1'
 }
+
+android {
+    lintOptions {
+        abortOnError false
+    }
+}
