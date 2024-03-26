@@ -138,10 +138,9 @@ public class XLuaHookDatabase {
             cv.put("name", hook.getGroup());
             cv.put("used", time);
             long rows = db.insertWithOnConflict("`group`", null, cv, SQLiteDatabase.CONFLICT_REPLACE);
-            if (rows < 0)
-                //throw new Throwable("Error inserting group");
 
         }
 
         return used;
     }
+}
