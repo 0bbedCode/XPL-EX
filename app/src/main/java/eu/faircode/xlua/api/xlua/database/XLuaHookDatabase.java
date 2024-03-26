@@ -145,5 +145,3 @@ public class XLuaHookDatabase {
 
         return used;
     }
-}
-}
