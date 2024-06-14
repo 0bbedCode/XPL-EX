@@ -39,7 +39,6 @@ Manipluate target applications, feed them fake data, modify behaviour all here i
     ContentResolver.query(Uri uri, String[] projection, Bundle queryArgs, CancellationSignal cancellationSignal);
   ```
 </details>
-
 <details>
   <summary>Call Log [3]</summary>
   
@@ -49,7 +48,6 @@ Manipluate target applications, feed them fake data, modify behaviour all here i
     ContentResolver.query(Uri uri, String[] projection, Bundle queryArgs, CancellationSignal cancellationSignal)
   ```
 </details>
-
 <details>
   <summary>Contacts [6]</summary>
   
@@ -71,7 +69,6 @@ Manipluate target applications, feed them fake data, modify behaviour all here i
      SensorManager.getSensors();
   ```
 </details>
-
 <details>
   <summary>Account [1]</summary>
   
@@ -79,7 +76,6 @@ Manipluate target applications, feed them fake data, modify behaviour all here i
      Account.createFromParcel(Parcel parcel)
   ```
 </details>
-
 <details>
   <summary>Activity [1]</summary>
   
@@ -87,7 +83,6 @@ Manipluate target applications, feed them fake data, modify behaviour all here i
      ActivityRecognitionResult.extractResult(Intent intent);
   ```
 </details>
-
 <details>
   <summary>Activity [1]</summary>
   
