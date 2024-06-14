@@ -1,4 +1,173 @@
 # XPL-EX
+
+Hooking + App Privacy Application For Android 6.0+ (JavaAPI Privacy)
+
+<br>
+
+XPL-EX has one main goal, to intercept applications from grabbing your Device Indetifiers. This targets Android Applications API(s) (Java) (Soon Native & Syscalls), it achives this by utilizing the Xposed Framework on Android. You can also use (non) root solutions such as VXP or ThaiChi.<br>
+Do note XPL-EX it self does not require Root Priveleges, but does require the Xposed Framework or Virutal Xposed Application.<br>
+This is Application Level (targing Android Applications), prevent them from reading any unique Device Identifiers and more.<br><br>
+
+Applications such as Facebook, Instagram, TikTok, many more similar apps track your data daily. Selling it to Data Brokers, Logging it, or hell who knows maybe selling it to big brother.<br>
+One way to combat against this is to ensure that the apps you are using do not grab any Information on your Android Device.<br>
+This is a Defense part of your Many Defenses against the All Seeing Eye.<br>
+Manipluate target applications, feed them fake data, modify behaviour all here in one.<br>
+
+## Technicals
+[-] Only Supports Java APIs (a native implementation and direct syscall interception will be one of the goals within the updates) Fortuantly 
+[+] Android 6.0+ (LSPosed >>> Android 8.1+)
+[+] Supports Virtual Environments VXP & ThaiChi
+[+] Full open source (aside from the closed source Pro App that is slowly being merged into the main app free)
+[+] Native android UI no heavy Frameworks
+[+] Hook behaviour code is written with LUA Scripts that can be loaded in Dynamically
+[+] 20+ Uniqe Identifer Hooks including of course (Double Advertisment ID(IPC), Android ID, Serial Number, DRM ID) many more !
+[+] 450+ pre made Hooks ready to be utilized (all grouped) and part of the "PrivacyEX" Collection
+[+] Java Shell and build.prop Properties Interceptor
+[+] Settings Config Export and Importer share across other XPL-EX Users
+[+] Java File Interception (/proc/cpuinfo, /proc/meminfo) also just normal Directory Isolation
+[+] Some of the things it can blocks/spoofs
+
+<details>
+  <summary>Apis</summary>
+
+<details>
+  <summary>Calendars [3]</summary>
+  
+  ```Java
+    ContentResolver.query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder);
+    ContentResolver.query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder, CancellationSignal cancellationSignal);
+    ContentResolver.query(Uri uri, String[] projection, Bundle queryArgs, CancellationSignal cancellationSignal);
+  ```
+</details>
+
+<details>
+  <summary>Call Log [3]</summary>
+  
+  ```Java
+    ContentResolver.query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder);
+    ContentResolver.query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder, CancellationSignal cancellationSignal);
+    ContentResolver.query(Uri uri, String[] projection, Bundle queryArgs, CancellationSignal cancellationSignal)
+  ```
+</details>
+
+<details>
+  <summary>Contacts [6]</summary>
+  
+  ```Java
+    ContentResolver.query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder);
+    ContentResolver.query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder, CancellationSignal cancellationSignal);
+    ContentResolver.query(Uri uri, String[] projection, Bundle queryArgs, CancellationSignal cancellationSignal)
+  ```
+</details>
+
+<details>
+  <summary>Sensors [5]</summary>
+  
+  ```Java
+     SensorManager.getDefaultSensor(int type);
+     SensorManager.getDefaultSensor(int type,  boolean wakeUp);
+     SensorManager.getDynamicSensorList(int type);
+     SensorManager.getSensorList(int type);
+     SensorManager.getSensors();
+  ```
+</details>
+
+<details>
+  <summary>Account [1]</summary>
+  
+  ```Java
+     Account.createFromParcel(Parcel parcel)
+  ```
+</details>
+
+<details>
+  <summary>Activity [1]</summary>
+  
+  ```Java
+     ActivityRecognitionResult.extractResult(Intent intent);
+  ```
+</details>
+
+<details>
+  <summary>Activity [1]</summary>
+  
+  ```Java
+     ActivityRecognitionResult.extractResult(Intent intent);
+  ```
+</details>
+
+
+- Networks
+- Sensors
+- Messages
+- Bluetooh
+- Call Logs
+- Activity
+- Application (New Apis + List)
+- Calendar Information
+- Sync Data
+- Notifications
+- User Agent (GeckoWebView, Generic WebView, OkHttp3)
+- Battery
+- Display Size
+- Block all Features
+- GPU
+- SOC + CPU
+- Memory, RAM
+- Location & Cell Location
+- Cell Info and State
+- TimeZone
+- Language
+- Block Using the Camera
+- Block Recording Audio
+- Block Sending Messages
+- Device Build Fields
+- Network Identifiers
+- Unique Identifiers
+  - DRM (API Obviosuly silly) 
+  - Advertisment ID (IPC & Api)
+  - Android ID
+  - Serial
+  - MacAddress
+  - Blue Tooth Address
+  - SSID
+  - IMEI, MEID (& IPC) (& build.prop)
+  - Subscriber ID
+  - Phone Number
+  - Amazon Tracking ID
+  - Fakebook Tracking ID
+  - IccId
+- Telephony Identifiers
+- Device Enumoration Indentifiers
+- build.prop Properties Interceptor (File, Command, Api ***System.getProperty*** & ***SystemProperty.get***)
+- Shell Interceptor (SU, getprop "/build.prop", logcat, uname, whoami)
+- File Interceptor, Spoof ***"/proc/cpuinfo"*** , ***"/proc/meminfo/"*** , ***"/vendor/build.prop"*** and Device Directories
+
+</details>
+
+
+
+XPL-EX Codes goal is to have a FOSS In Application Privacy Project, No Costs at all, No Data Analytics, No Servers, No Advertisments, dosnt even need Wifi. Soon all XPrivacyLua Pro functions will be merged within this<br>
+Application Privacy is something that needs to be taken serious as Many Applications track your Devices by ID. Data Brokers, Unique Logs, Tracking, Targeted Advertisements.<br>
+XPL-EX Used the Xposed Framework, or a virtual xposed evironment like ThaiChi or VXP to Hook. Actual application does not need Root (through xposed may) <br>
+
+
+
+
+
+
+
+XPLEX is an Extension of XPrivacyLua (Kinda), while Main UI + Some Loading Code it will be eventually moved to a seperate project as over 40k Lines have been committed.<>
+
+
+
+
+
+
+
+
+
+# XPL-EX
 Hooking + Privacy Framework For Android 6.0 +
 
 
@@ -7,7 +176,7 @@ Hooking + Privacy Framework For Android 6.0 +
 
 XPL-EX
 ------------
-
+<br>All though this is said to be a fork, this point of the Project it is taken a complete different direction and most code replaced over 50k lines while around 5k lines of the original code remain. I don't feel need at the moment to convert it to my own REPO so for now it will be linked to the base as a fork!<br>
 To understand it easily, XPL-EX is an application that conceals other applications from accessing any information about your device, whether the data is unique or generic. This project was originally forked from M66B's work, although, at this point, very few parts of the original code remain. Most of what exists now has been modified or added by me (over 40,000 lines modified/added). I further developed this app not just to fulfill a childhood dream but also to challenge the companies that trade our data, aiming to inspire hope for our future privacy. I seek no financial gain, only privacy for future generations.<br><br>
 <div align="center">We will prevail. Lets give a big F*ck you to the companies and show the power of XPL-EX!!! </div>
 <br><br>
@@ -51,6 +220,7 @@ Help
 ------------
 
 [XPL DEFINE](https://github.com/M66B/XPrivacyLua/blob/master/DEFINE.md) <br>
+[XPL-EX UI Help Docs or Usage Help Docs (How to use this damn f*cking app)](https://github.com/0bbedCode/XPL-EX/blob/new/APPHELP.md) <br>
 [XPL-EX API](https://github.com/0bbedCode/XPL-EX/blob/new/APIHELP.md) <br>
 [XPL-EX Examples](https://github.com/0bbedCode/XPL-EX/blob/new/LUAHELP.md) <br>
 [Hooked Apis in XPL-EX](https://github.com/0bbedCode/XPL-EX/blob/main/HOOKED.md) <br>
