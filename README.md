@@ -14,18 +14,18 @@ This is a Defense part of your Many Defenses against the All Seeing Eye.<br>
 Manipluate target applications, feed them fake data, modify behaviour all here in one.<br>
 
 ## Technicals
-[-] Only Supports Java APIs (a native implementation and direct syscall interception will be one of the goals within the updates) Fortuantly 
-[+] Android 6.0+ (LSPosed >>> Android 8.1+)
-[+] Supports Virtual Environments VXP & ThaiChi
-[+] Full open source (aside from the closed source Pro App that is slowly being merged into the main app free)
-[+] Native android UI no heavy Frameworks
-[+] Hook behaviour code is written with LUA Scripts that can be loaded in Dynamically
-[+] 20+ Uniqe Identifer Hooks including of course (Double Advertisment ID(IPC), Android ID, Serial Number, DRM ID) many more !
-[+] 450+ pre made Hooks ready to be utilized (all grouped) and part of the "PrivacyEX" Collection
-[+] Java Shell and build.prop Properties Interceptor
-[+] Settings Config Export and Importer share across other XPL-EX Users
-[+] Java File Interception (/proc/cpuinfo, /proc/meminfo) also just normal Directory Isolation
-[+] Some of the things it can blocks/spoofs
+- Only Supports Java APIs (a native implementation and direct syscall interception will be one of the goals within the updates) Fortuantly
+- Android 6.0+ (LSPosed >>> Android 8.1+)
+- Supports Virtual Environments VXP & ThaiChi
+- Full open source (aside from the closed source Pro App that is slowly being merged into the main app free)
+- Native android UI no heavy Frameworks
+- Hook behaviour code is written with LUA Scripts that can be loaded in Dynamically
+- 20+ Uniqe Identifer Hooks including of course (Double Advertisment ID(IPC), Android ID, Serial Number, DRM ID) many more !
+- 450+ pre made Hooks ready to be utilized (all grouped) and part of the "PrivacyEX" Collection
+- Java Shell and build.prop Properties Interceptor
+- Settings Config Export and Importer share across other XPL-EX Users
+- Java File Interception (/proc/cpuinfo, /proc/meminfo) also just normal Directory Isolation
+- Some of the things it can blocks/spoofs
 
 <details>
   <summary>Apis</summary>
