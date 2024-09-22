@@ -10,10 +10,18 @@ buildscript {
 
 allprojects {
     repositories {
+        google()
         jcenter()
         mavenCentral()
+        mavenLocal()
+        maven { url 'https://api.xposed.info' }
+        maven { url 'https://maven.google.com' }
         maven {
-            url 'https://maven.google.com'
+            url("https://s01.oss.sonatype.org/content/repositories/releases/")
+            content {
+                includeGroupByRegex("dev.rikka.*")
+                includeGroup("org.lsposed.hiddenapibypass")
+            }
         }
     }
 }
