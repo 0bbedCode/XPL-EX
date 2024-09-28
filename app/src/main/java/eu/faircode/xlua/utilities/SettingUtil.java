@@ -24,7 +24,7 @@ import eu.faircode.xlua.api.xlua.XLuaCall;
 public class SettingUtil {
 
     public static final List<String> EX_NAMES = Arrays.asList("Index", "Vortex");
-    public static final List<String> UPPER_PAIRS = Arrays.asList("Wifi", "Vpn", "Ex", "Io", "Su", "Arch", "Cpuid", "Db", "Egl", "Ab", "Gms",  "Hw", "Sms", "Icc", "No", "Sys", "Isp", "Cid", "Lac", "Mac", "Net", "Ad", "Drm", "Gsf", "Lcc", "Meid", "Imei", "Bssid", "Ssid", "Esim", "Sim", "Sku", "Lac", "Cid", "Msin", "Mnc", "Mcc", "Adb", "Os", "Utc", "Abi", "Gps", "Dns", "Vm", "Id", "Gsm", "Cpu", "Gpu", "Fp", "Rom", "Nfc", "Soc", "Url", "Dev", "Sdk", "Iso");
+    public static final List<String> UPPER_PAIRS = Arrays.asList("Uuid", "Wifi", "Vpn", "Ex", "Io", "Su", "Arch", "Cpuid", "Db", "Egl", "Ab", "Gms",  "Hw", "Sms", "Icc", "No", "Sys", "Isp", "Cid", "Lac", "Mac", "Net", "Ad", "Drm", "Gsf", "Lcc", "Meid", "Imei", "Bssid", "Ssid", "Esim", "Sim", "Sku", "Lac", "Cid", "Msin", "Mnc", "Mcc", "Adb", "Os", "Utc", "Abi", "Gps", "Dns", "Vm", "Id", "Gsm", "Cpu", "Gpu", "Fp", "Rom", "Nfc", "Soc", "Url", "Dev", "Sdk", "Iso");
     public static final List<String> XP_SETTINGS = Arrays.asList("show", "value.imei", "value.meid", "value.email", "value.android_id", "value.serial", "value.phone_number", "collection", "theme", "restrict_new_apps", "notify_new_apps", "notify");
 
     public static boolean isBooleanTypeSetting(String settingName) { return settingName.endsWith(".bool") || settingName.contains(".bool.") || settingName.startsWith("bool."); }

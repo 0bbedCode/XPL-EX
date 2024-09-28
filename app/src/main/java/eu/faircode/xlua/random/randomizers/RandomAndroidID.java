@@ -28,9 +28,7 @@ public class RandomAndroidID implements IRandomizer {
     }
 
     @Override
-    public String generateString() {
-        return RandomStringGenerator.generateRandomAlphanumericString(16, RandomStringGenerator.LOWER_LETTERS);
-    }
+    public String generateString() { return RandomStringGenerator.generateRandomHexString(16).toLowerCase(); }
 
     @Override
     public int generateInteger() { return 0; }

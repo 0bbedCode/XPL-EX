@@ -19,6 +19,100 @@ import eu.faircode.xlua.logger.XLog;
 public class CursorUtil {
     private static final String TAG = "XLua.CursorUtil";
 
+    // Vivo OAID Cursor Structure
+    // URI: content://com.vivo.vms.IdProvider/IdentifierId/OAID
+
+
+    // Cursor structure:
+    // | key       | value           |
+    // |-----------|-----------------|
+    // | android_id| 3847563829457622|
+
+
+    // Cursor structure:
+    // | value                                |
+    // |--------------------------------------|
+    // | 5ecd7c57-8512-4935-a648-85cb8e3fb1a2 |
+
+    public static MatrixCursor replaceValue(Cursor c, String newValue, String... possibleKeyNames) {
+        MatrixCursor newCursor = new MatrixCursor(c.getColumnNames());
+        int valIx = c.getColumnIndex("value");
+        if (valIx == -1) {
+            return (MatrixCursor) c;
+        }
+
+        int keyIx = c.getColumnIndex("key");
+        if(keyIx == -1) {
+            try {
+                boolean replacedFirst = false;
+                if(c.moveToFirst()) {
+                    do {
+                        MatrixCursor.RowBuilder rowBuilder = newCursor.newRow();
+                        if(!replacedFirst) {
+                            rowBuilder.add(newValue);
+                            replacedFirst = true;
+                        } else {
+                            rowBuilder.add(c.getString(valIx));
+                        }
+                    } while (c.moveToNext());
+                }
+            }catch (Exception e) {
+                Log.e(TAG, "Failed to copy value matrix cursor Single Dimension! e=" + e);
+            } finally {
+                newCursor.moveToFirst();
+            }
+        } else {
+            try {
+                //This is UNDER the assumption its KEY:VALUE (STRING)!!!!!
+                Map<String, String> vals = new HashMap<>();
+                if(c.moveToFirst()) {
+                    do {
+                        vals.put(c.getString(keyIx), c.getString(valIx));
+                    } while (c.moveToNext());
+                }
+
+                if(vals.size() == 1) {
+                    //JUST ASSUME FOR NOW FUCK ITT im tired this bullshit
+                    for(Map.Entry<String, String> e : vals.entrySet()) {
+                        MatrixCursor.RowBuilder rowBuilder = newCursor.newRow();
+                        String kName = e.getKey();
+                        rowBuilder.add(kName);
+                        rowBuilder.add(newValue);
+                        Log.i(TAG, "Cursor Replacing at Key: " + kName + " Value: " + newValue);
+                    }
+                } else {
+                    for(Map.Entry<String, String> e : vals.entrySet()) {
+                        MatrixCursor.RowBuilder rowBuilder = newCursor.newRow();
+                        String k = e.getKey();
+                        rowBuilder.add(k);
+
+                        boolean replaced = false;
+                        for(String pk : possibleKeyNames) {
+                            if(k.equalsIgnoreCase(pk)) {
+                                replaced = true;
+                                rowBuilder.add(newValue);
+                                Log.i(TAG, "Cursor Replacing at Key: " + k + " Value: " + newValue);
+                                break;
+                            }
+                        }
+
+                        if(!replaced) {
+                            rowBuilder.add(e.getValue());
+                        }
+                    }
+                }
+            }catch (Exception e) {
+                Log.e(TAG, "Failed to copy key value matrix cursor! e=" + e);
+            } finally {
+                newCursor.moveToFirst();
+            }
+        }
+
+        return newCursor;
+    }
+
+
+
     public static MatrixCursor copyKeyValue(Cursor c, String replaceKeyName, String newValue) {
         MatrixCursor newCursor = new MatrixCursor(c.getColumnNames());
         int keyIx = c.getColumnIndex("key");

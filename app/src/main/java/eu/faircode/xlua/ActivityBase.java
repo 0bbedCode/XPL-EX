@@ -21,50 +21,77 @@ package eu.faircode.xlua;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.Locale;
+
 import eu.faircode.xlua.api.XResult;
 import eu.faircode.xlua.api.xlua.XLuaCall;
+import eu.faircode.xlua.utilities.PrefUtil;
 
 public class ActivityBase extends AppCompatActivity {
     private String theme;
-    private static final String TAG = "XLua.ActivityBase";
+    //private Locale mCurrentLocale;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //PrefUtil.setString(this, "language", "es");
+        //mCurrentLocale = getResources().getConfiguration().locale;
+        //mCurrentLocale = new Locale("es");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         theme = XLuaCall.getTheme(this);
         setTheme("dark".equals(theme) ? R.style.AppThemeDark : R.style.AppThemeLight);
+
+        //Both methods work tho the first one not sure how to change and keeps ovveriding to english this one one alone works as well
+        /*String languageToLoad  = "es"; // your language
+        Locale locale = new Locale(languageToLoad);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getBaseContext().getResources().updateConfiguration(config,
+                getBaseContext().getResources().getDisplayMetrics());*/
+
         super.onCreate(savedInstanceState);
     }
 
+
+    /*@Override
+    protected void onRestart() {
+        //set theme ?
+        super.onRestart();
+        Locale locale = getLocale(this);
+        if (!locale.equals(mCurrentLocale)) {
+            mCurrentLocale = locale;
+            recreate();
+        }
+    }*/
+
     public String getThemeName() { return (theme == null ? "dark" : theme); }
 
-    void setDarkMode() { setThemeName("dark"); }
-    void setLightMode() { setThemeName("light"); }
-    private void setThemeName(final String name) {
-        final Context context = this;
-
-        Log.i(TAG, "Set Theme=" + name);
-        //If the GET value is not the SAME as the PUT value THEN recreate the UI
-
-        /*new Handler(Looper.getMainLooper()).post(new Runnable() {
-            final XResult ret = XLuaCall.putSetting(context, "theme", name);
-            @SuppressLint("NotifyDataSetChanged")
-            @Override
-            public void run() {
-                Toast.makeText(context, ret.getResultMessage(), Toast.LENGTH_SHORT).show();
-                if(ret.succeeded()) {
-                    theme = name;
-                    setTheme("dark".equals(name) ? R.style.AppThemeDark : R.style.AppThemeLight);
-                    recreate();
-                }
-            }
-        });*/
-    }
+    /*public static Locale getLocale(Context context){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String lang = sharedPreferences.getString("language", "es");
+        switch (lang) {
+            case "English":
+                lang = "en";
+                break;
+            case "Spanish":
+                lang = "es";
+                break;
+        }
+        return new Locale(lang);
+    }*/
 }

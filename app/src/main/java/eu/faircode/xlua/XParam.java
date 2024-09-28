@@ -29,6 +29,7 @@ import android.net.wifi.WifiConfiguration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.InputDevice;
 
@@ -37,6 +38,7 @@ import java.io.FileDescriptor;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +54,8 @@ import eu.faircode.xlua.interceptors.shell.ShellInterceptionResult;
 import eu.faircode.xlua.interceptors.UserContextMaps;
 import eu.faircode.xlua.interceptors.ShellIntercept;
 import eu.faircode.xlua.logger.XLog;
+import eu.faircode.xlua.random.randomizers.RandomMediaCodec;
+import eu.faircode.xlua.random.randomizers.RandomMediaCodecInfo;
 import eu.faircode.xlua.rootbox.XReflectUtils;
 import eu.faircode.xlua.tools.BytesReplacer;
 import eu.faircode.xlua.utilities.Evidence;
@@ -59,7 +63,7 @@ import eu.faircode.xlua.utilities.ListFilterUtil;
 import eu.faircode.xlua.utilities.CollectionUtil;
 import eu.faircode.xlua.utilities.CursorUtil;
 import eu.faircode.xlua.utilities.MemoryUtilEx;
-import eu.faircode.xlua.utilities.MockCpuUtil;
+import eu.faircode.xlua.utilities.MockFileUtil;
 import eu.faircode.xlua.display.MotionRangeUtil;
 import eu.faircode.xlua.utilities.FileUtil;
 import eu.faircode.xlua.utilities.LuaLongUtil;
@@ -197,6 +201,11 @@ public class XParam {
 
         return MockUtils.NOT_BLACKLISTED;
     }
+    //
+    //
+    //CLEAN LOGGING BEFORE FINAL RELEASE
+    //
+    //
 
     @SuppressWarnings("unused")
     public String filterBinderProxyAfter(String filterKind) {
@@ -211,51 +220,158 @@ public class XParam {
             int code = (int) getArgument(0);
             Parcel data = (Parcel) getArgument(1);
             Parcel reply = (Parcel) getArgument(2);
-            switch (filterKind) {
-                case "adid":
-                    if ("com.google.android.gms.ads.identifier.internal.IAdvertisingIdService".equalsIgnoreCase(interfaceName)) {
-                        String fAd = getSetting("unique.google.advertising.id");
-                        if(!Str.isValidNotWhitespaces(fAd)) return null;
-                        Object res = getResult();
-                        boolean result = (boolean) res;
-                        if (result) {
-                            byte[] bytes = reply.marshall();
-                            reply.setDataPosition(0);
-                            if (bytes.length == 84) {
-                                Log.i(TAG, "[onAfterTransact] bytes: " + Str.bytesToHex(bytes));
-                                try {
-                                    reply.readException();
-                                } finally {
-                                    String adId = reply.readString();
-                                    Log.i(TAG, "[onAfterTransact] adId: " + adId);
-                                    if (adId != null) {
-                                        try {
-                                            byte[] from = adId.getBytes("UTF-16");
-                                            from = Arrays.copyOfRange(from, 2, from.length);
-                                            Log.i(TAG, "[onAfterTransact] from: " + Str.bytesToHex(from));
 
-                                            byte[] to = fAd.getBytes("UTF-16");
-                                            to = Arrays.copyOfRange(to, 2, to.length);
-                                            Log.i(TAG, "[onAfterTransact] to: " + Str.bytesToHex(to));
+            if("adid".equalsIgnoreCase(filterKind)) {
+                if ("com.google.android.gms.ads.identifier.internal.IAdvertisingIdService".equalsIgnoreCase(interfaceName)) {
+                    Log.i(TAG, "Filtering [" + interfaceName + "] Result...");
+                    try {
+                        boolean wasSuccessful = (boolean) getResult();
+                        if(!wasSuccessful) {
+                            Log.e(TAG, "Result of Binder Transaction was not Successful (not a XPL-EX issue) returning [" + interfaceName + "]");
+                            return null;
+                        }
 
-                                            BytesReplacer bytesReplacer = new BytesReplacer(from, to);
-                                            bytesReplacer.replace(bytes);
+                        byte[] bytes = reply.marshall();
+                        reply.setDataPosition(0);
+                        if(bytes == null) {
+                            Log.e(TAG, "Raw Data from the Parcel is Null [" + interfaceName + "]");
+                            return null;
+                        }
 
-                                            reply.unmarshall(bytes, 0, bytes.length);
-                                        } catch (Exception e) {
-                                            Log.w(TAG, e);
-                                            fAd = null;
-                                        }
-                                    }
-                                    reply.setDataPosition(0);
-                                }
-                            }
-                        }  return fAd;
-                    } break;
+                        Log.i(TAG, "Raw Data From the Reply Parcel, Size: " + bytes.length + " Data: " + Str.bytesToHex(bytes));
+                        if(bytes.length != 84) {
+                           Log.e(TAG, "Raw Data Length of AD ID Data is not Equal to (84), it was " + bytes.length + " Skipping Replacement...");
+                           return null;
+                        }
+
+                        reply.readException();  //Read Exception as it should always Write Exception on the Reply Parcel
+                        String realAdId = reply.readString();
+                        String fakeAdId = getSetting("unique.google.advertising.id");
+                        if(TextUtils.isEmpty(fakeAdId) || realAdId == null) {
+                            Log.e(TAG, "Real AD ID Result or the Fake one From Settings [unique.google.advertising.id] is Null or Empty...");
+                            return null;
+                        }
+
+                        if(fakeAdId.length() < 5 || realAdId.length() < 5) {
+                            Log.e(TAG, "The Size of the AD ID either Real or Fake is not correct: Real Size=" + realAdId.length() + " Fake Size=" + fakeAdId.length());
+                            return null;
+                        }
+
+                        Log.i(TAG, "Real AD ID:" + realAdId + "\n" + Str.toHex(realAdId) +  "\nReplacing With: " + fakeAdId + "\n" + Str.toHex(fakeAdId));
+                        byte[] realAdIdBytes = realAdId.getBytes(StandardCharsets.UTF_16);
+                        realAdIdBytes = Arrays.copyOfRange(realAdIdBytes, 2, realAdIdBytes.length);
+
+                        //Why are we skipping two bytes ?
+
+                        byte[] fakeAdIdBytes = fakeAdId.getBytes(StandardCharsets.UTF_16);
+                        fakeAdIdBytes = Arrays.copyOfRange(fakeAdIdBytes, 2, fakeAdIdBytes.length);
+
+                        Log.i(TAG, "Replacing AD ID Bytes Now:\nFrom=" + Str.bytesToHex(realAdIdBytes) + "\nTo=" + Str.bytesToHex(fakeAdIdBytes));
+
+                        //Ensure its the same size
+                        BytesReplacer bytesReplacer = new BytesReplacer(realAdIdBytes, fakeAdIdBytes);
+                        byte[] newBytes = bytesReplacer.replace(bytes);
+                        Log.i(TAG, "Replaced Bytes new Bytes: " + Str.bytesToHex(newBytes) + "\nOld Bytes:" + Str.bytesToHex(bytes));
+                        reply.unmarshall(newBytes, 0, newBytes.length);
+                        Log.i(TAG, "Finished Replacing AD ID Bytes...");
+                        return realAdId;
+                    }catch (Exception e) {
+                        Log.e(TAG, "Error Filtering Interface Transact Result: " + interfaceName + " Error: " + e);
+                        return null;
+                    } finally {
+                        reply.setDataPosition(0);
+                    }
+                }
+            } else if("hihonor.oaid".equalsIgnoreCase(filterKind)) {
+                //com.hihonor.cloudservice.oaid.IOAIDService
+                //com.hihonor.cloudservice.oaid.IOAIDCallBack
+                //com/hihonor/ads/identifier/AdvertisingIdClient;
+                if(interfaceName.toLowerCase().startsWith("com.hihonor")) {
+                    //  this.y2(parcel0.readInt(), (parcel0.readInt() == 0 ? null : ((Bundle)Bundle.CREATOR.createFromParcel(parcel0))));
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("[" + interfaceName + "] Code: " + code);
+                    try {
+                        sb.append("\nData\n" + Str.bytesToHex(data.marshall()));
+                    }catch (Exception ignore) { }
+                    try { data.setDataPosition(0); } catch (Exception ignore) { }
+                    try {
+                        sb.append("\nReply:\n" + Str.bytesToHex(reply.marshall()));
+                    }catch (Exception ignore)  { }
+                    try { reply.setDataPosition(0); } catch (Exception ignore) { }
+                    Log.i(TAG, sb.toString());
+                    //boolean wasSuccessful = (boolean) getResult();
+                    //if(!wasSuccessful) {
+                    //    Log.e(TAG, "Result of Binder Transaction was not Successful (not a XPL-EX issue) returning [" + interfaceName + "]");
+                    //    return null;
+                    //}
+                    //data parcel ?
+
+                    //        a.a = new Uri.Builder().scheme("content").authority("com.huawei.hwid.pps.apiprovider").path("/oaid_scp/get").build();
+                    //        a.b = new Uri.Builder().scheme("content").authority("com.huawei.hwid.pps.apiprovider").path("/oaid/query").build();
+                }
             }
         }catch (Throwable e) {
-            XLog.e("Failed to get Result / Transaction! after", e, true);
+            Log.e(TAG, "Failed to get Result / Transaction! after Error:"  + e);
         } return null;
+    }
+
+    //public boolean filterCall(String )
+
+    //public boolean filterContentProviderClientCall() {
+    //}
+
+    @SuppressWarnings("unused")
+    public boolean filterSettingsCall(String setting, String newValue) {
+        try {
+            //This is called always, URI calls to this one
+            // public final @Nullable Bundle call(@NonNull String authority, @NonNull String method,
+            //            @Nullable String arg, @Nullable Bundle extras)
+
+            //Bundle callResult = context.getContentResolver().call(
+            // Uri.parse("content://settings/secure"), "GET_secure", "android_id", new Bundle()
+            //);
+            //String androidIdValue = callResult.getString("value");
+            //content://settings/secure
+            Object authObj = getArgument(0);
+            String auth = authObj instanceof Uri ? ((Uri) authObj).getAuthority() : (String)authObj;
+            if(auth == null) return false;
+            auth = auth.toLowerCase();
+            if(auth.contains("settings")) {
+                //&& (auth.contains("secure") || auth.contains("global")
+                String method = (String)getArgument(1);
+                if("GET_secure".equalsIgnoreCase(method)) {
+                    String arg = (String)getArgument(2);
+                    if(arg == null) return false;
+                    //Log.w(TAG, "Hello this is ObbedCode its weird this app is using Such Methods to get Secure Setting, please report App to ObbedCode! Setting:" + arg);
+                    Object res = getResult();
+                    if(res == null) return false;
+                    Bundle resBundle = (Bundle) res;
+                    if(!resBundle.containsKey("value")) return false;
+                    String value = resBundle.getString("value");
+                    if(value == null || value.isEmpty()) return false;
+                    if(setting.contains("|")) {
+                        String[] parts = setting.split("\\|");
+                        for(String p : parts) {
+                            if(p.trim().equalsIgnoreCase(arg)) {
+                                Bundle fakeResult = new Bundle();
+                                fakeResult.putString("value", newValue);
+                                setResult(fakeResult);
+                                return true;
+                            }
+                        }
+                    }
+                    else if(setting.equals("*") || setting.equalsIgnoreCase(arg)) {
+                        Bundle fakeResult = new Bundle();
+                        fakeResult.putString("value", newValue);
+                        setResult(fakeResult);
+                        return true;
+                    }
+                }
+            }
+        }catch (Throwable e) {
+            Log.e(TAG, "Filter SettingsSecure IPC Error: " + e.getMessage());
+        }
+        return false;
     }
 
     @SuppressWarnings("unused")
@@ -264,12 +380,23 @@ public class XParam {
             Object arg = getArgument(1);
             if(setting != null && newValue != null && arg instanceof String) {
                 String set = ((String)arg);
-                if(setting.equalsIgnoreCase(set)) {
+                if(setting.contains("|")) {
+                    String[] parts = setting.split("\\|");
+                    for(String p : parts) {
+                        if(p.trim().equalsIgnoreCase(set)) {
+                            setResult(newValue);
+                            return true;
+                        }
+                    }
+                }
+                else if(setting.equalsIgnoreCase(set)) {
                     setResult(newValue);
                     return true;
                 }
             }
-        }catch (Throwable e) { Log.e(TAG, "Filter SettingsSecure Error: " + e.getMessage()); }
+        }catch (Throwable e) {
+            Log.e(TAG, "Filter SettingsSecure Error: " + e.getMessage());
+        }
         return false;
     }
 
@@ -440,10 +567,17 @@ public class XParam {
     public ActivityManager.MemoryInfo getFakeMemoryInfo(int totalMemoryInGB, int availableMemoryInGB) { return MemoryUtilEx.getMemory(totalMemoryInGB, availableMemoryInGB); }
 
     @SuppressWarnings("unused")
-    public FileDescriptor createFakeCpuinfoFileDescriptor() { return MockCpuUtil.generateFakeFileDescriptor(XMockCall.getSelectedMockCpu(getApplicationContext())); }
+    public FileDescriptor createFakeCpuinfoFileDescriptor() { return MockFileUtil.generateFakeFileDescriptor(XMockCall.getSelectedMockCpu(getApplicationContext())); }
 
     @SuppressWarnings("unused")
-    public File createFakeCpuinfoFile() { return MockCpuUtil.generateFakeFile(XMockCall.getSelectedMockCpu(getApplicationContext())); }
+    public File createFakeCpuinfoFile() { return MockFileUtil.generateFakeFile(XMockCall.getSelectedMockCpu(getApplicationContext())); }
+
+
+    @SuppressWarnings("unused")
+    public FileDescriptor createFakeUUIDFileDescriptor() { return MockFileUtil.generateFakeBootUUIDDescriptor(); }
+
+    public File createFakeUUIDFile() { return MockFileUtil.generateFakeBootUUIDFile(); }
+
 
     //
     //End of Memory/CPU Functions
@@ -483,6 +617,26 @@ public class XParam {
     //
     //Start of ETC Util Functions
     //
+
+    @SuppressWarnings("unused")
+    public int generateRandomInt(int origin, int bound) { return ThreadLocalRandom.current().nextInt(origin, bound); }
+
+    @SuppressWarnings("unused")
+    public String[] generateMediaCodecSupportedTypeList() { return RandomMediaCodecInfo.generateSupportedTypes(); }
+
+    @SuppressWarnings("unused")
+    public String generateMediaCodecName() { return RandomMediaCodec.generateName(); }
+
+    @SuppressWarnings("unused")
+    public int[] generateIntArray() {
+        int sz = ThreadLocalRandom.current().nextInt(2, 8);
+        int[] elements = new int[sz];
+        for(int i = 0; i < sz; i++) {
+            elements[i] = ThreadLocalRandom.current().nextInt(5000, 9999999);
+        }
+
+        return elements;
+    }
 
     @SuppressWarnings("unused")
     public String generateRandomString(int min, int max) { return generateRandomString(ThreadLocalRandom.current().nextInt(min, max + 1)); }
@@ -538,13 +692,30 @@ public class XParam {
     @SuppressWarnings("unused")
     public String[] extractSelectionArgs() {
         String[] sel = null;
-        if(paramTypes[2].getName().equals(Bundle.class.getName())){
-            //ContentResolver.query26
-            Bundle bundle = (Bundle) getArgument(2);
-            if(bundle != null) sel = bundle.getStringArray("android:query-arg-sql-selection-args");
-        }
-        else if(paramTypes[3].getName().equals(String[].class.getName())) sel = (String[]) getArgument(3);
+        try {
+            if(paramTypes[2].getName().equals(Bundle.class.getName())){
+                //ContentResolver.query26
+                Bundle bundle = (Bundle) getArgument(2);
+                if(bundle != null) sel = bundle.getStringArray("android:query-arg-sql-selection-args");
+            }
+            else if(paramTypes[3].getName().equals(String[].class.getName())) sel = (String[]) getArgument(3);
+        }catch (Exception ignore) { }
         return sel;
+    }
+
+    @SuppressWarnings("unused")
+    public boolean isAuthority(String authority) {
+        try {
+            Object o = getArgument(0);
+            if(o == null) return false;
+            Uri uri = (Uri)o;
+            String a = uri.getAuthority();
+            if(a == null) return false;
+            return a.toLowerCase().contains(authority.toLowerCase());
+        }catch (Exception e) {
+            Log.e(TAG, "Failed to Compare Authority... " + authority + " Error: " + e);
+            return false;
+        }
     }
 
     @SuppressWarnings("unused")
@@ -556,20 +727,50 @@ public class XParam {
             try {
                 String authority = uri.getAuthority();
                 Cursor ret = (Cursor) getResult();
-                if((ret != null && authority != null) && authority.equalsIgnoreCase(serviceName)) {
-                    String[] args = extractSelectionArgs();
-                    if(args != null) {
-                        for(String arg : args) {
-                            if(arg.equalsIgnoreCase(newValue)) {
-                                Log.i(TAG, "Found Query Service [" + serviceName + "] and Column [" + columnName + "] new Value [" + newValue + "]");
-                                setResult(CursorUtil.copyKeyValue(ret, columnName, newValue));
+                if(ret != null && authority != null) {
+                    //content://com.vivo.vms.IdProvider/IdentifierId/OAID
+                    String sLow = serviceName.toLowerCase();
+                    String cLow = columnName.toLowerCase().trim();
+                    String aLow = authority.toLowerCase();
+                    if (serviceName.equals("*") || aLow.contains(sLow)) {
+                        if (cLow.equals("*")) {
+                            //Replace alllll
+                            //to do
+                        } else {
+                            String[] cs = cLow.contains("|") ? cLow.split("\\|") : new String[]{cLow};
+                            String[] args = extractSelectionArgs();
+                            //Final Check
+                            boolean isTarget = false;
+                            for (String c : cs) {
+                                if (args != null) {
+                                    for (String a : args) {
+                                        if (a.equalsIgnoreCase(c)) {
+                                            isTarget = true;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (isTarget) break;
+                                if (aLow.contains(c)) {
+                                    isTarget = true;
+                                    break;
+                                }
+                            }
+
+                            if (isTarget) {
+                                Log.i(TAG, "Found Query Service [" + authority + "] and Column [" + columnName + "] new Value [" + newValue + "]");
+                                setResult(CursorUtil.replaceValue(ret, newValue, cs));
                                 return true;
                             }
                         }
                     }
                 }
-            }catch (Throwable e) { Log.e(TAG, "LUA PARAM [queryFilterAfter] Error: " + e.getMessage()); }
-        } return false;
+            }catch (Throwable e) {
+                Log.e(TAG, "LUA PARAM [queryFilterAfter] Error: " + e.getMessage());
+            }
+        }
+        return false;
     }
 
     //
@@ -796,7 +997,7 @@ public class XParam {
 
         try {
             Object res2 = coerceValue(this.returnType, result);
-            Log.w(TAG, "Res2 = " + res2 + " clas=" + res2.getClass().getName());
+            Log.w(TAG, "Res2 = " + res2 + " class=" + res2.getClass().getName());
         }catch (Exception e) { Log.e(TAG, "Failed to read ccv e=" + e); }
 
         try {
@@ -834,7 +1035,6 @@ public class XParam {
         try {
             return Integer.parseInt(setting);
         }catch (Exception e) {
-            Log.e(TAG, "Invalid Numeric Input::\n", e);
             return useDefault ? defaultValue : null;
         }
     }
@@ -852,7 +1052,6 @@ public class XParam {
             if (setting != null) return setting;
             return useDefault ? defaultValue : null;
         }
-
         return useDefault ? defaultValue : null;
     }
 

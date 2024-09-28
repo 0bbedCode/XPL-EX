@@ -7,7 +7,7 @@ import java.util.Map;
 
 import eu.faircode.xlua.random.randomizers.NARandomizer;
 import eu.faircode.xlua.random.randomizers.Random3DigitNumber;
-import eu.faircode.xlua.random.randomizers.RandomAdID;
+import eu.faircode.xlua.random.randomizers.RandomUUID;
 import eu.faircode.xlua.random.randomizers.RandomAlphaNumeric;
 import eu.faircode.xlua.random.randomizers.RandomAndroidID;
 import eu.faircode.xlua.random.randomizers.RandomAndroidVersion;
@@ -92,7 +92,7 @@ public class GlobalRandoms {
         putRandomizer(new RandomIMEI());
         putRandomizer(new RandomMAC());
         putRandomizer(new RandomMEID());
-        putRandomizer(new RandomAdID());
+        putRandomizer(new RandomUUID());
         putRandomizer(new RandomSimSerial());
         putRandomizer(new RandomSubscriberID());
         putRandomizer(new RandomSSID());

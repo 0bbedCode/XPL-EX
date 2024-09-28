@@ -21,15 +21,38 @@ package eu.faircode.xlua;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.util.Log;
+
+import java.util.Locale;
 
 public class ApplicationEx extends Application {
     private static final String TAG = "XLua.App";
 
     @Override
     public void onCreate() {
+        //setLocale();
         super.onCreate();
+        //setLocale();
         Log.i(TAG, "Create version=" + BuildConfig.VERSION_NAME);
         Log.w(TAG, "SHA1 Fingerprint For [" + XCommandBridgeStatic.PRO_PACKAGE + "] package equals=[" + XSecurity.getProFingerPrint(getApplicationContext()) + "]");
     }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        //setLocale();
+    }
+
+    /*private void setLocale() {
+        final Resources resources = getResources();
+        final Configuration configuration = resources.getConfiguration();
+        //final Locale locale = ActivityBase.getLocale(this);
+        final Locale locale = new Locale("es");
+        if (!configuration.locale.equals(locale)) {
+            configuration.setLocale(locale);
+            resources.updateConfiguration(configuration, null);
+        }
+    }*/
 }

@@ -3,7 +3,7 @@
     <string name="channel_privacy" translatable="false">XPrivacyLua</string>
 
     <string name="title_license" translatable="false">
-        This app is meant to be used to protect your privacy. Modified and Extended from ObbedCode much lovee.
+        This app is meant to be used to protect your privacy. Modified and Extended from ObbedCode much love.
         <![CDATA[<br><br>]]>This is not the POWER OF YOUR CREATION!!
         <![CDATA[<br><br>]]>Copyright 2017-%1$d Marcel Bokhorst. All rights reserved.
         <![CDATA[<br><br>]]>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -11,7 +11,7 @@
         <![CDATA[<br><br><strong>LuaJ</strong><br>]]>Copyright 2007-2013 LuaJ. All rights reserved. See the <![CDATA[<a href="http://luaj.sourceforge.net/license.txt">license</a>]]>.
         <![CDATA[<br><br><b>Glide</b><br>]]>Copyright 2014 Google, Inc. All rights reserved. See the <![CDATA[<a href="https://raw.githubusercontent.com/bumptech/glide/master/LICENSE">license</a>]]>.
         <![CDATA[<br><br><b>Android Support Library</b><br>]]>Copyright 2011 The Android Open Source Project. See the <![CDATA[<a href="https://android.googlesource.com/platform/frameworks/support/+/master/LICENSE.txt">license</a>]]>.
-   </string>
+    </string>
     <string name="title_accept">I agree</string>
     <string name="title_deny">I disagree</string>
 
@@ -27,8 +27,6 @@
     <string name="button_terminate" translatable="false">Terminate</string>
     <string name="button_properties" translatable="false">Properties</string>
     <string name="button_configs" translatable="false">Configs</string>
-
-
 
     <string name="title_help_instructions">
         Tap on an app icon or name and tick restrictions to apply them.
@@ -48,7 +46,7 @@
     <string name="menu_whats_new_button" translatable="false">Whats New!</string>
 
     <string name="whats_new" translatable="false">
-        Whats new in 1.4.4 (Final) Update XPL-EX (ObbedCode) v1
+        Whats new in 1.4.4 (Final) Update XPL-EX (ObbedCode) v4
         <![CDATA[<br><br>]]> Privacy will never be lost I wont stop til each app is FULLY black boxed.
         <![CDATA[<br>]]>This is my Art, Quality over Quantity so be patience pls and thanks to all who are patient!.
         <![CDATA[<br>]]>Free, Open Source, No Analytics, No Servers, offline ...

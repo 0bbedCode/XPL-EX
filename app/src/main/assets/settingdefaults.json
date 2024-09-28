@@ -97,7 +97,10 @@
   { "name": "hardware.gsm.version", "description": "GSM Chip Name", "defaultValue": "Qualcomm RIL 1.0" },
   { "name": "hardware.gsm.band.version", "description": "GSM Chip Version", "defaultValue": "017-SM8150_GENFUSION_PACK-1.299167.1.399259.3" },
 
-  { "name": "hardware.gps.model.name", "description": "Returns the model name (including vendor and hardware/software version)", "defaultValue": "dunno" },
+  { "name": "hardware.gps.model.name", "description": "Returns the model nam(e including vendor and hardware/software version)", "defaultValue": "dunno" },
+  { "name": "hardware.camera.count", "description": "Amount of Cameras", "defaultValue": "0" },
+
+
 
   //Bluetooth Default Setting Values
   { "name": "bluetooth.state", "description": "Is Bluetooth On Disabled ??", "defaultValue": "10" },
@@ -118,7 +121,14 @@
   { "name": "unique.gsm.voicemail.id", "description": "alphabetic identifier associated with the voice mail number", "defaultValue": "abc" },
   { "name": "unique.bluetooth.address", "description": "Bluetooth MAC/Hardware Address", "defaultValue": "00:00:00:00:00:00" },
   { "name": "unique.network.mac.address", "description": "Net MAC/Hardware Address", "defaultValue": "00:00:00:00:00:00" },
+
   { "name": "unique.google.advertising.id", "description": "Google Advertising ID", "defaultValue": "84630630-u4ls-k487-f35f-h37afe0pomwq" },
+  { "name": "unique.facebook.advertising.id", "description": "Face Advertising ID", "defaultValue": "84630630-u4ls-k487-f35f-h37afe0pomwq" },
+  { "name": "unique.open.anon.advertising.id", "description": "OAID Open Anonymous Advertising ID", "defaultValue": "84630630-u4ls-k487-f35f-h37afe0pomwq" },
+  { "name": "unique.guid.uuid", "description": "GUID_uuid. Android/.GUID_uuid To be honest dosnt seem common", "defaultValue": "c651fde4-6ea1-4a41-882c-59bc2e94571d" },
+
+  //c651fde4-6ea1-4a41-882c-59bc2e94571d
+
   { "name": "unique.android.id", "description": "Android ID", "defaultValue": "0329184861423674" },
   { "name": "unique.drm.id", "description": "DRM ID", "defaultValue": "slvwoputzjflhwfozqjqtloqpxudqrrxtirqjgxtzairmaftdxruhmflneex" },
   { "name": "unique.gsf.id", "description": "Google Services Framework ID", "defaultValue": "FMZIYEVGXZDCENRO" },

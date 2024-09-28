@@ -1,8 +1,12 @@
 function after(hook, param)
-    local filtered = param:queryFilterAfter("com.google.android.gsf.gservices", "android_id", param:getSetting("unique.gsf.id"))
-    if filtered == true then
-        log("GSF")
-        return true
+    local auth = 'com.google.android.gsf.gservices'
+    if param:isAuthority(auth) then
+        local setting = param:getSetting('unique.gsf.id', 'FMZIYEVGXZDCENRO')
+        if setting ~= nil then
+            if param:queryFilterAfter(auth, 'android_id', setting) then
+                return true, 'Spoofed:', setting
+            end
+        end
     end
 	return false
 end

@@ -78,9 +78,7 @@ public class Str {
 
     public static String bytesToHex(byte[] bys) {
         StringBuilder hexString = new StringBuilder();
-        for (byte b : bys)
-            hexString.append(String.format("%02X ", b));
-
+        for (byte b : bys) hexString.append(String.format("%02X ", b));
         return hexString.toString();
     }
 
@@ -143,6 +141,23 @@ public class Str {
         if(!isValidNotWhitespaces(str) || !str.contains(delimiter)) return new ArrayList<>();
         String[] splt = str.split(Pattern.quote(delimiter));
         return Arrays.asList(splt);
+    }
+
+    public static String joinArray(String[] arr) { return joinArray(arr, ","); }
+    public static String joinArray(String[] arr, String delimiter) {
+        if(arr == null) return "";
+        StringBuilder sb = new StringBuilder();
+        int sz = arr.length - 1;
+        for(int i = 0; i < arr.length; i++) {
+            String l = arr[i];
+            if(!isValidNotWhitespaces(l)) continue;
+            sb.append(l);
+            if(i != sz) {
+                sb.append(delimiter);
+            }
+        }
+
+        return sb.toString();
     }
 
     public static String joinList(List<String> list) { return joinList(list, ","); }
