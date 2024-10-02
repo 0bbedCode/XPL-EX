@@ -1,12 +1,5 @@
 package eu.faircode.xlua.utilities;
 
-import android.content.pm.PackageManager;
-import android.opengl.GLES10;
-import android.opengl.GLES11;
-import android.opengl.GLES20;
-import android.opengl.GLES30;
-import android.opengl.GLES31;
-import android.opengl.GLES32;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -16,13 +9,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
-import javax.microedition.khronos.opengles.GL;
-import javax.microedition.khronos.opengles.GL10;
-import javax.microedition.khronos.opengles.GL11;
-
 import eu.faircode.xlua.Str;
 
-public class ReflectUtil {
+public class ReflectUtilEx {
     private static final String JAVA_LANG = "java.lang";
 
 
@@ -39,10 +28,10 @@ public class ReflectUtil {
     }
 
     public static boolean returnTypeIsValid(Class<?> compareType, Class<?> returnType) {
-        if(ReflectUtil.isReturnTypeNullOrVoid(compareType) && ReflectUtil.isReturnTypeNullOrVoid(returnType))
+        if(ReflectUtilEx.isReturnTypeNullOrVoid(compareType) && ReflectUtilEx.isReturnTypeNullOrVoid(returnType))
             return true;
 
-        if(ReflectUtil.isReturnTypeNullOrVoid(compareType) || ReflectUtil.isReturnTypeNullOrVoid(returnType))
+        if(ReflectUtilEx.isReturnTypeNullOrVoid(compareType) || ReflectUtilEx.isReturnTypeNullOrVoid(returnType))
             return false;
 
         return compareType.isAssignableFrom(returnType);

@@ -7,7 +7,6 @@ import android.hardware.SensorManager;
 import android.hardware.camera2.CameraManager;
 import android.media.AudioManager;
 import android.telephony.SmsManager;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.luaj.vm2.Globals;
@@ -17,7 +16,6 @@ import org.luaj.vm2.lib.DebugLib;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -31,7 +29,7 @@ import eu.faircode.xlua.BuildConfig;
 import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.api.hook.XLuaHookAssets;
 import eu.faircode.xlua.logger.XLog;
-import eu.faircode.xlua.utilities.ReflectUtil;
+import eu.faircode.xlua.utilities.ReflectUtilEx;
 import eu.faircode.xlua.utilities.StreamUtil;
 import eu.faircode.xlua.utilities.StringUtil;
 
@@ -73,7 +71,7 @@ public class XHookUtil {
 
         Class<?>[] paramTypes = XHookUtil.getParameterTypes(hook.getParameterTypes(), context);
         final Class<?> returnType = !StringUtil.isValidString(hook.getReturnType())
-                ? null : ReflectUtil.resolveClass(hook.getReturnType(), context.getClassLoader());
+                ? null : ReflectUtilEx.resolveClass(hook.getReturnType(), context.getClassLoader());
 
         return new LuaHookResolver(cls, methodName, paramTypes, returnType, isPreInit);
     }
@@ -81,7 +79,7 @@ public class XHookUtil {
     public static Class<?>[] getParameterTypes(String[] p, Context context) throws ClassNotFoundException {
         Class<?>[] paramTypes = new Class[p.length];
         for (int i = 0; i < p.length; i++)
-            paramTypes[i] = ReflectUtil.resolveClass(p[i], context.getClassLoader());
+            paramTypes[i] = ReflectUtilEx.resolveClass(p[i], context.getClassLoader());
 
         return paramTypes;
     }

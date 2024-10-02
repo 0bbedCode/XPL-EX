@@ -46,13 +46,12 @@
     <string name="menu_whats_new_button" translatable="false">Whats New!</string>
 
     <string name="whats_new" translatable="false">
-        Whats new in 1.4.4 (Final) Update XPL-EX (ObbedCode) v4
+        Whats new in 1.4.4 (Final) Update XPL-EX (ObbedCode) v9
         <![CDATA[<br><br>]]> Privacy will never be lost I wont stop til each app is FULLY black boxed.
         <![CDATA[<br>]]>This is my Art, Quality over Quantity so be patience pls and thanks to all who are patient!.
         <![CDATA[<br>]]>Free, Open Source, No Analytics, No Servers, offline ...
         <![CDATA[<br><br>]]> Shout out to Hubert (always keeps me informed updated!) (want to hide root ? this is your man!)
         <![CDATA[<br>]]>Telegram: <![CDATA[<a href="https://t.me/HubertHub">HubertHub</a>]]>
-        <![CDATA[<br><br>]]> Shout out to AppListo (Purchase AppCloner!)
         <![CDATA[<br>]]>Website: <![CDATA[<a href="https://appcloner.app/">AppCloner</a>]]>
 
         <![CDATA[<br><br>]]><![CDATA[<a href="https://t.me/xplexex">XPL-EX Announcements</a>]]>
@@ -66,10 +65,41 @@
         <![CDATA[<br>]]><![CDATA[<a href="https://xdaforums.com/t/app-vdinfos.4097379/">XDA</a>]]>
         <![CDATA[<br>]]><![CDATA[<a href="https://github.com/VD171/VD-Infos">GitHub</a>]]>
 
+        <![CDATA[<br><br>]]> GOODBYE ObbedCode
+        <![CDATA[<br>]]> This Journey was WONDERFUL and Beautiful I have learned a lot!
+        <![CDATA[<br>]]> I will be moving on from this Base of the Project and have Started a new Base!
+        <![CDATA[<br>]]> New UI new Code, Stronger, Better, Faster!
+        <![CDATA[<br>]]> Cleaner, Smoother and mostly Easier to use.
+        <![CDATA[<br>]]> I will no longer be maintaining this, this shall be the final update.
+        <![CDATA[<br>]]> I never got use to the Base, Never liked the Pro Closed Source App.
+        <![CDATA[<br>]]> New XPL EX new Code, new Base, new all, FOSS
+        <![CDATA[<br>]]> Much Love from ObbedCode
+
+
         <![CDATA[<br><br>]]> 1.4.4 Changes
-        <![CDATA[<br>]]>    -> Improving Performance
-        <![CDATA[<br>]]>    -> Optional to have the Deploying Hooks Popup
+        <![CDATA[<br>]]>    -> Cleaned up some Logs for Hooks
         <![CDATA[<br>]]>    -> Fixed more Bugs
+        <![CDATA[<br>]]>    -> Improved Query Hooks
+        <![CDATA[<br>]]>    -> Improved Settings Hooks
+        <![CDATA[<br>]]>    -> Added "settings" Content Resolver Call Hooks
+        <![CDATA[<br>]]>    -> Added Filtering for OAID
+        <![CDATA[<br>]]>    -> Added Filtering for GUID UUID
+        <![CDATA[<br>]]>    -> Added KeyGuard Manager OAID Hook
+        <![CDATA[<br>]]>    -> Added "getInputDeviceIds" Hooks
+        <![CDATA[<br>]]>    -> Added Chinese OAID Hooks "com.android.id.impl.IdProviderImpl"
+        <![CDATA[<br>]]>    -> Added "getNumberOfCameras" Hooks
+        <![CDATA[<br>]]>    -> Fixed Typo "anroid" to "android" (Fixed Cell Spoof Scripts)
+        <![CDATA[<br>]]>    -> Android "/proc/sys/kernel/random/boot_id" Hook
+        <![CDATA[<br>]]>    -> Added "com.samsung.android.deviceidservice.IDeviceIdService" Samsung ID
+        <![CDATA[<br>]]>    -> Added "com.vivo.vms.IdProvider/IdentifierId/OAID" Vivo OAID Hook
+        <![CDATA[<br>]]>    -> Added "com.asus.msa.SupplementaryDID.IDidAidlInterface" Asus ID
+        <![CDATA[<br>]]>    -> Fixed Operator ID Generator (6 Digits Long)
+        <![CDATA[<br>]]>    -> Fixed MAC Randomizer (Hex Decimal Chars)
+        <![CDATA[<br>]]>    -> Fixed OAID/UUID/Android ID Randomizer (Hex Decimal Chars)
+        <![CDATA[<br>]]>    -> Fixed Randomizer for MSIN
+        <![CDATA[<br>]]>    -> Added Stat Hooks
+        <![CDATA[<br>]]>    -> Fixed more Bugs
+
 
         <![CDATA[<br><br>]]> 1.4.3 Changes
         <![CDATA[<br><br>]]>        [All]

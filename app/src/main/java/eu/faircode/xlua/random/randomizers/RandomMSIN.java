@@ -29,7 +29,7 @@ public class RandomMSIN implements IRandomizer {
 
     @Override
     public String generateString() {
-        return RandomStringGenerator.generateRandomNumberString(9);
+        return RandomStringGenerator.generateRandomNumberString(10);
     }
 
     @Override

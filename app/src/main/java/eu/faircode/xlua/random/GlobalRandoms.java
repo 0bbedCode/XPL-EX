@@ -7,6 +7,7 @@ import java.util.Map;
 
 import eu.faircode.xlua.random.randomizers.NARandomizer;
 import eu.faircode.xlua.random.randomizers.Random3DigitNumber;
+import eu.faircode.xlua.random.randomizers.Random6DigitNumber;
 import eu.faircode.xlua.random.randomizers.RandomUUID;
 import eu.faircode.xlua.random.randomizers.RandomAlphaNumeric;
 import eu.faircode.xlua.random.randomizers.RandomAndroidID;
@@ -139,6 +140,7 @@ public class GlobalRandoms {
         putRandomizer(new RandomKernelNodeName());
         putRandomizer(new RandomKernelSysName());
         putRandomizer(new RandomKernelVersion());
+        putRandomizer(new Random6DigitNumber());
         //Collection Sort these ??????
         putRandomizers(RandomZone.RANDOMIZERS);
         putRandomizer(new RandomFirebaseId());

@@ -8,9 +8,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
-import eu.faircode.xlua.Str;
 import eu.faircode.xlua.logger.XLog;
-import eu.faircode.xlua.utilities.ReflectUtil;
+import eu.faircode.xlua.utilities.ReflectUtilEx;
 
 public class LuaHookResolver {
     public final Class<?> clazz;
@@ -45,16 +44,16 @@ public class LuaHookResolver {
     }
 
     public boolean hasMismatchReturn(Class<?> compareType) {
-        if(!isConstructor() && !ReflectUtil.returnTypeIsValid(compareType, returnType)) {
+        if(!isConstructor() && !ReflectUtilEx.returnTypeIsValid(compareType, returnType)) {
             XLog.e("Invalid return type " + compareType + " got, needed: " + returnType);
             //return true;
-            return !ReflectUtil.sameTypes(compareType, returnType);
+            return !ReflectUtilEx.sameTypes(compareType, returnType);
         } return false;
     }
 
     public Member tryGetAsMember() {
         try {
-            return ReflectUtil.resolveMember(clazz, methodName, paramTypes);
+            return ReflectUtilEx.resolveMember(clazz, methodName, paramTypes);
         }catch (NoSuchMethodException e) {
             XLog.e("Failed to resolve Member: " + this , e, false);
             return null;
@@ -63,7 +62,7 @@ public class LuaHookResolver {
 
     public Field tryGetAsField(boolean setAccessible) {
         try {
-            Field field = ReflectUtil.resolveField(clazz, methodName.substring(1), returnType);
+            Field field = ReflectUtilEx.resolveField(clazz, methodName.substring(1), returnType);
             if(setAccessible) field.setAccessible(true);
             return field;
         }catch (Exception e) {

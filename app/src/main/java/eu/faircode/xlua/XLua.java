@@ -25,10 +25,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.net.Uri;
-import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.os.Process;
 import android.os.SystemClock;
 import android.util.Log;
@@ -36,15 +34,12 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import org.luaj.vm2.Globals;
-import org.luaj.vm2.LuaError;
 import org.luaj.vm2.Prototype;
 import org.luaj.vm2.Varargs;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
@@ -72,11 +67,9 @@ import eu.faircode.xlua.hooks.LuaHookResolver;
 import eu.faircode.xlua.logger.XLog;
 import eu.faircode.xlua.logger.XReport;
 import eu.faircode.xlua.random.GlobalRandoms;
-import eu.faircode.xlua.random.IRandomizer;
-import eu.faircode.xlua.utilities.BundleUtil;
 
 import eu.faircode.xlua.api.hook.XLuaHook;
-import eu.faircode.xlua.utilities.ReflectUtil;
+import eu.faircode.xlua.utilities.ReflectUtilEx;
 
 public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
     private static final String TAG = "XLua.XCoreStartup";
@@ -450,7 +443,7 @@ public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
                 }
                 if (BuildConfig.DEBUG) XReport.install(hook, install, context);
             }catch (Throwable fe) {
-                if (hook.isOptional() && ReflectUtil.isReflectError(fe)) XLog.e("Optional Hook=" + hook.getId() + " class=" + fe.getClass().getName(), fe, true);
+                if (hook.isOptional() && ReflectUtilEx.isReflectError(fe)) XLog.e("Optional Hook=" + hook.getId() + " class=" + fe.getClass().getName(), fe, true);
                 else XReport.installException(hook, fe, context);
             }
         }

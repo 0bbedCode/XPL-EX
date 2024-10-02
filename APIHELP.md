@@ -463,7 +463,7 @@ String getResultLong()
 	local longBack = param:parcelReadLong(parcel)
 
 
-	local bundle = luajava.newInstance("anroid.os.Bundle")
+	local bundle = luajava.newInstance("android.os.Bundle")
 	-- put to bundle a Long Value represented as a String in LUA
 	param:bundlePutLong(bundle, "SomeKey", "555555555555")
 

@@ -136,7 +136,7 @@
   { "name": "unique.network.ssid", "description": "Wifi SSID", "defaultValue": "Starbucks Free-Wifi" },
   { "name": "unique.network.bssid", "description": "Wifi BSSID", "defaultValue": "00:00:00:00:00:00" },
   { "name": "unique.netd.secret.key", "description": "stable_secret contains RFC 7217 secret key which should never be leaked", "defaultValue": "90f8:f587:2bb7:db9b:e5:306a:67d7:a155" },
-  { "name": "unique.gsm.operator.msin", "description": "Mobile Subscription Identification Number (MSIN) is a 10-digit unique numeric code ", "defaultValue": "1234567890" },
+  { "name": "unique.gsm.operator.msin", "description": "Mobile Subscription Identification Number (MSIN) is a 9-digit unique numeric code ", "defaultValue": "1234567890" },
 
 
   { "name": "account.user.name", "description": "Account User Name", "defaultValue": "god" },
@@ -167,7 +167,7 @@
 
 
   //GSM Default Settings (re-checl all of these with the properties)
-  { "name": "gsm.operator.id", "description": "Operator ID (MCC + MNC)", "defaultValue": "573" }, //274+299
+  { "name": "gsm.operator.id", "description": "Operator ID (MCC + MNC)", "defaultValue": "573777" }, //274+299
   { "name": "gsm.operator.mcc", "description": "Operator MCC Value", "defaultValue": "274" },
   { "name": "gsm.operator.mnc", "description": "Operator MNC Value", "defaultValue": "299" },
 
@@ -243,6 +243,9 @@
   { "name": "intercept.shell.su.bool", "description": "Should Shell Interceptor Intercept (SU) command", "defaultValue": "true" },
   { "name": "intercept.shell.uname.bool", "description": "Should Shell Interceptor Intercept (uname) command", "defaultValue": "true" },
   { "name": "intercept.shell.logcat.bool", "description": "Should Shell Interceptor Intercept (logcat) command", "defaultValue": "true" },
+  { "name": "intercept.shell.stat.bool", "description": "Should Shell Interceptor Intercept (Shell) command", "defaultValue": "true" },
+  { "name": "intercept.shell.boot_id.bool", "description": "Should Shell Interceptor Intercept (Shell) command", "defaultValue": "true" },
+
 
   { "name": "battery.charge.time.remaining", "description": "Battery Charge Time Remaining in Milliseconds", "defaultValue": "0" },
   { "name": "battery.percentage.left", "description": "Battery Percentage Level", "defaultValue": "100" },

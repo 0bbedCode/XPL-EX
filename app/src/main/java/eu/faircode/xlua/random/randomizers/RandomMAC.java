@@ -31,7 +31,7 @@ public class RandomMAC implements IRandomizer {
 
     @Override
     public String generateString() {
-        String rawString = RandomStringGenerator.generateRandomAlphanumericString(12, RandomStringGenerator.UPPER_LETTERS);
+        String rawString = RandomStringGenerator.generateRandomHexString(12).toUpperCase();
         StringBuilder sb = new StringBuilder();
         int rawLen = rawString.length();
         for(int i = 0; i < rawString.length(); i += 2) {

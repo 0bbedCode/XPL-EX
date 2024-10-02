@@ -29,6 +29,8 @@ import android.net.wifi.WifiConfiguration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
+import android.system.StructStat;
+import android.system.StructTimespec;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.InputDevice;
@@ -70,9 +72,10 @@ import eu.faircode.xlua.utilities.LuaLongUtil;
 import eu.faircode.xlua.utilities.MemoryUtil;
 import eu.faircode.xlua.utilities.NetworkUtil;
 import eu.faircode.xlua.utilities.RandomStringGenerator;
-import eu.faircode.xlua.utilities.ReflectUtil;
+import eu.faircode.xlua.utilities.ReflectUtilEx;
 import eu.faircode.xlua.utilities.StringUtil;
 import eu.faircode.xlua.utilities.MockUtils;
+import eu.faircode.xlua.utilities.reflect.DynamicField;
 
 public class XParam {
     private static final List<String> ALLOWED_PACKAGES = Arrays.asList("google", "system", "settings", "android", "webview");
@@ -225,39 +228,41 @@ public class XParam {
                 if ("com.google.android.gms.ads.identifier.internal.IAdvertisingIdService".equalsIgnoreCase(interfaceName)) {
                     Log.i(TAG, "Filtering [" + interfaceName + "] Result...");
                     try {
+                        //this is way to extra tbh we can MAJOR shorten this even combine it into one function
+                        //Kinda of pissing me off how fucking dumb this looks
                         boolean wasSuccessful = (boolean) getResult();
-                        if(!wasSuccessful) {
+                        if (!wasSuccessful) {
                             Log.e(TAG, "Result of Binder Transaction was not Successful (not a XPL-EX issue) returning [" + interfaceName + "]");
                             return null;
                         }
 
                         byte[] bytes = reply.marshall();
                         reply.setDataPosition(0);
-                        if(bytes == null) {
+                        if (bytes == null) {
                             Log.e(TAG, "Raw Data from the Parcel is Null [" + interfaceName + "]");
                             return null;
                         }
 
                         Log.i(TAG, "Raw Data From the Reply Parcel, Size: " + bytes.length + " Data: " + Str.bytesToHex(bytes));
-                        if(bytes.length != 84) {
-                           Log.e(TAG, "Raw Data Length of AD ID Data is not Equal to (84), it was " + bytes.length + " Skipping Replacement...");
-                           return null;
+                        if (bytes.length != 84) {
+                            Log.e(TAG, "Raw Data Length of AD ID Data is not Equal to (84), it was " + bytes.length + " Skipping Replacement...");
+                            return null;
                         }
 
                         reply.readException();  //Read Exception as it should always Write Exception on the Reply Parcel
                         String realAdId = reply.readString();
                         String fakeAdId = getSetting("unique.google.advertising.id");
-                        if(TextUtils.isEmpty(fakeAdId) || realAdId == null) {
+                        if (TextUtils.isEmpty(fakeAdId) || realAdId == null) {
                             Log.e(TAG, "Real AD ID Result or the Fake one From Settings [unique.google.advertising.id] is Null or Empty...");
                             return null;
                         }
 
-                        if(fakeAdId.length() < 5 || realAdId.length() < 5) {
+                        if (fakeAdId.length() < 5 || realAdId.length() < 5) {
                             Log.e(TAG, "The Size of the AD ID either Real or Fake is not correct: Real Size=" + realAdId.length() + " Fake Size=" + fakeAdId.length());
                             return null;
                         }
 
-                        Log.i(TAG, "Real AD ID:" + realAdId + "\n" + Str.toHex(realAdId) +  "\nReplacing With: " + fakeAdId + "\n" + Str.toHex(fakeAdId));
+                        Log.i(TAG, "Real AD ID:" + realAdId + "\n" + Str.toHex(realAdId) + "\nReplacing With: " + fakeAdId + "\n" + Str.toHex(fakeAdId));
                         byte[] realAdIdBytes = realAdId.getBytes(StandardCharsets.UTF_16);
                         realAdIdBytes = Arrays.copyOfRange(realAdIdBytes, 2, realAdIdBytes.length);
 
@@ -275,30 +280,103 @@ public class XParam {
                         reply.unmarshall(newBytes, 0, newBytes.length);
                         Log.i(TAG, "Finished Replacing AD ID Bytes...");
                         return realAdId;
-                    }catch (Exception e) {
+                    } catch (Exception e) {
                         Log.e(TAG, "Error Filtering Interface Transact Result: " + interfaceName + " Error: " + e);
                         return null;
                     } finally {
                         reply.setDataPosition(0);
                     }
                 }
-            } else if("hihonor.oaid".equalsIgnoreCase(filterKind)) {
+            } else if("samad".equalsIgnoreCase(filterKind) || "levad".equalsIgnoreCase(filterKind)) {
+                if("com.samsung.android.deviceidservice.IDeviceIdService".equalsIgnoreCase(interfaceName) || "com.zui.deviceidservice.IDeviceidInterface".equalsIgnoreCase(interfaceName)) {
+                    if(code == 1) {
+                        //Fuck the check
+                        try {
+                            reply.setDataPosition(0);
+                            reply.readException();
+                            String realId = reply.readString();
+                            String fakeId = getSetting("unique.open.anon.advertising.id");
+
+                            if(TextUtils.isEmpty(realId) || TextUtils.isEmpty(fakeId)) {
+                                XLog.e(TAG, "Real ID or Fake ID for Samsung/Lenovo Spoof is empty or null..");
+                                return null;
+                            }
+
+                            reply.setDataPosition(0);
+                            byte[] bytes = reply.marshall();
+
+                            byte[] realAdIdBytes = realId.getBytes(StandardCharsets.UTF_16);
+                            realAdIdBytes = Arrays.copyOfRange(realAdIdBytes, 2, realAdIdBytes.length);
+
+                            byte[] fakeAdIdBytes = fakeId.getBytes(StandardCharsets.UTF_16);
+                            fakeAdIdBytes = Arrays.copyOfRange(fakeAdIdBytes, 2, fakeAdIdBytes.length);
+
+                            BytesReplacer bytesReplacer = new BytesReplacer(realAdIdBytes, fakeAdIdBytes);
+                            byte[] newBytes = bytesReplacer.replace(bytes);
+                            reply.unmarshall(newBytes, 0, newBytes.length);
+
+                            return realId;
+                        } catch (Exception e) {
+                            XLog.e(TAG, "Failed Intercepting Samsung/Lenovo ID Service: " + e);
+                        } finally {
+                            reply.setDataPosition(0);
+                        }
+                    }
+                }
+            }
+            else if("asusad".equalsIgnoreCase(filterKind)) {
+                if("com.asus.msa.SupplementaryDID.IDidAidlInterface".equalsIgnoreCase(interfaceName)) {
+                    if(code == 3) {
+                        try {
+                            reply.setDataPosition(0);
+                            reply.readException();
+                            String realId = reply.readString();
+                            String fakeId = getSetting("unique.open.anon.advertising.id");
+
+                            if(TextUtils.isEmpty(realId) || TextUtils.isEmpty(fakeId)) {
+                                XLog.e(TAG, "Real ID or Fake ID for Asus Spoof is empty or null..");
+                                return null;
+                            }
+
+                            reply.setDataPosition(0);
+                            byte[] bytes = reply.marshall();
+
+                            byte[] realAdIdBytes = realId.getBytes(StandardCharsets.UTF_16);
+                            realAdIdBytes = Arrays.copyOfRange(realAdIdBytes, 2, realAdIdBytes.length);
+
+                            byte[] fakeAdIdBytes = fakeId.getBytes(StandardCharsets.UTF_16);
+                            fakeAdIdBytes = Arrays.copyOfRange(fakeAdIdBytes, 2, fakeAdIdBytes.length);
+
+                            BytesReplacer bytesReplacer = new BytesReplacer(realAdIdBytes, fakeAdIdBytes);
+                            byte[] newBytes = bytesReplacer.replace(bytes);
+                            reply.unmarshall(newBytes, 0, newBytes.length);
+
+                            return realId;
+                        } catch (Exception e) {
+                            XLog.e(TAG, "Failed Intercepting Asus ID Service: " + e);
+                        } finally {
+                            reply.setDataPosition(0);
+                        }
+                    }
+                }
+            }
+            //} else if("hihonor.oaid".equalsIgnoreCase(filterKind)) {
                 //com.hihonor.cloudservice.oaid.IOAIDService
                 //com.hihonor.cloudservice.oaid.IOAIDCallBack
                 //com/hihonor/ads/identifier/AdvertisingIdClient;
-                if(interfaceName.toLowerCase().startsWith("com.hihonor")) {
+                //if(interfaceName.toLowerCase().startsWith("com.hihonor")) {
                     //  this.y2(parcel0.readInt(), (parcel0.readInt() == 0 ? null : ((Bundle)Bundle.CREATOR.createFromParcel(parcel0))));
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("[" + interfaceName + "] Code: " + code);
-                    try {
-                        sb.append("\nData\n" + Str.bytesToHex(data.marshall()));
-                    }catch (Exception ignore) { }
-                    try { data.setDataPosition(0); } catch (Exception ignore) { }
-                    try {
-                        sb.append("\nReply:\n" + Str.bytesToHex(reply.marshall()));
-                    }catch (Exception ignore)  { }
-                    try { reply.setDataPosition(0); } catch (Exception ignore) { }
-                    Log.i(TAG, sb.toString());
+                    //StringBuilder sb = new StringBuilder();
+                    //sb.append("[" + interfaceName + "] Code: " + code);
+                    //try {
+                    //    sb.append("\nData\n" + Str.bytesToHex(data.marshall()));
+                    //}catch (Exception ignore) { }
+                    //try { data.setDataPosition(0); } catch (Exception ignore) { }
+                    //try {
+                    //    sb.append("\nReply:\n" + Str.bytesToHex(reply.marshall()));
+                    //}catch (Exception ignore)  { }
+                    //try { reply.setDataPosition(0); } catch (Exception ignore) { }
+                    //Log.i(TAG, sb.toString());
                     //boolean wasSuccessful = (boolean) getResult();
                     //if(!wasSuccessful) {
                     //    Log.e(TAG, "Result of Binder Transaction was not Successful (not a XPL-EX issue) returning [" + interfaceName + "]");
@@ -308,12 +386,57 @@ public class XParam {
 
                     //        a.a = new Uri.Builder().scheme("content").authority("com.huawei.hwid.pps.apiprovider").path("/oaid_scp/get").build();
                     //        a.b = new Uri.Builder().scheme("content").authority("com.huawei.hwid.pps.apiprovider").path("/oaid/query").build();
-                }
-            }
+                //}
+            //}
         }catch (Throwable e) {
             Log.e(TAG, "Failed to get Result / Transaction! after Error:"  + e);
         } return null;
     }
+
+    @SuppressWarnings("unused")
+    public StructStat cleanStructStat() {
+        try {
+            StructStat stat = (StructStat) getResult();
+            if(stat == null) return null;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                String[] fieldsOne = new String[] { "st_mtim", "st_atim", "st_ctim" };
+                for(String f : fieldsOne) {
+                    DynamicField field = new DynamicField(StructStat.class, f)
+                            .setAccessible(true)
+                            .bindInstance(stat);
+
+                    if(field.isValid()) {
+                        try {
+                            StructTimespec inst = field.tryGetValueInstance();
+                            if(inst != null) {
+                                field.trySetValueInstance(new StructTimespec(
+                                        inst.tv_sec + ThreadLocalRandom.current().nextInt(100, 800),
+                                        inst.tv_nsec + ThreadLocalRandom.current().nextInt(100, 800)));
+                            }
+                        }catch (Exception ignored) { }
+                    }
+                }
+            }
+
+            String[] fields = new String[] { "st_atime", "st_ctime", "st_dev", "st_ino", "st_rdev" };
+            for(String f : fields) {
+                DynamicField field = new DynamicField(StructStat.class, f)
+                        .setAccessible(true)
+                        .bindInstance(stat);
+
+                if(field.isValid()) {
+                    try {
+                        long val = field.tryGetValueInstance();
+                        field.trySetValueInstance(val +  ThreadLocalRandom.current().nextInt(100, 800));
+                    }catch (Exception ignored) { }
+                }
+            }
+
+            return stat;
+        }catch (Throwable ignored) { }
+        return null;
+    }
+
 
     //public boolean filterCall(String )
 
@@ -576,6 +699,7 @@ public class XParam {
     @SuppressWarnings("unused")
     public FileDescriptor createFakeUUIDFileDescriptor() { return MockFileUtil.generateFakeBootUUIDDescriptor(); }
 
+    @SuppressWarnings("unused")
     public File createFakeUUIDFile() { return MockFileUtil.generateFakeBootUUIDFile(); }
 
 
@@ -873,16 +997,16 @@ public class XParam {
     //
 
     @SuppressWarnings("unused")
-    public boolean javaMethodExists(String className, String methodName) { return ReflectUtil.javaMethodExists(className, methodName); }
+    public boolean javaMethodExists(String className, String methodName) { return ReflectUtilEx.javaMethodExists(className, methodName); }
 
     @SuppressWarnings("unused")
-    public Class<?> getClassType(String className) { return ReflectUtil.getClassType(className); }
+    public Class<?> getClassType(String className) { return ReflectUtilEx.getClassType(className); }
 
     @SuppressWarnings("unused")
-    public Object createReflectArray(String className, int size) { return ReflectUtil.createArray(className, size); }
+    public Object createReflectArray(String className, int size) { return ReflectUtilEx.createArray(className, size); }
 
     @SuppressWarnings("unused")
-    public Object createReflectArray(Class<?> classType, int size) { return ReflectUtil.createArray(classType, size); }
+    public Object createReflectArray(Class<?> classType, int size) { return ReflectUtilEx.createArray(classType, size); }
 
     @SuppressWarnings("unused")
     public boolean hasFunction(String classPath, String function) { return XReflectUtils.methodExists(classPath, function); }
@@ -1120,43 +1244,43 @@ public class XParam {
         return type;
     }
 
-    private static Object coerceValue(Class<?> type, Object value) {
+    private static Object coerceValue(Class<?> returnType, Object value) {
         // TODO: check for null primitives
-        Class<?> vType = value.getClass();
-        if(vType == Double.class || vType == Float.class || vType == Long.class || vType == Integer.class || vType == String.class) {
-            Class<?> bType = boxType(type);
-            if(bType == Double.class || bType == Float.class || bType == Long.class || bType == Integer.class || bType == String.class) {
-                switch (bType.getName()) {
+        Class<?> valueType = value.getClass();
+        if(valueType == Double.class || valueType == Float.class || valueType == Long.class || valueType == Integer.class || valueType == String.class) {
+            Class<?> boxReturnType = boxType(returnType);
+            if(boxReturnType == Double.class || boxReturnType == Float.class || boxReturnType == Long.class || boxReturnType == Integer.class || boxReturnType == String.class) {
+                switch (boxReturnType.getName()) {
                     case "java.lang.Integer":
                         return
-                                vType == Double.class ? ((Double) value).intValue() :
-                                vType == Float.class ? ((Float) value).intValue() :
-                                vType == Long.class ? ((Long) value).intValue() :
-                                vType == String.class ? Str.tryParseInt(String.valueOf(value)) : value;
+                                valueType == Double.class ? ((Double) value).intValue() :
+                                valueType == Float.class ? ((Float) value).intValue() :
+                                valueType == Long.class ? ((Long) value).intValue() :
+                                valueType == String.class ? Str.tryParseInt(String.valueOf(value)) : value;
                     case "java.lang.Double":
                         return
-                                vType == Integer.class ? Double.valueOf((Integer) value) :
-                                vType == Float.class ? Double.valueOf((Float) value) :
-                                vType == Long.class ? Double.valueOf((Long) value) :
-                                vType == String.class ? Str.tryParseDouble(String.valueOf(value)) : value;
+                                valueType == Integer.class ? Double.valueOf((Integer) value) :
+                                valueType == Float.class ? Double.valueOf((Float) value) :
+                                valueType == Long.class ? Double.valueOf((Long) value) :
+                                valueType == String.class ? Str.tryParseDouble(String.valueOf(value)) : value;
                     case "java.lang.Float":
                          return
-                                vType == Integer.class ? Float.valueOf((Integer) value) :
-                                vType == Double.class ? ((Double) value).floatValue() :
-                                vType == Long.class ? ((Long) value).floatValue() :
-                                vType == String.class ? Str.tryParseFloat(String.valueOf(value)) : value;
+                                valueType == Integer.class ? Float.valueOf((Integer) value) :
+                                valueType == Double.class ? ((Double) value).floatValue() :
+                                valueType == Long.class ? ((Long) value).floatValue() :
+                                valueType == String.class ? Str.tryParseFloat(String.valueOf(value)) : value;
                     case "java.lang.Long":
                         return
-                                vType == Integer.class ? Long.valueOf((Integer) value) :
-                                vType == Double.class ? ((Double) value).longValue() :
-                                vType == Float.class ? ((Float) value).longValue() :
-                                vType == String.class ? Str.tryParseLong(String.valueOf(value)) : value;
+                                valueType == Integer.class ? Long.valueOf((Integer) value) :
+                                valueType == Double.class ? ((Double) value).longValue() :
+                                valueType == Float.class ? ((Float) value).longValue() :
+                                valueType == String.class ? Str.tryParseLong(String.valueOf(value)) : value;
                     case "java.lang.String":
                         return
-                                vType == Integer.class ? Integer.toString((int) value) :
-                                vType == Double.class ? Double.toString((double) value) :
-                                vType == Float.class ? Float.toString((float) value) :
-                                vType == Long.class ? Long.toString((long) value) : value;
+                                valueType == Integer.class ? Integer.toString((int) value) :
+                                valueType == Double.class ? Double.toString((double) value) :
+                                valueType == Float.class ? Float.toString((float) value) :
+                                valueType == Long.class ? Long.toString((long) value) : value;
                 }
             }
         }
@@ -1164,22 +1288,22 @@ public class XParam {
 
         // Lua 5.2 auto converts numbers into floating or integer values
     if (Integer.class.equals(value.getClass())) {
-            if (long.class.equals(type)) return (long) (int) value;
-            else if (float.class.equals(type)) return (float) (int) value;
-        else if (double.class.equals(type))
+            if (long.class.equals(returnType)) return (long) (int) value;
+            else if (float.class.equals(returnType)) return (float) (int) value;
+        else if (double.class.equals(returnType))
             return (double) (int) value;
     } else if (Double.class.equals(value.getClass())) {
-        if (float.class.equals(type))
+        if (float.class.equals(returnType))
             return (float) (double) value;
-    } else if (value instanceof String && int.class.equals(type)) {
+    } else if (value instanceof String && int.class.equals(returnType)) {
             return Integer.parseInt((String) value);
         }
-        else if (value instanceof String && long.class.equals(type)) {
+        else if (value instanceof String && long.class.equals(returnType)) {
             return Long.parseLong((String) value);
         }
-        else if (value instanceof String && float.class.equals(type))
+        else if (value instanceof String && float.class.equals(returnType))
             return Float.parseFloat((String) value);
-        else if (value instanceof String && double.class.equals(type))
+        else if (value instanceof String && double.class.equals(returnType))
             return Double.parseDouble((String) value);
 
         return value;

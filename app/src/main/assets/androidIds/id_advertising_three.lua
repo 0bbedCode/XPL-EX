@@ -10,7 +10,6 @@ function after(hook, param)
     end
 
     if isAdId == true then
-        log("(ADID) Detected Advertising ID Via Parcel [readString]: " .. res)
         local setting = param:getSettingReMap("unique.google.advertising.id", "ad.id")
         if setting == nil then
             return false

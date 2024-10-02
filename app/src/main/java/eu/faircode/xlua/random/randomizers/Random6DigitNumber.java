@@ -2,36 +2,32 @@ package eu.faircode.xlua.random.randomizers;
 
 import androidx.annotation.NonNull;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import eu.faircode.xlua.random.IRandomizer;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
 
-public class Random3DigitNumber implements IRandomizer {
-    private static final List<String> SETTINGS = Arrays.asList("gsm.operator.mnc", "gsm.operator.mcc", "android.build.radio");
+public class Random6DigitNumber implements IRandomizer  {
+    //"gsm.operator.mcc"
+    @Override
+    public boolean isSetting(String setting) { return getSettingName().equalsIgnoreCase(setting); }
 
     @Override
-    public boolean isSetting(String setting) { return SETTINGS.contains(setting); }
-
-    @Override
-    public String getSettingName() {
-        return "three.digit.number";
-    }
+    public String getSettingName() { return "gsm.operator.id"; }
 
     @Override
     public String getName() {
-        return "3 Digit Number";
+        return "6 Digit Number";
     }
 
     @Override
     public String getID() {
-        return "%three_digit_number%";
+        return "%six_digit_number%";
     }
 
     @Override
-    public String generateString() { return Integer.toString(ThreadLocalRandom.current().nextInt(100, 999)); }
+    public String generateString() { return Integer.toString(ThreadLocalRandom.current().nextInt(100000, 999999)); }
 
     @Override
     public int generateInteger() { return 0; }
