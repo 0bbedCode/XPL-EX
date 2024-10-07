@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import eu.faircode.xlua.BuildConfig;
 import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.XDatabase;
 import eu.faircode.xlua.api.xstandard.interfaces.IDBSerial;
@@ -435,7 +436,8 @@ public class SqlQuerySnake extends SqlQueryBuilder {
         Cursor c = null;
         try {
             String[] columns = onlyReturn.isEmpty() ? null : onlyReturn.toArray(new String[0]);
-            Log.i(TAG, "query,  table=" + tableName);
+            if(BuildConfig.DEBUG)
+                Log.i(TAG, "query,  table=" + tableName);
 
             c = db.getDatabase().query(
                     tableName,

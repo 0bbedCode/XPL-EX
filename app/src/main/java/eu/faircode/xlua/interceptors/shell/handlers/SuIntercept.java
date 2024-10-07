@@ -7,7 +7,7 @@ import java.util.List;
 import eu.faircode.xlua.api.xstandard.interfaces.ICommandIntercept;
 import eu.faircode.xlua.interceptors.UserContextMaps;
 import eu.faircode.xlua.interceptors.shell.CommandInterceptor;
-import eu.faircode.xlua.interceptors.shell.ShellInterceptionResult;
+import eu.faircode.xlua.interceptors.shell.ShellInterception;
 import eu.faircode.xlua.utilities.CollectionUtil;
 import eu.faircode.xlua.utilities.StringUtil;
 
@@ -20,11 +20,12 @@ public class SuIntercept extends CommandInterceptor implements ICommandIntercept
     public SuIntercept() { this.command = "su"; }
 
     @Override
-    public boolean interceptCommand(ShellInterceptionResult result) {
-        if(result != null && result.isValueValid()) {
+    public boolean interceptCommand(ShellInterception result) {
+        //Dead
+        if(result != null && result.isValid) {
             UserContextMaps maps = result.getUserMaps();
             if(maps != null) {
-                String low = result.getOriginalValue().toLowerCase().trim();
+                String low = result.getCommandLine().toLowerCase().trim();
                 if(!StringUtil.isValidString(low)) {
                     Log.e(TAG, "Some how the String low is null or empty...");
                     return false;

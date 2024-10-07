@@ -4,10 +4,11 @@ import android.util.Log;
 
 import java.util.List;
 
+import eu.faircode.xlua.BuildConfig;
 import eu.faircode.xlua.api.xstandard.interfaces.ICommandIntercept;
 import eu.faircode.xlua.interceptors.UserContextMaps;
 import eu.faircode.xlua.interceptors.shell.CommandInterceptor;
-import eu.faircode.xlua.interceptors.shell.ShellInterceptionResult;
+import eu.faircode.xlua.interceptors.shell.ShellInterception;
 import eu.faircode.xlua.utilities.CollectionUtil;
 import eu.faircode.xlua.utilities.StringUtil;
 
@@ -20,11 +21,11 @@ public class LogcatIntercept extends CommandInterceptor implements ICommandInter
     public LogcatIntercept() { this.command = "logcat"; }
 
     @Override
-    public boolean interceptCommand(ShellInterceptionResult result) {
-        if(result != null && result.isValueValid()) {
+    public boolean interceptCommand(ShellInterception result) {
+        if(result != null && result.isValid) {
             UserContextMaps maps = result.getUserMaps();
             if(maps != null) {
-                String low = result.getOriginalValue().toLowerCase().trim();
+                String low = result.getCommandLine().toLowerCase().trim();
                 if(!StringUtil.isValidString(low)) {
                     Log.e(TAG, "Some how the String low is null or empty...");
                     return false;
@@ -37,11 +38,15 @@ public class LogcatIntercept extends CommandInterceptor implements ICommandInter
                 }
 
                 if(parts.get(0).equalsIgnoreCase(this.command)) {
-                    Log.w(TAG, "(" + this.command + ")" + " command was found...");
+                    if(BuildConfig.DEBUG)
+                        Log.w(TAG, "(" + this.command + ")" + " command was found...");
+
                     if(!keepGoing(maps, LOGCAT_INTERCEPT_SETTING)) return true;
                     result.setNewValue("");
                     result.setIsMalicious(true);
-                    Log.i(TAG, "blocking (" + this.command + ") command from executing...");
+                    if(BuildConfig.DEBUG)
+                        Log.i(TAG, "blocking (" + this.command + ") command from executing...");
+
                     return true;
                 }
             }

@@ -53,7 +53,10 @@ public class XHookUtil {
     }
 
     public static boolean isField(String methodName) { return methodName != null && methodName.startsWith("#"); }
+
+
     public static LuaHookResolver resolveTargetHook(Context context, XLuaHook hook) throws NoSuchFieldException, IllegalAccessException, ClassNotFoundException {
+
         Class<?> cls = Class.forName(hook.getResolvedClassName(), false, context.getClassLoader());
         String methodName = hook.getMethodName();
         boolean isPreInit = false;

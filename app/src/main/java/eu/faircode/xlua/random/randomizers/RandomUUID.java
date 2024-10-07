@@ -28,7 +28,8 @@ public class RandomUUID implements IRandomizer {
                 "unique.google.advertising.id".equalsIgnoreCase(setting) ||
                 "unique.facebook.advertising.id".equalsIgnoreCase(setting) ||
                 "unique.open.anon.advertising.id".equalsIgnoreCase(setting) ||
-                "unique.guid.uuid".equalsIgnoreCase(setting);
+                "unique.guid.uuid".equalsIgnoreCase(setting) ||
+                "unique.boot.id".equalsIgnoreCase(setting);
     }
 
     @Override

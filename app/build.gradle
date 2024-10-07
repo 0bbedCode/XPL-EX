@@ -13,7 +13,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 140
-        versionName "1.4.4.1"
+        versionName "1.4.5"
         archivesBaseName = "XPL-EX-v$versionName-$versionCode"
     }
     /signingConfigs {

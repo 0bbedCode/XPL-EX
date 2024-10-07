@@ -8,12 +8,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import eu.faircode.xlua.BuildConfig;
 import eu.faircode.xlua.Str;
 import eu.faircode.xlua.api.properties.MockPropSetting;
 import eu.faircode.xlua.api.xstandard.interfaces.ICommandIntercept;
 import eu.faircode.xlua.interceptors.UserContextMaps;
 import eu.faircode.xlua.interceptors.shell.CommandInterceptor;
-import eu.faircode.xlua.interceptors.shell.ShellInterceptionResult;
+import eu.faircode.xlua.interceptors.shell.ShellInterception;
 import eu.faircode.xlua.utilities.CollectionUtil;
 import eu.faircode.xlua.utilities.Evidence;
 import eu.faircode.xlua.utilities.ShellUtils;
@@ -35,12 +36,12 @@ public class GetPropIntercept extends CommandInterceptor implements ICommandInte
     public GetPropIntercept() { this.command = "getprop"; }
 
     @Override
-    public boolean interceptCommand(ShellInterceptionResult result) {
-        if(result != null && result.isValueValid()) {
+    public boolean interceptCommand(ShellInterception result) {
+        if(result != null && result.isValid) {
             UserContextMaps maps = result.getUserMaps();
             if(maps != null) {
                 if(!keepGoing(maps, GETPROP_INTERCEPT_SETTING)) return true;
-                String low = result.getOriginalValue().toLowerCase().trim();
+                String low = result.getCommandLine();
                 if(!StringUtil.isValidString(low)) {
                     Log.e(TAG, "Some how the String low is null or empty...");
                     return false;
@@ -54,7 +55,10 @@ public class GetPropIntercept extends CommandInterceptor implements ICommandInte
                     boolean hasGrep = after.contains("grep");
                     List<String> parts = StringUtil.breakStringExtreme(after, true, true, ALLOWED_CHARS);
                     List<String> allowed = CollectionUtil.getVerifiedStrings(parts, false, ShellUtils.USELESS_COMMANDS);
-                    Log.i(TAG, "Command Data after cleaning=" + allowed + "  command=" + this.command);
+
+                    if(BuildConfig.DEBUG)
+                        Log.i(TAG, "Command Data after cleaning=" + allowed + "  command=" + this.command);
+
                     if(maps.isSettingsValid() && maps.isPropMapsValid()) {
                         if(!allowed.get(0).equals(this.command)) return false; //weird
                         if(allowed.size() == 1) {
@@ -141,8 +145,10 @@ public class GetPropIntercept extends CommandInterceptor implements ICommandInte
         } return false;
     }
 
-    public void createMap(ShellInterceptionResult result, UserContextMaps maps) {
-        Log.w(TAG, "Mocking command [" + this.command + "] as full single input output");
+    public void createMap(ShellInterception result, UserContextMaps maps) {
+        if(BuildConfig.DEBUG)
+            Log.w(TAG, "Mocking command [" + this.command + "] as full single input output");
+
         StringBuilder sb = new StringBuilder();
         for(Map.Entry<String, String> mappedProperty : maps.getPropMaps().entrySet()) {
             String propName = mappedProperty.getKey();
@@ -160,7 +166,9 @@ public class GetPropIntercept extends CommandInterceptor implements ICommandInte
             //Ends with 0D 0A
         }
 
-        Log.d(TAG, "Fake " + this.command + " output:\n" + sb);
+        if(BuildConfig.DEBUG)
+            Log.d(TAG, "Fake " + this.command + " output:\n" + sb);
+
         result.setNewValue(sb.toString());
         result.setIsMalicious(true);
     }

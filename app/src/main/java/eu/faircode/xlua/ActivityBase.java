@@ -40,6 +40,7 @@ import eu.faircode.xlua.utilities.PrefUtil;
 
 public class ActivityBase extends AppCompatActivity {
     private String theme;
+    private boolean isForceEnglish;
     //private Locale mCurrentLocale;
 
     @Override
@@ -50,10 +51,39 @@ public class ActivityBase extends AppCompatActivity {
         //mCurrentLocale = new Locale("es");
     }
 
+    public void setForceEnglish(boolean force) {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        prefs.edit().putBoolean("forceenglish", force).apply();
+    }
+
+    public boolean getIsForceEnglish() {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        if(!prefs.contains("forceenglish")) {
+            prefs.edit().putBoolean("forceenglish", false).apply();
+            return false;
+        }
+
+        return prefs.getBoolean("forceenglish", false);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         theme = XLuaCall.getTheme(this);
+        isForceEnglish = getIsForceEnglish();
         setTheme("dark".equals(theme) ? R.style.AppThemeDark : R.style.AppThemeLight);
+        if(isForceEnglish) {
+            try {
+                String languageToLoad  = "en"; // your language
+                Locale locale = new Locale(languageToLoad);
+                Locale.setDefault(locale);
+                Configuration config = new Configuration();
+                config.locale = locale;
+                getBaseContext().getResources().updateConfiguration(config,
+                        getBaseContext().getResources().getDisplayMetrics());
+            }catch (Exception e) {
+                Log.i("XLua.ActivityBase", "Not good mr huberth");
+            }
+        }
 
         //Both methods work tho the first one not sure how to change and keeps ovveriding to english this one one alone works as well
         /*String languageToLoad  = "es"; // your language

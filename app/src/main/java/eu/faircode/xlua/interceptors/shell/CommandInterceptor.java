@@ -15,15 +15,16 @@ public abstract class CommandInterceptor implements ICommandIntercept {
     @Override
     public  boolean keepGoing(UserContextMaps maps, String key) {  return StringUtil.toBoolean(maps.getSetting(key, "true"), true); }
     @Override
-    public boolean interceptCommand(ShellInterceptionResult result) { return false; }
+    public boolean interceptCommand(ShellInterception result) { return false; }
     @Override
     public String getCommand() { return this.command; }
     @Override
     public boolean containsCommand(String input) { return input != null && input.toLowerCase().contains(command.toLowerCase()); }
+
     @Override
     public boolean containsCommand(List<String> commands) {
         for(String s : commands) {
-            String sLow = s.toLowerCase();
+            String sLow = s.toLowerCase().trim();
             if(sLow.contains(this.command))
                 return true;
         }

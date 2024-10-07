@@ -155,6 +155,7 @@ public class ActivityMain extends ActivityBase {
         String theme = XLuaCall.getTheme(this);
         boolean isDark = theme.equalsIgnoreCase("dark");
         boolean isVerbose = getDebugState();
+        final boolean forceEnglish = getIsForceEnglish();
 
         final ArrayAdapterDrawer drawerArray = new ArrayAdapterDrawer(ActivityMain.this, R.layout.draweritem);
 
@@ -256,6 +257,19 @@ public class ActivityMain extends ActivityBase {
             public void onClick(DrawerItem item) {
                 setDebugState(item.isCheckable());
                 drawerArray.notifyDataSetChanged();//fix context issues
+            }
+        }));
+
+        drawerArray.add(new DrawerItem(this, R.string.menu_force_english, forceEnglish, new DrawerItem.IListener() {
+            @Override
+            public void onClick(DrawerItem item) {
+                boolean oldFlag = getIsForceEnglish();
+                boolean newFlag = item.isChecked();
+                setForceEnglish(newFlag);
+                drawerArray.notifyDataSetChanged();//fix context issues
+                if(oldFlag != forceEnglish) {
+                    recreate();
+                }
             }
         }));
 

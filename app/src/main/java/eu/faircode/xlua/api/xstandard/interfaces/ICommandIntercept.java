@@ -3,10 +3,10 @@ package eu.faircode.xlua.api.xstandard.interfaces;
 import java.util.List;
 
 import eu.faircode.xlua.interceptors.UserContextMaps;
-import eu.faircode.xlua.interceptors.shell.ShellInterceptionResult;
+import eu.faircode.xlua.interceptors.shell.ShellInterception;
 
 public interface ICommandIntercept {
-    boolean interceptCommand(ShellInterceptionResult result);
+    boolean interceptCommand(ShellInterception result);
     String getCommand();
     boolean containsCommand(String input);
     boolean containsCommand(List<String> commands);

@@ -126,6 +126,7 @@
   { "name": "unique.facebook.advertising.id", "description": "Face Advertising ID", "defaultValue": "84630630-u4ls-k487-f35f-h37afe0pomwq" },
   { "name": "unique.open.anon.advertising.id", "description": "OAID Open Anonymous Advertising ID", "defaultValue": "84630630-u4ls-k487-f35f-h37afe0pomwq" },
   { "name": "unique.guid.uuid", "description": "GUID_uuid. Android/.GUID_uuid To be honest dosnt seem common", "defaultValue": "c651fde4-6ea1-4a41-882c-59bc2e94571d" },
+  { "name": "unique.boot.id", "description": "This is your Boot ID set it to %random% to Randomize each time app close and open, or nothing to always be random each use", "defaultValue": "c651fde4-6ea1-4a41-882c-59bc2e94571d" },
 
   //c651fde4-6ea1-4a41-882c-59bc2e94571d
 
@@ -240,11 +241,12 @@
   //Values for inner functions
   { "name": "intercept.shell.meminfo.bool", "description": "Should Shell Interceptor Intercept (/proc/meminfo) file", "defaultValue": "true" },
   { "name": "intercept.shell.getprop.bool", "description": "Should Shell Interceptor Intercept (getprop) command", "defaultValue": "true" },
-  { "name": "intercept.shell.su.bool", "description": "Should Shell Interceptor Intercept (SU) command", "defaultValue": "true" },
+  //{ "name": "intercept.shell.su.bool", "description": "Should Shell Interceptor Intercept (SU) command", "defaultValue": "true" },
   { "name": "intercept.shell.uname.bool", "description": "Should Shell Interceptor Intercept (uname) command", "defaultValue": "true" },
   { "name": "intercept.shell.logcat.bool", "description": "Should Shell Interceptor Intercept (logcat) command", "defaultValue": "true" },
-  { "name": "intercept.shell.stat.bool", "description": "Should Shell Interceptor Intercept (Shell) command", "defaultValue": "true" },
-  { "name": "intercept.shell.boot_id.bool", "description": "Should Shell Interceptor Intercept (Shell) command", "defaultValue": "true" },
+  { "name": "intercept.shell.stat.bool", "description": "Should Shell Interceptor Intercept (stat) command", "defaultValue": "true" },
+  { "name": "intercept.shell.ls.bool", "description": "Should Shell Interceptor Intercept (ls details) command", "defaultValue": "true" },
+  { "name": "intercept.shell.boot_id.bool", "description": "Should Shell Interceptor Intercept (cat boot_id) command", "defaultValue": "true" },
 
 
   { "name": "battery.charge.time.remaining", "description": "Battery Charge Time Remaining in Milliseconds", "defaultValue": "0" },

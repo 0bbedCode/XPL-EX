@@ -52,9 +52,10 @@ import java.util.concurrent.ThreadLocalRandom;
 import de.robv.android.xposed.XC_MethodHook;
 import eu.faircode.xlua.api.properties.MockPropSetting;
 import eu.faircode.xlua.api.xmock.XMockCall;
-import eu.faircode.xlua.interceptors.shell.ShellInterceptionResult;
+import eu.faircode.xlua.interceptors.shell.ShellInterception;
 import eu.faircode.xlua.interceptors.UserContextMaps;
 import eu.faircode.xlua.interceptors.ShellIntercept;
+import eu.faircode.xlua.interceptors.shell.util.RandomDateHelper;
 import eu.faircode.xlua.logger.XLog;
 import eu.faircode.xlua.random.randomizers.RandomMediaCodec;
 import eu.faircode.xlua.random.randomizers.RandomMediaCodecInfo;
@@ -161,7 +162,7 @@ public class XParam {
         if(property == null || MockUtils.isPropVxpOrLua(property))
             return MockUtils.NOT_BLACKLISTED;
 
-        if(DebugUtil.isDebug())
+        if(BuildConfig.DEBUG)
             Log.i(TAG, "Filtering Property=" + property + " prop maps=" + propMaps.size() + " settings size=" + settings.size());
 
         Integer code = propSettings.get(property);
@@ -262,7 +263,10 @@ public class XParam {
                             return null;
                         }
 
-                        Log.i(TAG, "Real AD ID:" + realAdId + "\n" + Str.toHex(realAdId) + "\nReplacing With: " + fakeAdId + "\n" + Str.toHex(fakeAdId));
+                        if(BuildConfig.DEBUG)
+                            Log.i(TAG, "Real AD ID:" + realAdId + "\n" + Str.toHex(realAdId) + "\nReplacing With: " + fakeAdId + "\n" + Str.toHex(fakeAdId));
+
+
                         byte[] realAdIdBytes = realAdId.getBytes(StandardCharsets.UTF_16);
                         realAdIdBytes = Arrays.copyOfRange(realAdIdBytes, 2, realAdIdBytes.length);
 
@@ -271,14 +275,20 @@ public class XParam {
                         byte[] fakeAdIdBytes = fakeAdId.getBytes(StandardCharsets.UTF_16);
                         fakeAdIdBytes = Arrays.copyOfRange(fakeAdIdBytes, 2, fakeAdIdBytes.length);
 
-                        Log.i(TAG, "Replacing AD ID Bytes Now:\nFrom=" + Str.bytesToHex(realAdIdBytes) + "\nTo=" + Str.bytesToHex(fakeAdIdBytes));
+                        if(BuildConfig.DEBUG)
+                            Log.i(TAG, "Replacing AD ID Bytes Now:\nFrom=" + Str.bytesToHex(realAdIdBytes) + "\nTo=" + Str.bytesToHex(fakeAdIdBytes));
 
                         //Ensure its the same size
                         BytesReplacer bytesReplacer = new BytesReplacer(realAdIdBytes, fakeAdIdBytes);
                         byte[] newBytes = bytesReplacer.replace(bytes);
-                        Log.i(TAG, "Replaced Bytes new Bytes: " + Str.bytesToHex(newBytes) + "\nOld Bytes:" + Str.bytesToHex(bytes));
+
+                        if(BuildConfig.DEBUG)
+                            Log.i(TAG, "Replaced Bytes new Bytes: " + Str.bytesToHex(newBytes) + "\nOld Bytes:" + Str.bytesToHex(bytes));
+
                         reply.unmarshall(newBytes, 0, newBytes.length);
-                        Log.i(TAG, "Finished Replacing AD ID Bytes...");
+                        if(BuildConfig.DEBUG)
+                            Log.i(TAG, "Finished Replacing AD ID Bytes...");
+
                         return realAdId;
                     } catch (Exception e) {
                         Log.e(TAG, "Error Filtering Interface Transact Result: " + interfaceName + " Error: " + e);
@@ -360,37 +370,17 @@ public class XParam {
                     }
                 }
             }
-            //} else if("hihonor.oaid".equalsIgnoreCase(filterKind)) {
-                //com.hihonor.cloudservice.oaid.IOAIDService
-                //com.hihonor.cloudservice.oaid.IOAIDCallBack
-                //com/hihonor/ads/identifier/AdvertisingIdClient;
-                //if(interfaceName.toLowerCase().startsWith("com.hihonor")) {
-                    //  this.y2(parcel0.readInt(), (parcel0.readInt() == 0 ? null : ((Bundle)Bundle.CREATOR.createFromParcel(parcel0))));
-                    //StringBuilder sb = new StringBuilder();
-                    //sb.append("[" + interfaceName + "] Code: " + code);
-                    //try {
-                    //    sb.append("\nData\n" + Str.bytesToHex(data.marshall()));
-                    //}catch (Exception ignore) { }
-                    //try { data.setDataPosition(0); } catch (Exception ignore) { }
-                    //try {
-                    //    sb.append("\nReply:\n" + Str.bytesToHex(reply.marshall()));
-                    //}catch (Exception ignore)  { }
-                    //try { reply.setDataPosition(0); } catch (Exception ignore) { }
-                    //Log.i(TAG, sb.toString());
-                    //boolean wasSuccessful = (boolean) getResult();
-                    //if(!wasSuccessful) {
-                    //    Log.e(TAG, "Result of Binder Transaction was not Successful (not a XPL-EX issue) returning [" + interfaceName + "]");
-                    //    return null;
-                    //}
-                    //data parcel ?
-
-                    //        a.a = new Uri.Builder().scheme("content").authority("com.huawei.hwid.pps.apiprovider").path("/oaid_scp/get").build();
-                    //        a.b = new Uri.Builder().scheme("content").authority("com.huawei.hwid.pps.apiprovider").path("/oaid/query").build();
-                //}
-            //}
         }catch (Throwable e) {
             Log.e(TAG, "Failed to get Result / Transaction! after Error:"  + e);
         } return null;
+    }
+
+    @SuppressWarnings("unused")
+    public void spoofLastModified() {
+        try {
+            //Look I am getting tired of this fucking xplex old base xD
+            setResult(RandomDateHelper.generateLastModified());
+        }catch (Throwable ignored) { }
     }
 
     @SuppressWarnings("unused")
@@ -410,8 +400,8 @@ public class XParam {
                             StructTimespec inst = field.tryGetValueInstance();
                             if(inst != null) {
                                 field.trySetValueInstance(new StructTimespec(
-                                        inst.tv_sec + ThreadLocalRandom.current().nextInt(100, 800),
-                                        inst.tv_nsec + ThreadLocalRandom.current().nextInt(100, 800)));
+                                        inst.tv_sec + ThreadLocalRandom.current().nextInt(100, 80000),
+                                        inst.tv_nsec + ThreadLocalRandom.current().nextInt(100, 80000)));
                             }
                         }catch (Exception ignored) { }
                     }
@@ -427,7 +417,7 @@ public class XParam {
                 if(field.isValid()) {
                     try {
                         long val = field.tryGetValueInstance();
-                        field.trySetValueInstance(val +  ThreadLocalRandom.current().nextInt(100, 800));
+                        field.trySetValueInstance(val +  ThreadLocalRandom.current().nextInt(100, 80000));
                     }catch (Exception ignored) { }
                 }
             }
@@ -598,16 +588,37 @@ public class XParam {
     //
 
     @SuppressWarnings("unused")
+    public ShellInterception createShellContext(boolean isProcessBuilder) { return new ShellInterception(this, isProcessBuilder, getUserMaps()); }
+
+    @SuppressWarnings("unused")
+    public String ensureCommandIsSafe(ShellInterception shellData) {
+        if(shellData == null) return null;
+        ShellInterception res = ShellIntercept.intercept(shellData);
+        if(!res.isMalicious() || res.getNewValue() == null) return null;
+        if(!returnType.equals(Process.class)) return null;
+        try {
+            setResult(res.getEchoProcess());
+            return res.getNewValue();
+        }catch (Throwable e) {
+            Log.e(TAG, "Error Setting the new Intercepted Process Command Value " + e);
+            return null;
+        }
+    }
+
+    /*@SuppressWarnings("unused")
     public String interceptCommand(String command) {
         //We would accept args and even do some of this in LUAJ but LUAJ LOVES and I mean LOVES to Gas light us
         //Its one thing for me as the programmer to make a mistake another thing when LUAJ just lies to me and wont work
         if(command != null) {
             try {
-                ShellInterceptionResult res = ShellIntercept.intercept(ShellInterceptionResult.create(command, getUserMaps()));
+                ShellInterception res = ShellIntercept.intercept(ShellInterception.create(command, getUserMaps()).setProcess(getResult()));
                 if(res != null && res.isMalicious()) {
                     if(res.getNewValue() != null) {
-                        Log.w(TAG, "Command Intercepted: " + command);
-                        Log.w(TAG, "Replacing Command with: " + res.getNewValue());
+                        if(BuildConfig.DEBUG) {
+                            Log.w(TAG, "Command Intercepted: " + command);
+                            Log.w(TAG, "Replacing Command with: " + res.getNewValue());
+                        }
+
                         if(returnType.equals(Process.class))
                             setResult(res.getEchoProcess());
 
@@ -624,11 +635,14 @@ public class XParam {
     public String interceptCommandArray(String[] commands) {
         if(commands != null) {
             try {
-                ShellInterceptionResult res = ShellIntercept.intercept(ShellInterceptionResult.create(commands, getUserMaps()));
+                ShellInterception res = ShellIntercept.intercept(ShellInterception.create(commands, getUserMaps()).setProcess(getResult()));
                 if(res != null && res.isMalicious()) {
                     if(res.getNewValue() != null) {
-                        Log.w(TAG, "Command Intercepted: " + joinArray(commands));
-                        Log.w(TAG, "Replacing Command with: " + res.getNewValue());
+                        if(BuildConfig.DEBUG) {
+                            Log.w(TAG, "Command Intercepted: " + joinArray(commands));
+                            Log.w(TAG, "Replacing Command with: " + res.getNewValue());
+                        }
+
                         if(returnType.equals(Process.class))
                             setResult(res.getEchoProcess());
 
@@ -647,11 +661,14 @@ public class XParam {
     public String interceptCommandList(List<String> commands) {
         if(commands != null) {
             try {
-                ShellInterceptionResult res = ShellIntercept.intercept(ShellInterceptionResult.create(commands, getUserMaps()));
+                ShellInterception res = ShellIntercept.intercept(ShellInterception.create(commands, getUserMaps()).setProcess(getResult()));
                 if(res != null && res.isMalicious()) {
                     if(res.getNewValue() != null) {
-                        Log.w(TAG, "Command Intercepted: " + joinList(commands));
-                        Log.w(TAG, "Replacing Command with: " + res.getNewValue());
+                        if(BuildConfig.DEBUG) {
+                            Log.w(TAG, "Command Intercepted: " + joinList(commands));
+                            Log.w(TAG, "Replacing Command with: " + res.getNewValue());
+                        }
+
                         if(returnType.equals(Process.class))
                             setResult(res.getEchoProcess());
 
@@ -664,7 +681,7 @@ public class XParam {
                 Log.e(TAG, "Failed to intercept e=" + e);
             }
         } return null;
-    }
+    }*/
 
     //
     //End of Shell Intercept
@@ -697,10 +714,10 @@ public class XParam {
 
 
     @SuppressWarnings("unused")
-    public FileDescriptor createFakeUUIDFileDescriptor() { return MockFileUtil.generateFakeBootUUIDDescriptor(); }
+    public FileDescriptor createFakeUUIDFileDescriptor() { return MockFileUtil.generateFakeBootUUIDDescriptor(getSetting("unique.boot.id")); }
 
     @SuppressWarnings("unused")
-    public File createFakeUUIDFile() { return MockFileUtil.generateFakeBootUUIDFile(); }
+    public File createFakeUUIDFile() { return MockFileUtil.generateFakeBootUUIDFile(getSetting("unique.boot.id")); }
 
 
     //
@@ -883,7 +900,9 @@ public class XParam {
                             }
 
                             if (isTarget) {
-                                Log.i(TAG, "Found Query Service [" + authority + "] and Column [" + columnName + "] new Value [" + newValue + "]");
+                                if(BuildConfig.DEBUG)
+                                    Log.i(TAG, "Found Query Service [" + authority + "] and Column [" + columnName + "] new Value [" + newValue + "]");
+
                                 setResult(CursorUtil.replaceValue(ret, newValue, cs));
                                 return true;
                             }

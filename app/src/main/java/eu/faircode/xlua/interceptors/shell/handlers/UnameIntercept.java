@@ -2,10 +2,11 @@ package eu.faircode.xlua.interceptors.shell.handlers;
 
 import android.util.Log;
 
+import eu.faircode.xlua.BuildConfig;
 import eu.faircode.xlua.api.xstandard.interfaces.ICommandIntercept;
 import eu.faircode.xlua.interceptors.UserContextMaps;
 import eu.faircode.xlua.interceptors.shell.CommandInterceptor;
-import eu.faircode.xlua.interceptors.shell.ShellInterceptionResult;
+import eu.faircode.xlua.interceptors.shell.ShellInterception;
 import eu.faircode.xlua.utilities.StringUtil;
 
 public class UnameIntercept extends CommandInterceptor implements ICommandIntercept  {
@@ -23,18 +24,22 @@ public class UnameIntercept extends CommandInterceptor implements ICommandInterc
     public UnameIntercept() { this.command = "uname"; }
 
     @Override
-    public boolean interceptCommand(ShellInterceptionResult result) {
-        if(result != null && result.isValueValid()) {
+    public boolean interceptCommand(ShellInterception result) {
+        if(result != null && result.isValid) {
             UserContextMaps maps = result.getUserMaps();
             if(maps != null) {
-                String low = result.getOriginalValue().toLowerCase().trim();
+                String low = result.getCommandLine().toLowerCase().trim();
                 if(!StringUtil.isValidString(low)) {
-                    Log.e(TAG, "Some how the String low is null or empty...");
+                    if(BuildConfig.DEBUG)
+                        Log.e(TAG, "Some how the String low is null or empty...");
+
                     return false;
                 }
 
                 if(!keepGoing(maps, SU_INTERCEPT_SETTING)) {
-                    Log.w(TAG, "Found " + this.command + " but Setting is not allowing interception bye bye");
+                    if(BuildConfig.DEBUG)
+                        Log.w(TAG, "Found " + this.command + " but Setting is not allowing interception bye bye");
+
                     return true;
                 }
 
@@ -46,42 +51,54 @@ public class UnameIntercept extends CommandInterceptor implements ICommandInterc
                 String systems = maps.getSetting("android.build.base.os", "Android");                                   //
 
                 if(low.contains("-s")) {
-                    Log.w(TAG, "Command is -s (system name) : " + this.command);
+                    if(BuildConfig.DEBUG)
+                        Log.w(TAG, "Command is -s (system name) : " + this.command);
+
                     result.setNewValue(sysName);
                     result.setIsMalicious(true);
                     return true;
                 }
 
                 if(low.contains("-v")) {
-                    Log.w(TAG, "Command is -v (version) : " + this.command);
+                    if(BuildConfig.DEBUG)
+                        Log.w(TAG, "Command is -v (version) : " + this.command);
+
                     result.setNewValue(version);
                     result.setIsMalicious(true);
                     return true;
                 }
 
                 if(low.contains("-r")) {
-                    Log.w(TAG, "Command is -r (release) : " + this.command);
+                    if(BuildConfig.DEBUG)
+                        Log.w(TAG, "Command is -r (release) : " + this.command);
+
                     result.setNewValue(release);
                     result.setIsMalicious(true);
                     return true;
                 }
 
                 if(low.contains("-n")) {
-                    Log.w(TAG, "Command is -n (node name) : " + this.command);
+                    if(BuildConfig.DEBUG)
+                        Log.w(TAG, "Command is -n (node name) : " + this.command);
+
                     result.setNewValue(nodeNme);
                     result.setIsMalicious(true);
                     return true;
                 }
 
                 if(low.contains("-m")) {
-                    Log.w(TAG, "Command is -m (machine arch) : " + this.command);
+                    if(BuildConfig.DEBUG)
+                        Log.w(TAG, "Command is -m (machine arch) : " + this.command);
+
                     result.setNewValue(machine);
                     result.setIsMalicious(true);
                     return true;
                 }
 
                 if(low.contains("-a")) {
-                    Log.w(TAG, "Command is -a (all) : " + this.command);
+                    if(BuildConfig.DEBUG)
+                        Log.w(TAG, "Command is -a (all) : " + this.command);
+
                     result.setNewValue(new StringBuilder()
                             .append(sysName).append(" ")
                             .append(nodeNme).append(" ")
@@ -96,12 +113,15 @@ public class UnameIntercept extends CommandInterceptor implements ICommandInterc
 
                 String after = StringUtil.startAtString(this.command, low);
                 if(after.equals(this.command)) {
-                    Log.w(TAG, "Command is single: " + this.command + " setting as sys name: " + sysName);
+                    if(BuildConfig.DEBUG)
+                        Log.w(TAG, "Command is single: " + this.command + " setting as sys name: " + sysName);
+
                     result.setNewValue(sysName);
                     result.setIsMalicious(true);
                     return true;
                 }else {
-                    Log.w(TAG, "Could not find mapping for command: " + after);
+                    if(BuildConfig.DEBUG)
+                        Log.w(TAG, "Could not find mapping for command: " + after);
                 }
             }
         } return false;

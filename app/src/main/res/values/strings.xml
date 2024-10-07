@@ -46,7 +46,7 @@
     <string name="menu_whats_new_button" translatable="false">Whats New!</string>
 
     <string name="whats_new" translatable="false">
-        Whats new in 1.4.4 (Final) Update XPL-EX (ObbedCode) v9
+        Whats new in 1.4.5 (Final) Update XPL-EX (ObbedCode) v3
         <![CDATA[<br><br>]]> Privacy will never be lost I wont stop til each app is FULLY black boxed.
         <![CDATA[<br>]]>This is my Art, Quality over Quantity so be patience pls and thanks to all who are patient!.
         <![CDATA[<br>]]>Free, Open Source, No Analytics, No Servers, offline ...
@@ -75,6 +75,17 @@
         <![CDATA[<br>]]> New XPL EX new Code, new Base, new all, FOSS
         <![CDATA[<br>]]> Much Love from ObbedCode
 
+
+        <![CDATA[<br><br>]]> 1.4.5 Changes..
+        <![CDATA[<br>]]>    -> Added BlockGuardOs Hooks as IoBridge may not always exist
+        <![CDATA[<br>]]>    -> Optimized Shell Interceptor
+        <![CDATA[<br>]]>    -> Removed the SU Command Interceptor (useless)
+        <![CDATA[<br>]]>    -> Removed useless Logs and or moved to Debug Logs
+        <![CDATA[<br>]]>    -> Added a STAT Command Interceptor (access, modify, change, create, birth, device, inode)
+        <![CDATA[<br>]]>    -> Added File.lastModified() Hook
+        <![CDATA[<br>]]>    -> Added LS Command Interceptor (details / inode...)
+        <![CDATA[<br>]]>    -> Added CAT Command Interceptor for (boot_id)
+        <![CDATA[<br>]]>    -> Added Force English Flag
 
         <![CDATA[<br><br>]]> 1.4.4 Changes
         <![CDATA[<br>]]>    -> Cleaned up some Logs for Hooks
@@ -384,6 +395,7 @@
     <string name="menu_filter_groups" translatable="false">Groups</string>
     <string name="menu_filter_hooks" translatable="false">Hooks</string>
     <string name="menu_filter_all" translatable="false">All</string>
+    <string name="menu_force_english" translatable="false">Force English</string>
 
     <string name="menu_show">Show</string>
     <string name="menu_show_user">Show user apps</string>
