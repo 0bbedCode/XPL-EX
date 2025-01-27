@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/itemViewSettingExItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clSettingExLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <CheckBox
+            android:id="@+id/cbSettingExEnabled"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tvSettingExNameNice" />
+
+        <TextView
+            android:id="@+id/tvSettingExNameNice"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:clickable="false"
+            android:ellipsize="end"
+            android:focusable="false"
+            android:lines="1"
+            android:text="Cool Setting"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            app:layout_constraintEnd_toStartOf="@+id/cbSettingExEnabled"
+            app:layout_constraintStart_toStartOf="@+id/tiSettingExSettingValue"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="0dp"
+            android:layout_height="16dp"
+            app:layout_constraintEnd_toStartOf="@+id/cbSettingExEnabled"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvSettingExNameNice" />
+
+        <EditText
+            android:id="@+id/tiSettingExSettingValue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:padding="8dp"
+            android:hint="@string/hint_input_value"
+            android:textColor="?attr/colorTextOne"
+            android:textColorHint="?attr/colorTextDivider"
+            android:background="@drawable/rounded_edit_text"
+            android:elevation="2dp"
+            app:layout_constraintEnd_toStartOf="@+id/cbSettingExEnabled"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/divider"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

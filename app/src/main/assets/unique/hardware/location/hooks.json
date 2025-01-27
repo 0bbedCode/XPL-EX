@@ -1,0 +1,45 @@
+[
+  {
+    "builtin": false,
+    "collection": "PrivacyEx",
+    "group": "Hardware.Spoof.GPS.Model",
+    "name": "LocationManager.getGnssYearOfHardware",
+    "author": "OBC",
+    "className": "android.location.LocationManager",
+    "methodName": "getGnssYearOfHardware",
+    "parameterTypes": [ ],
+    "returnType": "int",
+    "minSdk": 4,
+    "maxSdk": 999,
+    "version": 1,
+    "description": "Spoof the Year of the GPS Device Manufacturer Date",
+    "enabled":true,
+    "optional":true,
+    "usage":true,
+    "notify":false,
+    "luaScript": "@id_locationmanager_getgnssyearofhardware",
+    "settings": ["hardware.gps.model.year"]
+  },
+
+  {
+    "builtin": false,
+    "collection": "PrivacyEx",
+    "group": "Hardware.Spoof.GPS.Model",
+    "name": "LocationManager.getGnssHardwareModelName",
+    "author": "OBC",
+    "className": "android.location.LocationManager",
+    "methodName": "getGnssHardwareModelName",
+    "parameterTypes": [ ],
+    "returnType": "java.lang.String",
+    "minSdk": 4,
+    "maxSdk": 999,
+    "version": 1,
+    "description": "Spoof the GPS Device Model Name",
+    "enabled":true,
+    "optional":true,
+    "usage":true,
+    "notify":false,
+    "luaScript": "@id_locationmanager_getgnsshardwaremodelname",
+    "settings": ["hardware.gps.model.name"]
+  }
+]

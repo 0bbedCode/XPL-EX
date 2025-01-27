@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="8dp">
+
+    <!-- Top Row: Icon, Name, and Checkbox -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/ivConfigIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:id="@+id/tvConfigName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_marginStart="8dp">
+
+            <CheckBox
+                android:id="@+id/cbConfigEnabled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <ImageView
+                android:id="@+id/ivConfigDeleteButton"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="4dp"
+                android:src="@android:drawable/ic_menu_delete"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Author Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="4dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold|italic"
+            android:text="Author:"/>
+
+        <TextView
+            android:id="@+id/tvConfigAuthor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:textAppearance="@android:style/TextAppearance.Small"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true"/>
+    </LinearLayout>
+
+    <!-- Version Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="4dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold|italic"
+            android:text="Version:"/>
+
+        <TextView
+            android:id="@+id/tvConfigVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textAppearance="@android:style/TextAppearance.Small"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true"/>
+    </LinearLayout>
+
+    <!-- Settings Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="4dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold|italic"
+            android:text="Settings:"/>
+
+        <TextView
+            android:id="@+id/tvSettingsCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="0"/>
+    </LinearLayout>
+
+    <!-- Hooks Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="4dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold|italic"
+            android:text="Hooks:"/>
+
+        <TextView
+            android:id="@+id/tvHookCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="0"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="4dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold|italic"
+            android:text="Tags:"/>
+
+        <TextView
+            android:id="@+id/tvTagCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="0"/>
+    </LinearLayout>
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp">
+
+        <HorizontalScrollView
+            android:id="@+id/horizontalTagScroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:fadingEdgeLength="0dp"
+            android:overScrollMode="always">
+
+            <LinearLayout
+                android:id="@+id/tagContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingEnd="40dp"/>
+
+        </HorizontalScrollView>
+
+        <ImageView
+            android:id="@+id/ivTagsExpander"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="end|center_vertical"
+            android:src="?attr/expander"
+            android:padding="4dp"/>
+
+    </FrameLayout>
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/flexTags"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="3dp"
+        android:visibility="gone"
+        app:alignItems="flex_start"
+        app:flexDirection="row"
+        app:flexWrap="wrap"
+        app:justifyContent="flex_start"
+        app:alignContent="flex_start"/>
+
+</LinearLayout>

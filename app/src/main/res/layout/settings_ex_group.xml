@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/itemViewSettingContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvSettingGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="0dp"
+        app:contentPadding="5dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="5dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clSettingGroupLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <CheckBox
+                android:id="@+id/cbSettingGroupEnabled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvSettingGroupName" />
+
+            <Spinner
+                android:id="@+id/spSettingGroupRandomizer"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintTop_toBottomOf="@+id/tvSettingGroupName"
+                tools:layout_editor_absoluteX="10dp" />
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="true"
+                android:overScrollMode="never"
+                android:paddingBottom="16dp"
+                android:scrollbarStyle="outsideOverlay"
+                android:scrollbars="vertical"
+                app:layout_constraintEnd_toEndOf="@+id/tvSettingGroupName"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/spSettingGroupRandomizer" />
+
+
+
+            <TextView
+                android:id="@+id/tvSettingGroupName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="12dp"
+                android:clickable="false"
+                android:ellipsize="end"
+                android:focusable="false"
+                android:lines="1"
+                android:text="Setting Group"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                app:layout_constraintEnd_toStartOf="@+id/cbSettingGroupEnabled"
+                app:layout_constraintStart_toEndOf="@+id/ivExpanderSettingGroup"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/ivExpanderSettingGroup"
+                android:layout_width="30dp"
+                android:layout_height="?android:attr/listPreferredItemHeightSmall"
+                android:alpha="0.5"
+                android:clickable="false"
+                android:focusable="false"
+                android:src="?attr/expander"
+                app:layout_constraintBottom_toBottomOf="@+id/tvSettingGroupName"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvSettingGroupName" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</LinearLayout>

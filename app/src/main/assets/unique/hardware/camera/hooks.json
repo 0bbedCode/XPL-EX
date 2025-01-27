@@ -1,0 +1,22 @@
+[
+  {
+    "builtin": true,
+    "collection": "PrivacyEx",
+    "group": "Hardware.Spoof.Camera.Count",
+    "name": "Camera.getNumberOfCameras/Spoof",
+    "author": "OBC",
+    "className": "android.hardware.Camera",
+    "methodName": "getNumberOfCameras",
+    "parameterTypes": [ ],
+    "returnType": "int",
+    "minSdk": 1,
+    "maxSdk": 999,
+    "version": 1,
+    "description": "",
+    "optional": true,
+    "usage": true,
+    "notify": false,
+    "luaScript": "@id_camera_count",
+    "settings":[ "hardware.camera.count" ]
+  }
+]

@@ -1,0 +1,252 @@
+[
+  {
+    "id": "soc.board.model",
+    "oldIds": ["cpu.soc.model"]
+  },
+  {
+    "id": "soc.board.config.code.name",
+    "oldIds": ["cpu.platform.name"]
+  },
+  {
+    "id": "soc.board.manufacturer",
+    "oldIds": ["cpu.soc.manufacturer"]
+  },
+  {
+    "id": "soc.board.manufacturer.id",
+    "oldIds": ["cpu.hardware.name"]
+  },
+  {
+    "id": "soc.cpu.processor.count",
+    "oldIds": ["cpu.processor.count"]
+  },
+  {
+    "id": "soc.cpu.architecture",
+    "oldIds": ["cpu.arch"]
+  },
+  {
+    "id": "soc.cpu.instruction.set.32",
+    "oldIds": ["cpu.dalvik.vm.variant"]
+  },
+  {
+    "id": "soc.cpu.abi",
+    "oldIds": ["cpu.abi"]
+  },
+  {
+    "id": "soc.cpu.abi.list",
+    "oldIds": ["cpu.abilist"]
+  },
+  {
+    "id": "soc.cpu.abi.list.32",
+    "oldIds": ["cpu.abilist32"]
+  },
+  {
+    "id": "soc.cpu.abi.list.64",
+    "oldIds": ["cpu.abilist64"]
+  },
+  {
+    "id": "soc.gpu.egl.implementor",
+    "oldIds": ["gpu.egl.code.name"]
+  },
+  {
+    "id": "soc.gpu.open.gles.version.encoded",
+    "oldIds": ["gpu.opengls.version"]
+  },
+  {
+    "id": "soc.gpu.open.gles.vendor",
+    "oldIds": ["gpu.gl.vendor"]
+  },
+  {
+    "id": "soc.gpu.open.gles.renderer",
+    "oldIds": ["gpu.gl.renderer"]
+  },
+  {
+    "id": "soc.gpu.open.gles.version",
+    "oldIds": ["gpu.gl.version"]
+  },
+  {
+    "id": "soc.baseband.board.config.name",
+    "oldIds": ["cpu.base.band"]
+  },
+  {
+    "id": "soc.bluetooth.board.config.name",
+    "oldIds": ["bluetooth.soc"]
+  },
+  {
+    "id": "hardware.memory.total",
+    "oldIds": ["memory.total"]
+  },
+  {
+    "id": "hardware.memory.available",
+    "oldIds": ["memory.available"]
+  },
+  {
+    "id": "region.parent.control.tz",
+    "oldIds": ["zone.parent.control.tz"]
+  },
+  {
+    "id": "region.country",
+    "oldIds": ["zone.country"]
+  },
+  {
+    "id": "region.country.iso",
+    "oldIds": ["zone.country.iso"]
+  },
+  {
+    "id": "region.country.code",
+    "oldIds": ["zone.region"]
+  },
+  {
+    "id": "region.language",
+    "oldIds": ["zone.language"]
+  },
+  {
+    "id": "region.language.iso",
+    "oldIds": ["zone.language.iso"]
+  },
+  {
+    "id": "region.language.tag",
+    "oldIds": ["zone.language.tag"]
+  },
+  {
+    "id": "region.timezone",
+    "oldIds": ["zone.timezone"]
+  },
+  {
+    "id": "region.timezone.id",
+    "oldIds": ["zone.timezone.id"]
+  },
+  {
+    "id": "region.timezone.display.label",
+    "oldIds": ["zone.timezone.display.name"]
+  },
+  {
+    "id": "cell.phone.type",
+    "oldIds": ["gsm.phone.type"]
+  },
+  {
+    "id": "cell.phone.sim.card.count",
+    "oldIds": ["gsm.sim.count"]
+  },
+  {
+    "id": "cell.operator.id",
+    "oldIds": ["gsm.operator.id"]
+  },
+  {
+    "id": "cell.operator.name",
+    "oldIds": ["gsm.network.carrier"]
+  },
+  {
+    "id": "cell.operator.numeric.id",
+    "oldIds": ["gsm.operator.id"]
+  },
+  {
+    "id": "cell.operator.display.name",
+    "oldIds": ["gsm.setting.display.name"]
+  },
+  {
+    "id": "cell.operator.mcc",
+    "oldIds": ["gsm.operator.mcc"]
+  },
+  {
+    "id": "cell.operator.mnc",
+    "oldIds": ["gsm.operator.mnc"]
+  },
+  {
+    "id": "cell.sim.type",
+    "oldIds": ["gsm.sim.type"]
+  },
+  {
+    "id": "cell.sim.state",
+    "oldIds": ["gsm.sim.state.number"]
+  },
+  {
+    "id": "cell.location.lac",
+    "oldIds": ["gsm.cell.location.lac"]
+  },
+  {
+    "id": "cell.location.cid",
+    "oldIds": ["gsm.cell.location.cid"]
+  },
+  {
+    "id": "apps.allow.list",
+    "oldIds": ["applications.allow.list"]
+  },
+  {
+    "id": "apps.block.list",
+    "oldIds": ["applications.block.list"]
+  },
+  {
+    "id": "apps.blacklist.mode.bool",
+    "oldIds": ["applications.blacklist.mode.bool"]
+  },
+  {
+    "id": "apps.blacklist.allow.vital.apps.bool",
+    "oldIds": ["applications.blacklist.allow.vital.apps.bool"]
+  },
+  {
+    "id": "apps.sync.times.bool",
+    "oldIds": ["applications.sync.times.bool"]
+  },
+  {
+    "id": "display.height",
+    "oldIds": ["display.height"]
+  },
+  {
+    "id": "display.width",
+    "oldIds": ["display.width"]
+  },
+  {
+    "id": "android.etc.build.rom.base.os",
+    "oldIds": ["android.build.user"]
+  },
+  {
+    "id": "android.etc.build.rom.user",
+    "oldIds": ["android.build.dev.codename"]
+  },
+  {
+    "id": "unique.gsm.phone.number.1",
+    "oldIds": ["unique.gsm.phone.number"]
+  },
+
+
+  {
+    "id": "unique.gsm.subscription.id.1",
+    "oldIds": ["unique.gsm.subscription.id"]
+  },
+  {
+    "id": "unique.gsm.imei.1",
+    "oldIds": ["unique.gsm.imei"]
+  },
+  {
+    "id": "unique.gsm.meid.1",
+    "oldIds": ["unique.gsm.meid"]
+  },
+  {
+    "id": "unique.gsm.icc.id.1",
+    "oldIds": ["unique.gsm.icc.id"]
+  },
+  {
+    "id": "unique.gsm.phone.number.1",
+    "oldIds": ["unique.gsm.phone.number"]
+  },
+  {
+    "id": "unique.gsm.sim.serial.1",
+    "oldIds": ["unique.gsm.sim.serial"]
+  },
+  {
+    "id": "unique.gsm.voicemail.id.1",
+    "oldIds": ["unique.gsm.voicemail.id"]
+  },
+  {
+    "id": "unique.gsm.operator.msin.1",
+    "oldIds": ["unique.gsm.operator.msin"]
+  },
+
+
+
+
+  {
+    "id": "android.etc.build.rom.version.codename",
+    "oldIds": ["android.build.type"]
+  }
+]

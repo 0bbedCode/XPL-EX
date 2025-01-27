@@ -1,0 +1,6 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:width="38dp"
+        android:height="38dp"
+        android:drawable="?attr/warningIcon" />
+</layer-list>

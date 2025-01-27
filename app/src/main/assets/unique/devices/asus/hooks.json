@@ -1,0 +1,22 @@
+[
+  {
+    "builtin": true,
+    "collection": "PrivacyEx",
+    "group": "Device.ID.Asus",
+    "name": "Asus/BinderProxy.transact",
+    "author": "OBC",
+    "className": "Intercept.IPC.Interface",
+    "methodName": "com.asus.msa.SupplementaryDID.IDidAidlInterface",
+    "parameterTypes": [ ],
+    "minSdk": 1,
+    "maxSdk": 999,
+    "version": 1,
+    "description": "Asus IPC Get OAID/AAID/VAID",
+    "enabled": true,
+    "optional": true,
+    "usage": true,
+    "notify": false,
+    "luaScript": "",
+    "settings": ["intercept.ipc.interface.asus"]
+  }
+]

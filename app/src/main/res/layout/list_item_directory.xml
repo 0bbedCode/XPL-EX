@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheckedTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tvDirectoryDetails"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:textAppearance="?android:attr/textAppearanceListItem"
+    android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+    android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:gravity="center_vertical"
+    android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+    android:ellipsize="none"
+    android:maxLines="3"
+    android:scrollHorizontally="false" />
+

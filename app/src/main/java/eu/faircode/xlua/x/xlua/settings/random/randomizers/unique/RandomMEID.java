@@ -1,0 +1,21 @@
+package eu.faircode.xlua.x.xlua.settings.random.randomizers.unique;
+
+import java.util.Arrays;
+import java.util.List;
+
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
+import eu.faircode.xlua.x.xlua.settings.random.RandomElement;
+import eu.faircode.xlua.x.xlua.settings.random.RandomizerSessionContext;
+import eu.faircode.xlua.x.xlua.settings.random.randomizers.RandomizersCache;
+
+public class RandomMEID extends RandomElement {
+    public RandomMEID() {
+        super("CELL MEID");
+        putIndexSettings(RandomizersCache.SETTING_UNIQUE_MEID, 1, 2);
+    }
+
+    @Override
+    public void randomize(RandomizerSessionContext context) {
+        context.pushSpecial(context.stack.pop(), RandomGenerator.nextStringNumeric(14));
+    }
+}

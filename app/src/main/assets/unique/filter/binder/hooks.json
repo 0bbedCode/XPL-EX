@@ -1,0 +1,22 @@
+[
+  {
+    "builtin": true,
+    "collection": "PrivacyEx",
+    "group": "Intercept.IPC.Interface",
+    "name": "Filter/BinderProxy.transact(int, Parcel, Parcel, int)",
+    "author": "OBC",
+    "className": "android.os.BinderProxy",
+    "methodName": "transact",
+    "parameterTypes": ["int", "android.os.Parcel", "android.os.Parcel", "int"],
+    "returnType": "boolean",
+    "minSdk": 1,
+    "maxSdk": 999,
+    "version": 1,
+    "description": "Filter IPC Transaction via BinderProxy",
+    "enabled": false,
+    "optional": true,
+    "usage": true,
+    "notify": false,
+    "luaScript": "@id_binderproxy"
+  }
+]

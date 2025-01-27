@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <!-- Setting Name -->
+    <TextView
+        android:id="@+id/tvSettingName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:text="SETTING NAME"
+        android:scrollHorizontally="true"
+        android:textSize="16sp"
+        android:paddingBottom="4dp" />
+
+    <!-- Setting Value Label -->
+    <TextView
+        android:id="@+id/tvSettingValueLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvSettingName"
+        android:text="Setting Value:"
+        android:textSize="14sp"
+        android:paddingTop="4dp"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold|italic" />
+
+
+    <!-- Setting Value -->
+    <TextView
+        android:id="@+id/tvSettingValue"
+        android:text="SETTING VALUE"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvSettingValueLabel"
+        android:paddingTop="4dp"
+        android:lineSpacingExtra="4dp"
+        android:ellipsize="none"
+        android:scrollHorizontally="false"
+        android:maxLines="10"
+        android:scrollbars="vertical"
+        android:textSize="14sp" />
+
+    <!-- Checkbox -->
+    <CheckBox
+        android:id="@+id/cbSetting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true" />
+
+</RelativeLayout>

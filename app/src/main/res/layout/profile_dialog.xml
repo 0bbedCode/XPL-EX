@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- App Icon and App Name -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/ivAppIcon"
+                android:layout_width="?android:attr/listPreferredItemHeightSmall"
+                android:layout_height="?android:attr/listPreferredItemHeightSmall"
+                android:src="@mipmap/ic_launcher" />
+
+            <TextView
+                android:id="@+id/tvAppName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="App Name"
+                android:textAppearance="@android:style/TextAppearance.Medium" />
+        </LinearLayout>
+
+        <!-- App Package Name -->
+        <TextView
+            android:id="@+id/tvAppPackageName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="com.example.app"
+            android:textAppearance="@android:style/TextAppearance.Small"
+            android:layout_marginTop="4dp" />
+
+        <!-- App UID -->
+        <TextView
+            android:id="@+id/tvAppUid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="UID: 1000"
+            android:textAppearance="@android:style/TextAppearance.Small"
+            android:layout_marginTop="2dp" />
+
+        <!-- Spacing -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+
+        <!-- Profile Name -->
+        <TextView
+            android:id="@+id/tvProfileNameLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Profile Name:"
+            android:textAppearance="@android:style/TextAppearance.Small"
+            android:layout_marginTop="8dp" />
+
+        <EditText
+            android:id="@+id/tiProfileName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter profile name" />
+
+        <!-- Profile Version -->
+        <TextView
+            android:id="@+id/tvProfileVersionLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Profile Version:"
+            android:textAppearance="@android:style/TextAppearance.Small"
+            android:layout_marginTop="8dp" />
+
+        <EditText
+            android:id="@+id/tiProfileVersion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter profile version" />
+
+        <!-- Profile Description -->
+        <TextView
+            android:id="@+id/tvProfileDescriptionLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Profile Description:"
+            android:textAppearance="@android:style/TextAppearance.Small"
+            android:layout_marginTop="8dp" />
+
+        <EditText
+            android:id="@+id/tiProfileDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter profile description" />
+
+        <!-- Spacing -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+
+        <!-- Profile Creation Date -->
+        <TextView
+            android:id="@+id/tvProfileCreationDateLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Profile Creation Date:"
+            android:textAppearance="@android:style/TextAppearance.Small"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/tvProfileCreationDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="DATE STRING"
+            android:textAppearance="@android:style/TextAppearance.Small" />
+
+        <!-- Profile Last Applied Date -->
+        <TextView
+            android:id="@+id/tvProfileLastAppliedDateLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Profile Last Applied Date:"
+            android:textAppearance="@android:style/TextAppearance.Small"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/tvProfileLastAppliedDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="DATE STRING"
+            android:textAppearance="@android:style/TextAppearance.Small" />
+
+        <!-- Spacing -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+
+        
+        <!-- Directories -->
+        <TextView
+            android:id="@+id/tvDirPathsLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Directories:"
+            android:textAppearance="@android:style/TextAppearance.Small"
+            android:layout_marginTop="8dp" />
+
+        <ListView
+            android:id="@+id/listviewDirectories"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:nestedScrollingEnabled="true"
+            android:divider="@android:color/darker_gray"
+            android:dividerHeight="0.5dp"
+            android:padding="8dp"
+            android:layout_margin="8dp"
+            android:choiceMode="multipleChoice"
+            android:scrollbars="vertical" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical">
+
+            <!-- Settings Label -->
+            <TextView
+                android:id="@+id/tvSettingsLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Settings:"
+                android:textAppearance="@android:style/TextAppearance.Small" />
+
+            <!-- Spacer -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <!-- Bulk Checkbox -->
+            <CheckBox
+                android:id="@+id/cbCheckSettingsBulk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bulk Select"
+                android:textAppearance="@android:style/TextAppearance.Small" />
+        </LinearLayout>
+        <!-- Selected Settings and Expander Layout -->
+        <!-- Selected Settings and Expander Layout -->
+        <!-- Selected Settings and Expander Layout -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical">
+
+            <!-- Expander Arrow -->
+            <ImageView
+                android:id="@+id/ivExpanderProfileSettings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="?attr/expander"
+                android:padding="4dp" />
+
+            <!-- Spacer -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <!-- Selected Settings Label -->
+            <TextView
+                android:id="@+id/tvSelectedSettingsLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="50dp"
+                android:textColor="@color/colorPrimary"
+                android:textStyle="bold|italic"
+                android:text="0/0"
+                android:textAppearance="@android:style/TextAppearance.Small" />
+        </LinearLayout>
+
+
+
+        <!-- Settings ListView -->
+        <ListView
+            android:id="@+id/listviewSettings"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:nestedScrollingEnabled="true"
+            android:divider="@android:color/darker_gray"
+            android:dividerHeight="0.5dp"
+            android:padding="8dp"
+            android:layout_margin="8dp"
+            android:choiceMode="multipleChoice"
+            android:scrollbars="vertical" />
+
+
+    </LinearLayout>
+</ScrollView>

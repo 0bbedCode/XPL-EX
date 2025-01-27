@@ -1,0 +1,22 @@
+[
+  {
+    "builtin": true,
+    "collection": "PrivacyEx",
+    "group": "Device.ID.Vivo",
+    "name": "ID/Query/Vivo",
+    "author": "OBC",
+    "className": "Intercept.Intent.Query",
+    "methodName": "oaid|pps_oaid|pps_oaid_c",
+    "parameterTypes": [ "com.vivo.vms.IdProvider" ],
+    "minSdk": 4,
+    "maxSdk": 999,
+    "version": 1,
+    "description": "",
+    "enabled":true,
+    "optional":true,
+    "usage":true,
+    "notify":false,
+    "luaScript": "",
+    "settings:": ["unique.open.anon.advertising.id"]
+  }
+]

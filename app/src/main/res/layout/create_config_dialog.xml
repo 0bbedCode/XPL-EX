@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvConfigName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_config_name"
+            android:textAppearance="@android:style/TextAppearance.Small"
+            android:layout_marginTop="8dp" />
+
+        <EditText
+            android:id="@+id/tiConfigName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/text_enter_config_name" />
+
+        <TextView
+            android:id="@+id/tvConfigAuthorLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_config_author"
+            android:textAppearance="@android:style/TextAppearance.Small"
+            android:layout_marginTop="8dp" />
+
+        <EditText
+            android:id="@+id/tiConfigAuthor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/text_enter_config_author" />
+
+        <TextView
+            android:id="@+id/tvConfigVersionLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_config_version"
+            android:textAppearance="@android:style/TextAppearance.Small"
+            android:layout_marginTop="8dp" />
+
+        <EditText
+            android:id="@+id/tiConfigVersion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/text_enter_config_version" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+
+
+        <TextView
+            android:id="@+id/tvTagsLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tags:"
+            android:textAppearance="@android:style/TextAppearance.Small"
+            android:layout_marginTop="8dp" />
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/flexTags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="3dp"
+            app:alignItems="flex_start"
+            app:flexDirection="row"
+            app:flexWrap="wrap"
+            app:justifyContent="flex_start" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+
+
+        <TextView
+            android:id="@+id/tvSettings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_label_settings"
+            android:textAppearance="@android:style/TextAppearance.Small"
+            android:layout_marginTop="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/ivExpanderConfigSettings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="?attr/expander"
+                android:padding="4dp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <CheckBox
+                android:id="@+id/cbCheckSettingsBulk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bulk Select"
+                android:textAppearance="@android:style/TextAppearance.Small" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tvSelectedSettingsLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="50dp"
+                android:textColor="@color/colorPrimary"
+                android:textStyle="bold|italic"
+                android:text="0/0"
+                android:textAppearance="@android:style/TextAppearance.Small" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/listviewSettings"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:nestedScrollingEnabled="true"
+            android:divider="@android:color/darker_gray"
+            android:dividerHeight="0.5dp"
+            android:padding="8dp"
+            android:layout_margin="8dp"
+            android:choiceMode="multipleChoice"
+            android:scrollbars="vertical" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvSettingsLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/text_label_hooks"
+                android:textAppearance="@android:style/TextAppearance.Small" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <CheckBox
+                android:id="@+id/cbCheckHooksBulk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bulk Select"
+                android:textAppearance="@android:style/TextAppearance.Small" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/ivExpanderConfigHooks"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="?attr/expander"
+                android:padding="4dp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tvSelectedHooksLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="50dp"
+                android:textColor="@color/colorPrimary"
+                android:textStyle="bold|italic"
+                android:text="0/0"
+                android:textAppearance="@android:style/TextAppearance.Small" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/listviewHooks"
+            android:layout_width="match_parent"
+            android:layout_height="230dp"
+            android:nestedScrollingEnabled="true"
+            android:divider="@android:color/darker_gray"
+            android:dividerHeight="0.5dp"
+            android:padding="8dp"
+            android:layout_margin="8dp"
+            android:choiceMode="multipleChoice"
+            android:scrollbars="vertical" />
+
+    </LinearLayout>
+</ScrollView>

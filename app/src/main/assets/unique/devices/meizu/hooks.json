@@ -1,0 +1,22 @@
+[
+  {
+    "builtin": true,
+    "collection": "PrivacyEx",
+    "group": "Device.ID.Meizu",
+    "name": "ID/Query/Meizu",
+    "author": "OBC",
+    "className": "Intercept.Intent.Query",
+    "methodName": "oaid|pps_oaid|pps_oaid_c",
+    "parameterTypes": [ "com.meizu.flyme.openidsdk" ],
+    "minSdk": 4,
+    "maxSdk": 999,
+    "version": 1,
+    "description": "",
+    "enabled":true,
+    "optional":true,
+    "usage":true,
+    "notify":false,
+    "luaScript": "",
+    "settings:": ["unique.open.anon.advertising.id"]
+  }
+]

@@ -1,0 +1,58 @@
+[
+  //android/content/pm/PackageInfo#firstInstallTime
+  {
+    "builtin": true,
+    "collection": "PrivacyEx",
+    "group": "Apps.Spoof.TimeStamps",
+    "name": "PackageInfo.writeToParcel/Times",
+    "author": "OBC",
+    "className": "android.content.pm.PackageInfo",
+    "methodName": "writeToParcel",
+    "parameterTypes": [ "android.os.Parcel", "int" ],
+    "returnType": "void",
+    "minSdk": 1,
+    "maxSdk": 999,
+    "version": 1,
+    "description": "",
+    "optional": true,
+    "usage": true,
+    "notify": false,
+    "luaScript": "@id_package_info_before_one"
+  },
+  {
+    "builtin": true,
+    "collection": "PrivacyEx",
+    "group": "Apps.Spoof.TimeStamps",
+    "name": "PackageInfo(Parcel)/Times",
+    "author": "OBC",
+    "className": "android.content.pm.PackageInfo",
+    "parameterTypes": [ "android.os.Parcel" ],
+    "minSdk": 1,
+    "maxSdk": 999,
+    "version": 1,
+    "description": "",
+    "optional": true,
+    "usage": true,
+    "notify": false,
+    "luaScript": "@id_package_info_after_one"
+  },
+  {
+    "builtin": true,
+    "collection": "PrivacyEx",
+    "group": "Apps.Spoof.TimeStamps",
+    "name": "PackageInfo.CREATOR/Times",
+    "author": "OBC",
+    "method": "CREATOR:createFromParcel",
+    "className": "android.content.pm.PackageInfo",
+    "parameterTypes": [ "android.os.Parcel" ],
+    "returnType": "android.content.pm.PackageInfo",
+    "minSdk": 1,
+    "maxSdk": 999,
+    "version": 1,
+    "description": "",
+    "optional": true,
+    "usage": true,
+    "notify": false,
+    "luaScript": "@id_package_info_parcel_one"
+  }
+]

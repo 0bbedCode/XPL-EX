@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ProgressBar
+        android:id="@+id/pbSettings"
+        style="@style/Base.Widget.AppCompat.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/flSettingsButtonOne"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_edit_button" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/flSettingsButtonTwo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/flSettingsButtonOne"
+        app:layout_constraintEnd_toEndOf="@+id/flSettingsButtonOne"
+        app:layout_constraintStart_toStartOf="@+id/flSettingsButtonOne"
+        app:srcCompat="@drawable/ic_remix_dice_fill" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/flSettingsButtonThree"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:visibility="invisible"
+        android:clickable="true"
+        app:layout_constraintBottom_toTopOf="@+id/flSettingsButtonTwo"
+        app:layout_constraintEnd_toEndOf="@+id/flSettingsButtonTwo"
+        app:layout_constraintStart_toStartOf="@+id/flSettingsButtonTwo"
+        app:srcCompat="@drawable/ic_remix_add_fill" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/flSettingsButtonFour"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:visibility="invisible"
+        android:clickable="true"
+        app:layout_constraintBottom_toTopOf="@+id/flSettingsButtonThree"
+        app:layout_constraintEnd_toEndOf="@+id/flSettingsButtonThree"
+        app:layout_constraintStart_toStartOf="@+id/flSettingsButtonThree"
+        app:srcCompat="@drawable/ic_remix_save_3_fill" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/flSettingsButtonFive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:visibility="invisible"
+        android:clickable="true"
+        app:layout_constraintBottom_toTopOf="@+id/flSettingsButtonFour"
+        app:layout_constraintEnd_toEndOf="@+id/flSettingsButtonFour"
+        app:layout_constraintStart_toStartOf="@+id/flSettingsButtonFour"
+        app:srcCompat="@drawable/ic_remix_delete_bin_2_line" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvAppIsland"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="8dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/app_info_layout_settings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/ivAppIslandExpander"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:alpha="0.5"
+                android:clickable="false"
+                android:focusable="false"
+                android:src="?attr/expander"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/ivAppIslandAppIcon"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:clickable="false"
+                android:focusable="false"
+                android:src="@mipmap/ic_launcher"
+                app:layout_constraintBottom_toBottomOf="@+id/ivAppIslandExpander"
+                app:layout_constraintStart_toEndOf="@+id/ivAppIslandExpander"
+                app:layout_constraintTop_toTopOf="@+id/ivAppIslandExpander" />
+
+            <TextView
+                android:id="@+id/tvAppIslandAppName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:clickable="false"
+                android:ellipsize="end"
+                android:focusable="false"
+                android:lines="1"
+                android:text="Android"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/ivAppIslandAppIcon"
+                app:layout_constraintTop_toTopOf="@+id/ivAppIslandAppIcon" />
+
+            <TextView
+                android:id="@+id/tvAppIslandPackageUid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"
+                android:lines="1"
+                android:text="1000"
+                android:textAppearance="@android:style/TextAppearance.Small"
+                app:layout_constraintStart_toStartOf="@+id/tvAppIslandAppName"
+                app:layout_constraintTop_toBottomOf="@+id/tvAppIslandAppName" />
+
+            <TextView
+                android:id="@+id/tvAppIslandPackageName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="6dp"
+                android:clickable="false"
+                android:ellipsize="start"
+                android:focusable="false"
+                android:singleLine="true"
+                android:text="com.example.android"
+                android:textAppearance="@android:style/TextAppearance.Small"
+                app:layout_constraintStart_toEndOf="@+id/tvAppIslandPackageUid"
+                app:layout_constraintTop_toBottomOf="@+id/tvAppIslandAppName" />
+
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/buttonGridLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="3dp"
+                app:alignItems="flex_start"
+
+                app:flexDirection="row"
+                app:flexWrap="wrap"
+                app:justifyContent="flex_start"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cbUseDefaultValues">
+
+                <Button
+                    android:id="@+id/btAppIslandSaveChecked"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginBottom="3dp"
+
+                    android:background="@drawable/rounded_corner"
+                    android:drawableLeft="@drawable/ic_checklist"
+                    android:drawablePadding="5dp"
+
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+
+                    android:text="@string/button_settings_save_checked"
+                    android:textColor="?attr/colorButtonText"
+                    android:textSize="10sp" />
+
+                <Button
+                    android:id="@+id/btAppIslandClearData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginBottom="3dp"
+
+                    android:background="@drawable/rounded_corner"
+                    android:drawableLeft="@drawable/ic_bomb_icon"
+                    android:drawablePadding="5dp"
+
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+
+                    android:text="@string/button_clear_app_data"
+                    android:textColor="?attr/colorButtonText"
+                    android:textSize="10sp" />
+
+
+                <Button
+                    android:id="@+id/btAppIslandSettingsResetAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginBottom="3dp"
+
+                    android:background="@drawable/rounded_corner"
+                    android:drawableLeft="@drawable/ic_reset_settings_icon"
+                    android:drawablePadding="5dp"
+
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+
+                    android:text="@string/button_reset_settings"
+                    android:textColor="?attr/colorButtonText"
+                    android:textSize="10sp" />
+
+
+                <Button
+                    android:id="@+id/btAppIslandForceStop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginBottom="3dp"
+
+                    android:background="@drawable/rounded_corner"
+                    android:drawableLeft="@drawable/force_stop_button"
+                    android:drawablePadding="5dp"
+
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+
+                    android:text="@string/button_force_stop"
+                    android:textColor="?attr/colorButtonText"
+                    android:textSize="10sp" />
+
+
+                <Button
+                    android:id="@+id/btAppIslandToLogsDialog"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginBottom="3dp"
+
+                    android:background="@drawable/rounded_corner"
+                    android:drawableLeft="@drawable/log_button"
+                    android:drawablePadding="5dp"
+
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+
+                    android:text="@string/button_logs"
+                    android:textColor="?attr/colorButtonText"
+                    android:textSize="10sp" />
+
+
+                <Button
+                    android:id="@+id/btAppIslandProfileDialog"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginBottom="3dp"
+
+                    android:background="@drawable/rounded_corner"
+                    android:drawableLeft="@drawable/profile_button"
+                    android:drawablePadding="5dp"
+
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+
+                    android:text="@string/button_profiles"
+                    android:textColor="?attr/colorButtonText"
+                    android:textSize="10sp" />
+
+                <Button
+                    android:id="@+id/btAppIslandConfigDialog"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginBottom="3dp"
+
+                    android:background="@drawable/rounded_corner"
+                    android:drawableLeft="@drawable/ic_edit_note18"
+                    android:drawablePadding="5dp"
+
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+
+                    android:text="@string/button_configs"
+                    android:textColor="?attr/colorButtonText"
+                    android:textSize="10sp" />
+
+                <Button
+                    android:id="@+id/btAppIslandCreateConfigDialog"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginBottom="3dp"
+
+                    android:background="@drawable/rounded_corner"
+                    android:drawableLeft="@drawable/ic_new_window18"
+                    android:drawablePadding="5dp"
+
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+
+                    android:text="@string/button_create_config"
+                    android:textColor="?attr/colorButtonText"
+                    android:textSize="10sp" />
+
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <CheckBox
+                android:id="@+id/cbForceStop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title_force_stop"
+                app:layout_constraintStart_toStartOf="@+id/tvAppIslandPackageUid"
+                app:layout_constraintTop_toBottomOf="@+id/tvAppIslandPackageName" />
+            <CheckBox
+                android:enabled="false"
+                android:id="@+id/cbUseDefaultValues"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title_use_default"
+                app:layout_constraintStart_toStartOf="@+id/cbForceStop"
+                app:layout_constraintTop_toBottomOf="@+id/cbForceStop" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshSettings"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:elevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvSettings"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:nestedScrollingEnabled="true"
+            android:overScrollMode="never"
+            android:clipToPadding="false"
+            android:paddingBottom="16dp"
+            android:scrollbarStyle="outsideOverlay"
+            android:scrollbars="vertical" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

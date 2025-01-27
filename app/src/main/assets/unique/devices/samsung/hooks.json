@@ -1,0 +1,23 @@
+[
+  {
+    //https://juejin.cn/post/7072741392178479140
+    "builtin": true,
+    "collection": "PrivacyEx",
+    "group": "Device.ID.Samsung",
+    "name": "Samsung/BinderProxy.transact",
+    "author": "OBC",
+    "className": "Intercept.IPC.Interface",
+    "methodName": "com.samsung.android.deviceidservice.IDeviceIdService",
+    "parameterTypes": [ ],
+    "minSdk": 1,
+    "maxSdk": 999,
+    "version": 1,
+    "description": "Samsung Get OAID/AAID/VAID",
+    "enabled": true,
+    "optional": true,
+    "usage": true,
+    "notify": false,
+    "luaScript": "",
+    "settings": ["intercept.ipc.interface.samsung"]
+  }
+]

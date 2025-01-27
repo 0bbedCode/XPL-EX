@@ -1,0 +1,22 @@
+[
+  {
+    "builtin": true,
+    "collection": "PrivacyEx",
+    "group": "Device.ID.Lenovo",
+    "name": "Lenovo/BinderProxy.transact",
+    "author": "OBC",
+    "className": "Intercept.IPC.Interface",
+    "methodName": "com.zui.deviceidservice.IDeviceidInterface",
+    "parameterTypes": [ ],
+    "minSdk": 1,
+    "maxSdk": 999,
+    "version": 1,
+    "description": "Lenovo IPC Get OAID/AAID/VAID",
+    "enabled": true,
+    "optional": true,
+    "usage": true,
+    "notify": false,
+    "luaScript": "",
+    "settings": ["intercept.ipc.interface.lenovo"]
+  }
+]
