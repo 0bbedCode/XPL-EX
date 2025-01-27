@@ -8,7 +8,7 @@ import eu.faircode.xlua.api.settings.LuaSettingPacket;
 import eu.faircode.xlua.api.xmock.database.LuaSettingsManager;
 import eu.faircode.xlua.api.xstandard.QueryCommandHandler;
 import eu.faircode.xlua.api.xstandard.UserIdentityPacket;
-import eu.faircode.xlua.api.xstandard.command.QueryPacket;
+import eu.faircode.xlua.api.xstandard.command.QueryPacket_old;
 import eu.faircode.xlua.utilities.CursorUtil;
 
 public class GetMockSettingsCommand extends QueryCommandHandler {
@@ -22,7 +22,7 @@ public class GetMockSettingsCommand extends QueryCommandHandler {
     }
 
     @Override
-    public Cursor handle(QueryPacket commandData) throws Throwable {
+    public Cursor handle(QueryPacket_old commandData) throws Throwable {
         LuaSettingPacket packet = commandData.readFullPacketFrom(LuaSettingPacket.class, UserIdentityPacket.USER_QUERY_PACKET_ONE);
         if(packet == null) return null;
         packet.resolveUserID();

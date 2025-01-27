@@ -374,7 +374,7 @@
     "builtin": true,
     "collection": "PrivacyEx",
     "group": "Spoof.Location",
-    "name": "Bundle.get/location",
+    "name": "BaseBundle.get/location",
     "author": "M66B x OBC",
     "className": "android.os.BaseBundle",
     "methodName": "get",

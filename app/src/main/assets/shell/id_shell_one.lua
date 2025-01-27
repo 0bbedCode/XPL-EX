@@ -16,9 +16,21 @@ function after(hook, param)
     --log("Command was intercepted=" .. arg .. " !!")
 	--return true, arg, comRes
 	local sh = param:createShellContext(false)
-	local rt = param:ensureCommandIsSafe(sh)
-	if rt ~= nil then
-        return true, "Spoofed:", rt
+	if sh == nil then
+        log("Create Shell Context is NIL")
+        param:isNullError(hook)
+        return false
+    end
+
+	local rt = param:isCommandBad(sh)
+    if rt == nil then
+        log("Command Bad Return is NIL")
+        param:isNullError(hook)
+        return false
+    end
+
+	if rt == true then
+        return true, param:getOldResult(), param:getNewResult()
     end
 	return false
 end

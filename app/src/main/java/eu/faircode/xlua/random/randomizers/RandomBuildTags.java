@@ -3,13 +3,13 @@ package eu.faircode.xlua.random.randomizers;
 import androidx.annotation.NonNull;
 
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.random.IRandomizer;
+
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
-import eu.faircode.xlua.utilities.RandomStringGenerator;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
-public class RandomBuildTags implements IRandomizer {
+public class RandomBuildTags implements IRandomizerOld {
     private static final String[] DEFAULT_BUILD_TAGS = new String[] {
         "release-keys",
             "test-keys",
@@ -40,7 +40,7 @@ public class RandomBuildTags implements IRandomizer {
     }
 
     @Override
-    public String generateString() { return DEFAULT_BUILD_TAGS[ThreadLocalRandom.current().nextInt(0, DEFAULT_BUILD_TAGS.length)]; }
+    public String generateString() { return DEFAULT_BUILD_TAGS[RandomGenerator.nextInt(0, DEFAULT_BUILD_TAGS.length)]; }
 
     @Override
     public int generateInteger() { return 0; }

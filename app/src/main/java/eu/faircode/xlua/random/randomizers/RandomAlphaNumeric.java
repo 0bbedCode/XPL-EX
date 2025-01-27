@@ -3,13 +3,14 @@ package eu.faircode.xlua.random.randomizers;
 import androidx.annotation.NonNull;
 
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.random.IRandomizer;
+
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
 import eu.faircode.xlua.utilities.RandomStringGenerator;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
-public class RandomAlphaNumeric implements IRandomizer {
+public class RandomAlphaNumeric implements IRandomizerOld {
     @Override
     public boolean isSetting(String setting) {
         return setting.equalsIgnoreCase("gsm.setting.display.name");
@@ -31,7 +32,7 @@ public class RandomAlphaNumeric implements IRandomizer {
     }
 
     @Override
-    public String generateString() { return RandomStringGenerator.generateRandomAlphanumericString(ThreadLocalRandom.current().nextInt(7, 18)); }
+    public String generateString() { return RandomStringGenerator.generateRandomAlphanumericString(RandomGenerator.nextInt(7, 18)); }
 
     @Override
     public int generateInteger() { return 0; }

@@ -22,6 +22,7 @@ import eu.faircode.xlua.utilities.ContentValuesUtil;
 import eu.faircode.xlua.utilities.CursorUtil;
 import eu.faircode.xlua.utilities.JSONUtil;
 import eu.faircode.xlua.utilities.ParcelUtil;
+import eu.faircode.xlua.x.xlua.settings.deprecated.SettingsHelperOld;
 
 public class LuaSetting extends UserIdentityPacket implements IJsonSerial, Parcelable {
     public static LuaSetting create() { return new LuaSetting(); }
@@ -63,6 +64,8 @@ public class LuaSetting extends UserIdentityPacket implements IJsonSerial, Parce
     public boolean isValueNull() { return this.value == null; }
     public boolean isValueEmpty() { return this.value != null && TextUtils.isEmpty(this.value); }
     public boolean isValueEmptyOrNull() { return isValueNull() || isValueEmpty(); }
+
+    public boolean isBuiltIn() { return SettingsHelperOld.isBuiltInSetting(this.name); }
 
     public LuaSettingDefault createDefault(String description) { return LuaSettingDefault.create(this, description); }
     public LuaSettingExtended createExtended(String description) { return LuaSettingExtended.create(this, description); }

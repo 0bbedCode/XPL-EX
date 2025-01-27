@@ -27,8 +27,10 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Process;
 import android.preference.PreferenceManager;
 import android.text.Html;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -60,14 +62,21 @@ import androidx.fragment.app.FragmentTransaction;
 
 import eu.faircode.xlua.api.XResult;
 import eu.faircode.xlua.api.xlua.call.CleanHooksCommand;
-import eu.faircode.xlua.api.xstandard.UserIdentityPacket;
 import eu.faircode.xlua.api.xlua.provider.XLuaHookProvider;
-import eu.faircode.xlua.api.xlua.XLuaCall;
 import eu.faircode.xlua.logger.XLog;
 import eu.faircode.xlua.utilities.PrefUtil;
+import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.ui.activities.SettingsExActivity;
+import eu.faircode.xlua.x.ui.core.UserClientAppContext;
+import eu.faircode.xlua.x.ui.dialogs.CollectionsDialog;
+import eu.faircode.xlua.x.xlua.commands.call.GetSettingExCommand;
+import eu.faircode.xlua.x.xlua.commands.call.PutSettingExCommand;
+import eu.faircode.xlua.x.xlua.database.A_CODE;
+import eu.faircode.xlua.x.xlua.root.RootManager;
 
 public class ActivityMain extends ActivityBase {
     private final static String TAG = "XLua.Main";
+
 
     private FragmentMain fragmentMain = null;
     private DrawerLayout drawerLayout = null;
@@ -82,6 +91,7 @@ public class ActivityMain extends ActivityBase {
     public static final String EXTRA_SEARCH_PACKAGE = "package";
 
     private ExecutorService executor = Executors.newSingleThreadExecutor();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,19 +152,20 @@ public class ActivityMain extends ActivityBase {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 DrawerItem item = (DrawerItem) parent.getAdapter().getItem(position);
-                Log.i(TAG, "Drawer selected " + item.getTitle());
+                //Log.i(TAG, "Drawer selected " + item.getTitle());
                 item.onClick();
                 if (!item.isCheckable())
                     drawerLayout.closeDrawer(drawerList);
             }
         });
 
-        // Initialize drawer
-        boolean notifyNew = XLuaCall.getSettingBoolean(this, "notify_new_apps"); //XProvider.getSettingBoolean(this, "global", "notify_new_apps");
-        boolean restrictNew = XLuaCall.getSettingBoolean(this, "restrict_new_apps"); //XProvider.getSettingBoolean(this, "global", "restrict_new_apps");
-        String theme = XLuaCall.getTheme(this);
-        boolean isDark = theme.equalsIgnoreCase("dark");
-        boolean isVerbose = getDebugState();
+        boolean notifyNew = GetSettingExCommand.notifyOnNewApps(this);
+        boolean restrictNew = GetSettingExCommand.restrictNewApps(this);
+        boolean isVerbose = GetSettingExCommand.getVerboseLogs(this);
+        boolean isDark = GetSettingExCommand.SETTING_THEME_DEFAULT.equalsIgnoreCase(GetSettingExCommand.getTheme(this, Process.myUid()));
+        if(DebugUtil.isDebug())
+            Log.d(TAG, Str.fm("Notify New=%s Restrict New=%s IsDark=%s", notifyNew, restrictNew, isDark));
+
         final boolean forceEnglish = getIsForceEnglish();
 
         final ArrayAdapterDrawer drawerArray = new ArrayAdapterDrawer(ActivityMain.this, R.layout.draweritem);
@@ -163,8 +174,7 @@ public class ActivityMain extends ActivityBase {
             drawerArray.add(new DrawerItem(this, R.string.menu_notify_new, notifyNew, new DrawerItem.IListener() {
                 @Override
                 public void onClick(DrawerItem item) {
-                    XLuaCall.putSettingBoolean(ActivityMain.this, "notify_new_apps", item.isChecked());
-                    //XProvider.putSettingBoolean(ActivityMain.this, "global", "notify_new_apps", item.isChecked());
+                    handleCodeToSnack(PutSettingExCommand.putNotifyNewApps(ActivityMain.this, item.isChecked()), getString(R.string.result_prefix_notify) + "=" + item.isChecked());
                     drawerArray.notifyDataSetChanged();
                 }
             }));
@@ -173,29 +183,11 @@ public class ActivityMain extends ActivityBase {
             drawerArray.add(new DrawerItem(this, R.string.menu_restrict_new, restrictNew, new DrawerItem.IListener() {
                 @Override
                 public void onClick(DrawerItem item) {
-                    XLuaCall.putSettingBoolean(ActivityMain.this, "restrict_new_apps", item.isChecked());
-                    //XProvider.putSettingBoolean(ActivityMain.this, "global", "restrict_new_apps", item.isChecked());
+                    handleCodeToSnack(PutSettingExCommand.putRestrictNewApps(ActivityMain.this, item.isChecked()), getString(R.string.result_prefix_restrict) + "=" + item.isChecked());
                     drawerArray.notifyDataSetChanged();
                 }
             }));
 
-
-        drawerArray.add(new DrawerItem(this, R.string.menu_companion, new DrawerItem.IListener() {
-            @Override
-            public void onClick(DrawerItem item) {
-                PackageManager pm = getPackageManager();
-                Intent companion = pm.getLaunchIntentForPackage(XUtil.PRO_PACKAGE_NAME);
-                if (companion == null) {
-                    Intent browse = new Intent(Intent.ACTION_VIEW);
-                    browse.setData(Uri.parse("https://lua.xprivacy.eu/pro/"));
-                    if (browse.resolveActivity(pm) == null)
-                        Snackbar.make(findViewById(android.R.id.content), getString(R.string.msg_no_browser), Snackbar.LENGTH_LONG).show();
-                    else
-                        startActivity(browse);
-                } else
-                    startActivity(companion);
-            }
-        }));
 
         drawerArray.add(new DrawerItem(this, R.string.menu_readme, new DrawerItem.IListener() {
             @Override
@@ -237,26 +229,46 @@ public class ActivityMain extends ActivityBase {
             }
         }));
 
+
+        drawerArray.add(new DrawerItem(this, R.string.menu_collections, new DrawerItem.IListener() {
+            @Override
+            public void onClick(DrawerItem item) {
+                new CollectionsDialog()
+                        .set(ActivityMain.this)
+                        .setOnDialogCloseListener(() -> { if(fragmentMain != null) fragmentMain.loadData(); })
+                        .show(getSupportFragmentManager(), getString(R.string.menu_collections));
+            }
+        }));
+
         if (!XposedUtil.isVirtualXposed())
             drawerArray.add(new DrawerItem(this,R.string.menu_dark, isDark, new DrawerItem.IListener() {
                 @Override
                 public void onClick(DrawerItem item) {
-                    String oldTheme = XLuaCall.getTheme(ActivityMain.this);
+                    String oldTheme = GetSettingExCommand.getTheme(ActivityMain.this, Process.myUid());
                     String newTheme = item.isChecked() ? "dark" : "light";
-                    XLuaCall.putSetting(ActivityMain.this, "theme", newTheme);
+
+                    A_CODE code = PutSettingExCommand.putTheme(ActivityMain.this, newTheme);
                     drawerArray.notifyDataSetChanged();
-                    if(!oldTheme.equals(newTheme)) {
-                        setTheme("dark".equals(newTheme) ? R.style.AppThemeDark : R.style.AppThemeLight);
-                        recreate();
+                    handleCodeToSnack(code, getString(R.string.result_prefix_theme) + "=" + newTheme);
+
+                    if(A_CODE.isSuccessful(code)) {
+                        if(!oldTheme.equals(newTheme)) {
+                            setTheme(GetSettingExCommand.SETTING_THEME_DEFAULT.equals(newTheme) ? R.style.AppThemeDark : R.style.AppThemeLight);
+                            recreate();
+                        }
                     }
                 }
             }));
 
+
+
         drawerArray.add(new DrawerItem(this, R.string.menu_debug_logs, isVerbose, new DrawerItem.IListener() {
             @Override
             public void onClick(DrawerItem item) {
-                setDebugState(item.isCheckable());
-                drawerArray.notifyDataSetChanged();//fix context issues
+                boolean isChecked = item.isChecked();
+                DebugUtil.setForceDebug(isChecked);
+                handleCodeToSnack(PutSettingExCommand.putVerboseLogging(ActivityMain.this, isChecked),  getString(R.string.result_prefix_debug) + "=" + isChecked);
+                drawerArray.notifyDataSetChanged();
             }
         }));
 
@@ -274,27 +286,6 @@ public class ActivityMain extends ActivityBase {
         }));
 
 
-        drawerArray.add(new DrawerItem(this, R.string.menu_props, new DrawerItem.IListener() {
-            @Override
-            public void onClick(DrawerItem item) {
-                menuProps();
-            }
-        }));
-
-        drawerArray.add(new DrawerItem(this, R.string.menu_cpumaps, new DrawerItem.IListener() {
-            @Override
-            public void onClick(DrawerItem item) {
-                menuCPU();
-            }
-        }));
-
-        drawerArray.add(new DrawerItem(this, R.string.menu_configs, new DrawerItem.IListener() {
-            @Override
-            public void onClick(DrawerItem item) {
-                menuConfig();
-            }
-        }));
-
         drawerArray.add(new DrawerItem(this, R.string.menu_settings, new DrawerItem.IListener() {
             @Override
             public void onClick(DrawerItem item) {
@@ -302,25 +293,18 @@ public class ActivityMain extends ActivityBase {
             }
         }));
 
+
         drawerList.setAdapter(drawerArray);
         //whatsNew
-
         initCore();
     }
 
-    public void setDebugState(boolean enabled) {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        prefs.edit().putBoolean("verbosedebug", enabled).apply();
-    }
 
-    public boolean getDebugState() {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        if(!prefs.contains("verbosedebug")) {
-            prefs.edit().putBoolean("verbosedebug", true).apply();
-            return true;
-        }
-
-        return prefs.getBoolean("verbosedebug", true);
+    public void handleCodeToSnack(A_CODE code, String extraIfSucceeded) {
+        Snackbar.make(findViewById(android.R.id.content),
+                A_CODE.isSuccessful(code) ?
+                        Str.combine(getString(R.string.msg_task_finished_command), TextUtils.isEmpty(extraIfSucceeded) ? "" :  " >> " + extraIfSucceeded) :
+                        Str.combine(getString(R.string.msg_task_failure), " >> " + code.name(), false) , Snackbar.LENGTH_LONG).show();
     }
 
     @Override
@@ -461,7 +445,7 @@ public class ActivityMain extends ActivityBase {
                 executor.submit(new Runnable() {
                     @Override
                     public void run() {
-                        XLuaCall.putSetting(ActivityMain.this, "show", set.name());
+                        //XLuaCall.putSetting(ActivityMain.this, "show", set.name());
                     }
                 });
                 return true;
@@ -483,10 +467,13 @@ public class ActivityMain extends ActivityBase {
     private void menuCPU() { startActivity(new Intent(this, ActivityCpu.class)); }
     private void menuConfig() { startActivity(new Intent(this, ActivityConfig.class)); }
     private void menuSettings() {
-        Intent settingIntent = new Intent(this, ActivitySettings.class);
-        settingIntent.putExtra("packageName", UserIdentityPacket.GLOBAL_NAMESPACE);
-        startActivity(settingIntent);
+        //Intent settingIntent = new Intent(this, ActivitySettings.class);
+        //settingIntent.putExtra("packageName", UserIdentityPacket.GLOBAL_NAMESPACE);
+        //startActivity(settingIntent);
         //startActivity(new Intent(this, ActivitySettings.class));
+        Intent settingIntent = new Intent(this, SettingsExActivity.class);
+        settingIntent.putExtra(UserClientAppContext.FIELD_APP_PACKAGE_NAME,  UserClientAppContext.GLOBAL_NAME_SPACE);
+        startActivity(settingIntent);
     }
 
 

@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import eu.faircode.xlua.XDatabase;
+import eu.faircode.xlua.XDatabaseOld;
 import eu.faircode.xlua.api.XResult;
 import eu.faircode.xlua.api.xmock.database.MockPropManager;
 import eu.faircode.xlua.api.properties.MockPropMap;
@@ -39,13 +39,14 @@ public class MockPropProvider {
         return value;
     }*/
 
-    public static Collection<MockPropMap> getMockPropMaps(Context context, XDatabase db) {
+    public static Collection<MockPropMap> getMockPropMaps(Context context, XDatabaseOld db) {
         initCache(context, db);
         Log.i(TAG, "mapped properties size=" + mappedProperties.size());
         return mappedProperties.values();
     }
 
-    public static XResult putMockPropMap(Context context, XDatabase db, MockPropPacket packet) {
+    public static XResult putMockPropMap(Context context, XDatabaseOld db, MockPropPacket packet) {
+        //Ew wtf is this cancer
         initCache(context, db);
         Log.i(TAG, "Before Mapped Properties=" + mappedProperties.size());
         //packet.resolveUserID();
@@ -56,8 +57,8 @@ public class MockPropProvider {
         return res;
     }
 
-    public static Collection<MockPropSetting> getSettingsForPackage(Context context, XDatabase db, int user, String packageName, boolean getAll) { return getSettingsForPackage(context, db, MockPropPacket.createQueryRequest(user, packageName, getAll));  }
-    public static Collection<MockPropSetting> getSettingsForPackage(Context context, XDatabase db, MockPropPacket packet) {
+    public static Collection<MockPropSetting> getSettingsForPackage(Context context, XDatabaseOld db, int user, String packageName, boolean getAll) { return getSettingsForPackage(context, db, MockPropPacket.createQueryRequest(user, packageName, getAll));  }
+    public static Collection<MockPropSetting> getSettingsForPackage(Context context, XDatabaseOld db, MockPropPacket packet) {
         Log.i(TAG, "Entering [getSettingsForPackage] packet=" + packet);
         int user = packet.getUser();
         String packageName = packet.getCategory();
@@ -91,7 +92,7 @@ public class MockPropProvider {
         return allSettings.values();
     }
 
-    public static void initCache(Context context, XDatabase db) {
+    public static void initCache(Context context, XDatabaseOld db) {
         if (!CollectionUtil.isValid(mappedProperties)) {
             synchronized (lock) {
                 if (!CollectionUtil.isValid(mappedProperties)) {

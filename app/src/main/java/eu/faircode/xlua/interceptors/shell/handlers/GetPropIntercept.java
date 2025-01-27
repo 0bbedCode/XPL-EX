@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import eu.faircode.xlua.BuildConfig;
-import eu.faircode.xlua.Str;
+import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.api.properties.MockPropSetting;
 import eu.faircode.xlua.api.xstandard.interfaces.ICommandIntercept;
 import eu.faircode.xlua.interceptors.UserContextMaps;
@@ -33,7 +33,7 @@ public class GetPropIntercept extends CommandInterceptor implements ICommandInte
     }
 
     @SuppressWarnings("unused")
-    public GetPropIntercept() { this.command = "getprop"; }
+    public GetPropIntercept() { this.command = "getprop"; this.setting = GETPROP_INTERCEPT_SETTING; }
 
     @Override
     public boolean interceptCommand(ShellInterception result) {
@@ -55,7 +55,6 @@ public class GetPropIntercept extends CommandInterceptor implements ICommandInte
                     boolean hasGrep = after.contains("grep");
                     List<String> parts = StringUtil.breakStringExtreme(after, true, true, ALLOWED_CHARS);
                     List<String> allowed = CollectionUtil.getVerifiedStrings(parts, false, ShellUtils.USELESS_COMMANDS);
-
                     if(BuildConfig.DEBUG)
                         Log.i(TAG, "Command Data after cleaning=" + allowed + "  command=" + this.command);
 

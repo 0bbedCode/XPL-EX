@@ -74,7 +74,7 @@ public class ReceiverPackage extends BroadcastReceiver {
 
                         Notification.Builder builder = new Notification.Builder(ctx);
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                            builder.setChannelId(XGlobals.cChannelName);
+                            builder.setChannelId(UberCore888.cChannelName);
                         builder.setSmallIcon(android.R.drawable.ic_dialog_alert);
                         builder.setContentTitle(resources.getString(R.string.msg_review_settings));
                         builder.setContentText(pm.getApplicationLabel(pm.getApplicationInfo(packageName, 0)));

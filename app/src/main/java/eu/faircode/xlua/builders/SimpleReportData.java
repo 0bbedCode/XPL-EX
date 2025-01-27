@@ -12,7 +12,7 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-import eu.faircode.xlua.Str;
+import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.api.xstandard.interfaces.IJsonSerial;
 import eu.faircode.xlua.builders.objects.Bundler;
 import eu.faircode.xlua.builders.objects.Contenter;

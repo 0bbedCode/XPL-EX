@@ -5,9 +5,43 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import eu.faircode.xlua.x.xlua.interfaces.IJsonType;
+
 public class JSONUtil {
 
     private static final String TAG = "XLua.JSONUtil";
+
+
+    //@Override
+    //public void fromJSONObject(JSONObject obj) throws JSONException
+
+    public static String objectToString(JSONObject o) {
+        try {
+            return o.toString();
+        }catch (Exception ignored) { }
+        return null;
+    }
+
+    public static JSONObject toObject(IJsonType o) {
+        try {
+            return o.toJSONObject();
+        }catch (Exception ignore) { }
+        return null;
+    }
+
+    public static void fromObject(JSONObject obj, IJsonType o) {
+        try {
+            if(o != null && obj != null)
+                o.fromJSONObject(obj);
+        }catch (Throwable ignore) { }
+    }
+
+    public static JSONObject objectFromString(String s) {
+        try {
+            return new JSONObject(s);
+        }catch (Throwable ignore) { }
+        return null;
+    }
 
     public static String getString(JSONObject obj, String jsonFieldName) { return getString(obj, jsonFieldName, null); }
     public static String getString(JSONObject obj, String jsonFieldName, String defaultValue) {

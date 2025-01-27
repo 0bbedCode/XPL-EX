@@ -3,12 +3,13 @@ package eu.faircode.xlua.random.randomizers;
 import androidx.annotation.NonNull;
 
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.random.IRandomizer;
+
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
-public class RandomMemory implements IRandomizer {
+public class RandomMemory implements IRandomizerOld {
     @Override
     public boolean isSetting(String setting) {
         return setting.equalsIgnoreCase(getSettingName()) || setting.equalsIgnoreCase("memory.total");
@@ -31,7 +32,7 @@ public class RandomMemory implements IRandomizer {
     public String generateString() { return Integer.toString(generateInteger()); }
 
     @Override
-    public int generateInteger() { return ThreadLocalRandom.current().nextInt(1, 999); }
+    public int generateInteger() { return RandomGenerator.nextInt(1, 999); }
 
     @Override
     public List<ISpinnerElement> getOptions() { return null; }

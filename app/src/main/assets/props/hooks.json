@@ -82,5 +82,23 @@
     "usage":true,
     "notify":false,
     "luaScript": "@id_build_prop"
+  },
+
+  {
+    "builtin": true,
+    "collection": "PrivacyEx",
+    "group": "Intercept.Properties",
+    "name": "Filter/Shell/getprop",
+    "author": "OBC",
+    "className": "Intercept.Shell",
+    "methodName": "getprop",
+    "parameterTypes": [ ],
+    "minSdk": 1,
+    "maxSdk": 999,
+    "version": 1,
+    "enabled":true,
+    "optional":true,
+    "usage":true,
+    "luaScript": ""
   }
 ]

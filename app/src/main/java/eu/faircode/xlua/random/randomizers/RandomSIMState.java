@@ -4,14 +4,14 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.random.IRandomizer;
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.DataNameValueElement;
 import eu.faircode.xlua.random.elements.DataNullElement;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
-public class RandomSIMState implements IRandomizer {
+public class RandomSIMState implements IRandomizerOld {
     private final List<ISpinnerElement> dataStates = new ArrayList<>();
     public RandomSIMState() {
         dataStates.add(DataNullElement.EMPTY_ELEMENT);
@@ -45,7 +45,7 @@ public class RandomSIMState implements IRandomizer {
 
     @Override
     public String generateString() {
-        ISpinnerElement el = dataStates.get(ThreadLocalRandom.current().nextInt(1, dataStates.size()));
+        ISpinnerElement el = dataStates.get(RandomGenerator.nextInt(1, dataStates.size()));
         return el.getValue();
     }
 

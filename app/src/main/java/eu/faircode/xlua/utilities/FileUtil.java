@@ -15,12 +15,27 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.logger.XLog;
 
 
 public class FileUtil {
     private static final String TAG = "XLua.FileUtil";
-    private static final List<String> DEVICE_FOLDERS = Arrays.asList("/sys/class/fingerprint/fingerprint/name", "/sys/bus/spi/drivers", "/sys/class/sensors", "/proc/bus/input", "/proc/scsi", "/sys/class/block", "/sys/block/sda/device/model", "/vendor/etc", "/sys/project_info", "/sys/android_camera", "/sys/class/camera", "/sys/bus/platform/drivers", "/sys/devices/soc", "/sys/class/fingerprint");
+    private static final List<String> DEVICE_FOLDERS = Arrays.asList(
+            "/sys/class/fingerprint/fingerprint/name",
+            "/sys/bus/spi/drivers",
+            "/sys/class/sensors",
+            "/proc/bus/input",
+            "/proc/scsi",
+            "/sys/class/block",
+            "/sys/block/sda/device/model",
+            "/vendor/etc",
+            "/sys/project_info",
+            "/sys/android_camera",
+            "/sys/class/camera",
+            "/sys/bus/platform/drivers",
+            "/sys/devices/soc",
+            "/sys/class/fingerprint");
 
     public static int getDescriptorNumber(FileDescriptor fd) {
         try {
@@ -35,7 +50,9 @@ public class FileUtil {
 
     //       String[] ss = new String[] {"fpc1020", "fpc_fpc1020", "fpc1020", "fpc_fpc1020", "fpc1020", "fp_fpc1020", "fpc1020", "fpc,fpc1020", "fpc1020", "fp_fpc1155", "fpc1145", "fpc1145","fpc1145_device", "fingerprint_fpc", "goodix_fp",  "goodix_fp", "0.goodix_fp", "fpc1145",  "0.fpc1145", "fpc1020",  "fingerprint", "silead_fp", "0.silead_fp", "cdfinger_fp",  "silead_fp", "goodix_fp", "goodix_fingerprint", "cdfinger_fp", "cdfinger_fingerprint", "goodix_fp", "goodix,fingerprint", "fpc1020","fingerprint_fpc", "goodix_fp","fingerprint_goodix", "qbt1000","qbt2000",  "elan",  "elan","elan_elan_fp", "esfp0", "egistec_fp" };
     public static boolean isDeviceDriver(String filePath) {
+        filePath = filePath.toLowerCase();
         if(filePath.contains("sys/devices/system/cpu/")) return false;
+        //if(filePath.contains("miui") || filePath.contains("keychain") || filePath.contains("ct_") || filePath.contains("comm")) return true;
         for(String d : DEVICE_FOLDERS) {
             if(filePath.startsWith(d))
                 return true;
@@ -77,6 +94,8 @@ public class FileUtil {
     }
 
     public static FileDescriptor generateFakeFileDescriptor(String contents) {
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Creating Fake File Descriptor with Contents=" + contents);
         File mockFile = generateTempFakeFile(contents);
         if(mockFile == null)
             return null;
@@ -89,8 +108,9 @@ public class FileUtil {
         }
     }
 
-
     public static File generateTempFakeFile(String contents) {
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Creating Fake File with Contents=" + contents);
         FileOutputStream fos = null;
         OutputStreamWriter osw = null;
         try {

@@ -2,14 +2,13 @@ package eu.faircode.xlua.api.xmock.call;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 
 import eu.faircode.xlua.api.XProxyContent;
 import eu.faircode.xlua.api.XResult;
 import eu.faircode.xlua.api.settings.LuaSettingPacket;
 import eu.faircode.xlua.api.xmock.database.LuaSettingsManager;
 import eu.faircode.xlua.api.xstandard.CallCommandHandler;
-import eu.faircode.xlua.api.xstandard.command.CallPacket;
+import eu.faircode.xlua.api.xstandard.command.CallPacket_old;
 import eu.faircode.xlua.logger.XLog;
 
 public class PutMockSettingCommand extends CallCommandHandler {
@@ -19,7 +18,7 @@ public class PutMockSettingCommand extends CallCommandHandler {
     }
 
     @Override
-    public Bundle handle(CallPacket commandData) throws Throwable {
+    public Bundle handle(CallPacket_old commandData) throws Throwable {
         LuaSettingPacket packet = commandData.readExtrasAs(LuaSettingPacket.class);
         if(packet == null) return XResult.create().setMethodName("putMockSetting").setFailed("Setting Packet is NULL").toBundle();
         packet.resolveUserID();

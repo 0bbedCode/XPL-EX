@@ -8,6 +8,10 @@ import java.util.Map;
 import eu.faircode.xlua.random.randomizers.NARandomizer;
 import eu.faircode.xlua.random.randomizers.Random3DigitNumber;
 import eu.faircode.xlua.random.randomizers.Random6DigitNumber;
+import eu.faircode.xlua.random.randomizers.RandomNetAddress6;
+import eu.faircode.xlua.random.randomizers.RandomNetGateway;
+//import eu.faircode.xlua.random.randomizers.RandomNetProvider;
+import eu.faircode.xlua.random.randomizers.RandomOAIDMiuiHyper;
 import eu.faircode.xlua.random.randomizers.RandomUUID;
 import eu.faircode.xlua.random.randomizers.RandomAlphaNumeric;
 import eu.faircode.xlua.random.randomizers.RandomAndroidID;
@@ -62,31 +66,37 @@ import eu.faircode.xlua.random.randomizers.RandomSubscriberID;
 import eu.faircode.xlua.random.randomizers.RandomUserAgentManager;
 import eu.faircode.xlua.random.randomizers.RandomVoiceMailID;
 import eu.faircode.xlua.random.randomizers.RandomDateEpoch;
-import eu.faircode.xlua.random.zone.RandomZone;
+//import eu.faircode.xlua.random.randomizers.RandomZoneParent;
+import eu.faircode.xlua.random.zone.RandomZoneDep;
+import eu.faircode.xlua.x.hook.interceptors.hardware.camera.RandomCameraCount;
+
 
 public class GlobalRandoms {
     private static final Object lock = new Object();
-    public static Map<String, IRandomizer> randomizers = new Hashtable<>();
+    public static Map<String, IRandomizerOld> randomizers = new Hashtable<>();
 
-    public static void putRandomizer(IRandomizer randomizer) { synchronized (lock) { randomizers.put(randomizer.getSettingName(), randomizer); } }
-    public static void putRandomizers(List<IRandomizer> rs) {
+    public static void putRandomizer(IRandomizerOld randomizer) { synchronized (lock) { randomizers.put(randomizer.getSettingName(), randomizer); } }
+    public static void putRandomizers(List<IRandomizerOld> rs) {
         synchronized (lock) {
-            for(IRandomizer r : rs)
+            for(IRandomizerOld r : rs)
                 randomizers.put(r.getSettingName(), r);
         }
     }
 
-    public static List<IRandomizer> getRandomizers() {
+    public static List<IRandomizerOld> getRandomizers() {
         synchronized (lock) {
             if(randomizers.isEmpty()) initRandomizers();
-            List<IRandomizer> localCopy = new ArrayList<>(randomizers.values());
+            List<IRandomizerOld> localCopy = new ArrayList<>(randomizers.values());
             localCopy.add(new RandomUserAgentManager());
+            //localCopy.add(new RandomNetProvider());
+            //localCopy.add(new RandomZoneParent());
             return localCopy;
         }
     }
 
     public static void initRandomizers() {
         putRandomizer(new NARandomizer());
+        putRandomizer(new RandomOAIDMiuiHyper());
         putRandomizer(new RandomAndroidID());
         putRandomizer(new RandomDRM());
         putRandomizer(new RandomGSF());
@@ -100,8 +110,14 @@ public class GlobalRandoms {
         putRandomizer(new RandomMemory());
         putRandomizer(new RandomDNS());
         putRandomizer(new RandomNetAddress());
+
+        for(IRandomizerOld r : RandomNetAddress6.INSTANCES)
+            putRandomizer(r);
+
+        putRandomizer(new RandomNetGateway());
         putRandomizer(new RandomHostName());
-        putRandomizer(new RandomHostName());
+        //putRandomizer(new RandomNetProvider());
+
         putRandomizer(new RandomSerial());
         putRandomizer(new RandomCarrierName());
         putRandomizer(new RandomMSIN());
@@ -141,8 +157,23 @@ public class GlobalRandoms {
         putRandomizer(new RandomKernelSysName());
         putRandomizer(new RandomKernelVersion());
         putRandomizer(new Random6DigitNumber());
+
+        //
+        //
+        //
+
+        //putRandomizer(new RandomGpsModelName());
+        //putRandomizer(new RandomGpsModelYear());
+        //putRandomizer(new RandomCameraCount());
+
+        //
+        //
+        //
+
+
+
         //Collection Sort these ??????
-        putRandomizers(RandomZone.RANDOMIZERS);
+        putRandomizers(RandomZoneDep.RANDOMIZERS);
         putRandomizer(new RandomFirebaseId());
 
         putRandomizer(new RandomStringOne());
@@ -150,10 +181,10 @@ public class GlobalRandoms {
 
     public static boolean isRandomName(String name) { return "%random%".equalsIgnoreCase(name) || "%randomize%".equalsIgnoreCase(name); }
     public static void bindRandomToSettings(Map<String, String> settings) {
-        List<IRandomizer> randomizers = getRandomizers();
+        List<IRandomizerOld> randomizers = getRandomizers();
         for(Map.Entry<String, String> s : settings.entrySet()) {
             if(isRandomName(s.getValue())) {
-                for(IRandomizer r : randomizers) {
+                for(IRandomizerOld r : randomizers) {
                     if(r.isSetting(s.getKey())) {
                         String nv = r.generateString();
                         settings.put(s.getKey(), nv);

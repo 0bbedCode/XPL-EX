@@ -12,21 +12,21 @@ import eu.faircode.xlua.api.xstandard.QueryCommandHandler;
 public class TryQueryWrapper implements Callable<Cursor> {
     private static final String TAG = "XLua.TryQueryWrapper";
 
-    private QueryPacket packet;
+    private QueryPacket_old packet;
     private String packageName;
     private QueryCommandHandler handle;
 
     private boolean isRunning = false;
     private Throwable exception;
 
-    public static TryQueryWrapper create(QueryPacket packet, QueryCommandHandler handler) { return new TryQueryWrapper(packet, handler); }
+    public static TryQueryWrapper create(QueryPacket_old packet, QueryCommandHandler handler) { return new TryQueryWrapper(packet, handler); }
 
-    public TryQueryWrapper(QueryPacket packet, QueryCommandHandler handle) {
+    public TryQueryWrapper(QueryPacket_old packet, QueryCommandHandler handle) {
         this.packet = packet;
         this.handle = handle;
     }
 
-    public TryQueryWrapper(QueryPacket packet, String packageName, QueryCommandHandler handle) {
+    public TryQueryWrapper(QueryPacket_old packet, String packageName, QueryCommandHandler handle) {
         this.packet = packet;
         this.packageName = packageName;
         this.handle = handle;

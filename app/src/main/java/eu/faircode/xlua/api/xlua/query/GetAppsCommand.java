@@ -6,10 +6,9 @@ import android.os.Binder;
 
 import java.util.Map;
 
-import eu.faircode.xlua.XUtil;
 import eu.faircode.xlua.api.XProxyContent;
 import eu.faircode.xlua.api.xstandard.QueryCommandHandler;
-import eu.faircode.xlua.api.xstandard.command.QueryPacket;
+import eu.faircode.xlua.api.xstandard.command.QueryPacket_old;
 import eu.faircode.xlua.api.xlua.provider.XLuaAppProvider;
 import eu.faircode.xlua.utilities.CursorUtil;
 
@@ -27,7 +26,7 @@ public class GetAppsCommand extends QueryCommandHandler {
     }
 
     @Override
-    public Cursor handle(QueryPacket commandData) throws Throwable {
+    public Cursor handle(QueryPacket_old commandData) throws Throwable {
         Map<String, XLuaApp> apps =
                 XLuaAppProvider.getApps(
                         commandData.getContext(),

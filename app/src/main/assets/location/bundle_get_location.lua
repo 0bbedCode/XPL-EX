@@ -1,13 +1,14 @@
 function after(hook, param)
     local result = param:getResult()
-    --if param:getException() ~= nil or result == nil then
-    --    return false
-    --end
-    if result == nil then
+    if param:getException() ~= nil or result == nil then
         return false
     end
 
     local key = param:getArgument(0)
+    if key == nil then
+        return false
+    end
+
     if key ~= 'location' then
         return false
     end

@@ -7,6 +7,7 @@ import java.io.FileDescriptor;
 import java.util.UUID;
 
 import eu.faircode.xlua.BuildConfig;
+import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.api.cpu.MockCpu;
 
 //Make this more global , Take in contents then do work
@@ -14,16 +15,18 @@ import eu.faircode.xlua.api.cpu.MockCpu;
 public class MockFileUtil {
     private static final String TAG = "XLua.XMockCpuUtils";
 
-    public static FileDescriptor generateFakeBootUUIDDescriptor(String settingUuid) {
-        if(BuildConfig.DEBUG)
-            Log.i(TAG, "MOCK FileDescriptor Boot UUID");
+    public static File generateFakeInet6File(String contents) {
+        if(DebugUtil.isDebug()) Log.d(TAG, "[MOCK FILE] For Inet6 File");
+        return FileUtil.generateTempFakeFile(contents);
+    }
 
+    public static FileDescriptor generateFakeBootUUIDDescriptor(String settingUuid) {
+        if(DebugUtil.isDebug()) Log.d(TAG, "MOCK FileDescriptor Boot UUID: " + settingUuid);
         return FileUtil.generateFakeFileDescriptor(settingUuid == null ? UUID.randomUUID().toString() : settingUuid);
     }
 
-    //unique.boot.id
     public static File generateFakeBootUUIDFile(String settingUuid) {
-        if(BuildConfig.DEBUG) Log.i(TAG, "MOCK FileDescriptor Boot UUID File");
+        if(DebugUtil.isDebug()) Log.d(TAG, "MOCK File Boot UUID File: " + settingUuid);
         return FileUtil.generateTempFakeFile(settingUuid == null ? UUID.randomUUID().toString() : settingUuid);
     }
 

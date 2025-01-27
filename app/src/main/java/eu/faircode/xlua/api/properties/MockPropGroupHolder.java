@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.faircode.xlua.XDatabase;
+import eu.faircode.xlua.XDatabaseOld;
 import eu.faircode.xlua.api.settings.LuaSettingExtended;
 import eu.faircode.xlua.api.xstandard.database.SqlQuerySnake;
 import eu.faircode.xlua.api.xstandard.interfaces.IDBQuery;
@@ -131,7 +131,7 @@ public class MockPropGroupHolder implements IJsonSerial, IDBQuery {
     public String toJSON() throws JSONException { return toJSONObject().toString(2); }
 
     @Override
-    public SqlQuerySnake createQuery(XDatabase db) {
+    public SqlQuerySnake createQuery(XDatabaseOld db) {
         return null;
     }
 

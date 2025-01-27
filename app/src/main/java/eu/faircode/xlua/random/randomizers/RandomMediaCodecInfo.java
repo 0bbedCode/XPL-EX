@@ -2,7 +2,9 @@ package eu.faircode.xlua.random.randomizers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+
+
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
 public class RandomMediaCodecInfo {
     private static final String[] PREFIXES = {"OMX.", "c2."};
@@ -27,10 +29,10 @@ public class RandomMediaCodecInfo {
     }
 
     public static String[] generateSupportedTypes() {
-        int numTypes = ThreadLocalRandom.current().nextInt(1, 4); // Generate 1 to 3 types
+        int numTypes = RandomGenerator.nextInt(1, 4); // Generate 1 to 3 types
         List<String> types = new ArrayList<>();
         for (int i = 0; i < numTypes; i++) {
-            if (ThreadLocalRandom.current().nextBoolean()) {
+            if (RandomGenerator.nextBoolean()) {
                 types.add(getRandomElement(VIDEO_MIME_TYPES));
             } else {
                 types.add(getRandomElement(AUDIO_MIME_TYPES));
@@ -41,6 +43,6 @@ public class RandomMediaCodecInfo {
     }
 
     private static String getRandomElement(String[] array) {
-        return array[ThreadLocalRandom.current().nextInt(array.length)];
+        return array[RandomGenerator.nextInt(array.length)];
     }
 }

@@ -2,32 +2,14 @@ package eu.faircode.xlua.interceptors.shell.util;
 
 import android.util.Log;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.BuildConfig;
-import eu.faircode.xlua.utilities.StreamUtil;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
+import eu.faircode.xlua.x.hook.interceptors.zone.RandomDateHelper;
 
 public class CommandOutputHelper {
     private static final String TAG = "XLua.CommandOutputHelper";
-
-    public static String readProcessOutput(Process process) {
-        StringBuilder sb = new StringBuilder();
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line).append("\n");
-            }
-        }catch (Exception ignored) { }
-        finally { StreamUtil.close(reader); }
-        return sb.toString();
-    }
 
     public static class FieldValuePointer {
         public boolean lastWasTime = false;
@@ -72,45 +54,46 @@ public class CommandOutputHelper {
             //int androidReleaseYear = 2008; // First Android release
             //2008-12-31 09:00:00.000000000
             //1969-12-31 18:00:00.000000000 (default)
-            ThreadLocalRandom rand = ThreadLocalRandom.current();
             int currentYear = RandomDateHelper.getCurrentYear();
-            int birthYear = rand.nextInt(2009, currentYear + 1);
-            int modifyYear = rand.nextInt(birthYear, currentYear + 1);
+            int birthYear = RandomGenerator.nextInt(2009, currentYear + 1);
+            int modifyYear = RandomGenerator.nextInt(birthYear, currentYear + 1);
             mDates.put("birth", birthYear);
             mDates.put("create", birthYear);
             mDates.put("modify", modifyYear);
-            mDates.put("change", rand.nextInt(modifyYear, currentYear + 1));
-            mDates.put("access", rand.nextInt(modifyYear, currentYear + 1));
+            mDates.put("change", RandomGenerator.nextInt(modifyYear, currentYear + 1));
+            mDates.put("access", RandomGenerator.nextInt(modifyYear, currentYear + 1));
         }
 
         public int getYearForField() {
             return field == null ?
-                    ThreadLocalRandom.current().nextInt(1969, RandomDateHelper.getCurrentYear() + 1) :  mDates.get(field.toLowerCase());
+                    RandomGenerator.nextInt(1969, RandomDateHelper.getCurrentYear() + 1) :  mDates.get(field.toLowerCase());
         }
 
         public void ensureField(String fieldName) {
             if(fieldName != null && fieldName.length() > 3) {
                 String fld = fieldName.trim().toLowerCase();
-                fld = fld.endsWith(":") && fld.length() > 3 ? fld.substring(0, fld.length() - 1) : fld;
+                //fld = fld.endsWith(":") && fld.length() > 3 ? fld.substring(0, fld.length() - 1) : fld;
+
+
                 switch(fld) {
-                    case "inode":
+                    case "inode:":
                         lastWasInode = true;
                         mExpectingValue = true;
                         field = "Inode";
                         break;
-                    case "device":
+                    case "device:":
                         lastWasDevice = true;
                         mExpectingValue = true;
                         field = "Device";
                         break;
-                    case "access":
-                    case "modify":
-                    case "change":
-                    case "birth":
-                    case "create":
+                    case "access:":
+                    case "modify:":
+                    case "change:":
+                    case "birth:":
+                    case "create:":
                         lastWasTime = true;
                         mExpectingValue = true;
-                        field = fld.substring(0, 1).toUpperCase() + fld.substring(1);
+                        field = fld.substring(0, 1).toUpperCase() + fld.substring(1).replaceAll(":", "");
                         break;
                     default:
                         reset();
@@ -130,9 +113,10 @@ public class CommandOutputHelper {
     }
 
     public static String randomizeStatOutput(String input) {
-        if(BuildConfig.DEBUG) {
-            Log.w(TAG, input);
-        }
+        //if(BuildConfig.DEBUG) {
+        //    Log.w(TAG, input);
+        //}
+        Log.w(TAG, input);
 
         StringBuilder currentChunk = new StringBuilder();
         StringBuilder full = new StringBuilder();
@@ -235,7 +219,7 @@ public class CommandOutputHelper {
                                     lowBuild.append(RandomDateHelper.generateRandomSeconds());
                                     lowBuild.append(".");                   //56.x
                                     if(decimalEnd.length() > 2) {
-                                        boolean allZeros = ThreadLocalRandom.current().nextBoolean();
+                                        boolean allZeros = RandomGenerator.nextBoolean();
                                         lowBuild.append(allZeros ? "000000000" : RandomDateHelper.generateRandomNanoseconds());
                                     } else {
                                         lowBuild.append(RandomDateHelper.generateRandomHundredths());
@@ -284,7 +268,7 @@ public class CommandOutputHelper {
     }
 
     private static String generateNumber(int low, int high) {
-        int num = ThreadLocalRandom.current().nextInt(low, high);
+        int num = RandomGenerator.nextInt(low, high);
         if(num <= 9) {
             return "0" + String.valueOf(num);
         } else {
@@ -294,9 +278,9 @@ public class CommandOutputHelper {
 
     private static String generateDeviceId() {
         // Generate major number (1-255)
-        int majorNumber = ThreadLocalRandom.current().nextInt(1, 256);
+        int majorNumber = RandomGenerator.nextInt(1, 256);
         // Generate minor number (0-255)
-        int minorNumber = ThreadLocalRandom.current().nextInt(256);
+        int minorNumber = RandomGenerator.nextInt(256);
         // Combine major and minor numbers
         int combinedNumber = (majorNumber << 8) | minorNumber;
         // Format the output

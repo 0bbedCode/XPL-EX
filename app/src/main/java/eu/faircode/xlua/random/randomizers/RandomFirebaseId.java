@@ -3,13 +3,13 @@ package eu.faircode.xlua.random.randomizers;
 import androidx.annotation.NonNull;
 
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.random.IRandomizer;
+
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
 import eu.faircode.xlua.utilities.RandomStringGenerator;
 
-public class RandomFirebaseId implements IRandomizer {
+public class RandomFirebaseId implements IRandomizerOld {
     @Override
     public boolean isSetting(String setting) { return getSettingName().equalsIgnoreCase(setting); }
 

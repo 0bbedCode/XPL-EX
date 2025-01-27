@@ -7,8 +7,8 @@ import android.util.Log;
 import java.util.Collection;
 import java.util.List;
 
-import eu.faircode.xlua.XDatabase;
-import eu.faircode.xlua.XGlobals;
+import eu.faircode.xlua.XDatabaseOld;
+import eu.faircode.xlua.UberCore888;
 
 import eu.faircode.xlua.XUtil;
 import eu.faircode.xlua.api.XResult;
@@ -25,11 +25,11 @@ import eu.faircode.xlua.api.xstandard.database.SqlQuerySnake;
 public class LuaAppManager {
     private static final String TAG = "XLua.XAppDatabase";
 
-    public static boolean initAppAssignments(Context context, XDatabase db, Integer user, String category, Boolean kill) { return initAppAssignments(context, db, LuaSimplePacket.create(user, category, kill)); }
-    public static boolean initAppAssignments(Context context, XDatabase db, LuaSimplePacket packet) {
+    public static boolean initAppAssignments(Context context, XDatabaseOld db, Integer user, String category, Boolean kill) { return initAppAssignments(context, db, LuaSimplePacket.create(user, category, kill)); }
+    public static boolean initAppAssignments(Context context, XDatabaseOld db, LuaSimplePacket packet) {
         packet.resolveUserID();
         List<String> collection = XLuaHookProvider.getCollections(context, db, packet.getUser());
-        List<String> hookIds = XGlobals.getHookIds(packet.getCategory(), collection);
+        List<String> hookIds = UberCore888.getHookIds(packet.getCategory(), collection);
         XLuaAssignmentDataHelper assignmentData = new XLuaAssignmentDataHelper(packet.getCategory(), packet.getOriginalUser());
 
         try {
@@ -55,8 +55,8 @@ public class LuaAppManager {
         return true;
     }
 
-    public static boolean clearApp(Context context, XDatabase db, Integer user, String category, Boolean kill, Boolean deleteAllData) { return clearApp(context, db, LuaSimplePacket.create(user, category, kill, deleteAllData)); }
-    public static boolean clearApp(Context context, XDatabase db, LuaSimplePacket packet)  {
+    public static boolean clearApp(Context context, XDatabaseOld db, Integer user, String category, Boolean kill, Boolean deleteAllData) { return clearApp(context, db, LuaSimplePacket.create(user, category, kill, deleteAllData)); }
+    public static boolean clearApp(Context context, XDatabaseOld db, LuaSimplePacket packet)  {
         packet.resolveUserID();
         if(!DatabaseHelp.deleteItem(packet.createUserQuery(db, LuaAssignment.Table.name)))
             return false;
@@ -71,7 +71,7 @@ public class LuaAppManager {
         return true;
     }
 
-    public static XResult clearSettings(String packageName, XDatabase db) {
+    public static XResult clearSettings(String packageName, XDatabaseOld db) {
         Collection<LuaSettingExtended> settings = new SqlQuerySnake(db, LuaSetting.Table.NAME)
                 .whereColumn(LuaSetting.Table.FIELD_CATEGORY, packageName)
                 .queryAll(LuaSettingExtended.class, true);
@@ -89,7 +89,7 @@ public class LuaAppManager {
         return XResult.create().setSucceeded();
     }
 
-    public static boolean clearData(int userid, XDatabase db)  {
+    public static boolean clearData(int userid, XDatabaseOld db)  {
         Log.i(TAG, "Clearing data user=" + userid);
 
         boolean result;

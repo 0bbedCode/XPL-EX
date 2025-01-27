@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 import eu.faircode.xlua.api.XProxyContent;
 import eu.faircode.xlua.api.xstandard.CallCommandHandler;
-import eu.faircode.xlua.api.xstandard.command.CallPacket;
+import eu.faircode.xlua.api.xstandard.command.CallPacket_old;
 import eu.faircode.xlua.api.cpu.MockCpu;
 import eu.faircode.xlua.api.xmock.provider.MockCpuProvider;
 import eu.faircode.xlua.utilities.BundleUtil;
@@ -18,7 +18,7 @@ public class GetMockCpuCommand extends CallCommandHandler {
     }
 
     @Override
-    public Bundle handle(CallPacket commandData) throws Throwable {
+    public Bundle handle(CallPacket_old commandData) throws Throwable {
         MockCpu packet = commandData.readExtrasAs(MockCpu.class);
         if(packet.getName() == null) {
             return BundleUtil.createFromISerial(

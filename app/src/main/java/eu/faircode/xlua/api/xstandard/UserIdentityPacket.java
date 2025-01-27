@@ -14,7 +14,8 @@ import org.json.JSONObject;
 import java.util.List;
 
 import eu.faircode.xlua.AppGeneric;
-import eu.faircode.xlua.XDatabase;
+import eu.faircode.xlua.DebugUtil;
+import eu.faircode.xlua.XDatabaseOld;
 import eu.faircode.xlua.XUtil;
 import eu.faircode.xlua.api.hook.assignment.LuaAssignment;
 import eu.faircode.xlua.api.xstandard.database.SqlQuerySnake;
@@ -72,7 +73,7 @@ public class UserIdentityPacket implements IJsonSerial, IUserPacket {
     public UserIdentityPacket setUseUserIdentity(boolean useUserIdentity) { this.useUserIdentity = useUserIdentity; return this; }
     public boolean getUseUserIdentity() { return this.useUserIdentity; }
 
-    public Boolean isKill() {  if(this.kill == null) return false; return this.kill; }
+    public Boolean isKill() {  return this.kill != null && this.kill; }
     public UserIdentityPacket setKill(Boolean kill) { if(kill != null) this.kill = kill; return this; }
 
     public Integer getCode() { if(this.code == null) return CODE_NULL_EMPTY;  return this.code; }
@@ -100,8 +101,8 @@ public class UserIdentityPacket implements IJsonSerial, IUserPacket {
     public String getKey() { return this.key; }
     public UserIdentityPacket setKey(String key) { if(key != null) this.key = key; return this; }
 
-    public SqlQuerySnake createUserQuery(XDatabase db, String table) { return table.equalsIgnoreCase(LuaAssignment.Table.name) ? createUserQuery(db, table, USER_QUERY_PACKET_TWO) : createUserQuery(db, table, USER_QUERY_PACKET_ONE); }
-    public SqlQuerySnake createUserQuery(XDatabase db, String table, int flags) {
+    public SqlQuerySnake createUserQuery(XDatabaseOld db, String table) { return table.equalsIgnoreCase(LuaAssignment.Table.name) ? createUserQuery(db, table, USER_QUERY_PACKET_TWO) : createUserQuery(db, table, USER_QUERY_PACKET_ONE); }
+    public SqlQuerySnake createUserQuery(XDatabaseOld db, String table, int flags) {
         if(flags == USER_QUERY_PACKET_TWO) {
             return SqlQuerySnake.create(db, table)
                     .whereColumn("package", getCategory())
@@ -111,7 +112,8 @@ public class UserIdentityPacket implements IJsonSerial, IUserPacket {
                     .create()
                     .whereColumn("user", getUser())
                     .whereColumn("category", getCategory());
-        } return null;
+        }
+        return null;
     }
 
     @Override
@@ -136,7 +138,9 @@ public class UserIdentityPacket implements IJsonSerial, IUserPacket {
     @Override
     public void readSelectionArgsFromQuery(String[] selection, int flags) {
         if(selection != null && selection.length > 0) {
-            Log.i("XLua.UserID", "entering read selection =" + selection.length + " flags=" + flags);
+            if(DebugUtil.isDebug())
+                Log.i("XLua.UserID", "entering read selection =" + selection.length + " flags=" + flags);
+
             if(flags == USER_QUERY_PACKET_ONE) {
                 this.user = StringUtil.toInteger(selection[0], GLOBAL_USER);
                 if(selection.length > 1) {
@@ -158,7 +162,9 @@ public class UserIdentityPacket implements IJsonSerial, IUserPacket {
     @Override
     public SqlQuerySnake generateSelectionArgsQuery(int flags) {
         ensureIdentification();
-        Log.i("XLua.UserID", "Entering Selection Args Generation: flags=" + flags + " tostring= " + this.toString());
+        if(DebugUtil.isDebug())
+            Log.i("XLua.UserID", "Entering Selection Args Generation: flags=" + flags + " tostring= " + this.toString());
+
         if(flags == USER_QUERY_PACKET_ONE) {
             return SqlQuerySnake.create()
                     .whereColumn("user", this.user)
@@ -206,7 +212,9 @@ public class UserIdentityPacket implements IJsonSerial, IUserPacket {
             if(this.code != null) b.putInt("code", getCode());
             if(this.kill != null) b.putBoolean("kill", isKill());
             if(this.key != null) b.putString("key", getKey());
-        } return b;
+        }
+
+        return b;
     }
 
     @Override

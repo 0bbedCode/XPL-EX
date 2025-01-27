@@ -6,7 +6,7 @@ import android.os.Bundle;
 import eu.faircode.xlua.api.XProxyContent;
 import eu.faircode.xlua.api.properties.MockPropMap;
 import eu.faircode.xlua.api.xstandard.CallCommandHandler;
-import eu.faircode.xlua.api.xstandard.command.CallPacket;
+import eu.faircode.xlua.api.xstandard.command.CallPacket_old;
 
 public class PutGroupStateCommand extends CallCommandHandler {
     public static PutGroupStateCommand create() { return new PutGroupStateCommand(); };
@@ -16,7 +16,7 @@ public class PutGroupStateCommand extends CallCommandHandler {
     }
 
     @Override
-    public Bundle handle(CallPacket commandData) throws Throwable {
+    public Bundle handle(CallPacket_old commandData) throws Throwable {
         /*MockPropMap packet = commandData.read(MockPropMap.class);
         return BundleUtil.createResultStatus(
                 XMockPropertiesProvider.setGroupState(commandData.getContext(), commandData.getDatabase(), packet));*/

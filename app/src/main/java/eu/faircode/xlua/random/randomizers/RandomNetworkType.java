@@ -4,14 +4,15 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.random.IRandomizer;
+
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.DataNullElement;
 import eu.faircode.xlua.random.elements.DataStringElement;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
-public class RandomNetworkType implements IRandomizer {
+public class RandomNetworkType implements IRandomizerOld {
     private final List<ISpinnerElement> dataStates = new ArrayList<>();
     public RandomNetworkType() {
         dataStates.add(DataNullElement.EMPTY_ELEMENT);
@@ -38,7 +39,7 @@ public class RandomNetworkType implements IRandomizer {
     }
 
     @Override
-    public String generateString() { return dataStates.get(ThreadLocalRandom.current().nextInt(1, dataStates.size())).getValue(); }
+    public String generateString() { return dataStates.get(RandomGenerator.nextInt(1, dataStates.size())).getValue(); }
 
     @Override
     public int generateInteger() { return 0; }

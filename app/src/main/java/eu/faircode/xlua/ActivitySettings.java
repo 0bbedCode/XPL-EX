@@ -34,7 +34,7 @@ public class ActivitySettings extends SettingsDialogCallbackActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        prepareMenuSearch(menu.findItem(R.id.menu_search_settings));
+        prepareMenuSearch(menu.findItem(R.id.menu_search_settings));    //Here
         return super.onPrepareOptionsMenu(menu);
     }
 

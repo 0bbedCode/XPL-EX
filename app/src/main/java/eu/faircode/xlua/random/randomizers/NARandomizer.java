@@ -4,14 +4,13 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-import eu.faircode.xlua.random.IRandomizer;
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
-import eu.faircode.xlua.utilities.RandomStringGenerator;
 
 //msg_na_randomizer
 
-public class NARandomizer implements IRandomizer {
-    public static boolean isNA(IRandomizer r) { return r.getID().equalsIgnoreCase("%n_a%"); }
+public class NARandomizer implements IRandomizerOld {
+    public static boolean isNA(IRandomizerOld r) { return r.getID().equalsIgnoreCase("%n_a%"); }
 
     @Override
     public boolean isSetting(String setting) { return setting.equalsIgnoreCase(getSettingName()); }

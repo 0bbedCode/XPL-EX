@@ -5,11 +5,11 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-import eu.faircode.xlua.random.IRandomizer;
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
 import eu.faircode.xlua.utilities.RandomStringGenerator;
 
-public class RandomSubscriberID implements IRandomizer {
+public class RandomSubscriberID implements IRandomizerOld {
     @Override
     public boolean isSetting(String setting) { return setting.equalsIgnoreCase(getSettingName()) || setting.equalsIgnoreCase("unique.gsm.subscription.id") ; }
 

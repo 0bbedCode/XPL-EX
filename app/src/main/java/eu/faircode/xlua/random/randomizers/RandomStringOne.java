@@ -4,13 +4,13 @@ import androidx.annotation.NonNull;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.random.IRandomizer;
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
 import eu.faircode.xlua.utilities.RandomStringGenerator;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
-public class RandomStringOne implements IRandomizer {
+public class RandomStringOne implements IRandomizerOld {
     private static final List<String> SETTINGS = Arrays.asList("android.build.incremental", "android.build.host", "android.build.fingerprint", "android.build.codename", "android.build.description", "android.build.display.id", "android.build.flavor");
 
     @Override
@@ -30,7 +30,7 @@ public class RandomStringOne implements IRandomizer {
     }
 
     @Override
-    public String generateString() { return RandomStringGenerator.generateRandomAlphanumericString(ThreadLocalRandom.current().nextInt(6, 25));
+    public String generateString() { return RandomStringGenerator.generateRandomAlphanumericString(RandomGenerator.nextInt(6, 25));
     }
 
     @Override

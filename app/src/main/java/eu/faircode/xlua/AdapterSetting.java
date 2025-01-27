@@ -23,7 +23,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,18 +33,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import eu.faircode.xlua.api.XResult;
-
 import eu.faircode.xlua.api.settings.LuaSettingExtended;
 import eu.faircode.xlua.api.settings.LuaSettingPacket;
 import eu.faircode.xlua.api.xstandard.interfaces.IDividerKind;
-import eu.faircode.xlua.api.xstandard.interfaces.ISettingUpdate;
 import eu.faircode.xlua.logger.XLog;
 import eu.faircode.xlua.random.randomizers.NARandomizer;
 import eu.faircode.xlua.ui.dialogs.NoRandomDialog;
-import eu.faircode.xlua.ui.dialogs.SettingDeleteDialog;
 import eu.faircode.xlua.random.GlobalRandoms;
-import eu.faircode.xlua.random.IRandomizer;
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.ui.AlertMessage;
 import eu.faircode.xlua.ui.SettingsQue;
 import eu.faircode.xlua.ui.dialogs.SettingDeleteDialogEx;
@@ -56,20 +51,19 @@ import eu.faircode.xlua.utilities.SettingUtil;
 import eu.faircode.xlua.utilities.UiUtil;
 import eu.faircode.xlua.utilities.ViewUtil;
 
+//Upgrade to JAVA 8 Please!
+//Lets do simulation class / mock
+
 public class AdapterSetting extends RecyclerView.Adapter<AdapterSetting.ViewHolder> implements
         Filterable,
         IDividerKind,
         ISettingUpdateEx {
     private static final String TAG = "XLua.AdapterSetting";
-    private final List<IRandomizer> randomizers = GlobalRandoms.getRandomizers();
+    private final List<IRandomizerOld> randomizers = GlobalRandoms.getRandomizers();
 
     private final HashMap<String, Boolean> expanded = new HashMap<>();
     private final List<LuaSettingExtended> settings = new ArrayList<>();
     private List<LuaSettingExtended> filtered = new ArrayList<>();
-
-    //private SettingsQue settingsQue;
-    //private AppGeneric application;
-    //private FragmentManager fragmentManager;
 
     //Filter / Divider VARs
     private boolean isRandomizingAll = false;;
@@ -102,7 +96,7 @@ public class AdapterSetting extends RecyclerView.Adapter<AdapterSetting.ViewHold
         final CheckBox cbSelected;
 
         final Spinner spRandomSelector;
-        final ArrayAdapter<IRandomizer> adapterRandomizer;
+        final ArrayAdapter<IRandomizerOld> adapterRandomizer;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -122,13 +116,17 @@ public class AdapterSetting extends RecyclerView.Adapter<AdapterSetting.ViewHold
             ivBtDelete = itemView.findViewById(R.id.ivBtDeleteSetting);
             ivReset = itemView.findViewById(R.id.ivBtSettingReset);
 
+
+
             adapterRandomizer = new ArrayAdapter<>(itemView.getContext(), android.R.layout.simple_spinner_item);
             adapterRandomizer.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             ivBtRandomize = itemView.findViewById(R.id.ivBtRandomSettingValue);
             spRandomSelector = itemView.findViewById(R.id.spSettingRandomizerSpinner);
-            if(DebugUtil.isDebug()) Log.i(TAG, "Created the Empty Array for Configs Fragment Config");
+            if(DebugUtil.isDebug()) Log.d(TAG, "Created the Empty Array for Configs Fragment Config");
             spRandomSelector.setTag(null);
             spRandomSelector.setAdapter(adapterRandomizer);
+
+
         }
 
         private void unWire() {
@@ -171,7 +169,9 @@ public class AdapterSetting extends RecyclerView.Adapter<AdapterSetting.ViewHold
         @Override
         public boolean onLongClick(View v) {
             int code = v.getId();
-            XLog.i("onLongClick id=" + code);
+            if(DebugUtil.isDebug())
+                Log.d(TAG, "onLongClick id=" + code);
+
             final LuaSettingExtended setting = filtered.get(getAdapterPosition());
             switch (code) {
                 case R.id.ivBtRandomSettingValue:
@@ -210,7 +210,9 @@ public class AdapterSetting extends RecyclerView.Adapter<AdapterSetting.ViewHold
             int pos = getAdapterPosition();
             final LuaSettingExtended setting = filtered.get(pos);
             String name = setting.getName();
-            XLog.i("onClick id=" + id + " selected=" + setting);
+            if(DebugUtil.isDebug())
+                Log.d(TAG, "onClick id=" + id + " selected=" + setting);
+
             switch (id) {
                 case R.id.ivExpanderSettingsSetting:
                 case R.id.itemViewSetting:
@@ -416,10 +418,27 @@ public class AdapterSetting extends RecyclerView.Adapter<AdapterSetting.ViewHold
 
     @SuppressLint("NotifyDataSetChanged")
     void randomizeAll(Context context) {
-        Log.i(TAG, "Invoking the randomize all.. size filtered=" + filtered.size());
-        isRandomizingAll = true;
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Invoking the randomize all.. size filtered=" + filtered.size());
+        /*isRandomizingAll = true;
         int randomized = 0;
+
+        List<ILinkParent> links = new ArrayList<>();
         for(LuaSettingExtended e : filtered) {
+            IRandomizerOld r = e.getRandomizer();
+            if(r != null && e.isEnabled()) {
+                if(r instanceof ILinkParent) {
+                    ILinkParent link = (ILinkParent)r;
+                    links.add(link);
+                }
+            }
+        }
+
+        List<LuaSettingExtended> copy = filtered;
+        for(ILinkParent link : links)
+            copy = link.randomizeSettings(copy);
+
+        for(LuaSettingExtended e : copy) {
             if(e.getRandomizer() != null && e.isEnabled()) {
                 if(NARandomizer.isNA(e.getRandomizer()))
                     continue;
@@ -430,21 +449,27 @@ public class AdapterSetting extends RecyclerView.Adapter<AdapterSetting.ViewHold
         }
 
         isRandomizingAll = false;
-        Log.i(TAG, "Finished randomizing all settings randomized=" + randomized);
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Finished randomizing all settings randomized=" + randomized);
+
         Toast.makeText(context, "Finished Randomizing all props, randomized count=" + randomized, Toast.LENGTH_SHORT).show();
-        notifyDataSetChanged();
+        notifyDataSetChanged();*/
     }
 
     @SuppressLint("NotifyDataSetChanged")
     void deleteSelected(Context context) {
-        Log.i(TAG, "Delete Selected settings... filtered=" + filtered.size());
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Delete Selected settings... filtered=" + filtered.size());
+
         List<LuaSettingExtended> batch = new ArrayList<>();
         for(LuaSettingExtended e : filtered)
             if(!e.isValueNull() && e.isEnabled()) batch.add(e);
 
         //notifyDataSetChanged();
         if(!batch.isEmpty()) {
-            Log.i(TAG, "settings=" + settings.size() + " batch size=" + batch.size());
+            if(DebugUtil.isDebug())
+                Log.d(TAG, "settings=" + settings.size() + " batch size=" + batch.size());
+
             settingsQue.batchUpdate(context, batch, true, this);
         }
     }
@@ -461,14 +486,18 @@ public class AdapterSetting extends RecyclerView.Adapter<AdapterSetting.ViewHold
 
     @SuppressLint("NotifyDataSetChanged")
     void saveAll(Context context) {
-        Log.i(TAG, "Saving all settings... filtered=" + filtered.size());
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Saving all settings... filtered=" + filtered.size());
+
         List<LuaSettingExtended> batch = new ArrayList<>();
         for(LuaSettingExtended e : filtered)
             if(e.isModified()) batch.add(e);
 
         //notifyDataSetChanged();
         if(!batch.isEmpty()) {
-            Log.i(TAG, "settings=" + settings.size() + " batch size=" + batch.size());
+            if(DebugUtil.isDebug())
+                Log.d(TAG, "settings=" + settings.size() + " batch size=" + batch.size());
+
             settingsQue.batchUpdate(context, batch, false, this);
         }
     }
@@ -476,7 +505,7 @@ public class AdapterSetting extends RecyclerView.Adapter<AdapterSetting.ViewHold
     void set(List<LuaSettingExtended> settings, AppGeneric application) {
         for(LuaSettingExtended s : settings) {
             if(s.getName() == null) {
-                XLog.e("BAD NULL NAME s=" + s.getName() + " d=" + s.getDescription() + " df=" + s.getDefaultValue());
+                Log.e(TAG, "BAD NULL NAME s=" + s.getName() + " d=" + s.getDescription() + " df=" + s.getDefaultValue());
                 continue;
             }
 
@@ -488,7 +517,7 @@ public class AdapterSetting extends RecyclerView.Adapter<AdapterSetting.ViewHold
         this.settings.clear();
         this.settings.addAll(settings);
         if(DebugUtil.isDebug())
-            Log.i(TAG, "Internal Count=" + this.settings.size() + " app=" + application);
+            Log.d(TAG, "Internal Count=" + this.settings.size() + " app=" + application);
 
         getFilter().filter(query);
     }
@@ -542,7 +571,8 @@ public class AdapterSetting extends RecyclerView.Adapter<AdapterSetting.ViewHold
             protected void publishResults(CharSequence query, FilterResults result) {
                 try {
                     final List<LuaSettingExtended> settings = (result.values == null ? new ArrayList<LuaSettingExtended>() : (List<LuaSettingExtended>) result.values);
-                    Log.i(TAG, "Filtered settings size=" + settings.size());
+                    if(DebugUtil.isDebug())
+                        Log.d(TAG, "Filtered settings size=" + settings.size());
 
                     if(dataChanged) {
                         dataChanged = false;
@@ -557,7 +587,7 @@ public class AdapterSetting extends RecyclerView.Adapter<AdapterSetting.ViewHold
                         diff.dispatchUpdatesTo(AdapterSetting.this);
                     }
                 }catch (Exception e) {
-                    XLog.e("Failed to Publish Results for Adapter Settings", e);
+                    Log.e(TAG, "Failed to Publish Results for Adapter Settings, Stack=" + Log.getStackTraceString(e));
                 }
             }
         };
@@ -607,20 +637,39 @@ public class AdapterSetting extends RecyclerView.Adapter<AdapterSetting.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) { return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.settingitem, parent, false)); }
 
+    //@Override
+    //public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
+    //    super.onDetachedFromRecyclerView(recyclerView);
+    //}
+
+    //@Override
+    //public void onViewDetachedFromWindow(@NonNull ViewHolder holder) {
+    //    super.onViewDetachedFromWindow(holder);
+    //}
+
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.unWire();
         LuaSettingExtended setting = filtered.get(position);
         setting.bindInputTextBox(holder.tiSettingValue);
+        setting.bindTextView(holder.tvSettingName);
 
         holder.tvSettingName.setText(SettingUtil.cleanSettingName(setting.getName()));  //Setting Name
         holder.tvSettingNameFull.setText(setting.getName());                            //Setting Name RAW
         holder.tvSettingDescription.setText(SettingUtil.generateDescription(setting));  //Setting Description
-
         //Im TERRIBLE with colors....
         SettingUtil.initCardViewColor(holder.itemView.getContext(), holder.tvSettingName, holder.cvSetting, setting);
 
         boolean enable = UiUtil.initRandomizer(holder.adapterRandomizer, holder.spRandomSelector, setting, randomizers);
+        /*IRandomizer randomizer = setting.getRandomizer();
+        if(randomizer instanceof ILinkParent) {
+            ILinkParent parent = (ILinkParent) randomizer;
+            if(!parent.hasChildren()) {
+                for(LuaSettingExtended e : setting.settings)
+                    parent.addSettingIfChild(e);
+            }
+        }*/
+
         holder.spRandomSelector.setEnabled(enable);
         holder.ivBtRandomize.setEnabled(enable);
         setting.setInputText();

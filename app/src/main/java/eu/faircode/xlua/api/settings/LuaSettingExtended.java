@@ -9,6 +9,7 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,10 +24,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.api.xstandard.interfaces.IJsonSerial;
-import eu.faircode.xlua.logger.XLog;
-import eu.faircode.xlua.random.IRandomizer;
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.IRandomizerManager;
+//import eu.faircode.xlua.x.random.ILinkParent;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
 import eu.faircode.xlua.utilities.SettingUtil;
 import eu.faircode.xlua.utilities.StringUtil;
@@ -64,9 +66,12 @@ public class LuaSettingExtended extends LuaSettingDefault implements IJsonSerial
     protected String groupId;
     protected Boolean isBusy = false;
 
-    protected IRandomizer randomizer;
+    protected IRandomizerOld randomizer;
     protected TextInputEditText inputText;
     protected TextWatcher textWatcher;
+    protected TextView tvName;
+
+    public List<LuaSettingExtended> settings;
 
     public LuaSettingExtended() { setUseUserIdentity(true); }
     public LuaSettingExtended(Parcel in) { this(); fromParcel(in); }
@@ -109,12 +114,35 @@ public class LuaSettingExtended extends LuaSettingDefault implements IJsonSerial
         if(updateTextBoxBinding && this.inputText != null) setInputText(this.value);
     }
 
+
+
+    public TextInputEditText getInputTextBox() { return this.inputText; }
+
+    public boolean isSameNameAsDisplayCache() {
+        if(this.tvName != null) {
+            String t = this.tvName.getText().toString();
+            if(t.contains(" ")) {
+                String tc = t.replace(" ", ".");
+                if(DebugUtil.isDebug())
+                    Log.d(TAG, "Text View Name=" + tc + " Setting Name=" + name);
+                return tc.equalsIgnoreCase(name);
+            } else {
+                if(DebugUtil.isDebug())
+                    Log.d(TAG, "Text View Name=" + t + " Setting Name=" + name);
+                return t.equalsIgnoreCase(name);
+            }
+        }
+
+        return true;
+    }
+
     public String getModifiedValue() { return this.modifiedValue; }
     public LuaSetting setModifiedValueToNull() { this.modifiedValue = null; return this; }
     public void setModifiedValue(String modifiedValue) { setModifiedValue(modifiedValue, false); }
     public void setModifiedValue(String modifiedValue, boolean setTextInput) {
         this.modifiedValue = modifiedValue;
-        if(this.inputText != null && setTextInput) setInputText(modifiedValue);
+        if(this.inputText != null && setTextInput)
+            setInputText(modifiedValue);
     }
 
     public void resetModified() { resetModified(false);  }
@@ -139,6 +167,22 @@ public class LuaSettingExtended extends LuaSettingDefault implements IJsonSerial
     public void randomizeValue() { randomizeValue(null); }
     public void randomizeValue(Context context) {
         if(this.randomizer != null) {
+            /*if(this.randomizer instanceof ILinkParent) {
+                ILinkParent parent = (ILinkParent) this.randomizer;
+                parent.randomizeSettings(settings);
+            } else {
+                if(context != null && this.randomizer instanceof IRandomizerManager) {
+                    IRandomizerManager manager = (IRandomizerManager) this.randomizer;
+                    if(!manager.hasNaNSelected()) {
+                        String v = manager.generateString(context);
+                        setModifiedValue(v, true);
+                    }
+                }else {
+                    String v = this.randomizer.generateString();
+                    setModifiedValue(v, true);
+                }
+            }*/
+
             if(context != null && this.randomizer instanceof IRandomizerManager) {
                 IRandomizerManager manager = (IRandomizerManager) this.randomizer;
                 if(!manager.hasNaNSelected()) {
@@ -152,9 +196,9 @@ public class LuaSettingExtended extends LuaSettingDefault implements IJsonSerial
         }
     }
 
-    public IRandomizer getRandomizer() { return this.randomizer; }
+    public IRandomizerOld getRandomizer() { return this.randomizer; }
     public void unBindRandomizer() { this.randomizer = null; }
-    public void bindRandomizer(IRandomizer randomizer) {
+    public void bindRandomizer(IRandomizerOld randomizer) {
         if(this.randomizer != null) {
             List<ISpinnerElement> elements = this.randomizer.getOptions();
             if(this.randomizer.isSetting(getName()) && (elements != null && !elements.isEmpty())) {
@@ -166,10 +210,10 @@ public class LuaSettingExtended extends LuaSettingDefault implements IJsonSerial
         this.randomizer = randomizer;
     }
 
-    public void bindRandomizer(List<IRandomizer> randomizers) {
+    public void bindRandomizer(List<IRandomizerOld> randomizers) {
         if(this.randomizer == null) {
             if(!randomizers.isEmpty()) {
-                for(IRandomizer r : randomizers) {
+                for(IRandomizerOld r : randomizers) {
                     if(r.isSetting(getName())) {
                         this.randomizer = r;
                         return;
@@ -179,7 +223,7 @@ public class LuaSettingExtended extends LuaSettingDefault implements IJsonSerial
                 if(isBuiltIntSetting())
                     return;
 
-                for(IRandomizer r : randomizers)
+                for(IRandomizerOld r : randomizers)
                     if(r.getID().equalsIgnoreCase("%n_a%"))
                         this.randomizer = r;
 
@@ -188,17 +232,28 @@ public class LuaSettingExtended extends LuaSettingDefault implements IJsonSerial
         }
     }
 
+    public void bindTextView(TextView tv) { this.tvName = tv; }
     public void bindInputTextBox(TextInputEditText textEdit) { bindInputTextBox(textEdit, null); }
-    public void bindInputTextBox(TextInputEditText textEdit, TextWatcher onTextEdit) { if(textEdit != null) { this.inputText = textEdit; this.textWatcher = onTextEdit; } }
+
+    //Maybe we should accept null ??
+    public void bindInputTextBox(TextInputEditText textEdit, TextWatcher onTextEdit) {
+        if(textEdit != null) {
+            this.inputText = textEdit;
+            this.textWatcher = onTextEdit;
+        }
+    }
     public void unBindInputTextBox() { this.inputText = null; this.textWatcher = null; }
     public void setInputTextEmpty() { setInputText(""); }
     public void setInputText(String text) {
         try {
             if(text == null) text = "";
             if(this.inputText != null) {
-                if(this.textWatcher != null) this.inputText.removeTextChangedListener(this.textWatcher);
+                if(this.textWatcher != null)
+                    this.inputText.removeTextChangedListener(this.textWatcher);
                 this.inputText.setText(text);
-                if(this.textWatcher != null) this.inputText.addTextChangedListener(this.textWatcher);
+                //this.inputText.getParent()
+                if(this.textWatcher != null)
+                    this.inputText.addTextChangedListener(this.textWatcher);
             }
         }catch (Exception e) {
             Log.e("XLua.LuaSettingExtended", "Failed to set InputTextEdit e=" + e);

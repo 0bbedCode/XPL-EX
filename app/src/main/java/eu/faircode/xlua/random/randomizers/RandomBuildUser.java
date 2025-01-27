@@ -3,14 +3,15 @@ package eu.faircode.xlua.random.randomizers;
 import androidx.annotation.NonNull;
 
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.random.IRandomizer;
+
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
 import eu.faircode.xlua.utilities.RandomStringGenerator;
 import eu.faircode.xlua.utilities.RandomUtil;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
-public class RandomBuildUser implements IRandomizer {
+public class RandomBuildUser implements IRandomizerOld {
     private static final String[] DEFAULT_BUILD_USERS = new String[] {
             "jenkins",
             "buildbot",
@@ -38,7 +39,7 @@ public class RandomBuildUser implements IRandomizer {
 
     @Override
     public String generateString() {
-        String user = DEFAULT_BUILD_USERS[ThreadLocalRandom.current().nextInt(0, DEFAULT_BUILD_USERS.length)];
+        String user = DEFAULT_BUILD_USERS[RandomGenerator.nextInt(0, DEFAULT_BUILD_USERS.length)];
         if (user.equals("random"))
             return RandomStringGenerator.generateRandomLetterString(RandomUtil.getInt(3, 10), RandomStringGenerator.LOWER_LETTERS);
         return user;

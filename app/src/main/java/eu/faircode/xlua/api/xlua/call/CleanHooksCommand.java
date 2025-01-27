@@ -6,14 +6,12 @@ import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.faircode.xlua.XDatabase;
+import eu.faircode.xlua.XDatabaseOld;
 import eu.faircode.xlua.api.XProxyContent;
 import eu.faircode.xlua.api.XResult;
-import eu.faircode.xlua.api.app.LuaSimplePacket;
 import eu.faircode.xlua.api.hook.XLuaHook;
-import eu.faircode.xlua.api.xlua.database.LuaAppManager;
 import eu.faircode.xlua.api.xstandard.CallCommandHandler;
-import eu.faircode.xlua.api.xstandard.command.CallPacket;
+import eu.faircode.xlua.api.xstandard.command.CallPacket_old;
 import eu.faircode.xlua.api.xstandard.database.DatabaseHelp;
 import eu.faircode.xlua.api.xstandard.database.SqlQuerySnake;
 
@@ -24,13 +22,13 @@ public class CleanHooksCommand extends CallCommandHandler {
     }
 
     @Override
-    public Bundle handle(CallPacket commandData) throws Throwable {
+    public Bundle handle(CallPacket_old commandData) throws Throwable {
         int failed = 0;
         int succeeded = 0;
         int found = 0;
         XResult res = XResult.create().setMethodName("clearHooksCommand");
         try {
-            XDatabase db = commandData.getDatabase();
+            XDatabaseOld db = commandData.getDatabase();
             List<XLuaHook> hooks = new ArrayList<>(DatabaseHelp.getFromDatabase(db, "hook", XLuaHook.class));
             for (XLuaHook hook : hooks) {
                 if (hook.getId().startsWith("PrivacyEx")) {

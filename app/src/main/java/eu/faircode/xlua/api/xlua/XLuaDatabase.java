@@ -9,40 +9,20 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import org.json.JSONObject;
-import org.luaj.vm2.Globals;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import eu.faircode.xlua.AppGeneric;
 import eu.faircode.xlua.DebugUtil;
-import eu.faircode.xlua.XDatabase;
-import eu.faircode.xlua.XGlobals;
-import eu.faircode.xlua.XUtil;
-import eu.faircode.xlua.api.hook.LuaHookUpdate;
+import eu.faircode.xlua.XDatabaseOld;
+import eu.faircode.xlua.UberCore888;
 import eu.faircode.xlua.api.hook.XLuaHook;
-import eu.faircode.xlua.api.hook.assignment.LuaAssignment;
-import eu.faircode.xlua.api.hook.assignment.LuaAssignmentEx;
-import eu.faircode.xlua.api.hook.assignment.LuaAssignmentPacket;
-import eu.faircode.xlua.api.xlua.database.LuaHookManager;
 import eu.faircode.xlua.api.xmock.database.LuaSettingsManager;
-import eu.faircode.xlua.api.xstandard.JsonHelper;
-import eu.faircode.xlua.api.xstandard.database.DatabaseHelp;
-import eu.faircode.xlua.api.xstandard.database.DatabaseUtil;
-import eu.faircode.xlua.api.xstandard.database.SqlQuerySnake;
 import eu.faircode.xlua.api.xstandard.interfaces.IInitDatabase;
-import eu.faircode.xlua.api.xstandard.interfaces.IJCompare;
-import eu.faircode.xlua.hooks.LuaHook;
-import eu.faircode.xlua.ui.HookGroup;
-import eu.faircode.xlua.ui.interfaces.IConfigUpdate;
 import eu.faircode.xlua.utilities.DatabasePathUtil;
-import eu.faircode.xlua.utilities.StringUtil;
 
 public class XLuaDatabase implements IInitDatabase {
-    private XDatabase db = null;
+    private XDatabaseOld db = null;
     private boolean init = false;
     private boolean check_1 = false;
     private boolean setPerms = true;
@@ -55,27 +35,34 @@ public class XLuaDatabase implements IInitDatabase {
     public XLuaDatabase(Context context) {
         this(context, true);
     }
-    public XLuaDatabase(Context context, boolean setPerms) { this.db = new XDatabase("xlua", context, setPerms); this.setPerms = setPerms; }
+    public XLuaDatabase(Context context, boolean setPerms) {
+        this.db = new XDatabaseOld("xlua", context, setPerms);
+        this.setPerms = setPerms;
+    }
 
     @Override
-    public XDatabase getDatabase(Context context) {
+    public XDatabaseOld getDatabase(Context context) {
         initDatabase(context, true);
         return db;
     }
 
     @Override
     public boolean initDatabase(Context context, boolean checkIsReady) {
-        synchronized (lock) { return internalInitDatabase(context, checkIsReady); }
+        synchronized (lock) {
+            return internalInitDatabase(context, checkIsReady);
+        }
     }
 
     private boolean internalInitDatabase(Context context, boolean checkIsReady) {
         if(checkIsReady && db != null) {
-            if(!XDatabase.isReady(db))
+            if(!XDatabaseOld.isReady(db))
                 reset(true);
         }
 
+        //We really do not need any of this bullshit
+
         if(db == null) {
-            db = new XDatabase(XGlobals.DB_NAME_LUA, context, setPerms);
+            db = new XDatabaseOld(UberCore888.DB_NAME_LUA, context, setPerms);
             DatabasePathUtil.log("Created XLUA DB =>" + db, false);
             reset(false);
             if(!db.isOpen(true))
@@ -243,7 +230,7 @@ public class XLuaDatabase implements IInitDatabase {
         return init;
     }
 
-    public void initHooks(XDatabase db, Context context) {
+    public void initHooks(XDatabaseOld db, Context context) {
 
         try {
             if(db.hasTable(XLuaHook.Table.name)) {
@@ -304,7 +291,7 @@ public class XLuaDatabase implements IInitDatabase {
                 DatabasePathUtil.log("Finished Checking XLua Database for Updates....", false);*/
             }
 
-            XGlobals.loadHooks(context, db);
+            UberCore888.loadHooks(context, db);
 
             //Pre-Check ? or can happen after
             //Go through each Hook in the Database of 'hook' and Get the object (we will need the json form)

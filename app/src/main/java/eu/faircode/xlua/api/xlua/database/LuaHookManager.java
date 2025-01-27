@@ -9,8 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-import eu.faircode.xlua.XDatabase;
-import eu.faircode.xlua.XGlobals;
+import eu.faircode.xlua.DebugUtil;
+import eu.faircode.xlua.XDatabaseOld;
+import eu.faircode.xlua.UberCore888;
 import eu.faircode.xlua.XUtil;
 import eu.faircode.xlua.api.XResult;
 import eu.faircode.xlua.api.hook.assignment.LuaAssignment;
@@ -22,25 +23,24 @@ import eu.faircode.xlua.api.xstandard.database.SqlQuerySnake;
 import eu.faircode.xlua.api.hook.assignment.XLuaAssignmentDataHelper;
 import eu.faircode.xlua.api.hook.group.XLuaGroupDataHelper;
 import eu.faircode.xlua.hooks.XReport;
-import eu.faircode.xlua.logger.XLog;
 
 public class LuaHookManager {
     private static final String TAG = "XLua.XHookDatabase";
 
-    public static XResult updateHook(XDatabase db, XLuaHook hook, String extraId) {
+    public static XResult updateHook(XDatabaseOld db, XLuaHook hook, String extraId) {
         return XResult.create().setMethodName("updateHook")
                 .log("[updating hook] extra id=" + extraId, TAG)
                                 .setResult(hook == null ? deleteHook(db, extraId) : hook.isBuiltin() || putHook(db, hook));
     }
 
-    public static boolean putHook(XDatabase db, XLuaHook hook) {
+    public static boolean putHook(XDatabaseOld db, XLuaHook hook) {
         //Make sure we do not need to prepare db what not
         return DatabaseHelp.insertItem(db, XLuaHook.Table.name, hook);
     }
 
-    public static boolean deleteHook(XDatabase db, String id) { return DatabaseHelp.deleteItem(SqlQuerySnake.create(db, XLuaHook.Table.name).whereColumn("id", id)); }
+    public static boolean deleteHook(XDatabaseOld db, String id) { return DatabaseHelp.deleteItem(SqlQuerySnake.create(db, XLuaHook.Table.name).whereColumn("id", id)); }
 
-    public static XResult assignHooks(Context context, XDatabase db, LuaAssignmentPacket packet) {
+    public static XResult assignHooks(Context context, XDatabaseOld db, LuaAssignmentPacket packet) {
         String packageName = packet.getCategory();
         int uid = packet.getUser();
 
@@ -62,7 +62,7 @@ public class LuaHookManager {
             int failed = 0;
             int succeeded = 0;
             for(String hookId : packet.getHookIds()) {
-                XLuaHook hook = XGlobals.getHook(hookId);
+                XLuaHook hook = UberCore888.getHook(hookId);
 
                 //Add its Group to the group list
                 if (hook != null && !groups.contains(hook.getGroup()))
@@ -92,7 +92,7 @@ public class LuaHookManager {
                 }
 
             Log.i(TAG, "assignHooks succeeded operations=" + succeeded + " failed operations=" + failed);
-            if(succeeded == 0 && packet.getHookIds().size() > 0)
+            if(succeeded == 0 && !packet.getHookIds().isEmpty())
                 return res.setFailed("None of the Operations succeeded ! (all failed)");
 
             db.setTransactionSuccessful();
@@ -100,13 +100,16 @@ public class LuaHookManager {
             db.endTransaction(true, false);
         }
 
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Force Stop Flag ? " + (packet.isKill()) + " Pkg=" + packageName + " UserId=" + XUtil.getUserId(uid) + " Uid=" + uid);
+
         if (packet.isKill())
             XLuaAppProvider.forceStop(context, packageName, XUtil.getUserId(uid));
 
         return res.setSucceeded();
     }
 
-    public static long report(XReport report, XLuaHook hook, XDatabase db) {
+    public static long report(XReport report, XLuaHook hook, XDatabaseOld db) {
         Log.i(TAG , "Updating Assignment: " + report);
 
         long used = -1;
@@ -144,7 +147,6 @@ public class LuaHookManager {
             Log.i(TAG, "Updated Group, returned=" + rows);
             db.endTransaction(true, !(rows < 0));
             //throw new Throwable("Error inserting group");
-
         }
 
         Log.i(TAG, "Report returning: " + used);

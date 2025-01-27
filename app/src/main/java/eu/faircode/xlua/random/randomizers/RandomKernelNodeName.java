@@ -3,14 +3,14 @@ package eu.faircode.xlua.random.randomizers;
 import androidx.annotation.NonNull;
 
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.random.IRandomizer;
+
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
 import eu.faircode.xlua.utilities.RandomStringGenerator;
-import eu.faircode.xlua.utilities.RandomUtil;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
-public class RandomKernelNodeName implements IRandomizer {
+public class RandomKernelNodeName implements IRandomizerOld {
     public static final String[] NODE_NAMES = new String[] { "localhost", "hostname", "android-", "raspberrypi", "ubuntu", "fedora", "debian", "archlinux", "localhost.localdomain", "ubuntu-server", "kali", "centos", "server", "test-server", "docker-desktop" };
 
     @Override
@@ -29,9 +29,9 @@ public class RandomKernelNodeName implements IRandomizer {
 
     @Override
     public String generateString() {
-        String nodeName = NODE_NAMES[ThreadLocalRandom.current().nextInt(0, NODE_NAMES.length)];
+        String nodeName = NODE_NAMES[RandomGenerator.nextInt(0, NODE_NAMES.length)];
         if ("android-".equals(nodeName))
-            return nodeName + RandomStringGenerator.generateRandomAlphanumericString(ThreadLocalRandom.current().nextInt(8, 18), RandomStringGenerator.LOWER_LETTERS);
+            return nodeName + RandomStringGenerator.generateRandomAlphanumericString(RandomGenerator.nextInt(8, 18), RandomStringGenerator.LOWER_LETTERS);
         return nodeName;
     }
 

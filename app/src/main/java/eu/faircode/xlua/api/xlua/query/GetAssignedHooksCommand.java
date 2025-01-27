@@ -1,22 +1,6 @@
 package eu.faircode.xlua.api.xlua.query;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.database.MatrixCursor;
-
-import java.util.List;
-
-import eu.faircode.xlua.XDatabase;
-import eu.faircode.xlua.XGlobals;
-import eu.faircode.xlua.XUtil;
-import eu.faircode.xlua.api.XProxyContent;
-import eu.faircode.xlua.api.xstandard.QueryCommandHandler;
-import eu.faircode.xlua.api.xstandard.command.QueryPacket;
-import eu.faircode.xlua.api.hook.assignment.LuaAssignment;
-import eu.faircode.xlua.api.xstandard.database.SqlQuerySnake;
-import eu.faircode.xlua.api.xlua.provider.XLuaHookProvider;
-
-public class GetAssignedHooksCommand extends QueryCommandHandler {
+/*public class GetAssignedHooksCommand extends QueryCommandHandler {
     public static GetAssignedHooksCommand create(boolean marshall) { return new GetAssignedHooksCommand(marshall); };
 
     public GetAssignedHooksCommand() { this(false); }
@@ -82,4 +66,4 @@ public class GetAssignedHooksCommand extends QueryCommandHandler {
 
         return XProxyContent.luaQuery(context, "getAssignedHooks2", snake.getSelectionCompareValues(), snake.getSelectionArgs());
     }
-}
+}*/

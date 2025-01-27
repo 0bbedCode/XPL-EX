@@ -3,7 +3,6 @@ package eu.faircode.xlua;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
@@ -13,25 +12,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.bumptech.glide.load.DecodeFormat;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
+//import eu.faircode.xlua.GlideApp;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import eu.faircode.xlua.api.app.XLuaApp;
-import eu.faircode.xlua.api.hook.LuaHooksGroup;
-import eu.faircode.xlua.api.hook.XLuaHook;
-import eu.faircode.xlua.api.hook.assignment.LuaAssignment;
-import eu.faircode.xlua.api.xlua.XLuaCall;
 import eu.faircode.xlua.api.xstandard.UserIdentityPacket;
-import eu.faircode.xlua.logger.XLog;
 import eu.faircode.xlua.utilities.StringUtil;
+import eu.faircode.xlua.x.ui.core.UserClientAppContext;
 
 public class AppGeneric {
+    //Clean this shit hold
     public static final AppGeneric DEFAULT = new AppGeneric(null, null);
     private static final String TAG = "XLua.AppGeneric";
 
@@ -51,6 +39,15 @@ public class AppGeneric {
         String pName = b.getString("packageName");
         Log.i(TAG, "pkg=" + pName);
         return new AppGeneric(pName, context);
+    }
+
+    public AppGeneric(UserClientAppContext context) {
+        if(context != null) {
+            this.icon = context.icon;
+            this.uid = context.appUid;
+            this.name = context.appName;
+            this.packageName = context.appPackageName;
+        }
     }
 
     public AppGeneric(String packageName, Context context) {
@@ -102,28 +99,15 @@ public class AppGeneric {
     }
 
     public void initIcon(ImageView ivAppIcon, Context context) {
-        Log.i(TAG, "Setting icon s=" + toString());
         TypedValue typedValue = new TypedValue();
         context.getTheme().resolveAttribute(android.R.attr.listPreferredItemHeight, typedValue, true);
         int height = TypedValue.complexToDimensionPixelSize(typedValue.data, context.getResources().getDisplayMetrics());
         int iconSize = Math.round(height * context.getResources().getDisplayMetrics().density + 0.5f);
-
-        Log.i(TAG, "ICON HEIGHT=" + height + " SIZE=" + iconSize);
-
-        // App icon
         try {
             if (icon <= 0)
                 ivAppIcon.setImageResource(android.R.drawable.sym_def_app_icon);
             else {
-                Log.i(TAG, "Setting with glid app");
-                Uri uri = Uri.parse("android.resource://" + packageName + "/" + icon);
-                GlideApp.with(context)
-                        .applyDefaultRequestOptions(new RequestOptions().format(DecodeFormat.PREFER_RGB_565))
-                        .load(uri)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .skipMemoryCache(true)
-                        .override(iconSize, iconSize)
-                        .into(ivAppIcon);
+                UserClientAppContext.attachIcon(context, iconSize, ivAppIcon, packageName, icon);
             }
         }catch (Exception e) {
             Log.e(TAG, "Failed to set AppIcon: " + packageName + " " + e);
@@ -140,6 +124,6 @@ public class AppGeneric {
     @NonNull
     @Override
     public String toString() {
-        return "pkg=" + packageName + " uid=" + uid + " name=" + name + " ico=" + icon;
+        return "pkg=" + packageName + " uid=" + uid + " name=" + name + " ico=" + icon + " force stop=" + (forceStop);
     }
 }

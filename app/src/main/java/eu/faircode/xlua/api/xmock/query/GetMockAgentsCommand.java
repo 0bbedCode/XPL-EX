@@ -5,7 +5,7 @@ import android.database.Cursor;
 
 import eu.faircode.xlua.api.XProxyContent;
 import eu.faircode.xlua.api.xstandard.QueryCommandHandler;
-import eu.faircode.xlua.api.xstandard.command.QueryPacket;
+import eu.faircode.xlua.api.xstandard.command.QueryPacket_old;
 import eu.faircode.xlua.api.xstandard.database.SqlQuerySnake;
 import eu.faircode.xlua.api.xmock.database.MockUserAgentManager;
 import eu.faircode.xlua.logger.XLog;
@@ -24,7 +24,7 @@ public class GetMockAgentsCommand extends QueryCommandHandler {
     }
 
     @Override
-    public Cursor handle(QueryPacket commandData) throws Throwable {
+    public Cursor handle(QueryPacket_old commandData) throws Throwable {
         String[] selection = commandData.getSelection();
         if(selection != null && selection.length > 0) {
             String dev = selection[0];

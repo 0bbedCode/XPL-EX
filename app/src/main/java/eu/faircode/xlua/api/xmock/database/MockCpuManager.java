@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import eu.faircode.xlua.XDatabase;
+import eu.faircode.xlua.XDatabaseOld;
 import eu.faircode.xlua.api.cpu.MockCpu;
 import eu.faircode.xlua.api.xstandard.database.DatabaseHelp;
 import eu.faircode.xlua.api.xstandard.database.SqlQuerySnake;
@@ -16,14 +16,14 @@ public class MockCpuManager {
     public static final int COUNT = 43;
     public static final String JSON = "cpumaps.json";
 
-    public static boolean insertCpuMap(XDatabase db, MockCpu map) {
+    public static boolean insertCpuMap(XDatabaseOld db, MockCpu map) {
         return DatabaseHelp.insertItem(
                 db,
                 MockCpu.Table.name,
                 map);
     }
 
-    public static boolean updateCpuMap(XDatabase db, String name, boolean selected) {
+    public static boolean updateCpuMap(XDatabaseOld db, String name, boolean selected) {
         MockCpu map = new MockCpu(name, null, null, null, selected);
         SqlQuerySnake snake = SqlQuerySnake.create(db, MockCpu.Table.name)
                 .whereColumn("name", name)
@@ -32,11 +32,11 @@ public class MockCpuManager {
         return DatabaseHelp.updateItem(snake, map);
     }
 
-    public static boolean putCpuMaps(XDatabase db, Collection<MockCpu> maps) {
+    public static boolean putCpuMaps(XDatabaseOld db, Collection<MockCpu> maps) {
        return DatabaseHelp.insertItems(db, MockCpu.Table.name, maps);
     }
 
-    public static MockCpu getSelectedMap(XDatabase db, boolean getContents) {
+    public static MockCpu getSelectedMap(XDatabaseOld db, boolean getContents) {
         SqlQuerySnake snake = SqlQuerySnake.create(db, MockCpu.Table.name)
                 .whereColumn("selected", "true");
 
@@ -46,7 +46,7 @@ public class MockCpuManager {
         return snake.queryGetFirstAs(MockCpu.class, true);
     }
 
-    public static MockCpu getMap(XDatabase db, String name, boolean getContents) {
+    public static MockCpu getMap(XDatabaseOld db, String name, boolean getContents) {
         SqlQuerySnake snake = SqlQuerySnake
                 .create(db, MockCpu.Table.name)
                 .whereColumn("name", name);
@@ -57,7 +57,7 @@ public class MockCpuManager {
         return snake.queryGetFirstAs(MockCpu.class, true);
     }
 
-    public static void enforceOneSelected(XDatabase db, String keepMapName, boolean keepFirstSelected) {
+    public static void enforceOneSelected(XDatabaseOld db, String keepMapName, boolean keepFirstSelected) {
         SqlQuerySnake selectedSnake = SqlQuerySnake.create(db, MockCpu.Table.name)
                 .whereColumn("selected", "true")
                 .onlyReturnColumns("name", "selected");
@@ -83,7 +83,7 @@ public class MockCpuManager {
         }
     }
 
-    public static Collection<MockCpu> getSelectedMaps(XDatabase db) {
+    public static Collection<MockCpu> getSelectedMaps(XDatabaseOld db) {
         SqlQuerySnake selectedSnake = SqlQuerySnake.create(db, MockCpu.Table.name)
                 .whereColumn("selected", "true")
                 .onlyReturnColumns("name", "selected");
@@ -91,7 +91,7 @@ public class MockCpuManager {
         return selectedSnake.queryAs(MockCpu.class, true);
     }
 
-    public static Collection<String> getSelectedMapNames(XDatabase db) {
+    public static Collection<String> getSelectedMapNames(XDatabaseOld db) {
         SqlQuerySnake selectedSnake = SqlQuerySnake.create(db, MockCpu.Table.name)
                 .whereColumn("selected", "true")
                 .onlyReturnColumns("name", "selected");
@@ -99,7 +99,7 @@ public class MockCpuManager {
         return selectedSnake.queryAsStringList("name", true);
     }
 
-    public static Collection<MockCpu> getCpuMaps(Context context, XDatabase db) {
+    public static Collection<MockCpu> getCpuMaps(Context context, XDatabaseOld db) {
         return DatabaseHelp.getOrInitTable(
                 context,
                 db,
@@ -111,7 +111,7 @@ public class MockCpuManager {
                 COUNT);
     }
 
-    public static boolean forceDatabaseCheck(Context context, XDatabase db) {
+    public static boolean forceDatabaseCheck(Context context, XDatabaseOld db) {
         return DatabaseHelp.prepareTableIfMissingOrInvalidCount(
                 context,
                 db,

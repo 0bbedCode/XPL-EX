@@ -42,7 +42,7 @@ public class XBasicLog {
             sb.append("Stack=\n");
             for (int i = 0; i < els.length; i++) {
                 StackTraceElement e = els[i];
-                sb.append(" >> ").append(e.getClassName()).append(e.getMethodName()).append("(").append(e.getFileName()).append(":").append(e.getLineNumber()).append(")").append("\n");
+                sb.append(" >> ").append(e.getClassName()).append(":").append(e.getMethodName()).append("(").append(e.getFileName()).append(":").append(e.getLineNumber()).append(")").append("\n");
                 //sb.append("[C][").append(e.getClassName()).append("][M][").append(e.getMethodName()).append("\n");
             }
         }

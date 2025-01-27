@@ -17,9 +17,8 @@ import androidx.appcompat.app.AppCompatDialogFragment;
 
 import eu.faircode.xlua.AppGeneric;
 import eu.faircode.xlua.R;
-import eu.faircode.xlua.Str;
+import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.api.settings.LuaSettingPacket;
-import eu.faircode.xlua.utilities.StringUtil;
 
 public class SettingAddDialog extends AppCompatDialogFragment {
     private static final String TAG = "XLua.SettingAddDialog";

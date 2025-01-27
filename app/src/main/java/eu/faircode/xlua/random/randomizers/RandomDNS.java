@@ -4,12 +4,13 @@ import androidx.annotation.NonNull;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.random.IRandomizer;
+
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
-public class RandomDNS implements IRandomizer {
+public class RandomDNS implements IRandomizerOld {
     private static final String DNS_FORMAT = "%s.%s.%s.%s";
     private static final List<String> dnsList = Arrays.asList("1.1.1.1", "8.8.8.8", "6.6.6.6", "random");
 
@@ -31,13 +32,13 @@ public class RandomDNS implements IRandomizer {
 
     @Override
     public String generateString() {
-        String dns = dnsList.get(ThreadLocalRandom.current().nextInt(0, dnsList.size()));
+        String dns = dnsList.get(RandomGenerator.nextInt(0, dnsList.size()));
         if(dns.equals("random")) {
             return String.format(DNS_FORMAT,
-                    ThreadLocalRandom.current().nextInt(1, 9),
-                    ThreadLocalRandom.current().nextInt(1, 9),
-                    ThreadLocalRandom.current().nextInt(1, 9),
-                    ThreadLocalRandom.current().nextInt(1, 9));
+                    RandomGenerator.nextInt(1, 9),
+                    RandomGenerator.nextInt(1, 9),
+                    RandomGenerator.nextInt(1, 9),
+                    RandomGenerator.nextInt(1, 9));
         } return dns;
     }
 

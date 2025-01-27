@@ -110,6 +110,7 @@ public class SettingsQue {
 
                     for(final LuaSettingExtended s : settings) {
                         result.settings.add(s);
+                        /* CHECK_CHECK more for kill hard coding fix later */
                         final LuaSettingPacket packet = createUpdatePacket(s, delete, false);
                         result.packets.add(packet);
                         result.code = packet.getCode();
@@ -200,6 +201,8 @@ public class SettingsQue {
             final boolean deleteDefaultMap,
             final boolean forceKill,
             final ISettingUpdateEx onCallback) {
+
+        /* CHECK_CHECK */
 
         if(setting.isBusy()) {
             XLog.e("Setting is Busy, wait til it is ready! setting=" + setting);

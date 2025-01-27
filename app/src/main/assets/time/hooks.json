@@ -19,7 +19,7 @@
     "usage":true,
     "notify":false,
     "luaScript": "@spoof_timezone_getdefault",
-    "settings": [ "zone.timezone" ]
+    "settings": [ "region.timezone" ]
   },
 
   {
@@ -41,7 +41,7 @@
     "usage":true,
     "notify":false,
     "luaScript": "@spoof_timezone_getid",
-    "settings": [ "zone.timezone.id" ]
+    "settings": [ "region.timezone.id" ]
   },
 
   {
@@ -63,7 +63,7 @@
     "usage":true,
     "notify":false,
     "luaScript": "@spoof_timezone_getdisplayname",
-    "settings": [ "zone.timezone.display.name" ]
+    "settings": [ "region.timezone.display.label" ]
   },
 
   {
@@ -85,6 +85,6 @@
     "usage":true,
     "notify":false,
     "luaScript": "@spoof_timezone_getdefault",
-    "settings": [ "zone.timezone" ]
+    "settings": [ "region.timezone" ]
   }
 ]

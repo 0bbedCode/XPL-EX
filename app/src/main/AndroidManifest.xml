@@ -36,6 +36,7 @@
 
         <activity
             android:name=".ActivityMain"
+            android:exported="true"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTask"
             android:resizeableActivity="true">
@@ -48,6 +49,7 @@
 
         <activity
             android:name=".ActivityHelp"
+            android:exported="true"
             android:configChanges="orientation|screenSize"
             android:label="@string/menu_help"
             android:launchMode="singleTop"
@@ -60,6 +62,7 @@
 
         <activity
             android:name=".ActivityProperties"
+            android:exported="true"
             android:configChanges="orientation|screenSize"
             android:label="@string/menu_props"
             android:launchMode="singleTop"
@@ -72,6 +75,7 @@
 
         <activity
             android:name=".ActivityAppControl"
+            android:exported="true"
             android:configChanges="orientation|screenSize"
             android:label="@string/menu_hooks"
             android:launchMode="singleTop"
@@ -85,6 +89,20 @@
 
         <activity
             android:name=".ActivitySettings"
+            android:exported="true"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/menu_settings"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ActivityMain"
+            android:resizeableActivity="true">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ActivityMain" />
+        </activity>
+
+        <activity
+            android:name=".x.ui.activities.SettingsExActivity"
+            android:exported="true"
             android:configChanges="orientation|screenSize"
             android:label="@string/menu_settings"
             android:launchMode="singleTop"
@@ -97,6 +115,7 @@
 
         <activity
             android:name=".ActivityConfig"
+            android:exported="true"
             android:configChanges="orientation|screenSize"
             android:label="@string/menu_configs"
             android:launchMode="singleTop"
@@ -109,6 +128,7 @@
 
         <activity
             android:name=".ActivityDatabase"
+            android:exported="true"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
             android:launchMode="singleTop"
@@ -123,6 +143,7 @@
 
         <activity
             android:name=".ActivityCpu"
+            android:exported="true"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
             android:launchMode="singleTop"

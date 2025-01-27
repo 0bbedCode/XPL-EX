@@ -24,6 +24,9 @@ public class ParcelUtil {
         return hexString.toString();
     }
 
+    //public static void writeInt(Parcel in, int value, String defaultIgnore) {}
+
+
     public static void writeString(Parcel in, String value, String ignoreValue) {
         writeString(in, value, ignoreValue, true);
     }

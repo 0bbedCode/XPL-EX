@@ -4,12 +4,13 @@ import androidx.annotation.NonNull;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.random.IRandomizer;
+
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
-public class Random3DigitNumber implements IRandomizer {
+public class Random3DigitNumber implements IRandomizerOld {
     private static final List<String> SETTINGS = Arrays.asList("gsm.operator.mnc", "gsm.operator.mcc", "android.build.radio");
 
     @Override
@@ -31,7 +32,7 @@ public class Random3DigitNumber implements IRandomizer {
     }
 
     @Override
-    public String generateString() { return Integer.toString(ThreadLocalRandom.current().nextInt(100, 999)); }
+    public String generateString() { return Integer.toString(RandomGenerator.nextInt(100, 999)); }
 
     @Override
     public int generateInteger() { return 0; }

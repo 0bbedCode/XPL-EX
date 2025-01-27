@@ -4,7 +4,7 @@ function after(hook, param)
 		return false
 	end
 
-    local fake = param:getSetting("android.build.user", "god")
+    local fake = param:getSetting("android.etc.build.rom.base.os", "god")
     if fake == nil then
         return false
     end

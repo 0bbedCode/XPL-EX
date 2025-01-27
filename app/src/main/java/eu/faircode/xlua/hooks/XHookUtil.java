@@ -7,6 +7,8 @@ import android.hardware.SensorManager;
 import android.hardware.camera2.CameraManager;
 import android.media.AudioManager;
 import android.telephony.SmsManager;
+import android.text.TextUtils;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.luaj.vm2.Globals;
@@ -26,6 +28,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import eu.faircode.xlua.BuildConfig;
+import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.api.hook.XLuaHookAssets;
 import eu.faircode.xlua.logger.XLog;
@@ -34,6 +37,8 @@ import eu.faircode.xlua.utilities.StreamUtil;
 import eu.faircode.xlua.utilities.StringUtil;
 
 public class XHookUtil {
+    private static final String TAG = "XLua.XHookUtil";
+
     public static Globals getHookGlobals(
             Context context,
             XLuaHook hook,
@@ -123,7 +128,7 @@ public class XHookUtil {
                 ZipEntry entry = entries.nextElement();
                 if (entry.getName().startsWith("assets/") && entry.getName().endsWith("hooks.json")) {
                     XLog.i("Found Entry for [hooks.json]: " + entry.getName());
-                    ArrayList<XLuaHook> read_hooks = readHooksFromEntry(entry, zipFile);
+                    ArrayList<XLuaHook> read_hooks = readHooksFromEntry(apk, entry, zipFile);
                     if(!read_hooks.isEmpty()) hooks_all.addAll(read_hooks);
                 }
             }
@@ -132,7 +137,33 @@ public class XHookUtil {
         } return hooks_all;
     }
 
-    public static ArrayList<XLuaHook> readHooksFromEntry(ZipEntry entry, ZipFile zipFile) {
+    public static String getLuaScriptEx(String apk, String scriptName) {
+        ZipFile zipFile = null;
+        try {
+            zipFile = new ZipFile(apk);
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                if(entry.getName().endsWith(scriptName)) {
+                    InputStream lis = null;
+                    try {
+                        lis = zipFile.getInputStream(entry);
+                        return new Scanner(lis).useDelimiter("\\A").next();
+                    } catch (Exception e) { XLog.e("Failed to find LUA Script: " + entry, e);
+                    }finally { StreamUtil.close(lis); }
+                }
+            }
+        }catch (Exception e){ XLog.e("Failed to read Hooks.", e);
+        } finally { StreamUtil.close(zipFile);
+        }
+
+        if(DebugUtil.isDebug())
+            Log.w(TAG, "Error Finding LUA Script: " + scriptName);
+
+        return null;
+    }
+
+    public static ArrayList<XLuaHook> readHooksFromEntry(String apk, ZipEntry entry, ZipFile zipFile) {
         XLog.i("Parsing Hooks From Entry [" + entry + "]");
         ArrayList<XLuaHook> hooks = new ArrayList<>();
         String entryName = entry.getName();
@@ -147,13 +178,22 @@ public class XHookUtil {
             for(int i = 0; i < jArray.length(); i++) {
                 XLuaHookAssets hookAsset = new XLuaHookAssets();
                 hookAsset.fromJSONObject(jArray.getJSONObject(i));
-                if (hookAsset.getLuaScript().startsWith("@")) {
+                if(TextUtils.isEmpty(hookAsset.getLuaScript())) {
+                    if(DebugUtil.isDebug())
+                        Log.d(TAG, "Lua is Empty >> " + hookAsset.getMethodName() + " " + hookAsset.getClassName());
+
+                    hookAsset.setLuaScript("function before(hook, param) end");
+                }
+                else if (hookAsset.getLuaScript().startsWith("@")) {
                     hookAsset.setIsBuiltIn(isBuiltIn || hookAsset.isBuiltin());
-                    String luaContents = getLuaScript(zipFile, entryPath, hookAsset.getLuaScript().substring(1) + ".lua");
+                    //String luaContents = getLuaScript(zipFile, entryPath, hookAsset.getLuaScript().substring(1) + ".lua");
+
+                    String luaContents = getLuaScriptEx(apk, hookAsset.getLuaScript().substring(1) + ".lua");
                     if(luaContents == null) {
                         XLog.e("Failed to Init Hook: " + hookAsset.getId() + " Entry=" + entry, new Throwable(), true);
                         continue;
                     }
+
                     hookAsset.setLuaScript(luaContents);
                 }
                 hooks.add(hookAsset);
@@ -161,21 +201,6 @@ public class XHookUtil {
         }catch (Exception e) {  XLog.e("Failed to Read Hooks from ZIP Entry=" + entry, e, true);
         }finally { StreamUtil.close(is);
         } return hooks;
-    }
-
-    public static String getLuaScript(ZipFile zipFile, String path, String scriptName) {
-        String entryLua = path + "/" + scriptName;
-        XLog.i("Searching for LUA Script in: " + entryLua + " path=" + path + " script name=" + scriptName);
-        ZipEntry luaEntry = zipFile.getEntry(entryLua);
-        if (luaEntry == null && !path.equals("assets")) return getLuaScript(zipFile, "assets", scriptName);
-        else {
-            InputStream lis = null;
-            try {
-                lis = zipFile.getInputStream(luaEntry);
-                return new Scanner(lis).useDelimiter("\\A").next();
-            } catch (Exception e) { XLog.e("Failed to find LUA Script: " + entryLua, e);
-            }finally { StreamUtil.close(lis); }
-        } return null;
     }
 
     public static String resolveClassName(Context context, String className) {

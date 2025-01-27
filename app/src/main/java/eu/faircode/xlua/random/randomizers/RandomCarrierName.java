@@ -4,12 +4,13 @@ import androidx.annotation.NonNull;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.random.IRandomizer;
+
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
-public class RandomCarrierName implements IRandomizer {
+public class RandomCarrierName implements IRandomizerOld {
     private static final List<String> CARRIERS = Arrays.asList("Siminn", "Verizon", "ATT", "T-Mobile", "Mint Mobile", "Sprint", "Xfinity Mobile", "MetroPCS", "Boost Mobile", "US Mobile", "Beast Mobile", "Spectrum", "Cricket", "Google Fi", "Black Wireless");
 
     @Override
@@ -31,7 +32,7 @@ public class RandomCarrierName implements IRandomizer {
     }
     @Override
     public String generateString() {
-        return CARRIERS.get(ThreadLocalRandom.current().nextInt(0, CARRIERS.size()));
+        return CARRIERS.get(RandomGenerator.nextInt(0, CARRIERS.size()));
     }
 
     @Override

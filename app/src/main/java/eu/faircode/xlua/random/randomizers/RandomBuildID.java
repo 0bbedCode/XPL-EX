@@ -4,12 +4,12 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-import eu.faircode.xlua.random.IRandomizer;
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
 import eu.faircode.xlua.utilities.RandomStringGenerator;
 import eu.faircode.xlua.utilities.RandomUtil;
 
-public class RandomBuildID implements IRandomizer {
+public class RandomBuildID implements IRandomizerOld {
     public static final String FORMAT = "%s.%s.%s";
 
     @Override

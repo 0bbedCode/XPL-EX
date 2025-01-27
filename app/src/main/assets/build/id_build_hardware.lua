@@ -4,7 +4,7 @@ function after(hook, param)
 		return false
 	end
 
-    local fake = param:getSetting("cpu.hardware.name", "qcom")
+    local fake = param:getSetting("soc.board.manufacturer.id", "qcom")
     if fake == nil then
         return false
     end

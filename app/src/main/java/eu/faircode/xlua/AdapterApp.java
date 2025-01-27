@@ -42,22 +42,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.load.DecodeFormat;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -71,18 +65,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import eu.faircode.xlua.api.XResult;
 import eu.faircode.xlua.api.settings.LuaSettingPacket;
 import eu.faircode.xlua.api.xlua.XLuaCall;
-import eu.faircode.xlua.api.xstandard.interfaces.IListener;
-import eu.faircode.xlua.api.hook.assignment.LuaAssignment;
 import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.api.hook.assignment.LuaAssignmentPacket;
 
-import eu.faircode.xlua.api.app.XLuaApp;
 import eu.faircode.xlua.logger.XLog;
 import eu.faircode.xlua.ui.GroupHelper;
-import eu.faircode.xlua.ui.HookWarnings;
-import eu.faircode.xlua.ui.dialogs.HookWarningDialog;
 import eu.faircode.xlua.ui.interfaces.ILoader;
 import eu.faircode.xlua.utilities.ViewUtil;
+import eu.faircode.xlua.x.ui.activities.SettingsExActivity;
+import eu.faircode.xlua.x.ui.core.UserClientAppContext;
+import eu.faircode.xlua.x.xlua.commands.call.AssignHooksCommand;
+import eu.faircode.xlua.x.xlua.hook.AssignmentPacket;
+import eu.faircode.xlua.x.xlua.hook.AppXpPacket;
+import eu.faircode.xlua.x.xlua.hook.AssignmentsPacket;
+import eu.faircode.xlua.x.xlua.hook.IAssignListener;
+//import eu.faircode.xlua.GlideApp;
 
 public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> implements Filterable {
     private static final String TAG = "XLua.App";
@@ -99,8 +96,8 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
     private List<String> collection = new ArrayList<>();
     private boolean dataChanged = false;
     private List<XLuaHook> hooks = new ArrayList<>();
-    private final List<XLuaApp> all = new ArrayList<>();
-    private List<XLuaApp> filtered = new ArrayList<>();
+    private final List<AppXpPacket> all = new ArrayList<>();
+    private List<AppXpPacket> filtered = new ArrayList<>();
     private final Map<String, Boolean> expanded = new HashMap<>();
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -110,7 +107,7 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
             View.OnClickListener,
             View.OnLongClickListener,
             CompoundButton.OnCheckedChangeListener,
-            IListener {
+            IAssignListener {
 
         final View itemView;
         final ImageView ivExpander;
@@ -126,7 +123,8 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
         final RecyclerView rvGroup;
         final Group grpExpanded;
 
-        final ImageView ivHooks, ivConfigs, ivSettingEx, ivProperties;
+        //final ImageView ivHooks, ivConfigs, ivSettingEx, ivProperties;
+        final ImageView ivProfile;
 
         final AdapterGroup adapter;
 
@@ -145,10 +143,12 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
             cbAssigned = itemView.findViewById(R.id.cbAssigned);
             cbForceStop = itemView.findViewById(R.id.cbForceStop);
 
-            ivHooks = itemView.findViewById(R.id.ivGroupHooks);
-            ivConfigs = itemView.findViewById(R.id.ivConfigsButton);
-            ivSettingEx = itemView.findViewById(R.id.ivSettingsExButton);
-            ivProperties = itemView.findViewById(R.id.ivPropertiesButton);
+            //ivHooks = itemView.findViewById(R.id.ivGroupHooks);
+            //ivConfigs = itemView.findViewById(R.id.ivConfigsButton);
+            //ivSettingEx = itemView.findViewById(R.id.ivSettingsExButton);
+            //ivProperties = itemView.findViewById(R.id.ivPropertiesButton);
+
+            ivProfile = itemView.findViewById(R.id.ivGroupProfile);
 
             rvGroup = itemView.findViewById(R.id.rvGroup);
             rvGroup.setHasFixedSize(true);
@@ -168,14 +168,16 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
             ivSettings.setOnLongClickListener(this);
             cbAssigned.setOnCheckedChangeListener(this);
             cbForceStop.setOnCheckedChangeListener(this);
-            ivHooks.setOnClickListener(this);
-            ivHooks.setOnLongClickListener(this);
-            ivConfigs.setOnClickListener(this);
-            ivConfigs.setOnLongClickListener(this);
-            ivSettingEx.setOnClickListener(this);
-            ivSettingEx.setOnLongClickListener(this);
-            ivProperties.setOnClickListener(this);
-            ivProperties.setOnLongClickListener(this);
+            //ivHooks.setOnClickListener(this);
+            //ivHooks.setOnLongClickListener(this);
+            //ivConfigs.setOnClickListener(this);
+            //ivConfigs.setOnLongClickListener(this);
+            //ivSettingEx.setOnClickListener(this);
+            //ivSettingEx.setOnLongClickListener(this);
+            //ivProperties.setOnClickListener(this);
+            //ivProperties.setOnLongClickListener(this);
+            ivProfile.setOnClickListener(this);
+            ivProfile.setOnLongClickListener(this);
         }
 
         private void unWire() {
@@ -185,49 +187,66 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
             ivSettings.setOnLongClickListener(null);
             cbAssigned.setOnCheckedChangeListener(null);
             cbForceStop.setOnCheckedChangeListener(null);
-            ivHooks.setOnClickListener(null);
-            ivHooks.setOnLongClickListener(null);
-            ivConfigs.setOnClickListener(null);
-            ivConfigs.setOnLongClickListener(null);
-            ivSettingEx.setOnClickListener(null);
-            ivSettingEx.setOnLongClickListener(null);
-            ivProperties.setOnClickListener(null);
-            ivProperties.setOnLongClickListener(null);
+            //ivHooks.setOnClickListener(null);
+            //ivHooks.setOnLongClickListener(null);
+            //ivConfigs.setOnClickListener(null);
+            //ivConfigs.setOnLongClickListener(null);
+            //ivSettingEx.setOnClickListener(null);
+            //ivSettingEx.setOnLongClickListener(null);
+            //ivProperties.setOnClickListener(null);
+            //ivProperties.setOnLongClickListener(null);
+            ivProfile.setOnClickListener(null);
+            ivProfile.setOnLongClickListener(null);
         }
 
         @SuppressLint("NonConstantResourceId")
         @Override
         public void onClick(View view) {
             try {
-                XLuaApp app = filtered.get(getAdapterPosition());
-                String pkgName = app.getPackageName();
+                AppXpPacket app = filtered.get(getAdapterPosition());
+                String pkgName = app.packageName;
                 switch (view.getId()) {
                     case R.id.itemView:
                         ViewUtil.internalUpdateExpanded(expanded, pkgName);
                         updateExpand();
                         break;
-                    case R.id.ivGroupHooks:
+                    /*case R.id.ivGroupHooks:
                         Intent settingIntent = new Intent(view.getContext(), ActivityAppControl.class);
-                        settingIntent.putExtra("packageName", app.getPackageName());
+                        settingIntent.putExtra("packageName", app.packageName);
                         view.getContext().startActivity(settingIntent);
                         break;
                     case R.id.ivConfigsButton:
                         Intent configIntent = new Intent(view.getContext(), ActivityConfig.class);
-                        configIntent.putExtra("packageName", app.getPackageName());
+                        configIntent.putExtra("packageName", app.packageName);
                         view.getContext().startActivity(configIntent);
                         break;
                     case R.id.ivSettingsExButton:
-                        Intent settingExIntent = new Intent(view.getContext(), ActivitySettings.class);
-                        settingExIntent.putExtra("packageName", app.getPackageName());
-                        view.getContext().startActivity(settingExIntent);
+
+                        //public static String FIELD_ICON = "icon";
+                        //public static String FIELD_USER_ID = "userId";
+                        //public static String FIELD_APP_UID = "appUid";
+                        //public static String FIELD_APP_NAME = "appName";
+                        //public static String FIELD_APP_PACKAGE_NAME = "appPackageName";
+
+
+                        //Intent settingExIntent = new Intent(view.getContext(), ActivitySettings.class);
+                        //settingExIntent.putExtra("packageName", app.getPackageName());
+                        //view.getContext().startActivity(settingExIntent);
+
+                        Intent settingsExIntent = new Intent(view.getContext(), SettingsExActivity.class);
+                        settingsExIntent.putExtra(UserClientAppContext.USER_CONTEXT_ARG, UserClientAppContext.create(app).toBundle());
+                        view.getContext().startActivity(settingsExIntent);
                         break;
                     case R.id.ivPropertiesButton:
                         Intent propsIntent = new Intent(view.getContext(), ActivityProperties.class);
-                        propsIntent.putExtra("packageName", app.getPackageName());
+                        propsIntent.putExtra("packageName", app.packageName);
                         view.getContext().startActivity(propsIntent);
-                        break;
+                        break;*/
                     case R.id.ivSettings:
-                        PackageManager pm = view.getContext().getPackageManager();
+                        Intent settingsExIntent = new Intent(view.getContext(), SettingsExActivity.class);
+                        settingsExIntent.putExtra(UserClientAppContext.USER_CONTEXT_ARG, UserClientAppContext.create(app).toBundle());
+                        view.getContext().startActivity(settingsExIntent);
+                        /*PackageManager pm = view.getContext().getPackageManager();
                         Intent settings = pm.getLaunchIntentForPackage(XUtil.PRO_PACKAGE_NAME);
                         if (settings == null) {
                             Intent browse = new Intent(Intent.ACTION_VIEW);
@@ -239,7 +258,7 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
                         } else {
                             settings.putExtra("packageName", pkgName);
                             view.getContext().startActivity(settings);
-                        }
+                        }*/
                         break;
                 }
             }catch (Exception e) {
@@ -251,11 +270,11 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
         @Override
         public boolean onLongClick(View view) {
             try {
-                XLuaApp app = filtered.get(getAdapterPosition());
+                AppXpPacket app = filtered.get(getAdapterPosition());
                 int id = view.getId();
                 Log.i(TAG, "onLongClick=" + id + " full=" + view);
                 switch (id) {
-                    case R.id.ivGroupHooks:
+                    /*case R.id.ivGroupHooks:
                         Toast.makeText(view.getContext(), R.string.button_hooks_group_hint, Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.ivConfigsButton:
@@ -266,9 +285,9 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
                         break;
                     case R.id.ivPropertiesButton:
                         Toast.makeText(view.getContext(), R.string.button_props_hint, Toast.LENGTH_SHORT).show();
-                        break;
+                        break;*/
                     default:
-                        Intent launch = view.getContext().getPackageManager().getLaunchIntentForPackage(app.getPackageName());
+                        Intent launch = view.getContext().getPackageManager().getLaunchIntentForPackage(app.packageName);
                         if (launch != null) view.getContext().startActivity(launch);
                         else Toast.makeText(view.getContext(), R.string.error_no_activity, Toast.LENGTH_SHORT).show();
                         break;
@@ -286,21 +305,20 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
         public void onCheckedChanged(final CompoundButton compoundButton, boolean checked) {
             try {
                 Log.i(TAG, "Check changed");
-                final XLuaApp app = filtered.get(getAdapterPosition());
+                final AppXpPacket app = filtered.get(getAdapterPosition());
                 switch (compoundButton.getId()) {
                     case R.id.cbAssigned:
                         updateAssignments(compoundButton.getContext(), app, group, checked);
                         notifyItemChanged(getAdapterPosition());
                         break;
-
                     case R.id.cbForceStop:
-                        app.setForceStop(checked);
+                        app.forceStop = checked;
 
                         executor.submit(new Runnable() {
                             @Override
                             public void run() {
-                                LuaSettingPacket packet = LuaSettingPacket.create("forcestop", Boolean.toString(app.getForceStop()));
-                                packet.setCategory(app.getPackageName());
+                                LuaSettingPacket packet = LuaSettingPacket.create("forcestop", Boolean.toString(app.forceStop));
+                                packet.setCategory(app.packageName);
                                 final XResult ret = XLuaCall.sendSetting(compoundButton.getContext(), packet);
 
                                 new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -311,6 +329,8 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
                                         //notifyDataSetChanged();
                                     }
                                 });
+
+
                             }
                         });
 
@@ -322,52 +342,34 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
         }
 
         @Override
-        public void onAssign(Context context, String groupName, boolean assign) {
-            Log.i(TAG, "Group changed");
-            XLuaApp app = filtered.get(getAdapterPosition());
+        public void setAssigned(Context context, String groupName, boolean assign) {
+            Log.i(TAG, "Group changed: " + groupName);
+
+            AppXpPacket app = filtered.get(getAdapterPosition());
             updateAssignments(context, app, groupName, assign);
             notifyItemChanged(getAdapterPosition());
         }
 
-        private void updateAssignments(final Context context, final XLuaApp app, String groupName, final boolean assign) {
-            final String pkgName = app.getPackageName();
+        private void updateAssignments(final Context context, final AppXpPacket app, String groupName, final boolean assign) {
+            final String pkgName = app.packageName;
             Log.i(TAG, pkgName + " " + groupName + "=" + assign);
-
             final ArrayList<String> hookIds = new ArrayList<>();
-            final Set<String> ids = new HashSet<>();
-            for (XLuaHook hook : hooks)
-                if (hook.isAvailable(pkgName, collection) &&
-                        (groupName == null || groupName.equals(hook.getGroup()))) {
+            for (XLuaHook hook : hooks) {
+                if (hook.isAvailable(pkgName, collection) && (groupName == null || groupName.equals(hook.getGroup()))) {
                     hookIds.add(hook.getId());
-                    if (assign) {
-                        //if(ids.contains(hook.getGroup())) {
-                        //    String wMsg = HookWarnings.getWarningMessage(context, hook.getGroup());
-                        //    if(wMsg != null) {
-                        //        ids.add(hook.getGroup());
-                        //        new HookWarningDialog()
-                        //                .setGroup(group)
-                        //                .setText(wMsg)
-                        //                .show(fragmentLoader.getManager(), context.getString(R.string.title_hook_warning));
-                        //    }
-                        //}
-                        app.addAssignment(new LuaAssignment(hook));
-                    }
+                    if(assign)
+                        app.addAssignment(AssignmentPacket.create(hook));
                     else
-                        app.removeAssignment(new LuaAssignment(hook));
+                        app.removeAssignment(AssignmentPacket.create(hook));
                 }
+            }
 
-            executor.submit(new Runnable() {
-                @Override
-                public void run() {
-                    XLuaCall.assignHooks(
-                            context,app.getUid(), pkgName, hookIds, !assign, app.getForceStop());
-                }
-            });
+            executor.submit(() -> AssignHooksCommand.call(context, AssignmentsPacket.create(app.uid, app.packageName, hookIds, !assign, app.forceStop)));
         }
 
         void updateExpand() {
-            XLuaApp app = filtered.get(getAdapterPosition());
-            boolean isExpanded = (group == null && expanded.containsKey(app.getPackageName()) && Boolean.TRUE.equals(expanded.get(app.getPackageName())));
+            AppXpPacket app = filtered.get(getAdapterPosition());
+            boolean isExpanded = (group == null && expanded.containsKey(app.packageName) && Boolean.TRUE.equals(expanded.get(app.packageName)));
             ivExpander.setImageLevel(isExpanded ? 1 : 0);
             ivExpander.setVisibility(group == null ? View.VISIBLE : View.INVISIBLE);
             grpExpanded.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
@@ -383,7 +385,7 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
         setHasStableIds(true);
     }
 
-    void set(List<String> collection, List<XLuaHook> hooks, List<XLuaApp> apps) {
+    void set(List<String> collection, List<XLuaHook> hooks, List<AppXpPacket> apps) {
         this.dataChanged = (this.hooks.size() != hooks.size());
         for (int i = 0; i < this.hooks.size() && !this.dataChanged; i++) {
             XLuaHook hook = this.hooks.get(i);
@@ -411,12 +413,7 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
         final Collator collator = Collator.getInstance(Locale.getDefault());
         collator.setStrength(Collator.SECONDARY); // Case insensitive, process accents etc
 
-        Collections.sort(apps, new Comparator<XLuaApp>() {
-            @Override
-            public int compare(XLuaApp app1, XLuaApp app2) {
-                return collator.compare(app1.getLabel(), app2.getLabel());
-            }
-        });
+        Collections.sort(apps, (app1, app2) -> collator.compare(app1.label, app2.label));
 
         all.clear();
         all.addAll(apps);
@@ -433,7 +430,7 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
     }
 
     void setGroup(String name) {
-        if (group == null ? name != null : !group.equals(name)) {
+        if (!Objects.equals(group, name)) {
             group = name;
             this.dataChanged = true;
             getFilter().filter(query);
@@ -444,24 +441,27 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
     void restrict(final Context context) {
         final List<LuaAssignmentPacket> actions = new ArrayList<>();
         boolean revert = false;
-        for (XLuaApp app : filtered)
-            for (XLuaHook hook : hooks)
+        for (AppXpPacket app : filtered) {
+            for (XLuaHook hook : hooks) {
                 if (group == null || group.equals(hook.getGroup())) {
-                    LuaAssignment assignment = new LuaAssignment(hook);
+                    AssignmentPacket assignment = new AssignmentPacket(hook);
                     if (app.hasAssignment(assignment)) {
                         revert = true;
                         break;
                     }
                 }
+            }
+        }
+
         Log.i(TAG, "revert=" + revert);
 
-        for (XLuaApp app : filtered) {
+        for (AppXpPacket app : filtered) {
             ArrayList<String> hookIds = new ArrayList<>();
 
             for (XLuaHook hook : hooks)
-                if (hook.isAvailable(app.getPackageName(), this.collection) &&
+                if (hook.isAvailable(app.packageName, this.collection) &&
                         (group == null || group.equals(hook.getGroup()))) {
-                    LuaAssignment assignment = new LuaAssignment(hook);
+                    AssignmentPacket assignment = new AssignmentPacket(hook);
                     if (revert) {
                         if (app.hasAssignment(assignment)) {
                             hookIds.add(hook.getId());
@@ -475,14 +475,14 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
                     }
                 }
 
-            if (hookIds.size() > 0) {
-                Log.i(TAG, "Applying " + group + "=" + hookIds.size() + "=" + revert + " package=" + app.getPackageName());
+            if (!hookIds.isEmpty()) {
+                Log.i(TAG, "Applying " + group + "=" + hookIds.size() + "=" + revert + " package=" + app.packageName);
                 LuaAssignmentPacket packet = new LuaAssignmentPacket();
                 packet.setHookIds(hookIds);
-                packet.setCategory(app.getPackageName());
-                packet.setUser(app.getUid());
+                packet.setCategory(app.packageName);
+                packet.setUser(app.uid);
                 packet.setIsDelete(revert);
-                packet.setKill(app.getForceStop());
+                packet.setKill(app.forceStop);
                 actions.add(packet);
             }
         }
@@ -506,16 +506,16 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
             protected FilterResults performFiltering(CharSequence query) {
                 AdapterApp.this.query = query;
 
-                List<XLuaApp> visible = new ArrayList<>();
+                List<AppXpPacket> visible = new ArrayList<>();
                 if (show == enumShow.all || !TextUtils.isEmpty(query))
                     visible.addAll(all);
                 else
-                    for (XLuaApp app : all)
-                        if (app.getUid() > Process.FIRST_APPLICATION_UID && app.isEnabled() &&
-                                (show == enumShow.icon ? app.getIcon() > 0 : !app.isSystem()))
+                    for (AppXpPacket app : all)
+                        if (app.uid > Process.FIRST_APPLICATION_UID && app.enabled &&
+                                (show == enumShow.icon ? app.icon > 0 : !app.system))
                             visible.add(app);
 
-                List<XLuaApp> results = new ArrayList<>();
+                List<AppXpPacket> results = new ArrayList<>();
 
                 if (TextUtils.isEmpty(query))
                     results.addAll(visible);
@@ -555,7 +555,7 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
                         uid = -1;
                     }
 
-                    for (XLuaApp app : visible) {
+                    for (AppXpPacket app : visible) {
                         if (restricted || unrestricted) {
                             int assignments = app.getAssignments(group).size();
                             if (restricted && assignments == 0)
@@ -563,20 +563,20 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
                             if (unrestricted && assignments > 0)
                                 continue;
                         }
-                        if (system && !app.isSystem())
+                        if (system && !app.system)
                             continue;
-                        if (user && app.isSystem())
+                        if (user && app.system)
                             continue;
 
-                        if (app.getUid() == uid ||
-                                app.getPackageName().toLowerCase().contains(q) ||
-                                (app.getLabel() != null && app.getLabel().toLowerCase().contains(q)))
+                        if (app.uid == uid ||
+                                app.packageName.toLowerCase().contains(q) ||
+                                (app.label != null && app.label.toLowerCase().contains(q)))
                             results.add(app);
                     }
                 }
 
                 if (results.size() == 1) {
-                    String packageName = results.get(0).getPackageName();
+                    String packageName = results.get(0).packageName;
                     if (!expanded.containsKey(packageName)) {
                         expanded1 = true;
                         expanded.put(packageName, true);
@@ -591,9 +591,9 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
 
             @Override
             protected void publishResults(CharSequence query, FilterResults result) {
-                final List<XLuaApp> apps = (result.values == null
-                        ? new ArrayList<XLuaApp>()
-                        : (List<XLuaApp>) result.values);
+                final List<AppXpPacket> apps = (result.values == null
+                        ? new ArrayList<AppXpPacket>()
+                        : (List<AppXpPacket>) result.values);
                 Log.i(TAG, "Filtered apps count=" + apps.size());
 
                 if (dataChanged) {
@@ -612,56 +612,48 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
 
     private class AppDiffCallback extends DiffUtil.Callback {
         private final boolean refresh;
-        private final List<XLuaApp> prev;
-        private final List<XLuaApp> next;
+        private final List<AppXpPacket> prev;
+        private final List<AppXpPacket> next;
 
-        AppDiffCallback(boolean refresh, List<XLuaApp> prev, List<XLuaApp> next) {
+        AppDiffCallback(boolean refresh, List<AppXpPacket> prev, List<AppXpPacket> next) {
             this.refresh = refresh;
             this.prev = prev;
             this.next = next;
         }
 
         @Override
-        public int getOldListSize() {
-            return prev.size();
-        }
+        public int getOldListSize() { return prev.size(); }
 
         @Override
-        public int getNewListSize() {
-            return next.size();
-        }
+        public int getNewListSize() { return next.size(); }
 
         @Override
         public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-            XLuaApp app1 = prev.get(oldItemPosition);
-            XLuaApp app2 = next.get(newItemPosition);
-
-            return (!refresh && app1.getPackageName().equals(app2.getPackageName()) && Objects.equals(app1.getUid(), app2.getUid()));
-            //return (!refresh && app1.getPackageName().equals(app2.getPackageName()) && app1.getUid() == app2.getUid());
+            AppXpPacket app1 = prev.get(oldItemPosition);
+            AppXpPacket app2 = next.get(newItemPosition);
+            return (!refresh && app1.packageName.equals(app2.packageName) && Objects.equals(app1.uid, app2.uid));
         }
 
         @Override
         public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-            XLuaApp app1 = prev.get(oldItemPosition);
-            XLuaApp app2 = next.get(newItemPosition);
+            AppXpPacket app1 = prev.get(oldItemPosition);
+            AppXpPacket app2 = next.get(newItemPosition);
 
-            if (!Objects.equals(app1.getIcon(), app2.getIcon()) ||
-                    !app1.getLabel().equals(app2.getLabel()) ||
-                    app1.isEnabled() != app2.isEnabled() ||
-                    app1.isPersistent() != app2.isPersistent() ||
+            if (!Objects.equals(app1.icon, app2.icon) ||
+                    !app1.label.equals(app2.label) ||
+                    app1.enabled != app2.enabled ||
+                    app1.persistent != app2.persistent ||
                     app1.getAssignments(group).size() != app2.getAssignments(group).size())
                 return false;
 
-            for (LuaAssignment a1 : app1.getAssignments(group)) {
-                //Hmmm make sure this still works
-                int i2 = app2.assignmentIndex(a1); // by hookid
-                if (i2 < 0)
-                    return false;
+            for (AssignmentPacket a1 : app1.getAssignments(group)) {
+                int i2 = app2.assignmentIndex(a1);
+                if (i2 < 0) return false;
 
-                LuaAssignment a2 = app2.getAssignmentAt(i2);
-                if (a1.getInstalled() != a2.getInstalled() ||
-                        a1.getUsed() != a2.getUsed() ||
-                        a1.getRestricted() != a2.getRestricted())
+                AssignmentPacket a2 = app2.assignmentAt(i2);
+                if (a1.installed != a2.installed ||
+                        a1.used != a2.used ||
+                        a1.restricted != a2.restricted)
                     return false;
             }
 
@@ -671,8 +663,8 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
 
     @Override
     public long getItemId(int position) {
-        XLuaApp assignment = filtered.get(position);
-        return ((long) assignment.getPackageName().hashCode()) << 32 | assignment.getUid();
+        AppXpPacket assignment = filtered.get(position);
+        return ((long) assignment.packageName.hashCode()) << 32 | assignment.uid;
     }
 
     @Override
@@ -685,51 +677,44 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.unWire();
-        XLuaApp app = filtered.get(position);
+        AppXpPacket app = filtered.get(position);
         app.setListener(holder);
 
         Resources resources = holder.itemView.getContext().getResources();
 
         // App icon
-        if (app.getIcon() <= 0)
+        if (app.icon <= 0)
             holder.ivIcon.setImageResource(android.R.drawable.sym_def_app_icon);
-        else {
-            Uri uri = Uri.parse("android.resource://" + app.getPackageName() + "/" + app.getIcon());
-            GlideApp.with(holder.itemView.getContext())
-                    .applyDefaultRequestOptions(new RequestOptions().format(DecodeFormat.PREFER_RGB_565))
-                    .load(uri)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .override(iconSize, iconSize)
-                    .into(holder.ivIcon);
-        }
+        else
+            UserClientAppContext.attachIcon(holder.itemView.getContext(), iconSize, holder.ivIcon, app.packageName, app.icon);
+
 
         // App info
-        holder.itemView.setBackgroundColor(app.isSystem()
+        holder.itemView.setBackgroundColor(app.system
                 ? XUtil.resolveColor(holder.itemView.getContext(), R.attr.colorSystem)
                 : resources.getColor(android.R.color.transparent, null));
 
-        holder.tvLabel.setText(app.getLabel());
-        holder.tvUid.setText(Integer.toString(app.getUid()));
-        holder.tvPackage.setText(app.getPackageName());
-        holder.ivPersistent.setVisibility(app.isPersistent() ? View.VISIBLE : View.GONE);
+        holder.tvLabel.setText(app.label);
+        holder.tvUid.setText(Integer.toString(app.uid));
+        holder.tvPackage.setText(app.packageName);
+        holder.ivPersistent.setVisibility(app.persistent ? View.VISIBLE : View.GONE);
 
         List<XLuaHook> selectedHooks = new ArrayList<>();
         for (XLuaHook hook : hooks)
-            if (hook.isAvailable(app.getPackageName(), collection) &&
+            if (hook.isAvailable(app.packageName, collection) &&
                     (group == null || group.equals(hook.getGroup())))
                 selectedHooks.add(hook);
 
         // Assignment info
-        holder.cbAssigned.setChecked(app.getAssignments(group).size() > 0);
+        holder.cbAssigned.setChecked(!app.getAssignments(group).isEmpty());
         holder.cbAssigned.setButtonTintList(ColorStateList.valueOf(resources.getColor(
-                selectedHooks.size() > 0 && app.getAssignments(group).size() == selectedHooks.size()
+                !selectedHooks.isEmpty() && app.getAssignments(group).size() == selectedHooks.size()
                         ? R.color.colorAccent
                         : android.R.color.darker_gray, null)));
 
-        holder.tvAndroid.setVisibility("android".equals(app.getPackageName()) ? View.VISIBLE : View.GONE);
-        holder.cbForceStop.setChecked(app.getForceStop());
-        holder.cbForceStop.setEnabled(!app.isPersistent());
+        holder.tvAndroid.setVisibility("android".equals(app.packageName) ? View.VISIBLE : View.GONE);
+        holder.cbForceStop.setChecked(app.forceStop);
+        holder.cbForceStop.setEnabled(!app.persistent);
         holder.adapter.set(app, selectedHooks, holder.itemView.getContext());
         holder.updateExpand();
         holder.wire();

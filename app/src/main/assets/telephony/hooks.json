@@ -59,7 +59,7 @@
     "usage":true,
     "notify":false,
     "luaScript": "@id_telephony_countryiso",
-    "settings":[ "zone.country.iso" ]
+    "settings":[ "region.country.iso" ]
   },
   {
     "builtin": true,
@@ -929,7 +929,7 @@
     "usage":true,
     "notify":false,
     "luaScript": "@id_telephony_countryiso",
-    "settings":[ "zone.country.iso" ]
+    "settings":[ "region.country.iso" ]
   },
   {
     "builtin": false,
@@ -950,7 +950,7 @@
     "usage":true,
     "notify":false,
     "luaScript": "@id_telephony_countryiso",
-    "settings":[ "zone.country.iso" ]
+    "settings":[ "region.country.iso" ]
   },
 
   {

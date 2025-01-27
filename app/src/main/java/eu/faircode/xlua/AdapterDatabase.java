@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
 
 public class AdapterDatabase extends RecyclerView.Adapter<AdapterDatabase.ViewHolder> {
     private static final String TAG = "XLua.ADDatabase";
-    private List<XDatabase> dbs = new ArrayList<>();
+    private List<XDatabaseOld> dbs = new ArrayList<>();
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public class ViewHolder extends RecyclerView.ViewHolder
@@ -42,7 +42,7 @@ public class AdapterDatabase extends RecyclerView.Adapter<AdapterDatabase.ViewHo
 
         public void onClick(View view) {
             Log.i(TAG, "onClick");
-            final XDatabase prop = dbs.get(getAdapterPosition());
+            final XDatabaseOld prop = dbs.get(getAdapterPosition());
             int id = view.getId();
             String name = prop.getName();
 
@@ -58,7 +58,7 @@ public class AdapterDatabase extends RecyclerView.Adapter<AdapterDatabase.ViewHo
 
     AdapterDatabase() { setHasStableIds(true); }
 
-    void set(List<XDatabase> db_vals) {
+    void set(List<XDatabaseOld> db_vals) {
         dbs.clear();
         Log.i(TAG, "Set has Init=" + dbs.size());
         dbs.addAll(db_vals);
@@ -79,7 +79,7 @@ public class AdapterDatabase extends RecyclerView.Adapter<AdapterDatabase.ViewHo
 
     @Override
     public void onBindViewHolder(final AdapterDatabase.ViewHolder holder, int position) {
-        XDatabase db = dbs.get(position);
+        XDatabaseOld db = dbs.get(position);
 
         holder.tvDatabaseName.setText(db.getName());
         holder.tvDatabasePath.setText(db.getPath());

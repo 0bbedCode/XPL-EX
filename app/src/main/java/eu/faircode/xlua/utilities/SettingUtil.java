@@ -20,11 +20,12 @@ import eu.faircode.xlua.api.XResult;
 import eu.faircode.xlua.api.settings.LuaSettingExtended;
 import eu.faircode.xlua.api.settings.LuaSettingPacket;
 import eu.faircode.xlua.api.xlua.XLuaCall;
+import eu.faircode.xlua.x.Str;
 
 public class SettingUtil {
 
     public static final List<String> EX_NAMES = Arrays.asList("Index", "Vortex");
-    public static final List<String> UPPER_PAIRS = Arrays.asList("Stat", "Uuid", "Wifi", "Vpn", "Ex", "Io", "Su", "Arch", "Cpuid", "Db", "Egl", "Ab", "Gms",  "Hw", "Sms", "Icc", "No", "Sys", "Isp", "Cid", "Lac", "Mac", "Net", "Ad", "Drm", "Gsf", "Lcc", "Meid", "Imei", "Bssid", "Ssid", "Esim", "Sim", "Sku", "Lac", "Cid", "Msin", "Mnc", "Mcc", "Adb", "Os", "Utc", "Abi", "Gps", "Dns", "Vm", "Id", "Gsm", "Cpu", "Gpu", "Fp", "Rom", "Nfc", "Soc", "Url", "Dev", "Sdk", "Iso");
+    public static final List<String> UPPER_PAIRS = Arrays.asList("Tz", "Getprop", "Ipc", "Meminfo", "Lcd", "Gles", "Va", "Ls", "Stat", "Uuid", "Wifi", "Vpn", "Ex", "Io", "Su", "Arch", "Cpuid", "Db", "Egl", "Ab", "Gms",  "Hw", "Sms", "Icc", "No", "Sys", "Isp", "Cid", "Lac", "Mac", "Net", "Ad", "Drm", "Gsf", "Lcc", "Meid", "Imei", "Bssid", "Ssid", "Esim", "Sim", "Sku", "Lac", "Cid", "Msin", "Mnc", "Mcc", "Adb", "Os", "Utc", "Abi", "Gps", "Dns", "Vm", "Id", "Gsm", "Cpu", "Gpu", "Fp", "Rom", "Nfc", "Soc", "Url", "Dev", "Sdk", "Iso");
     public static final List<String> XP_SETTINGS = Arrays.asList("show", "value.imei", "value.meid", "value.email", "value.android_id", "value.serial", "value.phone_number", "collection", "theme", "restrict_new_apps", "notify_new_apps", "notify");
 
     public static boolean isBooleanTypeSetting(String settingName) { return settingName.endsWith(".bool") || settingName.contains(".bool.") || settingName.startsWith("bool."); }
@@ -103,17 +104,37 @@ public class SettingUtil {
                     if(o1 == null || o2 == null || o1.getName() == null || o2.getName() == null)
                         return 0;
 
+                    // First, sort by built-in settings
                     if (o1.isBuiltIntSetting() && !o2.isBuiltIntSetting())
                         return -1; // o1 comes before o2
                     else if (!o1.isBuiltIntSetting() && o2.isBuiltIntSetting())
                         return 1; // o2 comes before o1
 
+                    // If both are built-in or both are not built-in, proceed with category sorting
+                    String category1 = o1.getName().split("\\.")[0];
+                    String category2 = o2.getName().split("\\.")[0];
+
+                    if (!category1.equalsIgnoreCase(category2)) {
+                        return category1.compareToIgnoreCase(category2);
+                    }
+
+                    // Within the same category, sort by .parent., regular, and .list
+                    boolean isParent1 = o1.getName().contains(".parent.");
+                    boolean isParent2 = o2.getName().contains(".parent.");
+                    boolean isList1 = o1.getName().endsWith(".list");
+                    boolean isList2 = o2.getName().endsWith(".list");
+
+                    if (isParent1 && !isParent2) return -1;
+                    if (!isParent1 && isParent2) return 1;
+                    if (isList1 && !isList2) return 1;
+                    if (!isList1 && isList2) return -1;
+
+                    // If all else is equal, sort alphabetically
                     return o1.getName().compareToIgnoreCase(o2.getName());
                 }
             });
         }
     }
-
     public static boolean isBuiltInSetting(String settingName) {
         return XP_SETTINGS.contains(settingName) ||
                 settingName.endsWith(".randomize") || settingName.equalsIgnoreCase("lac,cid"); }
@@ -182,9 +203,11 @@ public class SettingUtil {
         boolean started = true;
         StringBuilder low = new StringBuilder();
 
+        //Should we parse numerics ??????
+
         for (int i = 0; i < lowered.length(); i++) {
             char c = lowered.charAt(i);
-            if (c == ' ' || c == '_' || c == '.' || c == '\n' || c == '\0' || c == '\t' || c == ',') {
+            if (c == ' ' || c == '_' || c == '.' || c == '\n' || c == '\0' || c == '\t' || c == ',' || Character.isDigit(c)) {
                 if (low.length() > 0) {
                     if (name.length() > 0) name.append(" ");
                     name.append(handleLowerHalf(low.toString()));
@@ -206,6 +229,11 @@ public class SettingUtil {
             if (name.length() > 0) name.append(" ");
             name.append(handleLowerHalf(low.toString()));
         }
+
+        //String oName = name.toString();
+        //List<String> parts = Str.splitToList(oName, " ");
+        //parts.remove(0);
+        //return Str.joinList(parts, " ");
 
         return name.toString();
     }

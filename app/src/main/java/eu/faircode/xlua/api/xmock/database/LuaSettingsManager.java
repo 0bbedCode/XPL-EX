@@ -5,9 +5,9 @@ import android.content.Context;
 import java.util.Collection;
 import java.util.HashMap;
 
-import eu.faircode.xlua.Str;
-import eu.faircode.xlua.XDatabase;
-import eu.faircode.xlua.XGlobals;
+import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.XDatabaseOld;
+import eu.faircode.xlua.UberCore888;
 import eu.faircode.xlua.api.XResult;
 import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.api.settings.LuaSetting;
@@ -34,12 +34,12 @@ public class LuaSettingsManager {
     public static final String SETTING_THEME = "theme";
     public static final String SETTING_COLLECTION = "collection";
 
-    public static XResult putSetting(Context context, XDatabase db, String settingName) { return putSetting(context, db, UserIdentityPacket.GLOBAL_USER, UserIdentityPacket.GLOBAL_NAMESPACE, settingName, null, false); }
-    public static XResult putSetting(Context context, XDatabase db, String settingName, String value) { return putSetting(context, db, UserIdentityPacket.GLOBAL_USER, UserIdentityPacket.GLOBAL_NAMESPACE, settingName, value, false); }
-    public static XResult putSetting(Context context, XDatabase db, Integer user, String category, String settingName) { return putSetting(context, db, user, category, settingName, null); }
-    public static XResult putSetting(Context context, XDatabase db, Integer user, String category, String settingName, String value) { return putSetting(context, db, user, category, settingName, value, false); }
-    public static XResult putSetting(Context context, XDatabase db, Integer user, String category, String settingName, String value, Boolean kill) { return putSetting(context, db, LuaSettingPacket.create(user, category, settingName, value, null, LuaSettingPacket.getCodeFromValue(value), kill)); }
-    public static XResult putSetting(Context context, XDatabase db, LuaSettingPacket setting) {
+    public static XResult putSetting(Context context, XDatabaseOld db, String settingName) { return putSetting(context, db, UserIdentityPacket.GLOBAL_USER, UserIdentityPacket.GLOBAL_NAMESPACE, settingName, null, false); }
+    public static XResult putSetting(Context context, XDatabaseOld db, String settingName, String value) { return putSetting(context, db, UserIdentityPacket.GLOBAL_USER, UserIdentityPacket.GLOBAL_NAMESPACE, settingName, value, false); }
+    public static XResult putSetting(Context context, XDatabaseOld db, Integer user, String category, String settingName) { return putSetting(context, db, user, category, settingName, null); }
+    public static XResult putSetting(Context context, XDatabaseOld db, Integer user, String category, String settingName, String value) { return putSetting(context, db, user, category, settingName, value, false); }
+    public static XResult putSetting(Context context, XDatabaseOld db, Integer user, String category, String settingName, String value, Boolean kill) { return putSetting(context, db, LuaSettingPacket.create(user, category, settingName, value, null, LuaSettingPacket.getCodeFromValue(value), kill)); }
+    public static XResult putSetting(Context context, XDatabaseOld db, LuaSettingPacket setting) {
         XResult res = XResult.create().setMethodName("putSetting").setExtra(setting.toString());
         setting.ensureIdentification();
         boolean result =
@@ -60,12 +60,12 @@ public class LuaSettingsManager {
         return res.setResult(result);
     }
 
-    public static boolean getSettingBoolean(Context context, XDatabase db, String settingName) { return Boolean.parseBoolean(getSettingValue(context, db, settingName, UserIdentityPacket.GLOBAL_USER, UserIdentityPacket.GLOBAL_NAMESPACE)); }
-    public static boolean getSettingBoolean(Context context, XDatabase db, String settingName, int user, String category) { return Boolean.parseBoolean(getSettingValue(context, db, settingName, user, category)); }
+    public static boolean getSettingBoolean(Context context, XDatabaseOld db, String settingName) { return Boolean.parseBoolean(getSettingValue(context, db, settingName, UserIdentityPacket.GLOBAL_USER, UserIdentityPacket.GLOBAL_NAMESPACE)); }
+    public static boolean getSettingBoolean(Context context, XDatabaseOld db, String settingName, int user, String category) { return Boolean.parseBoolean(getSettingValue(context, db, settingName, user, category)); }
 
-    public static String getSettingValue(Context context, XDatabase db, String settingName) { return getSettingValue(context, db, settingName, UserIdentityPacket.GLOBAL_USER, UserIdentityPacket.GLOBAL_NAMESPACE); }
-    public static String getSettingValue(Context context, XDatabase db, String settingName, int user, String category) {  return getSettingValue(context, db, LuaSettingPacket.create(user, category, settingName)); }
-    public static String getSettingValue(Context context, XDatabase db, LuaSettingPacket packet) {
+    public static String getSettingValue(Context context, XDatabaseOld db, String settingName) { return getSettingValue(context, db, settingName, UserIdentityPacket.GLOBAL_USER, UserIdentityPacket.GLOBAL_NAMESPACE); }
+    public static String getSettingValue(Context context, XDatabaseOld db, String settingName, int user, String category) {  return getSettingValue(context, db, LuaSettingPacket.create(user, category, settingName)); }
+    public static String getSettingValue(Context context, XDatabaseOld db, LuaSettingPacket packet) {
         packet.ensureIdentification();
         String v = SqlQuerySnake
                 .create(db, LuaSetting.Table.NAME)
@@ -97,8 +97,8 @@ public class LuaSettingsManager {
         return v;
     }
 
-    public static Collection<LuaSetting> getSettings(XDatabase db, LuaSettingPacket packet) { return getSettings(db, packet.getUser(), packet.getCategory()); }
-    public static Collection<LuaSetting> getSettings(XDatabase db, int user, String category) {
+    public static Collection<LuaSetting> getSettings(XDatabaseOld db, LuaSettingPacket packet) { return getSettings(db, packet.getUser(), packet.getCategory()); }
+    public static Collection<LuaSetting> getSettings(XDatabaseOld db, int user, String category) {
         return SqlQuerySnake
                 .create(db, LuaSetting.Table.NAME)
                 .ensureDatabaseIsReady()
@@ -107,8 +107,8 @@ public class LuaSettingsManager {
                 .queryAs(LuaSetting.class, true);
     }
 
-    public static Collection<LuaSettingExtended> getAllSettings(Context context, XDatabase db, LuaSettingPacket packet) { return getAllSettings(context, db, packet.getUser(), packet.getCategory());  }
-    public static Collection<LuaSettingExtended> getAllSettings(Context context, XDatabase db, int user, String category) {
+    public static Collection<LuaSettingExtended> getAllSettings(Context context, XDatabaseOld db, LuaSettingPacket packet) { return getAllSettings(context, db, packet.getUser(), packet.getCategory());  }
+    public static Collection<LuaSettingExtended> getAllSettings(Context context, XDatabaseOld db, int user, String category) {
         HashMap<String, LuaSettingExtended> allSettings = new HashMap<>();
         Collection<LuaSettingDefault> mappedSettings = getMappedSettings(context, db);
         Collection<LuaSetting> userSettings = getSettings(db, user, category);
@@ -134,7 +134,7 @@ public class LuaSettingsManager {
         }
 
         XLog.i("All settings before parsing=" + allSettings.size());
-        Collection<XLuaHook> hooks = XGlobals.getHooks(context, db, true);
+        Collection<XLuaHook> hooks = UberCore888.getHooks(context, db, true);
         for(XLuaHook hook : hooks) {
             String[] settings = hook.getSettings();
             if(settings == null || settings.length < 1)
@@ -156,8 +156,8 @@ public class LuaSettingsManager {
         return allSettings.values();
     }
 
-    public static LuaSetting getSetting(XDatabase db, String settingName, int user, String category) { return getSetting(db, LuaSettingPacket.create(user, category, settingName)); }
-    public static LuaSetting getSetting(XDatabase db, LuaSettingPacket packet) {
+    public static LuaSetting getSetting(XDatabaseOld db, String settingName, int user, String category) { return getSetting(db, LuaSettingPacket.create(user, category, settingName)); }
+    public static LuaSetting getSetting(XDatabaseOld db, LuaSettingPacket packet) {
         packet.ensureIdentification();
         return SqlQuerySnake
                 .create(db, LuaSetting.Table.NAME)
@@ -166,7 +166,7 @@ public class LuaSettingsManager {
                 .queryGetFirstAs(LuaSetting.class, true);
     }
 
-    public static XResult putDefaultMappedSetting(Context context, XDatabase db, LuaSettingPacket setting) {
+    public static XResult putDefaultMappedSetting(Context context, XDatabaseOld db, LuaSettingPacket setting) {
         XLog.i("Setting=" + setting.toString() + " Is Delete=" + setting.isDeleteDefault());
         XResult res = XResult.create().setMethodName("putDefaultSetting").setExtra(setting.toString());
         boolean result =
@@ -188,7 +188,7 @@ public class LuaSettingsManager {
         return res.setResult(result);
     }
 
-    public static String getDefaultMappedSettingValue(XDatabase db, String settingName) {
+    public static String getDefaultMappedSettingValue(XDatabaseOld db, String settingName) {
         return SqlQuerySnake
                 .create(db, LuaSettingDefault.Table.NAME)
                 .ensureDatabaseIsReady()
@@ -196,7 +196,7 @@ public class LuaSettingsManager {
                 .queryGetFirstString(LuaSettingDefault.Table.FIELD_DEFAULT_VALUE, true);
     }
 
-    public static LuaSettingDefault getMappedSetting(Context context, XDatabase db, String settingName) {
+    public static LuaSettingDefault getMappedSetting(Context context, XDatabaseOld db, String settingName) {
         return SqlQuerySnake
                 .create(db, LuaSettingDefault.Table.NAME)
                 .ensureDatabaseIsReady()
@@ -204,7 +204,7 @@ public class LuaSettingsManager {
                 .queryGetFirstAs(LuaSettingDefault.class, true);
     }
 
-    public static Collection<LuaSettingDefault> getMappedSettings(Context context, XDatabase db) {
+    public static Collection<LuaSettingDefault> getMappedSettings(Context context, XDatabaseOld db) {
         return DatabaseHelp.getOrInitTable(
                 context,
                 db,
@@ -216,7 +216,7 @@ public class LuaSettingsManager {
                 COUNT);
     }
 
-    public static boolean compareJsonToDatabase(Context context, XDatabase db) {
+    public static boolean compareJsonToDatabase(Context context, XDatabaseOld db) {
         return DatabaseHelp.compareJsonWithDatabase(
                 context,
                 db,
@@ -227,8 +227,8 @@ public class LuaSettingsManager {
                 true);
     }
 
-    public static boolean prepareDatabaseTable(XDatabase db) { return DatabaseHelp.prepareDatabase(db, LuaSetting.Table.NAME, LuaSetting.Table.columns); }
-    public static boolean forceDatabaseCheck(Context context, XDatabase db) {
+    public static boolean prepareDatabaseTable(XDatabaseOld db) { return DatabaseHelp.prepareDatabase(db, LuaSetting.Table.NAME, LuaSetting.Table.columns); }
+    public static boolean forceDatabaseCheck(Context context, XDatabaseOld db) {
         return DatabaseHelp.prepareTableIfMissingOrInvalidCount(
                 context,
                 db,

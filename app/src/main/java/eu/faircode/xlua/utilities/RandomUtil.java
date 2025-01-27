@@ -2,9 +2,9 @@ package eu.faircode.xlua.utilities;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.ThreadLocalRandom;
 
 import eu.faircode.xlua.logger.XLog;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
 public class RandomUtil {
     // Array containing abbreviated versions of time zones
@@ -47,25 +47,25 @@ public class RandomUtil {
     public static final String YYYY_MM_DD = "yyyy-MM-dd";
     public static final String DD_MM_YYYY__HHMMSS = "dd-MM-yyyy HH:mm:ss";
 
-    public static String getTimeZone() { return TIMEZONE_FULL[ThreadLocalRandom.current().nextInt(0, TIMEZONE_FULL.length)]; }
-    public static String getTimeZoneAbbreviated() { return TIMEZONE_AB[ThreadLocalRandom.current().nextInt(0, TIMEZONE_AB.length)];  }
+    public static String getTimeZone() { return TIMEZONE_FULL[RandomGenerator.nextInt(0, TIMEZONE_FULL.length)]; }
+    public static String getTimeZoneAbbreviated() { return TIMEZONE_AB[RandomGenerator.nextInt(0, TIMEZONE_AB.length)];  }
 
-    public static String getWeekDayAbbreviated() { return WEEK_DAYS_AB[ThreadLocalRandom.current().nextInt(0, WEEK_DAYS_AB.length)]; }
-    public static String getWeekDay() { return WEEK_DAYS_FULL[ThreadLocalRandom.current().nextInt(0, WEEK_DAYS_FULL.length)]; }
+    public static String getWeekDayAbbreviated() { return WEEK_DAYS_AB[RandomGenerator.nextInt(0, WEEK_DAYS_AB.length)]; }
+    public static String getWeekDay() { return WEEK_DAYS_FULL[RandomGenerator.nextInt(0, WEEK_DAYS_FULL.length)]; }
 
     public static int getWeekDayNumber() { return getInt(1, WEEK_DAYS_AB.length + 1); }
     public static String getWeekDayNumberFormatted() { return getIntEnsureFormat(1, WEEK_DAYS_AB.length + 1); }
 
-    public static String getMonthAbbreviated() { return MONTHS_AB[ThreadLocalRandom.current().nextInt(0, MONTHS_AB.length)]; }
-    public static String getMonth() { return MONTHS_FULL[ThreadLocalRandom.current().nextInt(0, MONTHS_FULL.length)]; }
+    public static String getMonthAbbreviated() { return MONTHS_AB[RandomGenerator.nextInt(0, MONTHS_AB.length)]; }
+    public static String getMonth() { return MONTHS_FULL[RandomGenerator.nextInt(0, MONTHS_FULL.length)]; }
 
     public static int getMonthNumber() { return getInt(1, MONTHS_AB.length + 1); }
     public static String getMonthNumberFormatted() { return getIntEnsureFormat(1, MONTHS_AB.length + 1); }
 
-    public static int getInt(int originStart, int boundEndBefore) { return ThreadLocalRandom.current().nextInt(originStart, boundEndBefore); }
+    public static int getInt(int originStart, int boundEndBefore) { return RandomGenerator.nextInt(originStart, boundEndBefore); }
 
     public static String getIntEnsureFormat(int originStart, int bound) {
-        int random = ThreadLocalRandom.current().nextInt(originStart, bound);
+        int random = RandomGenerator.nextInt(originStart, bound);
         String startStr = String.valueOf(originStart);
         String boundStr = String.valueOf(bound);
         String rStr = String.valueOf(random);
@@ -124,8 +124,8 @@ public class RandomUtil {
             "RMX1931", "Bloom", "Griffin", "Judy", "Phoenix", "PAHM00", "I001D", "A50"
     };
 
-    public static String getPhoneCodeName() { return PHONE_CODENAMES[ThreadLocalRandom.current().nextInt(0, PHONE_CODENAMES.length)]; }
-    public static String getPhoneModel() { return PHONE_MODELS[ThreadLocalRandom.current().nextInt(0, PHONE_MODELS.length)]; }
+    public static String getPhoneCodeName() { return PHONE_CODENAMES[RandomGenerator.nextInt(0, PHONE_CODENAMES.length)]; }
+    public static String getPhoneModel() { return PHONE_MODELS[RandomGenerator.nextInt(0, PHONE_MODELS.length)]; }
 
     // Array of Android version code names
     /*public static final String[] androidCodeNames = {

@@ -13,15 +13,84 @@
     <attr name="colorTextDivider" format="reference" />
     <attr name="colorDividerBack" format="reference" />
 
+    <attr name="hookMenu" format="reference" />
+    <attr name="randomButton" format="reference" />
+    <attr name="colorUnsavedSetting" format="reference" />
+    <attr name="resetButton" format="reference" />
+    <attr name="saveButton" format="reference" />
+    <attr name="deleteButton" format="reference" />
+    <attr name="settingMenu" format="reference" />
+    <attr name="configMenu" format="reference" />
+    <attr name="propMenu" format="reference" />
+    <attr name="wildcardButton" format="reference" />
+    <attr name="profileButton" format="reference" />
+    <attr name="logsButton" format="reference" />
+    <attr name="forceStopButton" format="reference" />
+
+    <attr name="colorButtonBackground" format="reference" />
+    <attr name="colorButtonText" format="reference" />
+    <attr name="editIcon" format="reference" />
+
+    <attr name="warningIcon" format="reference" />
+    <attr name="warningIconTwo" format="reference" />
+    <attr name="blowIcon" format="reference" />
+    <attr name="bombIcon" format="reference" />
+    <attr name="resetSettingsIcon" format="reference" />
+    <attr name="checklistIcon" format="reference" />
+    <attr name="editNoteIcon" format="reference" />
+    <attr name="newWindowIcon" format="reference" />
+
+
+
+
+    <style name="RoundedButtonWithIcon" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/rounded_corner</item>
+        <item name="android:textColor">?attr/colorButtonText</item>
+        <item name="android:drawablePadding">8dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+
 
     <style name="AppThemeLight" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:windowDisablePreview">true</item>
+
+
+        <item name="colorButtonBackground">@color/darkColorPrimaryButton</item>
+        <item name="colorButtonText">@color/darkColorPrimaryButtonText</item>
+
 
         <item name="expander">@drawable/expander_black</item>
         <item name="hookError">@drawable/ic_error_outline_black_24dp</item>
         <item name="hookInstalled">@drawable/ic_done_black_24dp</item>
         <item name="appPersistent">@drawable/ic_settings_backup_restore_black_24dp</item>
+
         <item name="appSettings">@drawable/ic_settings_black_24dp</item>
+
+        <item name="hookMenu">@drawable/ic_hook_black24</item>
+        <item name="randomButton">@drawable/ic_random_black24</item>
+        <item name="resetButton">@drawable/ic_reset_black24</item>
+        <item name="saveButton">@drawable/ic_save_black24</item>
+        <item name="deleteButton">@drawable/ic_delete_black24</item>
+        <item name="settingMenu">@drawable/ic_setting_ex_black24</item>
+        <item name="configMenu">@drawable/ic_json_black24</item>
+        <item name="propMenu">@drawable/ic_prop_one_black24</item>
+
+        <item name="wildcardButton">@drawable/ic_wildcard_one_black24</item>
+        <item name="profileButton">@drawable/ic_profile_black24</item>
+        <item name="logsButton">@drawable/ic_file_one_black24</item>
+        <item name="forceStopButton">@drawable/ic_skull_black24</item>
+        <item name="warningIcon">@drawable/ic_warning_dark24</item>
+        <item name="warningIconTwo">@drawable/ic_serv_cold_dark24</item>
+        <item name="editIcon">@drawable/ic_edit_black24</item>
+        <item name="blowIcon">@drawable/ic_blow_black24</item>
+        <item name="bombIcon">@drawable/ic_bomb_black24</item>
+        <item name="resetSettingsIcon">@drawable/ic_reset_settings_black24</item>
+        <item name="checklistIcon">@drawable/ic_checklist_black24</item>
+        <item name="editNoteIcon">@drawable/ic_edit_note_black24</item>
+        <item name="newWindowIcon">@drawable/ic_new_window_black24</item>
 
         <item name="colorSettingSaved">@color/lightColorSettingSaved</item>
         <item name="colorTextOne">@color/lightColorTextOne</item>
@@ -32,6 +101,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorUnsavedSetting">@color/colorUnsavedSetting</item>
+
 
         <item name="colorSystem">@color/lightColorSystem</item>
         <item name="colorDrawerScrim">@color/lightColorDrawerScrim</item>
@@ -41,15 +112,48 @@
     <style name="AppThemeDark" parent="Theme.AppCompat">
         <item name="android:windowDisablePreview">true</item>
 
+        <item name="colorButtonBackground">@color/lightColorPrimaryButton</item>
+        <item name="colorButtonText">@color/lightColorPrimaryButtonText</item>
+
+
         <item name="expander">@drawable/expander_white</item>
         <item name="hookError">@drawable/ic_error_outline_white_24dp</item>
         <item name="hookInstalled">@drawable/ic_done_white_24dp</item>
         <item name="appPersistent">@drawable/ic_settings_backup_restore_white_24dp</item>
         <item name="appSettings">@drawable/ic_settings_white_24dp</item>
 
+        <item name="hookMenu">@drawable/hook_white24</item>
+        <item name="randomButton">@drawable/ic_random_white24</item>
+        <item name="resetButton">@drawable/ic_reset_white24</item>
+        <item name="saveButton">@drawable/ic_save_white24</item>
+        <item name="deleteButton">@drawable/ic_delete_white24</item>
+        <item name="settingMenu">@drawable/ic_setting_ex_white24</item>
+        <item name="configMenu">@drawable/ic_json_white24</item>
+        <item name="propMenu">@drawable/ic_prop_one_white24</item>
+        <item name="logsButton">@drawable/ic_file_one_white24</item>
+        <item name="forceStopButton">@drawable/ic_skull_white24</item>
+        <item name="warningIcon">@drawable/ic_warning_white24</item>
+        <item name="warningIconTwo">@drawable/ic_serv_cold_white24</item>
+        <item name="editIcon">@drawable/ic_edit_white24</item>
+        <item name="bombIcon">@drawable/ic_bomb_white24</item>
+        <item name="resetSettingsIcon">@drawable/ic_reset_settings_white24</item>
+        <item name="checklistIcon">@drawable/ic_checklist_white24</item>
+        <item name="editNoteIcon">@drawable/ic_edit_note_white24</item>
+        <item name="newWindowIcon">@drawable/ic_new_window_white24</item>
+
+
+        <item name="wildcardButton">@drawable/ic_wildcard_one_white24</item>
+        <item name="profileButton">@drawable/ic_profile_white24</item>
+
+        <item name="blowIcon">@drawable/ic_blow_white24</item>
+
+
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="colorUnsavedSetting">@color/colorUnsavedSetting</item>
+
 
         <item name="colorSettingSaved">@color/darkColorSettingSaved</item>
         <item name="colorTextOne">@color/darkColorTextOne</item>

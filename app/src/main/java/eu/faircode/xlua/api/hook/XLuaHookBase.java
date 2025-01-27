@@ -53,6 +53,7 @@ public class XLuaHookBase {
 
     public final static int FLAG_WITH_DB = 5;
     public final static int FLAG_WITH_LUA = 2; // =PARCELABLE_ELIDE_DUPLICATES
+
     public String getId() { return this.collection + "." + this.name; }
 
     public XLuaHookBase setCollection(String collection) { this.collection = collection; return this; }
@@ -81,6 +82,10 @@ public class XLuaHookBase {
     public String[] getExcludePackages() { return excludePackages; }
     public Boolean isEnabled() { return enabled; }
     public String[] getSettings() { return settings; }
+
+    public void setIsEnabled(boolean isEnabled) {
+        enabled = isEnabled;
+    }
 
     public boolean isOptional() {
         return this.optional;
@@ -163,7 +168,7 @@ public class XLuaHookBase {
         if (parameterTypes == null)
             throw new IllegalArgumentException("parameter types missing");
         if (TextUtils.isEmpty(this.luaScript))
-            throw new IllegalArgumentException("Lua script missing");
+            throw new IllegalArgumentException("Lua script missing " + this.methodName + " " + this.className + " " + getId());
     }
 
     @Override

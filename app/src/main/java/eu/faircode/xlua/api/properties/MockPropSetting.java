@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import eu.faircode.xlua.XDatabase;
+import eu.faircode.xlua.XDatabaseOld;
 import eu.faircode.xlua.api.xstandard.database.SqlQuerySnake;
 import eu.faircode.xlua.api.xstandard.interfaces.IDBQuery;
 import eu.faircode.xlua.api.xstandard.interfaces.IJsonSerial;
@@ -149,7 +149,7 @@ public class MockPropSetting extends MockPropMap implements IJsonSerial, IDBQuer
     }
 
     @Override
-    public SqlQuerySnake createQuery(XDatabase db) {
+    public SqlQuerySnake createQuery(XDatabaseOld db) {
         ensureIdentification();
         return SqlQuerySnake.create(db, MockPropSetting.Table.NAME)
                 .whereColumn("user", this.user)

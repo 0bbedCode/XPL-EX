@@ -4,14 +4,14 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.random.IRandomizer;
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.DataNullElement;
 import eu.faircode.xlua.random.elements.DataNumberElement;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
-public class RandomSIMCount implements IRandomizer {
+public class RandomSIMCount implements IRandomizerOld {
     private final List<ISpinnerElement> dataStates = new ArrayList<>();
     public RandomSIMCount() {
         dataStates.add(DataNullElement.EMPTY_ELEMENT);
@@ -37,10 +37,10 @@ public class RandomSIMCount implements IRandomizer {
     }
 
     @Override
-    public String generateString() { return dataStates.get(ThreadLocalRandom.current().nextInt(1, dataStates.size())).getValue(); }
+    public String generateString() { return dataStates.get(RandomGenerator.nextInt(1, dataStates.size())).getValue(); }
 
     @Override
-    public int generateInteger() { return Integer.parseInt(dataStates.get(ThreadLocalRandom.current().nextInt(1, dataStates.size())).getValue()); }
+    public int generateInteger() { return Integer.parseInt(dataStates.get(RandomGenerator.nextInt(1, dataStates.size())).getValue()); }
 
     @Override
     public List<ISpinnerElement> getOptions() { return this.dataStates; }

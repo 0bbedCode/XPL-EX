@@ -1,14 +1,33 @@
 package eu.faircode.xlua.utilities;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import eu.faircode.xlua.api.XProxyContent;
 import eu.faircode.xlua.api.xstandard.interfaces.ISerial;
+import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.data.utils.ListUtil;
+import eu.faircode.xlua.x.xlua.LibUtil;
 
 public class BundleUtil {
+    private static final String TAG = LibUtil.generateTag(BundleUtil.class);
+
+    public static List<String> getStringArrayList(Bundle b, String key) {
+        if(b == null || Str.isEmpty(key) || !b.containsKey(key))
+            return ListUtil.emptyList();
+
+        try {
+            return b.getStringArrayList(key);
+        }catch (Exception e) {
+            Log.e(TAG, "Failed to Read String Array List from Bundle! Key=" + key + " Error=" + e);
+            return ListUtil.emptyList();
+        }
+    }
 
     public static Bundle combineBundles(Bundle a, Bundle b) {
         //Bundle main = new Bundle();
@@ -27,6 +46,15 @@ public class BundleUtil {
             return returnFalseIfNull ? createResultStatus(false) : new Bundle();
 
         return obj.toBundle();
+    }
+
+    public static Bundle createFromStringList(String keyName, List<String> list) {
+        if(Str.isEmpty(keyName))
+            return null;
+
+        Bundle b = new Bundle();
+        b.putStringArrayList(keyName, new ArrayList<>(list));
+        return b;
     }
 
     public static Bundle createFromStringArray(String keyName, List<String> lst) { return createFromStringArray(keyName, lst.toArray(new String[0])); }
@@ -149,8 +177,12 @@ public class BundleUtil {
     //get rid of this -5 constraint
     public static int readInteger(Bundle bundle, String keyName) { return readInteger(bundle, keyName, -5); }
     public static int readInteger(Bundle bundle, String keyName, Integer defaultValue) {
-        if(bundle == null || !bundle.containsKey(keyName)) return defaultValue;
-        if(defaultValue == null) return bundle.getInt(keyName);
+        if(bundle == null || !bundle.containsKey(keyName))
+            return defaultValue;
+
+        if(defaultValue == null)
+            return bundle.getInt(keyName);
+
         return bundle.getInt(keyName, defaultValue);
     }
 

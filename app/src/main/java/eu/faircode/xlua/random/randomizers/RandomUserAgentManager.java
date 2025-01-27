@@ -6,17 +6,23 @@ import androidx.annotation.NonNull;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 import eu.faircode.xlua.api.useragent.MockUserAgent;
-import eu.faircode.xlua.random.IRandomizer;
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.IRandomizerManager;
 import eu.faircode.xlua.random.elements.DataNullElement;
 import eu.faircode.xlua.random.elements.DataUserAgentElement;
 import eu.faircode.xlua.random.elements.IManagedSpinnerElement;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
-public class RandomUserAgentManager implements IRandomizer, IRandomizerManager {
+//Make a linking system
+//some settings have links changing the main link will change its children
+//hmm lets do it
+
+
+
+public class RandomUserAgentManager implements IRandomizerOld, IRandomizerManager {
     private IManagedSpinnerElement selectedElement;
     private final List<ISpinnerElement> dataStates = Arrays.asList(
             (ISpinnerElement) DataUserAgentElement.create(DataNullElement.EMPTY_ELEMENT.getName(), this),
@@ -58,7 +64,7 @@ public class RandomUserAgentManager implements IRandomizer, IRandomizerManager {
     }
 
     @Override
-    public String generateString() { return dataStates.get(ThreadLocalRandom.current().nextInt(1, dataStates.size())).getValue(); }
+    public String generateString() { return dataStates.get(RandomGenerator.nextInt(1, dataStates.size())).getValue(); }
 
     @Override
     public int generateInteger() { return 0; }

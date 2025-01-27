@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,8 +29,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.lang.reflect.Method;
+import java.net.Inet4Address;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,7 +40,6 @@ import eu.faircode.xlua.api.configs.MockConfig;
 import eu.faircode.xlua.api.settings.LuaSettingExtended;
 import eu.faircode.xlua.api.xlua.XLuaCall;
 import eu.faircode.xlua.api.xmock.XMockQuery;
-import eu.faircode.xlua.api.xmock.call.ClearAppDataCommand;
 import eu.faircode.xlua.api.xmock.call.KillAppCommand;
 import eu.faircode.xlua.logger.XLog;
 import eu.faircode.xlua.ui.ConfigQue;
@@ -50,7 +50,6 @@ import eu.faircode.xlua.ui.dialogs.SettingAddDialogEx;
 import eu.faircode.xlua.ui.dialogs.SettingsResetDialog;
 import eu.faircode.xlua.ui.interfaces.IConfigUpdate;
 import eu.faircode.xlua.ui.interfaces.ILoader;
-import eu.faircode.xlua.ui.dialogs.SettingAddDialog;
 import eu.faircode.xlua.ui.ViewFloatingAction;
 import eu.faircode.xlua.ui.interfaces.ISettingUpdateEx;
 import eu.faircode.xlua.ui.interfaces.ISettingsReset;
@@ -61,6 +60,8 @@ import eu.faircode.xlua.utilities.PrefUtil;
 import eu.faircode.xlua.utilities.SettingUtil;
 import eu.faircode.xlua.utilities.UiUtil;
 import eu.faircode.xlua.utilities.ViewUtil;
+import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.runtime.reflect.DynamicField;
 
 public class FragmentSettings
         extends
@@ -73,6 +74,8 @@ public class FragmentSettings
         ISettingUpdateEx,
         ISettingsReset,
         IConfigUpdate {
+
+    private static final String TAG = "XLua.FragmentSettings";
 
     private AdapterSetting rvAdapter;
 
@@ -116,7 +119,9 @@ public class FragmentSettings
             cbUseDefault.setEnabled(false);
             btKill.setEnabled(false);
             btClearData.setEnabled(false);
-        }else cbUseDefault.setChecked(XLuaCall.getSettingBoolean(getContext(), application.getUid(), application.getPackageName(), USE_DEFAULT));
+        }
+        else
+            cbUseDefault.setChecked(XLuaCall.getSettingBoolean(getContext(), application.getUid(), application.getPackageName(), USE_DEFAULT));
 
         super.initActions();
         super.bindTextViewsToAppId(main, R.id.ivSettingsAppIcon, R.id.tvSettingsPackageName, R.id.tvSettingsPackageFull, R.id.tvSettingsPackageUid);
@@ -180,7 +185,8 @@ public class FragmentSettings
     @Override
     public boolean onLongClick(View v) {
         int code = v.getId();
-        XLog.i("onLongClick=" + code);
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "onLongClick=" + code);
         switch (code) {
             case R.id.flSettingsButtonTwo:
                 Snackbar.make(v, R.string.menu_settings_randomize_hint, Snackbar.LENGTH_SHORT).show();
@@ -221,7 +227,8 @@ public class FragmentSettings
     @SuppressLint("NonConstantResourceId") @Override
     public void onClick(View v) {
         int id = v.getId();
-        XLog.i("onClick id=" + id);
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "onClick id=" + id);
         switch (id) {
             case R.id.btSettingsKillApp:
                 final XResult res = KillAppCommand.invokeEx(v.getContext(), application.getPackageName(), application.getUid());
@@ -312,8 +319,10 @@ public class FragmentSettings
         btKill.setOnClickListener(this);
         btConfigs.setOnClickListener(this);
         cvAppView.setOnClickListener(this);
+
         cbUseDefault.setOnCheckedChangeListener(this);
         cbUseDefault.setOnLongClickListener(this);
+
         btResetAll.setOnClickListener(this);
         btResetAll.setOnLongClickListener(this);
 
@@ -335,7 +344,8 @@ public class FragmentSettings
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         int id = buttonView.getId();
-        XLog.i("onCheckedChanged id=" + id);
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "onCheckedChanged id=" + id);
         try {
             if(id == R.id.cbUseDefaultSettings) {
                 XLuaCall.putSettingBoolean(
@@ -346,7 +356,9 @@ public class FragmentSettings
                         isChecked,
                         application.getForceStop());
             }
-        }catch (Exception e) { XLog.e("onCheckedChanged Failed, id=" + id, e, true); }
+        }catch (Exception e) {
+            Log.e(TAG, "onCheckedChanged Failed, id=" + id + " Stack=" + Log.getStackTraceString(e));
+        }
     }
 
     @Override
@@ -421,19 +433,23 @@ public class FragmentSettings
         @Nullable
         @Override
         public SettingsDataHolder loadInBackground() {
-            XLog.i("Data loader started");
+            if(DebugUtil.isDebug()) Log.d(TAG, "Data loader started");
             SettingsDataHolder data = new SettingsDataHolder();
             try {
                 data.theme = XLuaCall.getTheme(getContext());
                 data.settings = new ArrayList<>(XMockQuery.getAllSettings(getContext(), application));
-                XLog.i("Settings from Data Loader=" + data.settings.size());
+                for(LuaSettingExtended s : data.settings)
+                    if(s.getName().contains(".parent."))
+                        s.settings = data.settings; //Make a copy of the list ? or?
+
+                if(DebugUtil.isDebug()) Log.d(TAG, "Settings from Data Loader=" + data.settings.size());
             }catch (Throwable ex) {
                 data.settings.clear();
                 data.exception = ex;
-                XLog.e("Data Loader Exception", ex, true);
+                Log.e(TAG, "Data Loader Exception");
             }
 
-            XLog.i("Data Loader Settings Finished=" + data.settings.size());
+            if(DebugUtil.isDebug()) Log.e(TAG, "Data Loader Settings Finished=" + data.settings.size());
             return data;
         }
     }

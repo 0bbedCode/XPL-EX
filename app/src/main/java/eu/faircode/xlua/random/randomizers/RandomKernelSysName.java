@@ -3,13 +3,14 @@ package eu.faircode.xlua.random.randomizers;
 import androidx.annotation.NonNull;
 
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.random.IRandomizer;
+
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
 import eu.faircode.xlua.utilities.RandomStringGenerator;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
-public class RandomKernelSysName implements IRandomizer {
+public class RandomKernelSysName implements IRandomizerOld {
     public static final String[] SYS_NAMES = new String[] { "Linux", "Unix", "BSD", "XNU", "random" };
 
     @Override
@@ -28,9 +29,9 @@ public class RandomKernelSysName implements IRandomizer {
 
     @Override
     public String generateString() {
-        String nodeName = SYS_NAMES[ThreadLocalRandom.current().nextInt(0, SYS_NAMES.length)];
+        String nodeName = SYS_NAMES[RandomGenerator.nextInt(0, SYS_NAMES.length)];
         if ("random".equals(nodeName))
-            return RandomStringGenerator.generateRandomAlphanumericString(ThreadLocalRandom.current().nextInt(5, 15), RandomStringGenerator.LOWER_LETTERS);
+            return RandomStringGenerator.generateRandomAlphanumericString(RandomGenerator.nextInt(5, 15), RandomStringGenerator.LOWER_LETTERS);
         return nodeName;
     }
 

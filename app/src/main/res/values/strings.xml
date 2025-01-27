@@ -21,12 +21,24 @@
     <string name="title_restrict">Restrict</string>
     <string name="title_bootloop">Restricting can cause a bootloop</string>
     <string name="title_force_stop">Force stop automatically</string>
-    <string name="title_use_default" translatable="false">Use Default Values for settings</string>
+    <string name="title_use_default" translatable="false">Use Default if Null</string>
     <string name="button_reset_settings" translatable="false">Reset Settings</string>
+
+    <string name="title_hooks_assign" translatable="false">Assign Hooks</string>
+    <string name="title_delete_action" translatable="false">Delete</string>
+
 
     <string name="button_terminate" translatable="false">Terminate</string>
     <string name="button_properties" translatable="false">Properties</string>
     <string name="button_configs" translatable="false">Configs</string>
+    <string name="button_profiles" translatable="false">Profiles</string>
+    <string name="button_create_config" translatable="false">Create Config</string>
+
+    <string name="button_create_profile" translatable="false">Create Profile</string>
+
+    <string name="button_logs" translatable="false">Logs</string>
+    <string name="button_force_stop" translatable="false">Force Stop</string>
+    <string name="button_clear_app_data" translatable="false">Clear App Data</string>
 
     <string name="title_help_instructions">
         Tap on an app icon or name and tick restrictions to apply them.
@@ -46,16 +58,15 @@
     <string name="menu_whats_new_button" translatable="false">Whats New!</string>
 
     <string name="whats_new" translatable="false">
-        Whats new in 1.4.5 (Final) Update XPL-EX (ObbedCode) v3
-        <![CDATA[<br><br>]]> Privacy will never be lost I wont stop til each app is FULLY black boxed.
-        <![CDATA[<br>]]>This is my Art, Quality over Quantity so be patience pls and thanks to all who are patient!.
+        Whats new in 1.5.1 Update XPL-EX (ObbedCode) v46456456
+
+        <![CDATA[<br><br>]]>This is my Art! Enjoy love all, smile, be happy, enjoy what you do!
         <![CDATA[<br>]]>Free, Open Source, No Analytics, No Servers, offline ...
         <![CDATA[<br><br>]]> Shout out to Hubert (always keeps me informed updated!) (want to hide root ? this is your man!)
         <![CDATA[<br>]]>Telegram: <![CDATA[<a href="https://t.me/HubertHub">HubertHub</a>]]>
-        <![CDATA[<br>]]>Website: <![CDATA[<a href="https://appcloner.app/">AppCloner</a>]]>
 
-        <![CDATA[<br><br>]]><![CDATA[<a href="https://t.me/xplexex">XPL-EX Announcements</a>]]>
-        <![CDATA[<br>]]><![CDATA[<a href="https://t.me/XPLEXCHAT">XPL-EX Chat</a>]]>
+        <![CDATA[<br><br>]]><![CDATA[<a href="https://t.me/xpl_ex">XPL-EX Announcements</a>]]>
+        <![CDATA[<br>]]><![CDATA[<a href="https://t.me/XPL_EX_CHAT">XPL-EX Chat</a>]]>
         <![CDATA[<br>]]><![CDATA[<a href="https://github.com/0bbedCode/XPL-EX">GitHub</a>]]>
         <![CDATA[<br>]]><![CDATA[<a href="https://xdaforums.com/t/xpl-ex-xprivacylua-ex-android-privacy-manager-hooking-manager-extended.4652573/">XDA</a>]]>
         <![CDATA[<br>]]><![CDATA[<a href="https://www.instagram.com/obbedcode">Instagram (ObbedCode)</a>]]>
@@ -65,209 +76,64 @@
         <![CDATA[<br>]]><![CDATA[<a href="https://xdaforums.com/t/app-vdinfos.4097379/">XDA</a>]]>
         <![CDATA[<br>]]><![CDATA[<a href="https://github.com/VD171/VD-Infos">GitHub</a>]]>
 
-        <![CDATA[<br><br>]]> GOODBYE ObbedCode
-        <![CDATA[<br>]]> This Journey was WONDERFUL and Beautiful I have learned a lot!
-        <![CDATA[<br>]]> I will be moving on from this Base of the Project and have Started a new Base!
-        <![CDATA[<br>]]> New UI new Code, Stronger, Better, Faster!
-        <![CDATA[<br>]]> Cleaner, Smoother and mostly Easier to use.
-        <![CDATA[<br>]]> I will no longer be maintaining this, this shall be the final update.
-        <![CDATA[<br>]]> I never got use to the Base, Never liked the Pro Closed Source App.
-        <![CDATA[<br>]]> New XPL EX new Code, new Base, new all, FOSS
-        <![CDATA[<br>]]> Much Love from ObbedCode
+        <![CDATA[<br><br>]]> 1.5.1 XPL151R
+        <![CDATA[<br>]]>• Fixed UI Binding Bugs
+        <![CDATA[<br>]]>• Fixed Internal bugs
+        <![CDATA[<br>]]>• Organized Settings in Groups properly (parents first)
+        <![CDATA[<br>]]>• Fixed Child Setting not Binding to its Container
+        <![CDATA[<br>]]>• Added Network and Unique Randomizers
+        <![CDATA[<br>]]>• Linked the Randomizer Drop Down spinner UI Element
+        <![CDATA[<br>]]>• Improved Check box Syncing with Setting and Container
+        <![CDATA[<br>]]>• Linked Network Settings to Hooks
+        <![CDATA[<br>]]>• Finished Save Checked Option in Settings UI
+        <![CDATA[<br>]]>• Added more UI Feedback
+        <![CDATA[<br>]]>• Fixed Name Information Parser on Child Settings
+        <![CDATA[<br>]]>• Fixed Get Groups Command (String Array and List Error)
+        <![CDATA[<br>]]>• Created the new Improved Configs UI Dialog!
+        <![CDATA[<br>]]>•-> Supports Importing legacy Configs
+        <![CDATA[<br>]]>•-> Added Author and Version Fields to Configs
+        <![CDATA[<br>]]>•-> Added Tags help further Detail Config purpose
+        <![CDATA[<br>]]>•-> Added Option to Specify Hook IDs into Config
+
+        <![CDATA[<br><br><br>]]> 1.5.0 RED Edition XPL150R
+        <![CDATA[<br>]]>• Final Revision of the Core
+        <![CDATA[<br>]]>• Many bug Fixed (forceStop, randomizers, Hide VPN)
+        <![CDATA[<br>]]>• Optimized Startup
+        <![CDATA[<br>]]>• Now Storing settings under UserID instead of PKG UID
+        <![CDATA[<br>]]>• Major Clean up of Schizo Messages and Code
+        <![CDATA[<br>]]>• Tour Guide
+        <![CDATA[<br>]]>• Fixed and Deprecated Many Hooks
+        <![CDATA[<br>]]>• Dual Settings Control (Multiple SIM + Network Control)
+        <![CDATA[<br>]]>• Added Parent Settings to Control a group of Settings at once
+        <![CDATA[<br>]]>• Cleaned out MANY useless Settings
+        <![CDATA[<br>]]>• Attempt to Make things more Organized and Clear
+        <![CDATA[<br>]]>• Fixed ICON Colors and better ICONs
+        <![CDATA[<br>]]>• Added Collection Control in Main UI instead of Pro APP
+        <![CDATA[<br>]]>• Force Stop Control in Settings UI for Modifying Settings
+        <![CDATA[<br>]]>• Fixed Database File Utils
+        <![CDATA[<br>]]>• Moved Database Files from [/data/system/] to [/data/misc/] More Stealthy
+        <![CDATA[<br>]]>• Enhanced Hook methods by Hooking the base Objects (less leaks)
+        <![CDATA[<br>]]>• Enhanced Detection Filters for Properties, Settings, Queries, IPC etc...
+        <![CDATA[<br>]]>• Enhanced Data Generation to look more Realistic
+        <![CDATA[<br>]]>• Force Stop Control in Settings UI for Modifying Settings
+        <![CDATA[<br>]]>• Increased Security between Service Communication and Fixed possible Query leaks
+        <![CDATA[<br>]]>• Improved Randomization Core, ensure Seed Generation is Strong
+        <![CDATA[<br>]]>• For Open Anonymous ID Generation, added Switch between MIUI Devices and Regular Generator to match formats
+        <![CDATA[<br>]]>• Added [Os.lstat] Hook for the File STAT Hooks Group
+        <![CDATA[<br>]]>• (Xiaomi) Added Hooks for VAID/AAID/OAID/UDID
+        <![CDATA[<br>]]>• Upgraded to Java 8, Gradle 7.1 and Libraries
+        <![CDATA[<br>]]>• Updated Process (exec) Interceptor to Properly intercept the Process Object Return Value
+        <![CDATA[<br>]]>• Improved the STAT Output Spoofer
+        <![CDATA[<br>]]>• Added Cache for Values that are not Controlled by User Randomization to ensure Consistency
+        <![CDATA[<br>]]>• Enhanced Shell Interceptor, Supports latest Fingerprint Pro
+        <![CDATA[<br>]]>• Group Control in Settings Now
+        <![CDATA[<br>]]>• Improved SQL Snake Builder
+        <![CDATA[<br>]]>• Created Custom Buttons ditched using the Generic App Compact Themed Buttons
+        <![CDATA[<br>]]>• Changes colors from Blue to Red, Red ICON, Red Theme new Red Edition
+        <![CDATA[<br>]]>• Added more Feedback and Dialogs, Feels alive
+        <![CDATA[<br>]]>• Finished Verbose Logs button, will enforce many logs in log cat for debugging
 
 
-        <![CDATA[<br><br>]]> 1.4.5 Changes..
-        <![CDATA[<br>]]>    -> Added BlockGuardOs Hooks as IoBridge may not always exist
-        <![CDATA[<br>]]>    -> Optimized Shell Interceptor
-        <![CDATA[<br>]]>    -> Removed the SU Command Interceptor (useless)
-        <![CDATA[<br>]]>    -> Removed useless Logs and or moved to Debug Logs
-        <![CDATA[<br>]]>    -> Added a STAT Command Interceptor (access, modify, change, create, birth, device, inode)
-        <![CDATA[<br>]]>    -> Added File.lastModified() Hook
-        <![CDATA[<br>]]>    -> Added LS Command Interceptor (details / inode...)
-        <![CDATA[<br>]]>    -> Added CAT Command Interceptor for (boot_id)
-        <![CDATA[<br>]]>    -> Added Force English Flag
-
-        <![CDATA[<br><br>]]> 1.4.4 Changes
-        <![CDATA[<br>]]>    -> Cleaned up some Logs for Hooks
-        <![CDATA[<br>]]>    -> Fixed more Bugs
-        <![CDATA[<br>]]>    -> Improved Query Hooks
-        <![CDATA[<br>]]>    -> Improved Settings Hooks
-        <![CDATA[<br>]]>    -> Added "settings" Content Resolver Call Hooks
-        <![CDATA[<br>]]>    -> Added Filtering for OAID
-        <![CDATA[<br>]]>    -> Added Filtering for GUID UUID
-        <![CDATA[<br>]]>    -> Added KeyGuard Manager OAID Hook
-        <![CDATA[<br>]]>    -> Added "getInputDeviceIds" Hooks
-        <![CDATA[<br>]]>    -> Added Chinese OAID Hooks "com.android.id.impl.IdProviderImpl"
-        <![CDATA[<br>]]>    -> Added "getNumberOfCameras" Hooks
-        <![CDATA[<br>]]>    -> Fixed Typo "anroid" to "android" (Fixed Cell Spoof Scripts)
-        <![CDATA[<br>]]>    -> Android "/proc/sys/kernel/random/boot_id" Hook
-        <![CDATA[<br>]]>    -> Added "com.samsung.android.deviceidservice.IDeviceIdService" Samsung ID
-        <![CDATA[<br>]]>    -> Added "com.vivo.vms.IdProvider/IdentifierId/OAID" Vivo OAID Hook
-        <![CDATA[<br>]]>    -> Added "com.asus.msa.SupplementaryDID.IDidAidlInterface" Asus ID
-        <![CDATA[<br>]]>    -> Fixed Operator ID Generator (6 Digits Long)
-        <![CDATA[<br>]]>    -> Fixed MAC Randomizer (Hex Decimal Chars)
-        <![CDATA[<br>]]>    -> Fixed OAID/UUID/Android ID Randomizer (Hex Decimal Chars)
-        <![CDATA[<br>]]>    -> Fixed Randomizer for MSIN
-        <![CDATA[<br>]]>    -> Added Stat Hooks
-        <![CDATA[<br>]]>    -> Fixed more Bugs
-
-
-        <![CDATA[<br><br>]]> 1.4.3 Changes
-        <![CDATA[<br><br>]]>        [All]
-        <![CDATA[<br>]]>    -> Improved Text View Lines using (maxLines) remove (Lines)
-        <![CDATA[<br>]]>    -> Improved Reporter Code
-        <![CDATA[<br>]]>    -> Added Dialog for No Randomizer and added No Randomizer selection
-        <![CDATA[<br>]]>    -> Added Dialog for Empty Groups how to Fix it
-        <![CDATA[<br>]]>    -> Added new way to handle (Bundle, Parcel, Json, ContentValues, Cursor) Data Types
-        <![CDATA[<br>]]>    -> Improved Type Conversions
-        <![CDATA[<br>]]>    -> Added (Messages) Hooks
-        <![CDATA[<br>]]>    -> Added (Location) Hooks
-        <![CDATA[<br>]]>    -> Added (Sync) Hooks
-        <![CDATA[<br>]]>    -> Added (Record Audio) Hooks
-        <![CDATA[<br>]]>    -> Added (Camera) Hooks
-        <![CDATA[<br>]]>    -> Added (Contacts) Hooks
-        <![CDATA[<br>]]>    -> Added (Notification) Hooks
-        <![CDATA[<br>]]>    -> Added (Calender) Hooks
-        <![CDATA[<br>]]>    -> Added More Telephony Hooks
-        <![CDATA[<br>]]>    -> Added (BSSID and SSID) Hooks
-        <![CDATA[<br>]]>    -> Deprecated Command (GetAppCommand)
-        <![CDATA[<br>]]>    -> Added Clean up for some Streams (memory stuff)
-        <![CDATA[<br>]]>    -> Improved on the (0) Groups "issue"
-        <![CDATA[<br>]]>    -> Improved UI updating for Hooks UI
-        <![CDATA[<br>]]>    -> Added new Advertising ID Hook: com.google.android.gms.ads.identifier.internal.IAdvertisingIdService
-        <![CDATA[<br>]]>    -> Improved the Randomizer for the AD ID to follow more standards
-        <![CDATA[<br>]]>    -> Fixed the Configs Bug not saving the new Values for the Settings
-        <![CDATA[<br>]]>    -> Added more GPU Hooks (GLES10/11/20/30/31/32 EGL14/15 and EGLImpl)
-        <![CDATA[<br>]]>    -> Fixed the Map Delete Bug (Not deleting Map)
-        <![CDATA[<br>]]>    -> Added Warnings Dialogs for Hooks
-        <![CDATA[<br>]]>    -> Added Delete all settings (Per Package) option
-        <![CDATA[<br>]]>    -> Added Adjust User Agent Changer Hooks
-        <![CDATA[<br>]]>    -> Added Adjust Crippler (Destroy Spoof Adjust) Hooks
-        <![CDATA[<br>]]>    -> Added Amazon Ad ID and Facebook Ad ID Hooks
-        <![CDATA[<br>]]>    -> Added In App Paypal Security Spoof (Trick Paypal Environment) Hooks
-        <![CDATA[<br>]]>    -> Added Firebase Hooks
-        <![CDATA[<br>]]>    -> Added Root and Emulator Hider Hooks (Non Native!!)
-        <![CDATA[<br>]]>    -> Added More MNC + MCC Hooks and Location Hooks
-        <![CDATA[<br>]]>    -> Added Facebook Analytics Hooks
-        <![CDATA[<br>]]>    -> Added Google Analytics Hooks
-        <![CDATA[<br>]]>    -> Fixed Return Type Mismatch with Box and Unboxed Types
-        <![CDATA[<br>]]>    -> Fixed Scroll Bug Hidden Action Buttons for the Config UI
-        <![CDATA[<br>]]>    -> Added Rename Prompt for Configs if Same name is present
-        <![CDATA[<br>]]>    -> Added More Cell Location Hooks
-        <![CDATA[<br>]]>    -> Added More Specific Unique ID Hooks
-        <![CDATA[<br>]]>    -> Added Zone Randomizers (beta)
-        <![CDATA[<br>]]>    -> Added (Sensors) Hooks
-        <![CDATA[<br>]]>    -> Enhanced Properties Interceptor to work with Emulator Root Detection Hiding as well as Shell Intercept
-        <![CDATA[<br>]]>    -> Modified the Intercept Shell APIs to Set Result if Return of Hooked Function is java.lang.Process
-        <![CDATA[<br>]]>    -> Added Even more LUA APIs to use for you Script kitties !
-        <![CDATA[<br>]]>    -> Added logcat Command to Intercept
-        <![CDATA[<br>]]>    -> Added Stack Trace Hooks, to ensure Stack Trace dosnt show Traces of Hooks
-        <![CDATA[<br>]]>    -> Added more Properties (9+)
-        <![CDATA[<br>]]>        [1] gsm.device.imei0, gsm.device.imei1, gsm.device.imei
-        <![CDATA[<br>]]>        [2] persist.sys.tctPowerIccid
-        <![CDATA[<br>]]>        [3] ro.boot.wifimacaddr
-        <![CDATA[<br>]]>        [4] ro.boot.wifi_mac
-        <![CDATA[<br>]]>        [5] ro.boot.bt_mac
-        <![CDATA[<br>]]>        [6] persist.sys.imei0, persist.sys.imei1, persist.sys.imei
-        <![CDATA[<br>]]>        [7] persist.sys.verizon_test_plan_imei
-        <![CDATA[<br>]]>        [8] persist.sys.verizon_test_plan_iccid
-        <![CDATA[<br>]]>        [9] vendor.gsm.serial
-        <![CDATA[<br>]]>    -> Added Whoami Command to Intercept
-        <![CDATA[<br>]]>    -> Added UserInfo Hooks prevent reading of Device Account Profile User Name or Info
-        <![CDATA[<br>]]>    -> Added Main UI Group Dividers
-        <![CDATA[<br>]]>    -> Added Updating Assignments Dialog (Keep things looking smooth)
-        <![CDATA[<br>]]>    -> Added Option in Settings to Export Settings to a Config!
-        <![CDATA[<br>]]>    -> Added AdStir Analytics / Ads Hooks
-        <![CDATA[<br>]]>    -> Added Amazon Analytics / Ads Hooks
-        <![CDATA[<br>]]>    -> Added UMENG Analytics / Ads Hooks
-        <![CDATA[<br>]]>    -> Added Unity Analytics / Ads Hooks
-        <![CDATA[<br>]]>    -> Added AppsFlyer Analytics / Ads Hooks
-
-
-        <![CDATA[<br><br>]]> 1.4.2.3 Changes
-        <![CDATA[<br><br>]]>        [Coming Soon possibly next update...]
-        <![CDATA[<br>]]>    -> Configs for Hooks ability to select Hooks for a Config and Apply
-        <![CDATA[<br>]]>    -> Secure Key Exchange System prevent Fake Communication (IPC)
-        <![CDATA[<br>]]>    -> Finish String Translation (moved strings to resources to prepare)
-        <![CDATA[<br>]]>    -> Add Option to Select Configs from the MAIN UI and or Option select apps to apply config too
-        <![CDATA[<br><br>]]>        [Main UI]
-        <![CDATA[<br>]]>    -> Added Navigation buttons under each App to the new UIs
-        <![CDATA[<br>]]>    -> Fixed the Scroll Up Bug (Was most likely caused by poor Theme Handling)
-        <![CDATA[<br>]]>    -> Added a Button to Remove Copies of PrivacyEx Hooks from the Hook DB
-        <![CDATA[<br><br>]]>        [Hook UI]
-        <![CDATA[<br>]]>    -> Added a NEW UI To Help Manage Hooks and Settings for Hooks!!
-        <![CDATA[<br><br>]]>        [Config UI]
-        <![CDATA[<br>]]>    -> Fixed many Bugs
-        <![CDATA[<br>]]>    -> Updated Log Messages to UI
-        <![CDATA[<br>]]>    -> Added Settings Description and Original Setting Name
-        <![CDATA[<br>]]>    -> Added Option to Delete Configs
-        <![CDATA[<br>]]>    -> Added Option to Delete Selected Config Settings from Config
-        <![CDATA[<br>]]>    -> Enhanced Code
-        <![CDATA[<br><br>]]>        [Settings UI]
-        <![CDATA[<br>]]>    -> Enhanced Code
-        <![CDATA[<br>]]>    -> Added Options to Switch between using Default Values (when no setting value is present) or strictly use yours or NULL
-        <![CDATA[<br><br>]]>        [Property UI]
-        <![CDATA[<br>]]>    -> Added Better searching (search properties)
-        <![CDATA[<br>]]>    -> Added Options to Add Property directly from Group
-        <![CDATA[<br>]]>    -> Fixed Bugs and Enchained stability
-        <![CDATA[<br>]]>    -> Added a new Prop setting Type (force)
-        <![CDATA[<br>]]>    -> Added EVEN MORE Properties to Intercept (10+) 291 Total
-        <![CDATA[<br><br>]]>        [Randomizer]
-        <![CDATA[<br>]]>    -> Added User-Agent Randomizer (5000 user agents)
-        <![CDATA[<br>]]>    -> Added Randomizers for ALL Unique Settings
-        <![CDATA[<br>]]>    -> Enhanced Randomizer Core + Added more Randomizers (30+)
-        <![CDATA[<br><br>]]>        [Bugs]
-        <![CDATA[<br>]]>    -> Fixed GSF ID Bug and Advertising ID Bug
-        <![CDATA[<br>]]>    -> Fixed LAC and CID Hook
-        <![CDATA[<br>]]>    -> Fixed Method Resolver Bug + Return Type Void Bug
-        <![CDATA[<br>]]>    -> Fixed Call User ID Bug for some Commands
-        <![CDATA[<br>]]>    -> Fixed InetAddress Duplicate Hook
-        <![CDATA[<br>]]>    -> Fixed Default Settings JSON file rename (value) to (defaultValue)
-        <![CDATA[<br><br>]]>        [Merges]
-        <![CDATA[<br>]]>    -> Updated some Hooks and Links, merged from VDInfos
-        <![CDATA[<br><br>]]>        [XLog]
-        <![CDATA[<br>]]>    -> Added a new Advance Log Cat Logger to build off of in the Future
-        <![CDATA[<br><br>]]>        [Hooks]
-        <![CDATA[<br>]]>    -> Added Logging Hooks for (IO and Shell) to Monitor / Log App Behaviour
-        <![CDATA[<br>]]>    -> Cleaned up the Hook Folders and Groups to be more Simple
-        <![CDATA[<br>]]>    -> Added Clipboard , Accounts Hooks to PrivacyEx Collection
-        <![CDATA[<br>]]>    -> Added Package Manager Hooks (not all still use HMA)
-        <![CDATA[<br>]]>    -> Added WebView WebSettings Hooks
-        <![CDATA[<br>]]>    -> Added WebView OkHttp3 Hooks
-        <![CDATA[<br>]]>    -> Added WebView GeckoView Hooks
-        <![CDATA[<br>]]>    -> Added NetworkInfo (VPN) Hook
-        <![CDATA[<br>]]>    -> Added GPU Vendor Renderer Hooks (May Not always work)
-        <![CDATA[<br>]]>    -> Added ID Hooks......
-        <![CDATA[<br><br>]]>        [ETC]
-        <![CDATA[<br>]]>    -> Added Functionality to Check JSON Contents with Database to ensure you get the latest updates!
-
-        <![CDATA[<br><br>]]> 1.4.2.2 Changes
-        <![CDATA[<br>]]> [+] Fixed the 411dpi Hardcoded Hook Groups Recycler View Bug
-        <![CDATA[<br>]]> [+] Fixed the Shell Interception Bug
-        <![CDATA[<br>]]> [+] Added (uname) to the list of commands to Intercept shell
-
-        <![CDATA[<br><br>]]> 1.4.2.1 Changes
-        <![CDATA[<br>]]> [+] Modified over 40k lines of code (Re-Programmed whole core)
-        <![CDATA[<br>]]> [+] Fixed the XPL-EX Folder Detection!
-        <![CDATA[<br>]]> [+] Re-Programmed the Properties system (linked properties to settings)
-        <![CDATA[<br>]]> [+] Added some of the Pro Features within the Main Application
-        <![CDATA[<br>]]> [+] Added More Hashes to the Caller Security Check (allow more patched XPrivacyLua Pro versions)
-        <![CDATA[<br>]]> [+] Added a Hook Group Name Cleaner (make names of hooks look better UI)
-        <![CDATA[<br>]]> [+] Added total (272) Build prop Properties
-        <![CDATA[<br>]]> [+] Added Bluetooth List Hook
-        <![CDATA[<br>]]> [+] Added Wifi List Hook
-        <![CDATA[<br>]]> [+] Added More Privacy Hooks!
-        <![CDATA[<br>]]> [+] DRM + GSF Framework ID Hooks Fixed
-        <![CDATA[<br>]]> [+] Many more Hooks + Code Fixed + Cleaned
-        <![CDATA[<br>]]> [+] Added Shell Interception (getprop, su, meminfo)..
-        <![CDATA[<br>]]> [+] Added Settings UI [advance ;) ]
-        <![CDATA[<br>]]> [+] Added Randomizers (20+)
-        <![CDATA[<br>]]> [+] Added better Properties UI
-        <![CDATA[<br>]]> [+] Added Settings Config UI
-        <![CDATA[<br>]]> [+] Changes Command System to be Similar to that one of a C2
-        <![CDATA[<br>]]> [+] Started to add secure core key exchange system
-        <![CDATA[<br>]]> [!] Plus Many more changes applied !!!
-        <![CDATA[<br><br>]]>This is my Art, Quality over Quantity so be patience pls and thanks to all who are patient!.
    </string>
 
     <string name="warning_hook_ad_analytics" translatable="false">This will attempt to disable the analytics libraries from being loaded into the application. This does not support all (80+) right now, so be patient until I get around to all of them. If analytics are still being loaded in or ads are still appearing, it means they are not supported for now. This can also cause applications to crash if they heavily depend on the analytics/ad library. IF Application Crashes go into the New HOOK UI and disable some of the Ad Analytics Hooks test app rinse and repeat until you find the Hook that is crashing it. I WILL not help with this as Disabling ads and analytics can crash some apps so figure out your self what is causing it disable it!</string>
@@ -287,8 +153,58 @@
     <string name="warning_hook_user_agent" translatable="false">If you have installed a custom WebView on the device, such as BroMite, this hook may not work as expected. It will still work on applications that use OkHttp3, HttpUrlConnection, and GeckoWebView from Firefox. These hooks will not work on Chromium-based browsers, such as Chrome and Brave, since they use native code to build their user agents. Lastly, using this on apps like DoorDash is unwise, as DoorDash uses its own type of user agent. If you do not spoof it correctly, it can make DoorDash flag you.</string>
     <string name="warning_hook_vpn_state" translatable="false">This will hide the fact that you have a VPN enabled and connected. However, if the target application uses server-side methods to detect the VPN, it cannot be bypassed via hooks. This hook is a local detection bypass using four methods.</string>
 
+    <string name="save_setting_success" translatable="false">Settings were saved! </string>
+    <string name="save_setting_error" translatable="false">Failed to save Settings! </string>
+
+    <string name="msg_error_global_limit" translatable="false">Error this Action can not be completed because its Global Context </string>
+    <string name="msg_error_generic" translatable="false">Error executing Action! </string>
+    <string name="msg_error_generic_null" translatable="false">Error executing Action! NULL PTR </string>
+    <string name="msg_error_no_hooks" translatable="false">Error No Hooks for this Action!</string>
+    <string name="msg_finished_applying_config" translatable="false">Finished Applying Config! </string>
+
+    <string name="msg_task_finished_command" translatable="false">Command was executed Successfully!</string>
+    <string name="msg_task_failure" translatable="false">Command Failed to execute!</string>
+
+    <string name="result_prefix_notify" translatable="false">Notify</string>
+    <string name="result_prefix_restrict" translatable="false">Restrict</string>
+    <string name="result_prefix_theme" translatable="false">Theme</string>
+    <string name="result_prefix_debug" translatable="false">Debug</string>
+    <string name="result_prefix_force_stop" translatable="false">App Force Closed!</string>
+    <string name="result_prefix_cleared_app_data" translatable="false">AppData Cleared!</string>
+
+    <string name="search_config_hint" translatable="false">Search Configs...</string>
+    <string name="hint_input_value" translatable="false">Enter Value...</string>
+
+
+    <string name="msg_hint_create_profile" translatable="false">Create a Profile for the Targeted Application!</string>
+    <string name="msg_hint_clear_app" translatable="false">Clear target Application Data!</string>
+    <string name="msg_hint_logs" translatable="false">Target app Logs!</string>
+    <string name="msg_hint_force_stop" translatable="false">Force Stop target Application!</string>
+    <string name="msg_hint_reset_settings" translatable="false">Reset XPL-EX Settings back to Default aka Nothing!</string>
+    <string name="msg_shared_prefs_saved" translatable="false">Shared preferences were saved!</string>
+
+
+    <string name="msg_hint_wild_card" translatable="false">Randomize when app event, easter egg randomizer</string>
+    <string name="msg_hint_reset_container" translatable="false">Reset Values to last saved Values</string>
+    <string name="msg_hint_randomize_container" translatable="false">Randomize Settings</string>
+    <string name="msg_hint_save_container" translatable="false">Save Un Saved Settings</string>
+    <string name="msg_hint_delete_container" translatable="false">Delete Settings</string>
+
+
+    <string name="msg_hint_hook_control" translatable="false">Hooks Control, Enabled=%s Total=%s</string>
+    <string name="msg_result_randomized" translatable="false">Settings were Randomized! Ensure to save the new values!</string>
+    <string name="msg_error_randomizer_none" translatable="false">No Randomizers</string>
+
+    <string name="msg_result_deleted" translatable="false">Delete action was Successful</string>
+    <string name="msg_error_result_generic" translatable="false">Action failed, Reason:</string>
+
+    <string name="msg_error_nothing_deleted" translatable="false">Nothing Deleted</string>
+    <string name="msg_error_bad_app" translatable="false">Invalid App</string>
+    <string name="msg_error_bad_options" translatable="false">No options Selected for applying...</string>
+
 
     <string name="title_hook_warning" translatable="false">Hook Group Warning!</string>
+
 
     <string name="title_help_installed">Restriction installed</string>
     <string name="title_help_system">Applying restrictions can result in problems</string>
@@ -302,6 +218,18 @@
     <string name="title_no_groups" translatable="false">Groups Error</string>
     <string name="title_error_generic" translatable="false">Error</string>
 
+    <string name="title_global" translatable="false">Global</string>
+    <string name="title_app" translatable="false">App</string>
+
+    <string name="title_tag_cell" translatable="false">Cell</string>
+    <string name="title_tag_hardware" translatable="false">Hardware</string>
+    <string name="title_tag_unique" translatable="false">Unique</string>
+    <string name="title_tag_rom" translatable="false">ROM</string>
+    <string name="title_tag_device" translatable="false">Device</string>
+    <string name="title_tag_etc" translatable="false">ETC</string>
+    <string name="title_tag_custom" translatable="false">Custom</string>
+
+
 
     <string name="menu_clean_privacy_ex_hooks" translatable="false">Clean PEX Hooks</string>
 
@@ -310,6 +238,12 @@
     <string name="title_no_random" translatable="false">Setting Missing Random</string>
     <string name="title_collection_privacy" translatable="false">For my mental health</string>
 
+    <string name="title_check_all" translatable="false">Check All</string>
+    <string name="title_uncheck_all" translatable="false">Uncheck All</string>
+
+    <string name="title_select_tags" translatable="false">Select Tags</string>
+
+    <string name="msg_config_push" translatable="false">Pushed Config! Result = </string>
 
     <string name="msg_delete_config" translatable="false">Are you sure you really want to Delete this Config ? (whole config) </string>
     <string name="msg_na_randomizer" translatable="false">This setting does not have a Randomizer and or you set the Randomizer to N/A. Reason most likely is due to the Fact that there are SOO many settings to make Randomizers for all is asking North Korea to free its people. That being said as each Update comes more Randomizers will come, in the mean Time Use Google to find out what you think best fits this setting and use Description for help and maybe a Possible Format. Thank you! </string>
@@ -318,6 +252,32 @@
 
     <string name="msg_old_group" translatable="false">HEY I noticed you have original M66Bs Collection enabled (Privacy) I WILL be disabling this without your choice as this is to prevent people from getting confused and or complaining about issues solved years ago. That being said IF you go out and enable it again I will NOT help you if you have issues as I do no longer support or maintain that collection. Any issues relating to the fact you have a old outdated collection will be 100% ignored!</string>
 
+
+    <string name="msg_confirm_save_options_config" translatable="false">
+       This will save all your currently checked options as a preset configuration.\n\n
+        This has NOTHING to do with Saving the actual value of the settings to the database\n
+       You can choose to have these checks automatically applied:\n
+       • Only when opening this screen for this specific app\n
+       • Or when opening this screen for any app\n\n
+       Your current selection will be saved as the default configuration.\n\n
+        Settings Checked:
+    </string>
+
+    <string name="msg_confirm_force_stop" translatable="false">
+        Are you sure you want to Force Stop the Target application?\n\n
+        This should not cause any issues but will force your target application
+        to stop running, so save any tasks if not saved in the app you\'re stopping!
+    </string>
+
+    <string name="msg_confirm_clear_data" translatable="false">
+        Are you sure you want to clear this target\'s application data?\n\n
+        You will not be able to recover it unless you have made a backup.
+        You will be signed out of all accounts, and will lose all data on that application.
+    </string>
+
+    <string name="msg_confirm_delete_config" translatable="false">
+        Are you sure you want to delete this Config? Name:
+    </string>
 
     <string name="result_update_setting_success" translatable="false">Setting Updated Successfully</string>
     <string name="result_delete_setting_success" translatable="false">Setting Deleted Successfully</string>
@@ -368,6 +328,21 @@
     <string name="title_settings_reset" translatable="false">Reset all Settings</string>
     <string name="title_config_rename_config" translatable="false">Rename Config</string>
 
+
+    <string name="text_config_name" translatable="false">Config Name</string>
+    <string name="text_enter_config_name" translatable="false">Enter config name</string>
+
+    <string name="text_config_author" translatable="false">Author Name</string>
+    <string name="text_enter_config_author" translatable="false">Enter author name</string>
+
+    <string name="text_config_version" translatable="false">Version</string>
+    <string name="text_enter_config_version" translatable="false">Enter version string</string>
+
+    <string name="text_label_settings" translatable="false">Settings:</string>
+    <string name="text_label_hooks" translatable="false">Hooks:</string>
+    <string name="text_bulk_select" translatable="false">Bulk Select</string>
+
+
     <string name="msg_delete_app_data" translatable="false">Are you sure you want to clear Application App Data ? This will delete specifically the App Data not the Hook Settings or Assignments.</string>
 
 
@@ -376,6 +351,14 @@
 
     <string name="menu_add_property_name" translatable="false">Property Name</string>
     <string name="menu_add_property_setting_name" translatable="false">Setting Name</string>
+
+    <string name="option_apply" translatable="false">Apply</string>
+    <string name="option_update" translatable="false">Update</string>
+    <string name="option_create" translatable="false">Create</string>
+    <string name="option_open" translatable="false">Open</string>
+    <string name="option_save" translatable="false">Save</string>
+    <string name="option_edit" translatable="false">Edit</string>
+
 
     <string name="option_delete" translatable="false">Delete</string>
     <string name="option_cancel" translatable="false">Cancel</string>
@@ -414,6 +397,9 @@
     <string name="menu_show_priv" translatable="false">Privacy</string>
     <string name="menu_show_rev" translatable="false">Reverse Engineering</string>
     <string name="menu_show_byp" translatable="false">Bypass/Hide</string>
+
+
+
 
     <string name="button_hooks_group_hint" translatable="false">Application Hook Group view to see all assigned Hooks and Groups with their Settings</string>
     <string name="button_configs_hint" translatable="false">Configs Menu, modify application settings via Configs</string>
@@ -482,6 +468,14 @@
     <string name="title_hook_exclude" translatable="false">Exclude packages</string>
     <string name="title_hook_settings" translatable="false">Settings</string>
     <string name="title_deploy_hooks" translatable="false">Updating Hook Assignments...</string>
+    <string name="title_deploy_settings" translatable="false">Updating Setting...</string>
+    <string name="title_profile_manager" translatable="false">Profile Manager</string>
+    <string name="title_config_modify" translatable="false">Modify Config</string>
+
+    <string name="title_logs" translatable="false">Logs</string>
+    <string name="title_confirm" translatable="false">Confirm</string>
+    <string name="title_save_options" translatable="false">Save Checked Settings</string>
+    <string name="title_config_manager" translatable="false">Config Manager</string>
 
 
     <string name="menu_hooks" translatable="false">Hook App Control</string>
@@ -493,6 +487,8 @@
     <string name="menu_database" translatable="false">Database</string>
     <string name="menu_save" translatable="false">Save</string>
     <string name="menu_cpumaps" translatable="false">CPU Maps</string>
+    <string name="menu_collections" translatable="false">Collections</string>
+
 
     <string name="msg_no_service">Module not running or updated</string>
     <string name="msg_review_settings">Review privacy settings</string>
@@ -501,6 +497,10 @@
     <string name="msg_restrict_sure">Are you sure to toggle \'%1$s\' for all apps?</string>
     <string name="msg_no_browser">No browser available to open link</string>
     <string name="msg_deploy_succeeded"  translatable="false">Updating Hook Assignments Succeeded!</string>
+
+
+    <string name="msg_succeeded_count"  translatable="false">Succeeded:</string>
+    <string name="msg_failed_count"  translatable="false">Failed:</string>
 
 
     <string name="group_determine_activity">Determine activity</string>

@@ -6,9 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +13,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,16 +30,11 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.api.XResult;
 import eu.faircode.xlua.api.configs.MockConfig;
 import eu.faircode.xlua.api.configs.MockConfigPacket;
 import eu.faircode.xlua.api.settings.LuaSettingExtended;
 import eu.faircode.xlua.api.xlua.XLuaCall;
-import eu.faircode.xlua.api.xmock.XMockCall;
 import eu.faircode.xlua.api.xmock.XMockQuery;
 import eu.faircode.xlua.logger.XLog;
 import eu.faircode.xlua.ui.ConfigQue;
@@ -55,6 +46,8 @@ import eu.faircode.xlua.ui.interfaces.ILoader;
 import eu.faircode.xlua.ui.transactions.ConfigTransactionResult;
 import eu.faircode.xlua.utilities.FileDialogUtil;
 import eu.faircode.xlua.utilities.UiUtil;
+import eu.faircode.xlua.x.data.JsonFileUtil;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
 public class  FragmentConfig extends
         ViewFloatingAction implements
@@ -267,36 +260,39 @@ public class  FragmentConfig extends
         XLog.i("onActivityResult code=" + requestCode);
         switch (requestCode) {
             case PICK_FILE_REQUEST_CODE:
-                String mimeType = Objects.requireNonNull(getContext()).getContentResolver().getType(selectedFileUri);
-                if ("application/json".equalsIgnoreCase(mimeType) || "text/plain".equalsIgnoreCase(mimeType)) {
-                    final MockConfig config = FileDialogUtil.readConfig(getContext(), selectedFileUri);
-                    if(config == null)
-                        Snackbar.make(
-                                view,
-                                getResources().getString(R.string.result_config_read_failed) + " => " + selectedFileUri.getPath(),
-                                Snackbar.LENGTH_LONG).show();
-                    else {
-                        String configName = config.getName();
-                        for(int i = 0; i < spConfigs.getCount(); i++) {
-                            MockConfig conf = spConfigs.getItem(i);
-                            assert conf != null;
-                            if(configName.equals(conf.getName())) {
-                                new RenameDialogEx()
-                                        .setConfig(config)
-                                        .setCallback(this)
-                                        .show(Objects.requireNonNull(getFragmentManager()), getString(R.string.title_config_rename_config));
+                if(!JsonFileUtil.isJsonFile(getContext(), selectedFileUri)) {
+                    Snackbar.make(view, R.string.result_config_parse_failed, Snackbar.LENGTH_LONG).show();
+                    return;
+                }
 
-                                configName += "-" + ThreadLocalRandom.current().nextInt(10000,999999999);
-                                config.setName(configName);
-                                break;
-                            }
+                final MockConfig config = FileDialogUtil.readConfig(getContext(), selectedFileUri);
+                if(config == null)
+                    Snackbar.make(
+                            view,
+                            getResources().getString(R.string.result_config_read_failed) + " => " + selectedFileUri.getPath(),
+                            Snackbar.LENGTH_LONG).show();
+                else {
+                    String configName = config.getName();
+                    for(int i = 0; i < spConfigs.getCount(); i++) {
+                        MockConfig conf = spConfigs.getItem(i);
+                        assert conf != null;
+                        if(configName.equals(conf.getName())) {
+                            new RenameDialogEx()
+                                    .setConfig(config)
+                                    .setCallback(this)
+                                    .show(Objects.requireNonNull(getFragmentManager()), getString(R.string.title_config_rename_config));
+
+                            configName += "-" + RandomGenerator.nextInt(10000,999999999);
+                            config.setName(configName);
+                            break;
                         }
-
-                        for(LuaSettingExtended setting : config.getSettings()) setting.setIsEnabled(true);
-                        pushConfig(config);
-                        Snackbar.make(view, getResources().getString(R.string.result_config_read_success) + " " + configName, Snackbar.LENGTH_LONG).show();
                     }
-                } else Snackbar.make(view, R.string.result_config_parse_failed, Snackbar.LENGTH_LONG).show();
+
+                    for(LuaSettingExtended setting : config.getSettings()) setting.setIsEnabled(true);
+                    pushConfig(config);
+                    Snackbar.make(view, getResources().getString(R.string.result_config_read_success) + " " + configName, Snackbar.LENGTH_LONG).show();
+                }
+
                 break;
             case PICK_FOLDER_RESULT_CODE:
                 final int takeFlags = data.getFlags()

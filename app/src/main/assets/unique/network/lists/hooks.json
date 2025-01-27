@@ -1,0 +1,66 @@
+[
+
+  /*{
+    "builtin": true,
+    "collection": "PrivacyEx",
+    "group": "ID.Network",
+    "name": "NetworkInfo.getExtraInfo",
+    "author": "M66B",
+    "className": "android.net.NetworkInfo",
+    "methodName": "getExtraInfo",
+    "parameterTypes": [ ],
+    "returnType": "java.lang.String",
+    "minSdk": 1,
+    "maxSdk": 999,
+    "version": 1,
+    "description": "",
+    "enabled":true,
+    "optional":true,
+    "usage":true,
+    "notify":false,
+    "luaScript": "@generic_null_value"
+  },*/
+  {
+    "builtin": true,
+    "collection": "PrivacyEx",
+    "group": "Network.Spoof.Wifi.List",
+    "name": "WifiManager.getScanResults",
+    "author": "OBC",
+    "className": "android.net.wifi.WifiManager",
+    "methodName": "getScanResults",
+    "parameterTypes": [ ],
+    "returnType": "java.util.List",
+    "minSdk": 1,
+    "maxSdk": 999,
+    "version": 1,
+    "description": "Get a list of Available Wifi Networks",
+    "enabled":true,
+    "optional":true,
+    "usage":true,
+    "notify":false,
+    "luaScript": "@list_wifimanager_getscanresults",
+    "settings":[ "network.allowed.list" ]
+  },
+
+  {
+    "builtin": true,
+    "collection": "PrivacyEx",
+    "group": "Network.Spoof.Wifi.List",
+    "name": "WifiManager.getConfiguredNetworks",
+    "author": "OBC",
+    "className": "android.net.wifi.WifiManager",
+    "methodName": "getConfiguredNetworks",
+    "parameterTypes": [ ],
+    "returnType": "java.util.List",
+    "minSdk": 1,
+    "maxSdk": 29,
+    "version": 1,
+    "description": "Get a list of Saved Wifi Networks",
+    "enabled":true,
+    "optional":true,
+    "usage":true,
+    "notify":false,
+    "luaScript": "@list_wifimanager_getconfigurednetworks",
+    "settings":[ "network.allowed.list" ]
+  }
+]

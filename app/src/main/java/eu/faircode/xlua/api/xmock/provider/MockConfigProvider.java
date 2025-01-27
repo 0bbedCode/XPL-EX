@@ -6,7 +6,7 @@ import android.util.Log;
 
 import java.util.Map;
 
-import eu.faircode.xlua.XDatabase;
+import eu.faircode.xlua.XDatabaseOld;
 import eu.faircode.xlua.XUtil;
 import eu.faircode.xlua.api.xstandard.interfaces.ISettingsConfig;
 import eu.faircode.xlua.utilities.StringUtil;
@@ -14,8 +14,8 @@ import eu.faircode.xlua.utilities.StringUtil;
 public class MockConfigProvider {
     private static final String TAG = "XLua.XMockPhoneProvider";
 
-    public static boolean applySettingsConfig(Context context, ISettingsConfig config, String packageName, XDatabase db) { return applySettingsConfig(context, config, packageName, XUtil.getUserId(Process.myUid()), db); }
-    public static boolean applySettingsConfig(Context context, ISettingsConfig config, String packageName, int userId, XDatabase db)  {
+    public static boolean applySettingsConfig(Context context, ISettingsConfig config, String packageName, XDatabaseOld db) { return applySettingsConfig(context, config, packageName, XUtil.getUserId(Process.myUid()), db); }
+    public static boolean applySettingsConfig(Context context, ISettingsConfig config, String packageName, int userId, XDatabaseOld db)  {
         if(config == null)
             return false;
 

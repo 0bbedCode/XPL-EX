@@ -4,7 +4,7 @@ import android.content.Context;
 
 import java.util.Collection;
 
-import eu.faircode.xlua.XDatabase;
+import eu.faircode.xlua.XDatabaseOld;
 import eu.faircode.xlua.api.XResult;
 import eu.faircode.xlua.api.properties.MockPropGroupHolder;
 import eu.faircode.xlua.api.properties.MockPropMap;
@@ -16,8 +16,8 @@ import eu.faircode.xlua.api.xstandard.database.SqlQuerySnake;
 public class MockPropManager {
     private static final String JSON = "propmaps.json";
 
-    public static XResult putPropertySetting(XDatabase db, MockPropPacket packet) { return putPropertySetting(db, packet.createSetting(), packet.isDeleteSetting()); }
-    public static XResult putPropertySetting(XDatabase db, MockPropSetting setting, boolean delete) {
+    public static XResult putPropertySetting(XDatabaseOld db, MockPropPacket packet) { return putPropertySetting(db, packet.createSetting(), packet.isDeleteSetting()); }
+    public static XResult putPropertySetting(XDatabaseOld db, MockPropSetting setting, boolean delete) {
         return XResult.create()
                 .setMethodName("putMockPropSetting")
                 .setExtra(setting.toString())
@@ -27,8 +27,8 @@ public class MockPropManager {
                                 DatabaseHelp.prepareDatabase(db, MockPropSetting.Table.NAME, MockPropSetting.Table.COLUMNS)));
     }
 
-    public static int getPropertySettingCode(XDatabase db, MockPropSetting setting) { return getPropertySettingCode(db, setting.getName(), setting.getUser(), setting.getCategory()); }
-    public static int getPropertySettingCode(XDatabase db, String propertyName, int userId, String packageName) {
+    public static int getPropertySettingCode(XDatabaseOld db, MockPropSetting setting) { return getPropertySettingCode(db, setting.getName(), setting.getUser(), setting.getCategory()); }
+    public static int getPropertySettingCode(XDatabaseOld db, String propertyName, int userId, String packageName) {
         return SqlQuerySnake.create(db, MockPropSetting.Table.NAME)
                 .ensureDatabaseIsReady()
                 .whereColumn("user", userId)
@@ -37,8 +37,8 @@ public class MockPropManager {
                 .queryGetFirstInt("value", MockPropSetting.PROP_NULL, true);
     }
 
-    public static Collection<MockPropSetting> getPropertySettingsForUser(XDatabase db, MockPropSetting setting) { return getPropertySettingsForUser(db, setting.getUser(), setting.getCategory()); }
-    public static Collection<MockPropSetting> getPropertySettingsForUser(XDatabase db, int userId, String packageName) {
+    public static Collection<MockPropSetting> getPropertySettingsForUser(XDatabaseOld db, MockPropSetting setting) { return getPropertySettingsForUser(db, setting.getUser(), setting.getCategory()); }
+    public static Collection<MockPropSetting> getPropertySettingsForUser(XDatabaseOld db, int userId, String packageName) {
         return SqlQuerySnake.create(db, MockPropSetting.Table.NAME)
                 .ensureDatabaseIsReady()
                 .whereColumn("user", userId)
@@ -46,8 +46,8 @@ public class MockPropManager {
                 .queryAs(MockPropSetting.class, true);
     }
 
-    public static XResult putSettingMapForProperty(XDatabase db, MockPropPacket packet) { return putSettingMapForProperty(db, packet.createMap(), packet.isDeleteMap()); }
-    public static XResult putSettingMapForProperty(XDatabase db, MockPropMap mapSetting, boolean delete) {
+    public static XResult putSettingMapForProperty(XDatabaseOld db, MockPropPacket packet) { return putSettingMapForProperty(db, packet.createMap(), packet.isDeleteMap()); }
+    public static XResult putSettingMapForProperty(XDatabaseOld db, MockPropMap mapSetting, boolean delete) {
         return XResult.create()
                 .setMethodName("putMockPropMap")
                 .setExtra(mapSetting.toString())
@@ -57,21 +57,21 @@ public class MockPropManager {
                                 DatabaseHelp.prepareDatabase(db, MockPropMap.Table.name, MockPropMap.Table.columns)));
     }
 
-    public static Collection<MockPropMap> getPropertiesForSettingMap(XDatabase db, String settingName) {
+    public static Collection<MockPropMap> getPropertiesForSettingMap(XDatabaseOld db, String settingName) {
         return SqlQuerySnake.create(db, MockPropMap.Table.name)
                 .ensureDatabaseIsReady()
                 .whereColumn("settingName", settingName)
                 .queryAs(MockPropMap.class, true);
     }
 
-    public static String getSettingMapNameForProperty(XDatabase db, String propertyName) {
+    public static String getSettingMapNameForProperty(XDatabaseOld db, String propertyName) {
         return SqlQuerySnake.create(db, MockPropMap.Table.name)
                 .ensureDatabaseIsReady()
                 .whereColumn("name", propertyName)
                 .queryGetFirstString("settingName", true);
     }
 
-    public static MockPropMap getSettingMapForProperty(XDatabase db, String propertyName) {
+    public static MockPropMap getSettingMapForProperty(XDatabaseOld db, String propertyName) {
         return SqlQuerySnake.create(db, MockPropMap.Table.name)
                 .ensureDatabaseIsReady()
                 .whereColumn("name", propertyName)
@@ -79,7 +79,7 @@ public class MockPropManager {
     }
 
 
-    public static boolean ensurePropSettingsDatabase(Context context, XDatabase db) {
+    public static boolean ensurePropSettingsDatabase(Context context, XDatabaseOld db) {
         return DatabaseHelp.prepareTableIfMissingOrInvalidCount(
                 context,
                 db,
@@ -89,7 +89,7 @@ public class MockPropManager {
     }
 
 
-    public static Collection<MockPropMap> forceCheckMapsDatabase(Context context, XDatabase db) {
+    public static Collection<MockPropMap> forceCheckMapsDatabase(Context context, XDatabaseOld db) {
         return DatabaseHelp.initDatabaseLists(
                 context,
                 db,

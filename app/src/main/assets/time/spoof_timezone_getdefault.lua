@@ -4,7 +4,7 @@ function after(hook, param)
 	    return false
 	end
 
-    local fake = param:getSettingReMap("zone.timezone", "zone.tzshort", "GMT+0")
+    local fake = param:getSettingReMap("region.timezone", "zone.tzshort", "GMT+0")
     if fake == nil then
         return false
     end

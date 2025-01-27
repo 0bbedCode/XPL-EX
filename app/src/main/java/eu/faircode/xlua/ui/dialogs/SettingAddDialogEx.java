@@ -16,7 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
 import eu.faircode.xlua.R;
-import eu.faircode.xlua.Str;
+import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.api.settings.LuaSettingExtended;
 import eu.faircode.xlua.ui.SettingsQue;
 import eu.faircode.xlua.ui.interfaces.ISettingUpdateEx;

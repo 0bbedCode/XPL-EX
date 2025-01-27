@@ -7,10 +7,9 @@ import eu.faircode.xlua.XUtil;
 import eu.faircode.xlua.api.XProxyContent;
 import eu.faircode.xlua.api.XResult;
 import eu.faircode.xlua.api.settings.LuaSettingPacket;
-import eu.faircode.xlua.api.xlua.database.LuaAppManager;
 import eu.faircode.xlua.api.xlua.provider.XLuaAppProvider;
 import eu.faircode.xlua.api.xstandard.CallCommandHandler;
-import eu.faircode.xlua.api.xstandard.command.CallPacket;
+import eu.faircode.xlua.api.xstandard.command.CallPacket_old;
 
 public class ClearAppDataCommand extends CallCommandHandler {
     @SuppressWarnings("unused")
@@ -20,7 +19,7 @@ public class ClearAppDataCommand extends CallCommandHandler {
     }
 
     @Override
-    public Bundle handle(CallPacket commandData) throws Throwable {
+    public Bundle handle(CallPacket_old commandData) throws Throwable {
         LuaSettingPacket packet = commandData.readExtrasAs(LuaSettingPacket.class);
         XResult res = XResult.create().setMethodName("killApp").setExtra(packet.toString());
         XLuaAppProvider.forceStop(

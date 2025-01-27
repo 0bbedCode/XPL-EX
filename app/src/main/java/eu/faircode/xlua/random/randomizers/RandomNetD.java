@@ -4,11 +4,11 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-import eu.faircode.xlua.random.IRandomizer;
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
 import eu.faircode.xlua.utilities.RandomStringGenerator;
 
-public class RandomNetD implements IRandomizer {
+public class RandomNetD implements IRandomizerOld {
     //unique.netd.secret.key
     //90f8:f587:2bb7:db9b:e5:306a:67d7:a155
     public static final String FORMAT = "%s:%s:%s:%s:%s:%s:%s:%s";

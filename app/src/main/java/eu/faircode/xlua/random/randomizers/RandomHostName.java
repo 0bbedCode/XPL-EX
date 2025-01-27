@@ -4,13 +4,14 @@ import androidx.annotation.NonNull;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.random.IRandomizer;
+
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
 import eu.faircode.xlua.utilities.RandomStringGenerator;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
-public class RandomHostName implements IRandomizer {
+public class RandomHostName implements IRandomizerOld {
     private static final List<String> hostNames = Arrays.asList("google.org", "duckduckorg", "ducky", "cia.hq", "fbi.hq", "nsa.hq", "privacy.org", "funny.mommy", "random");
 
     @Override
@@ -31,9 +32,9 @@ public class RandomHostName implements IRandomizer {
 
     @Override
     public String generateString() {
-        String host = hostNames.get(ThreadLocalRandom.current().nextInt(0, hostNames.size()));
+        String host = hostNames.get(RandomGenerator.nextInt(0, hostNames.size()));
         if(host.equals("random")) {
-            return RandomStringGenerator.generateRandomAlphanumericString(ThreadLocalRandom.current().nextInt(5, 25), RandomStringGenerator.LOWER_LETTERS + RandomStringGenerator.UPPER_LETTERS);
+            return RandomStringGenerator.generateRandomAlphanumericString(RandomGenerator.nextInt(5, 25), RandomStringGenerator.LOWER_LETTERS + RandomStringGenerator.UPPER_LETTERS);
         } return host;
     }
 

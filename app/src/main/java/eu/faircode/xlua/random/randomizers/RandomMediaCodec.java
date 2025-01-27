@@ -1,6 +1,8 @@
 package eu.faircode.xlua.random.randomizers;
 
-import java.util.concurrent.ThreadLocalRandom;
+
+
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
 public class RandomMediaCodec {
     private static final String[] PREFIXES = {"OMX.", "c2."};
@@ -17,6 +19,6 @@ public class RandomMediaCodec {
     }
 
     private static String getRandomElement(String[] array) {
-        return array[ThreadLocalRandom.current().nextInt(array.length)];
+        return array[RandomGenerator.nextInt(array.length)];
     }
 }

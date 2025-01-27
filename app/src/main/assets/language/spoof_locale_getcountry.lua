@@ -4,7 +4,7 @@ function after(hook, param)
 	    return false
 	end
 
-	local fake = param:getSetting("zone.country", "Iceland")
+	local fake = param:getSetting("region.country", "Iceland")
 	if fake == nil then
 	    return false
 	end

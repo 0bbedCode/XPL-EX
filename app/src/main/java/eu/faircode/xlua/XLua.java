@@ -41,7 +41,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.WeakHashMap;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -49,27 +48,35 @@ import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import eu.faircode.xlua.api.properties.MockPropConversions;
-import eu.faircode.xlua.api.xlua.XLuaCall;
-import eu.faircode.xlua.api.xmock.XMockQuery;
-import eu.faircode.xlua.api.xstandard.UserIdentityPacket;
+import eu.faircode.xlua.x.LogX;
+import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.data.utils.ListUtil;
+import eu.faircode.xlua.x.hook.filter.HookRepository;
 import eu.faircode.xlua.hooks.XHookUtil;
 
 //package eu.faircode.xlua;
 
 import java.util.Collection;
 
-import eu.faircode.xlua.api.xlua.XLuaQuery;
 import eu.faircode.xlua.hooks.LuaHookWrapper;
 import eu.faircode.xlua.hooks.LuaScriptHolder;
 import eu.faircode.xlua.hooks.XReporter;
 import eu.faircode.xlua.hooks.LuaHookResolver;
 import eu.faircode.xlua.logger.XLog;
 import eu.faircode.xlua.logger.XReport;
-import eu.faircode.xlua.random.GlobalRandoms;
 
 import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.utilities.ReflectUtilEx;
+import eu.faircode.xlua.x.xlua.commands.GlobalCommandBridge;
+import eu.faircode.xlua.x.xlua.commands.query.GetAssignedHooksExCommand;
+import eu.faircode.xlua.x.xlua.hook.PackageHookContext;
+
+/*
+    ToDO:
+        [>] Add the remaining remapped Entries
+        [>] Ensure use Proper abstraction, Returning Collection is useless as Caller function Can cast to get it as Collection so have it return something like list
+        [>] When doing "toString" function ensure the "appendFieldLine" takes in the Constant for the Field Name if available
+ */
 
 public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
     private static final String TAG = "XLua.XCoreStartup";
@@ -105,32 +112,7 @@ public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
                 new XC_MethodHook() {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) {
-                        // call(String method, String name, Bundle args)
-                        /*StringBuilder sb = new StringBuilder();
-                        sb.append("CALLING UID: " + Binder.getCallingUid() + "\n");
-                        try {
-                            sb.append((String)param.args[0] + "\n");
-                        }catch (Exception e) { }
-                        try {
-                            sb.append((String)param.args[1] + "\n");
-                        }catch (Exception e) { }
-                        try {
-                            Bundle b = (Bundle) param.args[2];
-                            for(String s : b.keySet()) {
-                               sb.append("KEY=" + s + "\n");
-                               try {
-                                   sb.append("VALUE=" + b.getString(s) + "\n");
-                               }catch (Exception ie) { }
-                            }
-                            //sb.append(b.toString());
-                        }catch (Exception e) { }
-                        Log.i(TAG, "CALL CALL CALL\n" + sb.toString());*/
-                        //GET_secure
-                        //android_id
-
-                        //_track_generation
-                        //We can target this!!
-                        XCommandBridgeStatic.handeCall(param, lpparam.packageName);
+                        GlobalCommandBridge.handeCall(param, lpparam.packageName);
                     }
                 });
 
@@ -140,72 +122,22 @@ public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
                 new XC_MethodHook() {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) {
-                        //query(Uri uri, String[] projection, String where, String[] whereArgs,
-                        //            String order)
-                        /*StringBuilder sb = new StringBuilder();
-                        try {
-                            Uri uri = (Uri) param.args[0];
-                            sb.append("URI => " + uri.getAuthority() + "\n");
-                        }catch (Exception e) { }
-                        try {
-                            String[] projection = (String[]) param.args[1];
-                            sb.append("Projection => " +  Str.joinArray(projection) + "\n");
-                        }catch (Exception e) { }
-                        try {
-                            String where = (String)param.args[2];
-                            sb.append("Where => " + where + "\n");
-                        }catch (Exception e) { }
-                        try {
-                            String[] whereArgs = (String[]) param.args[3];
-                            sb.append("whereArgs => " + Str.joinArray(whereArgs) + "\n");
-                        }catch (Exception e) { }
-                        try {
-                            String order = (String) param.args[4];
-                            sb.append("Order => " + order);
-                        }catch (Exception e) { }
-
-                        Log.i(TAG, "QUERY QUERY\n" + sb.toString());*/
-                        XCommandBridgeStatic.handleQuery(param, lpparam.packageName);
+                        GlobalCommandBridge.handleQuery(param, lpparam.packageName);
                     }
                 });
-
-        /*XposedBridge.hookMethod(
-                clsSet.getMethod("getAllSecureSettings", Integer.class, String[].class) ,
-                new XC_MethodHook() {
-                    @Override
-                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                        int uid = (int)param.args[0];
-                        Log.i(TAG, "GETTING SETTINGS SECURE: " + uid);
-                        super.beforeHookedMethod(param);
-                    }
-                });
-
-        XposedBridge.hookMethod(
-                clsSet.getMethod("getSecureSetting", String.class, int.class),
-                new XC_MethodHook() {
-                    @Override
-                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                        String name = (String)param.args[0];
-                        int uid = (int)param.args[1];
-                        Log.i(TAG, "GET SETTING SECURE: " + uid + " > " + name);
-                        super.beforeHookedMethod(param);
-                    }
-                });*/
     }
+
 
     private void hookAndroid(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         // https://android.googlesource.com/platform/frameworks/base/+/master/services/core/java/com/android/server/am/ActivityManagerService.java
         Class<?> clsAM = Class.forName("com.android.server.am.ActivityManagerService", false, lpparam.classLoader);
-
         XposedBridge.hookAllMethods(clsAM, "systemReady", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 try {
-                    Log.i(TAG, "Preparing system");
                     XposedBridge.log(TAG + " Preparing system");
                     Context context = getContext(param.thisObject);
                     hookPackage(lpparam, Process.myUid(), context);
-
                 } catch (Throwable ex) {
                     Log.e(TAG, Log.getStackTraceString(ex));
                     XposedBridge.log(ex);
@@ -215,25 +147,22 @@ public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 try {
-                    Log.i(TAG, "System ready");
                     XposedBridge.log(TAG + " System ready");
                     Context context = getContext(param.thisObject);
 
                     // Store current module version
                     PackageInfo pi = context.getPackageManager().getPackageInfo(BuildConfig.APPLICATION_ID, 0);
                     version = pi.versionCode;
-                    Log.i(TAG, "Module version " + version);
 
                     // public static UserManagerService getInstance()
                     Class<?> clsUM = Class.forName("com.android.server.pm.UserManagerService", false, param.thisObject.getClass().getClassLoader());
                     Object um = clsUM.getDeclaredMethod("getInstance").invoke(null);
-
                     //  public int[] getUserIds()
                     int[] userids = (int[]) um.getClass().getDeclaredMethod("getUserIds").invoke(um);
 
                     // Listen for package changes
                     for (int userid : userids) {
-                        Log.i(TAG, "Registering package listener user=" + userid);
+                        //Log.i(TAG, "Registering package listener user=" + userid);
                         IntentFilter ifPackageAdd = new IntentFilter();
                         ifPackageAdd.addAction(Intent.ACTION_PACKAGE_ADDED);
                         ifPackageAdd.addAction(Intent.ACTION_PACKAGE_FULLY_REMOVED);
@@ -256,7 +185,9 @@ public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
                         if (field.getType().equals(Context.class)) {
                             field.setAccessible(true);
                             context = (Context) field.get(am);
-                            Log.i(TAG, "Context found in " + cAm + " as " + field.getName());
+                            if(DebugUtil.isDebug())
+                                Log.i(TAG, "Context found in " + cAm + " as " + field.getName());
+
                             break;
                         }
                     cAm = cAm.getSuperclass();
@@ -307,30 +238,20 @@ public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
     }
 
     public void hookPackage(final XC_LoadPackage.LoadPackageParam lpparam, int uid, final Context context) throws Throwable {
-        final String pName = lpparam.packageName;
-        final String key = UUID.randomUUID().toString();
-        XLog.i("pkg [" + pName + "] key [" + key + "]");
+        PackageHookContext app = PackageHookContext.create(lpparam, uid, context);
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Hook Package created App Context=" + app);
 
-        Collection<XLuaHook> hooks = XLuaQuery.getAssignments(context, pName, uid, true);
-        final boolean useDefault = XLuaCall.getSettingBoolean(context, UserIdentityPacket.GLOBAL_USER, pName, "useDefault");
-
-        XLog.i("pkg [" + pName + "] uid [" + uid + "] hook size [" + hooks.size() + "]");
-
-        final Map<String, String> settings = XLuaQuery.getGlobalSettings(context, uid);
-        settings.putAll(XLuaQuery.getSettings(context, uid, pName, true));
-        GlobalRandoms.bindRandomToSettings(settings);
-
-        final Map<String, Integer> propSettings = MockPropConversions.toMap(XMockQuery.getModifiedProperties(context, uid, pName));
-        final Map<String, String> propMaps = XMockQuery.getMockPropMapsMap(context, true, settings, false);
-
-        XLog.i("pkg [" + pName + "] settings size [" + settings.size() + "] properties size [" + propSettings.size() + "] prop maps size [" + propMaps.size() + "]");
+        Collection<XLuaHook> hooks = GetAssignedHooksExCommand.get(context, true, uid, lpparam.packageName);
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Hook Package got Assigned Hooks, Size=" + ListUtil.size(hooks));
 
         Map<LuaScriptHolder, Prototype> scriptPrototype = new HashMap<>();
         PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-        for(final XLuaHook hook : hooks) {
+        for(final XLuaHook hook : HookRepository.create().doFiltering(context, hooks, app.settings).getHooks()) {
             try {
                 if(!hook.isAvailable(pInfo.versionCode)) {
-                    XLog.w("Hook is not compatible with Target SDK: " + hook.getId());
+                    Log.w(TAG, "Hook is not compatible with Target SDK: " + hook.getId());
                     continue;
                 }
 
@@ -338,8 +259,9 @@ public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
                 final long install = SystemClock.elapsedRealtime();
                 final Prototype compiledScript = XHookUtil.compileScript(scriptPrototype, hook);
                 final LuaHookResolver target = XHookUtil.resolveTargetHook(context, hook);
+                if(DebugUtil.isDebug())
+                    Log.d(TAG, "Created Target Hook=" + target);
 
-                XLog.i("Created Target Hook: " + target);
                 if(target.isField()) {
                     final Field field = target.tryGetAsField(true);
                     if(field != null) {
@@ -349,32 +271,34 @@ public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
                             LuaHookWrapper luaField = LuaHookWrapper.createField(
                                     context,
                                     hook,
-                                    settings,
-                                    propSettings,
-                                    propMaps,
+                                    app.settings,
+                                    app.buildPropSettings,
+                                    app.buildPropMaps,
                                     compiledScript,
                                     field,
-                                    key,
-                                    useDefault,
-                                    pName);
+                                    app.temporaryKey,
+                                    app.useDefault,
+                                    app.packageName);
 
                             if(!luaField.isValid()) {
-                                XLog.w("Skipping over Field: [" + field.getName() + "] Its not a After Function" );
+                                Log.e(TAG, Str.fm("Skipping Field Hook Field: %s is not a After Hook, Field Hooks can not be before Hooks!", field.getName()));
                                 continue;
                             }
 
                             Varargs result = luaField.invoke();
-                            XReport.usage(hook, result, run, XReport.FUNCTION_AFTER, context);
+                            //XReport.usage(hook, result, run, XReport.FUNCTION_AFTER, context);
                         }catch (Exception e) {
-                            XReport.fieldException(context, e, hook, field);
+                            //XReport.fieldException(context, e, hook, field);
                         }
                     }
                 }else {
                     final Member member = target.tryGetAsMember();
                     if(member != null) {
-                        XLog.w("Member Method Name=" + member.getName());
+                        if(DebugUtil.isDebug())
+                            Log.d(TAG, "Hook Member Name=" + member.getName());
+
                         if(target.hasMismatchReturn(member)) {
-                            XLog.e("Invalid Return Type for Hook: " + hook.getId());
+                            Log.e(TAG, Str.fm("Hook has an Invalid Return Type, Hook id=%s Return Type=%s", hook.getId(), hook.getReturnType()));
                             continue;
                         }
 
@@ -401,50 +325,65 @@ public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
                                             threadGlobals.put(thread, XHookUtil.getHookGlobals(
                                                     context,
                                                     hook,
-                                                    settings,
-                                                    propSettings,
-                                                    propMaps,
-                                                    key,
-                                                    useDefault,
-                                                    pName));
+                                                    app.settings,
+                                                    app.buildPropSettings,
+                                                    app.buildPropMaps,
+                                                    app.temporaryKey,
+                                                    app.useDefault,
+                                                    app.packageName));
 
                                         Globals globals = threadGlobals.get(thread);
                                         luaMember = LuaHookWrapper
                                                 .createMember(
                                                         context,
                                                         hook,
-                                                        settings,
-                                                        propSettings,
-                                                        propMaps,
+                                                        app.settings,
+                                                        app.buildPropSettings,
+                                                        app.buildPropMaps,
                                                         compiledScript,
                                                         function,
                                                         param,
                                                         globals,
-                                                        key,
-                                                        useDefault,
-                                                        pName);
+                                                        app.temporaryKey,
+                                                        app.useDefault,
+                                                        app.packageName);
 
                                         if(!luaMember.isValid()) {
                                             if(BuildConfig.DEBUG)
-                                                XLog.w("Lua Member is Not Valid [" + target.methodName + "] Most likely not a after or before : now a:" + function);
+                                                Log.w(TAG, Str.fm("Lua Member is Not Valid [%s] Most likely not a after or before, function=%s", target.methodName, function));
                                             return;
                                         }
                                     }
 
                                     Varargs result = luaMember.invoke();
-                                    XReport.usage(hook, result, run, function, context);
+                                    //XReport.usage(hook, result, run, function, context);
                                 }catch (Exception ex) {
-                                    synchronized (threadGlobals) { threadGlobals.remove(Thread.currentThread()); }
-                                    XReport.memberException(context, ex, hook, member, function, param);
+                                    synchronized (threadGlobals) {
+                                        threadGlobals.remove(Thread.currentThread());
+                                    }
+                                    //XReport.memberException(context, ex, hook, member, function, param);
                                 }
                             }
                         });
-                    }else XLog.e("Member is NULL. hook=" + hook.getName() + " id=" + hook.getId(), new Throwable(), true);
+                    }
+                    else
+                        Log.e(TAG, Str.fm("Member is NULL, Hook Name=%s Id=%s", hook.getName(), hook.getId()));
                 }
-                if (BuildConfig.DEBUG) XReport.install(hook, install, context);
+
+
+                //LogX.dFS();
+                //if(DebugUtil.isDebug())
+
+
+                //XReport.install();
+                //if (BuildConfig.DEBUG)
+                    //XReport.install(hook, install, context);
+
             }catch (Throwable fe) {
-                if (hook.isOptional() && ReflectUtilEx.isReflectError(fe)) XLog.e("Optional Hook=" + hook.getId() + " class=" + fe.getClass().getName(), fe, true);
-                else XReport.installException(hook, fe, context);
+                if (hook.isOptional() && ReflectUtilEx.isReflectError(fe))
+                    XLog.e("Optional Hook=" + hook.getId() + " class=" + fe.getClass().getName(), fe, true);
+                //else
+                    //XReport.installException(hook, fe, context);
             }
         }
     }

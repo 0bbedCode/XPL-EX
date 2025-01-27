@@ -4,13 +4,13 @@ import androidx.annotation.NonNull;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.random.IRandomizer;
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
 import eu.faircode.xlua.utilities.RandomStringGenerator;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
-public class RandomPhoneNumber implements IRandomizer {
+public class RandomPhoneNumber implements IRandomizerOld {
     //public static final String FORMAT = "%s(%s)%s-%s";
 
     @Override
@@ -32,7 +32,7 @@ public class RandomPhoneNumber implements IRandomizer {
     @Override
     public String generateString() {
         return new StringBuilder()
-                .append(AREA_CODE.get(ThreadLocalRandom.current().nextInt(0, AREA_CODE.size() - 1)))
+                .append(AREA_CODE.get(RandomGenerator.nextInt(0, AREA_CODE.size() - 1)))
                 .append(RandomStringGenerator.generateRandomNumberString(3))
                 .append(RandomStringGenerator.generateRandomNumberString(4))
                 .toString();

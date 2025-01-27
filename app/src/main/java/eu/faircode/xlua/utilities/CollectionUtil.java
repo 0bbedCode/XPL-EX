@@ -1,14 +1,14 @@
 package eu.faircode.xlua.utilities;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
+
+import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
 public class CollectionUtil {
     private static final String TAG = "XLua.CollectionUtil";
@@ -27,7 +27,7 @@ public class CollectionUtil {
     public static <T> T getRandomElement(List<T> items, T defaultItem, boolean forceClearAfter) {
         if(items == null || items.isEmpty()) return defaultItem;
         if(items.size() == 1) return items.get(0);
-        T e = items.get(ThreadLocalRandom.current().nextInt(0, items.size()));
+        T e = items.get(RandomGenerator.nextInt(0, items.size()));
         if(forceClearAfter) items.clear();
         return e;
     }
@@ -67,6 +67,17 @@ public class CollectionUtil {
         return null;
     }
 
+    public static String[] cleanEmpty(String[] arr) {
+        if(arr == null) return null;
+        List<String> sList = new ArrayList<>();
+        for(String s : arr) {
+            if(Str.isValidNotWhitespaces(s))
+                sList.add(s);
+        }
+
+        return sList.toArray(new String[0]);
+    }
+
     public static ArrayList<?> collectionToArrayList(Collection<?> c) { return new ArrayList<>(c); }
     public static ArrayList<?> setToArrayList(Set<?> s) { return new ArrayList<>(s); }
 
@@ -95,7 +106,7 @@ public class CollectionUtil {
     }*/
 
     public static int getSize(Object o) {
-        if (o == null) { Log.e(TAG, "GET CONTAINER SIZE OBJECT IS NULL");  return 0; }
+        if (o == null) return 0;
         if (o instanceof Collection) {
             return ((Collection<?>) o).size();
         } else if (o instanceof Map) {

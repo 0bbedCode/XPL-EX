@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import eu.faircode.xlua.XDatabase;
+import eu.faircode.xlua.XDatabaseOld;
 import eu.faircode.xlua.api.xstandard.UserIdentityPacket;
 import eu.faircode.xlua.api.xstandard.database.SqlQuerySnake;
 import eu.faircode.xlua.api.xstandard.interfaces.IDBQuery;
@@ -136,7 +136,7 @@ public class MockPropMap extends UserIdentityPacket implements IJsonSerial, IDBQ
     }
 
     @Override
-    public SqlQuerySnake createQuery(XDatabase db) { return SqlQuerySnake.create(db, Table.name).whereColumn("name", this.name); }
+    public SqlQuerySnake createQuery(XDatabaseOld db) { return SqlQuerySnake.create(db, Table.name).whereColumn("name", this.name); }
 
     @Override
     public int describeContents() { return 0; }

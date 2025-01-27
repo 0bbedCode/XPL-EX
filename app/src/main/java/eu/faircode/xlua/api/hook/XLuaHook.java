@@ -1,14 +1,12 @@
 package eu.faircode.xlua.api.hook;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,15 +17,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import eu.faircode.xlua.R;
-import eu.faircode.xlua.XUtil;
 import eu.faircode.xlua.api.settings.LuaSettingExtended;
 import eu.faircode.xlua.api.xstandard.interfaces.IJsonSerial;
-import eu.faircode.xlua.logger.XLog;
 import eu.faircode.xlua.utilities.CursorUtil;
 import eu.faircode.xlua.utilities.StringUtil;
+import eu.faircode.xlua.x.ui.core.view_registry.IIdentifiableObject;
 
-public class XLuaHook extends XLuaHookBase implements IJsonSerial, Parcelable {
+public class XLuaHook extends XLuaHookBase implements IJsonSerial, Parcelable, IIdentifiableObject {
     private static final String TAG = "XLua.Hook";
 
     private final List<LuaSettingExtended> managed_settings = new ArrayList<>();
@@ -299,6 +295,11 @@ public class XLuaHook extends XLuaHookBase implements IJsonSerial, Parcelable {
         this.notify = (in.readByte() != 0);
         this.luaScript = in.readString();
         this.settings = in.createStringArray();
+        /*if(DebugUtil.isDebug()) {
+            if(this.settings != null) Log.d(TAG, "Hook Settings Count From Parcel [" + this.settings.length + "] Id=" + this.getId());
+            else Log.w(TAG, "Hook Id=" + this.getId() + " From Parcel has Null Settings...");
+        }*/
+
     }
 
     public static final Parcelable.Creator<XLuaHook> CREATOR = new Parcelable.Creator<XLuaHook>() {
@@ -312,6 +313,11 @@ public class XLuaHook extends XLuaHookBase implements IJsonSerial, Parcelable {
             return new XLuaHook[size];
         }
     };
+
+    @Override
+    public void setId(String id) {
+
+    }
 
     public static class Table {
         public static final String name = "hook";

@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,10 +17,9 @@ import androidx.appcompat.app.AppCompatDialogFragment;
 import java.util.Objects;
 
 import eu.faircode.xlua.R;
-import eu.faircode.xlua.Str;
+import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.api.XResult;
 import eu.faircode.xlua.api.configs.MockConfig;
-import eu.faircode.xlua.api.settings.LuaSettingExtended;
 import eu.faircode.xlua.logger.XLog;
 import eu.faircode.xlua.ui.interfaces.IConfigUpdate;
 import eu.faircode.xlua.ui.transactions.ConfigTransactionResult;

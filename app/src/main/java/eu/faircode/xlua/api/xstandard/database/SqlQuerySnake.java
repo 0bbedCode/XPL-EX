@@ -10,9 +10,10 @@ import java.util.List;
 
 import eu.faircode.xlua.BuildConfig;
 import eu.faircode.xlua.DebugUtil;
-import eu.faircode.xlua.XDatabase;
+import eu.faircode.xlua.XDatabaseOld;
 import eu.faircode.xlua.api.xstandard.interfaces.IDBSerial;
 import eu.faircode.xlua.loggers.DatabaseQueryLogger;
+import eu.faircode.xlua.x.xlua.database.IDatabaseEntry;
 
 public class SqlQuerySnake extends SqlQueryBuilder {
     private static final String TAG = "XLua.DatabaseQuerySnake";
@@ -23,14 +24,14 @@ public class SqlQuerySnake extends SqlQueryBuilder {
     public static SqlQuerySnake create() { return new SqlQuerySnake();}
     public static SqlQuerySnake create(String tableName) { return new SqlQuerySnake(null, tableName); }
     //public static SqlQuerySnake create(XDatabase db, String tableName)
-    public static SqlQuerySnake create(XDatabase db, String tableName) {
+    public static SqlQuerySnake create(XDatabaseOld db, String tableName) {
         return new SqlQuerySnake(db, tableName);
     }
 
     public SqlQuerySnake() { super(); }
-    public SqlQuerySnake(XDatabase db, String tableName) { super(db, tableName); }
+    public SqlQuerySnake(XDatabaseOld db, String tableName) { super(db, tableName); }
 
-    public SqlQuerySnake setDatabase(XDatabase db) {
+    public SqlQuerySnake setDatabase(XDatabaseOld db) {
         this.db = db;
         return this;
     }
@@ -110,7 +111,7 @@ public class SqlQuerySnake extends SqlQueryBuilder {
         return this;
     }
 
-    public XDatabase getDatabase() { return db; }
+    public XDatabaseOld getDatabase() { return db; }
     public String getOrderBy() { return orderOrFieldName; }
 
     public List<String> getOnlyReturn() {
@@ -121,7 +122,7 @@ public class SqlQuerySnake extends SqlQueryBuilder {
     }
 
     public SqlQuerySnake ensureDatabaseIsReady() {
-        canCompile = XDatabase.isReady(db);
+        canCompile = XDatabaseOld.isReady(db);
         return this;
     }
 
@@ -278,6 +279,39 @@ public class SqlQuerySnake extends SqlQueryBuilder {
         return defaultValue;
     }
 
+    public <T extends IDatabaseEntry> T queryGetFirstAs_final(Class<T> typeClass, boolean cleanUpAfter) {
+        if(!canCompile) return null;
+        canCompile = false;
+
+        T item = null;
+        Cursor c = null;
+        try {
+            // Create a new instance of T, we create it first to init a default so its never 'null' assuming the typeClass can be constructed ()
+            item = typeClass.newInstance();
+            db.readLock();
+            c = query();
+            if(c != null) {
+                if (c.moveToFirst()) {
+                    item.fromCursor(c);             // Read data from cursor
+                    return item;
+                }
+            }
+        }
+        catch (InstantiationException ie) {
+            error = ie;
+            Log.e(TAG, "Your object is messed up via constructor not my fault...");
+        }catch (Exception e) {
+            error = e;
+            Log.e(TAG, "Failed to query Cursor! From DB [" + db + "] from Table [" + tableName + "]\n" + e + "\n" + Log.getStackTraceString(e));
+        } finally {
+            db.readUnlock();
+            if(cleanUpAfter)
+                clean(c);
+        }
+
+        return item;
+    }
+
     public <T extends IDBSerial> T queryGetFirstAs(Class<T> typeClass, boolean cleanUpAfter) {
         if(!canCompile) return null;
         canCompile = false;
@@ -310,6 +344,39 @@ public class SqlQuerySnake extends SqlQueryBuilder {
 
         return item;
     }
+
+
+    public <T extends IDatabaseEntry> Collection<T> queryAs_final(Class<T> typeClass) { return queryAs_final(typeClass, false); }
+    public <T extends IDatabaseEntry> Collection<T> queryAs_final(Class<T> typeClass, boolean cleanUpAfter) {
+        if(!canCompile) return new ArrayList<>();
+        canCompile = false;
+
+        db.readLock();
+        Cursor c = query();
+        Collection<T> items = new ArrayList<>();
+        try {
+            if(c != null) {
+                if (c.moveToFirst()) {
+                    do {
+                        T item = typeClass.newInstance();   // Create a new instance of T
+                        item.fromCursor(c);             // Read data from cursor
+                        items.add(item);
+                    } while (c.moveToNext());
+                }
+            }
+
+            return items;
+        }catch (Exception e) {
+            error = e;
+            Log.e(TAG, "Failed to query Cursor! From DB [" + db + "] from Table [" + tableName + "]\n" + e + "\n" + Log.getStackTraceString(e));
+            return items;
+        } finally {
+            db.readUnlock();
+            if(cleanUpAfter)
+                clean(c);
+        }
+    }
+
 
     public <T extends IDBSerial> Collection<T> queryAs(Class<T> typeClass) { return queryAs(typeClass, false); }
     public <T extends IDBSerial> Collection<T> queryAs(Class<T> typeClass, boolean cleanUpAfter) {

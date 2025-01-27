@@ -17,13 +17,14 @@ import android.util.Log;
 
 import eu.faircode.xlua.ActivityMain;
 import eu.faircode.xlua.BuildConfig;
+import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.R;
-import eu.faircode.xlua.XDatabase;
-import eu.faircode.xlua.XGlobals;
+import eu.faircode.xlua.XDatabaseOld;
+import eu.faircode.xlua.UberCore888;
 import eu.faircode.xlua.XUtil;
 import eu.faircode.xlua.api.XProxyContent;
 import eu.faircode.xlua.api.xstandard.CallCommandHandler;
-import eu.faircode.xlua.api.xstandard.command.CallPacket;
+import eu.faircode.xlua.api.xstandard.command.CallPacket_old;
 import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.hooks.XReport;
 
@@ -39,9 +40,9 @@ public class ReportCommand extends CallCommandHandler {
 
     @Override
     @SuppressLint("MissingPermission")
-    public Bundle handle(CallPacket commandData) throws Throwable {
+    public Bundle handle(CallPacket_old commandData) throws Throwable {
         Bundle extras = commandData.getExtras();
-        XDatabase dbb = commandData.getDatabase();
+        XDatabaseOld dbb = commandData.getDatabase();
         SQLiteDatabase db = dbb.getDatabase();
 
 
@@ -68,7 +69,23 @@ public class ReportCommand extends CallCommandHandler {
         Log.i(TAG, "Hook " + hookid + " pkg=" + packageName + ":" + uid + " event=" + event + sb.toString());
 
         // Get hook
-        XLuaHook hook = XGlobals.getHook(hookid);
+        XLuaHook hook = UberCore888.getHook(hookid);
+        /*if(hook == null) {
+            try {
+                Collection<XLuaHook> hooks = XGlobals.getHooks(commandData.getContext(), commandData.getDatabase(), true);
+                for(XLuaHook h : hooks) {
+                    if(h.getId().equalsIgnoreCase(hookid)) {
+                        hook = h;
+                        break;
+                    }
+                }
+            }catch (Exception e) {
+                Log.e(TAG, "Error Getting HOOK (" + userid + ")");
+            }
+        }*/
+
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Report Hook ID=" + (hook == null ? "" : hook.getId()) + " Report ID=" + hookid);
 
         // Get notify setting
         Bundle args = new Bundle();
@@ -102,7 +119,40 @@ public class ReportCommand extends CallCommandHandler {
                         "package = ? AND uid = ? AND hook = ?",
                         new String[]{packageName, Integer.toString(uid), hookid});
                 if (rows != 1)
-                    Log.w(TAG, "Error updating assignment");
+                    Log.w(TAG, "Error updating assignment id: " + hookid);
+
+                //Manually insert
+                /*if (rows != 1) {
+                    Log.w(TAG, "Error updating assignment id: " + hookid);
+                    //We can assume its some filter type now so lets just "force" it ?
+                    //rows = db.insert("assignment",null, cv);
+                    //AssignHooksCommand
+                    //Integer user, String packageName, List<String> hookIds, Boolean delete, Boolean kill
+                    if(hookid != null && hookid.contains("Filter/")) {
+                        if(DebugUtil.isDebug())
+                            Log.d(TAG, "Force Inserting Assignment on Hood Id=" + hookid + " user=" + userid + " Package=" + packageName);
+
+                        db.setTransactionSuccessful();
+                        db.endTransaction();
+                        dbb.writeUnlock();
+
+                        List<String> hookIds = Collections.singletonList(hookid);
+                        LuaAssignmentPacket assPacket = new LuaAssignmentPacket(userid, packageName, hookIds, false, false);
+                        XResult res = LuaHookManager.assignHooks(commandData.getContext(), commandData.getDatabase(), assPacket);
+                        if(DebugUtil.isDebug())
+                            Log.d(TAG, "Result of force Inserting Hook id=" + hookid + " Result=" + res.getFullMessage());
+
+
+                        dbb.writeLock();
+                        db.beginTransaction();
+                        rows = db.update("assignment", cv,
+                                "package = ? AND uid = ? AND hook = ?",
+                                new String[]{packageName, Integer.toString(uid), hookid});
+
+                        if(DebugUtil.isDebug())
+                            Log.d(TAG, "Hook ID [" + hookid + "] Rows Updated: " + rows);
+                    }
+                }*/
 
                 // Update group
                 if (hook != null && "use".equals(event) && restricted == 1 && notify) {

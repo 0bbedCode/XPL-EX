@@ -12,7 +12,17 @@ public class CatBootIDIntercept extends CommandInterceptor implements ICommandIn
     private static final String CAT_BOOT_ID_INTERCEPT_SETTING = "intercept.shell.boot_id.bool";
 
     @SuppressWarnings("unused")
-    public CatBootIDIntercept() { this.command = "/proc/sys/kernel/random/boot_id"; }
+    public CatBootIDIntercept() { this.command = "boot_id"; this.setting = CAT_BOOT_ID_INTERCEPT_SETTING; }
+    ///proc/sys/kernel/random/boot_id
+
+    @Override
+    public boolean isCommand(ShellInterception results) {
+        for(String command : results.commandLine)
+            if(command.toLowerCase().contains("boot_id"))
+                return true;
+
+        return false;
+    }
 
     @Override
     public boolean interceptCommand(ShellInterception result) {

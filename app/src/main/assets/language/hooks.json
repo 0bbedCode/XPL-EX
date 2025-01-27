@@ -18,7 +18,7 @@
     "usage":true,
     "notify":false,
     "luaScript": "@spoof_locale_getcountry",
-    "settings": [ "zone.country" ]
+    "settings": [ "region.country" ]
   },
   {
     "builtin": true,
@@ -39,7 +39,7 @@
     "usage":true,
     "notify":false,
     "luaScript": "@spoof_locale_getdisplaylanguage",
-    "settings": [ "zone.language" ]
+    "settings": [ "region.language" ]
   },
   {
     "builtin": true,
@@ -60,7 +60,7 @@
     "usage":true,
     "notify":false,
     "luaScript": "@spoof_locale_getdisplayname",
-    "settings": [ "zone.language", "zone.country" ]
+    "settings": [ "region.language", "region.country" ]
   },
   {
     "builtin": true,
@@ -81,7 +81,7 @@
     "usage":true,
     "notify":false,
     "luaScript": "@spoof_locale_getiso3country",
-    "settings": [ "zone.country.iso" ]
+    "settings": [ "region.country.iso" ]
   },
   {
     "builtin": true,
@@ -102,7 +102,7 @@
     "usage":true,
     "notify":false,
     "luaScript": "@spoof_locale_getiso3language",
-    "settings": [ "zone.language.iso" ]
+    "settings": [ "region.language.iso" ]
   },
   {
     "builtin": true,
@@ -123,7 +123,7 @@
     "usage":true,
     "notify":false,
     "luaScript": "@spoof_locale_tolanguagetag",
-    "settings": [ "zone.language.tag" ]
+    "settings": [ "region.language.tag" ]
   },
   /*{
   "collection": "PrivacyEx",
@@ -156,6 +156,6 @@
     "usage":true,
     "notify":false,
     "luaScript": "@spoof_locale_tostring",
-    "settings": [ "zone.language.iso" ]
+    "settings": [ "region.language.iso" ]
   }
 ]

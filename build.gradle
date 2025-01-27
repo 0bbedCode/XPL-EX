@@ -2,9 +2,12 @@ buildscript {
     repositories {
         google()
         jcenter()
+
+        mavenCentral()
+        maven { url 'https://jitpack.io' } // Add JitPack repository
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath 'com.android.tools.build:gradle:4.0.0-rc01'
     }
 }
 
@@ -14,6 +17,9 @@ allprojects {
         jcenter()
         mavenCentral()
         mavenLocal()
+
+        maven { url 'https://jitpack.io' } // Add JitPack repository
+
         maven { url 'https://api.xposed.info' }
         maven { url 'https://maven.google.com' }
         maven {

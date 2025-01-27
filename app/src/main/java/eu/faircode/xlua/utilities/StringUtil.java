@@ -9,10 +9,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 
 import eu.faircode.xlua.logger.XLog;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
 public class StringUtil {
     private static final String TAG = "XLua.StringUtil";
@@ -315,7 +315,7 @@ public class StringUtil {
         Random generator = new Random();
         StringBuilder randomStringBuilder = new StringBuilder();
         //int randomLength = generator.nextInt(minLen, maxLen);
-        int randomLength = ThreadLocalRandom.current().nextInt(minLen, maxLen);
+        int randomLength = RandomGenerator.nextInt(minLen, maxLen);
         char tempChar;
         for (int i = 0; i < randomLength; i++){
             tempChar = (char) (generator.nextInt(96) + 32);

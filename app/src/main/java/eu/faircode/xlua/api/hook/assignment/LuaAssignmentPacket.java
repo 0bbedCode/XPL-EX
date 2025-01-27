@@ -66,6 +66,9 @@ public class LuaAssignmentPacket extends UserIdentityPacket {
         if(b != null) {
             super.fromBundle(b);
             this.hookIds = b.getStringArrayList("hooks");
+
+
+
             this.delete = BundleUtil.readBoolean(b, "delete");
             readPacketHeaderBundle(b);
         }

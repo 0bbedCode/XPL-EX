@@ -12,15 +12,15 @@ import eu.faircode.xlua.api.xstandard.CallCommandHandler;
 public class TryCallWrapper implements Callable<Bundle> {
     private static final String TAG = "XLua.TryCallWrapper";
 
-    private final CallPacket packet;
+    private final CallPacket_old packet;
     private final CallCommandHandler handle;
 
     private boolean isRunning = false;
     private Throwable exception;
 
-    public static TryCallWrapper create(CallPacket packet, CallCommandHandler handler) { return new TryCallWrapper(packet, handler); }
+    public static TryCallWrapper create(CallPacket_old packet, CallCommandHandler handler) { return new TryCallWrapper(packet, handler); }
 
-    public TryCallWrapper(CallPacket packet, CallCommandHandler handle) {
+    public TryCallWrapper(CallPacket_old packet, CallCommandHandler handle) {
         this.packet = packet;
         this.handle = handle;
     }

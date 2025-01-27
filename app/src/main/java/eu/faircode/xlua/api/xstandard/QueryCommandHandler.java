@@ -7,8 +7,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import eu.faircode.xlua.XSecurity;
-import eu.faircode.xlua.api.xstandard.command.QueryPacket;
+import eu.faircode.xlua.api.xstandard.command.QueryPacket_old;
 import eu.faircode.xlua.api.xstandard.interfaces.ISecurityObject;
+import eu.faircode.xlua.x.data.string.StrBuilder;
 
 public abstract class QueryCommandHandler implements ISecurityObject {
     protected String name;
@@ -22,7 +23,7 @@ public abstract class QueryCommandHandler implements ISecurityObject {
         this.requiresPermissionCheck = requirePermissionCheck;
     }
 
-    public abstract Cursor handle(QueryPacket commandData) throws Throwable;
+    public abstract Cursor handle(QueryPacket_old commandData) throws Throwable;
 
     @Override
     public void throwOnPermissionCheck(Context context) { XSecurity.checkCaller(context); }
@@ -51,14 +52,11 @@ public abstract class QueryCommandHandler implements ISecurityObject {
     @NonNull
     @Override
     public String toString() {
-        return new StringBuilder()
-                .append(" name=")
-                .append(name)
-                .append(" requires permission check=")
-                .append(requiresPermissionCheck)
-                .append(" requires single thread=")
-                .append(requiresSingleThread)
-                .append(" marshall=")
-                .append(marshall).toString();
+        return StrBuilder.create()
+                .appendFieldLine("Name", name)
+                .appendFieldLine("Requires UID Check", String.valueOf(requiresPermissionCheck))
+                .appendFieldLine("Single Thread", String.valueOf(requiresSingleThread))
+                .appendFieldLine("Marshall", String.valueOf(marshall))
+                .toString(true);
     }
 }

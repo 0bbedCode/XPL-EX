@@ -6,12 +6,13 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.XDatabase;
+import eu.faircode.xlua.DebugUtil;
+import eu.faircode.xlua.XDatabaseOld;
 import eu.faircode.xlua.api.XResult;
 import eu.faircode.xlua.api.cpu.MockCpu;
 import eu.faircode.xlua.api.xmock.database.MockCpuManager;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
 public class MockCpuProvider {
     private static final boolean makeSureOneSelected = false;
@@ -23,7 +24,7 @@ public class MockCpuProvider {
 
     private static final String TAG = "XLua.XMockCpuApi";
 
-    public static XResult putMockCpuMap(XDatabase db, String cpuName, boolean selected) {
+    public static XResult putMockCpuMap(XDatabaseOld db, String cpuName, boolean selected) {
         XResult res = XResult.create().setMethodName("putMockCpuMap");
         synchronized (lock) {
             if(selected) {
@@ -57,7 +58,7 @@ public class MockCpuProvider {
         }
     }
 
-    public static MockCpu getSelectedCpuMap(Context context, XDatabase db) {
+    public static MockCpu getSelectedCpuMap(Context context, XDatabaseOld db) {
         if(mapNamesCache.isEmpty()) {
             initCache(context, db);
             if(mapNamesCache.isEmpty())
@@ -68,16 +69,17 @@ public class MockCpuProvider {
             if(selectedMapsCache.size() == 1)
                 return selectedMapsCache.get(0);
             else if(selectedMapsCache.size() > 1) {
-                return selectedMapsCache.get(ThreadLocalRandom.current().nextInt(0, selectedMapsCache.size()));
+                return selectedMapsCache.get(RandomGenerator.nextInt(0, selectedMapsCache.size()));
             }
         }
 
-        String name = mapNamesCache.get(ThreadLocalRandom.current().nextInt(0, mapNamesCache.size()));
-        Log.i(TAG, "cpu map size selected is (0) selecting a Random Map, map=[" + name + "]");
+        String name = mapNamesCache.get(RandomGenerator.nextInt(0, mapNamesCache.size()));
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "cpu map size selected is (0) selecting a Random Map, map=[" + name + "]");
         return MockCpuManager.getMap(db, name, true);
     }
 
-    public static void initCache(Context context, XDatabase db) {
+    public static void initCache(Context context, XDatabaseOld db) {
         synchronized (lock) {
             if(mapNamesCache.isEmpty()) {
                 List<MockCpu> selected = new ArrayList<>();

@@ -4,8 +4,8 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import eu.faircode.xlua.XDatabase;
-import eu.faircode.xlua.XGlobals;
+import eu.faircode.xlua.XDatabaseOld;
+import eu.faircode.xlua.UberCore888;
 import eu.faircode.xlua.api.xmock.database.MockConfigManager;
 import eu.faircode.xlua.api.xmock.database.MockPropManager;
 import eu.faircode.xlua.api.xstandard.interfaces.IInitDatabase;
@@ -15,7 +15,7 @@ import eu.faircode.xlua.logger.XLog;
 import eu.faircode.xlua.utilities.CollectionUtil;
 
 public class XMockDatabase implements IInitDatabase {
-    private XDatabase db;
+    private XDatabaseOld db;
     private boolean init = false;
     private boolean setPerms = true;
 
@@ -33,10 +33,10 @@ public class XMockDatabase implements IInitDatabase {
     public XMockDatabase(Context context) {
         this(context, true);
     }
-    public XMockDatabase(Context context, boolean setPerms) { this.db = new XDatabase("mock", context, setPerms); this.setPerms = setPerms; }
+    public XMockDatabase(Context context, boolean setPerms) { this.db = new XDatabaseOld("mock", context, setPerms); this.setPerms = setPerms; }
 
     @Override
-    public XDatabase getDatabase(Context context) {
+    public XDatabaseOld getDatabase(Context context) {
         initDatabase(context, true);
         return db;
     }
@@ -45,12 +45,12 @@ public class XMockDatabase implements IInitDatabase {
     public boolean initDatabase(Context context, boolean checkIsReady) {
         synchronized (lock) {
             if(checkIsReady && db != null) {
-                if(!XDatabase.isReady(db))
+                if(!XDatabaseOld.isReady(db))
                     reset(true);
             }
 
             if(db == null) {
-                db = new XDatabase(XGlobals.DB_NAME_MOCK, context, setPerms);
+                db = new XDatabaseOld(UberCore888.DB_NAME_MOCK, context, setPerms);
                 XLog.i(true, "Created XMOCK DB: " + db);
                 reset(false);
                 if(!db.isOpen(true))

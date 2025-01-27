@@ -4,7 +4,7 @@ import android.util.Log;
 
 import java.util.Map;
 
-import eu.faircode.xlua.Str;
+import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.utilities.CollectionUtil;
 import eu.faircode.xlua.utilities.StringUtil;
 

@@ -9,7 +9,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
-import eu.faircode.xlua.Str;
+import eu.faircode.xlua.x.Str;
 
 public class ReflectUtilEx {
     private static final String JAVA_LANG = "java.lang";

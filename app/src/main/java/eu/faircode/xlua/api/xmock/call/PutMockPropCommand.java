@@ -11,7 +11,7 @@ import eu.faircode.xlua.api.properties.MockPropPacket;
 import eu.faircode.xlua.api.xmock.provider.MockPropProvider;
 import eu.faircode.xlua.api.xstandard.CallCommandHandler;
 import eu.faircode.xlua.api.xstandard.UserIdentityPacket;
-import eu.faircode.xlua.api.xstandard.command.CallPacket;
+import eu.faircode.xlua.api.xstandard.command.CallPacket_old;
 
 public class PutMockPropCommand extends CallCommandHandler {
     //This will register with the LUA Database not the MOCK Database
@@ -21,7 +21,7 @@ public class PutMockPropCommand extends CallCommandHandler {
     }
 
     @Override
-    public Bundle handle(CallPacket commandData) throws Throwable {
+    public Bundle handle(CallPacket_old commandData) throws Throwable {
         MockPropPacket packet = commandData.readExtrasAs(MockPropPacket.class);
         if(packet == null) return XResult.fromInvalidPacket(name, MockPropPacket.class).toBundle();
 

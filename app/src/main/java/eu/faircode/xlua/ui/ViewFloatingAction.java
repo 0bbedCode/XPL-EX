@@ -97,8 +97,7 @@ public class ViewFloatingAction extends Fragment {
     protected void initRecyclerView(View main, int rvView, boolean bindToFloatingAction) {
         try {
              this.rvList = main.findViewById(rvView);
-             if(bindToFloatingAction)
-                 bindActionButtonToRecyclerView(this.rvList);
+             if(bindToFloatingAction) bindActionButtonToRecyclerView(this.rvList);
         }catch (Exception e) {
             Log.e(TAG_ViewFloatingAction, "[bindActionButtonToRecyclerView]");
         }

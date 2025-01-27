@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,8 +15,6 @@ import androidx.appcompat.app.AppCompatDialogFragment;
 import java.util.Objects;
 
 import eu.faircode.xlua.R;
-import eu.faircode.xlua.Str;
-import eu.faircode.xlua.api.settings.LuaSettingExtended;
 
 public class PrivacyGroupWarningDialog extends AppCompatDialogFragment {
     @NonNull

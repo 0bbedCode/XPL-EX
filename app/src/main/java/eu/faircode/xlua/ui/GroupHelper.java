@@ -2,7 +2,7 @@ package eu.faircode.xlua.ui;
 
 import android.content.Context;
 
-import eu.faircode.xlua.Str;
+import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.TextDividerItemDecoration;
 
 public class GroupHelper {

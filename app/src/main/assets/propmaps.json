@@ -2,41 +2,60 @@
   //Device Info Default Settings
   { "settingName": "device.brand", "propNames": ["ro.vendor_dlkm.build.brand", "ro.product.brand","ro.product.odm.brand","ro.product.system.brand","ro.product.system_ext.brand","ro.product.vendor.brand", "ro.vendor.product.brand"] },
   { "settingName": "device.manufacturer", "propNames": ["ro.vendor_dlkm.build.manufacturer", "ro.product.vendor.manufacturer ", "ro.product.system_ext.manufacturer", "ro.product.system.manufacturer", "ro.product.odm.manufacturer", "ro.product.manufacturer", "ro.vendor.product.manufacturer"] },
-  { "settingName": "device.nick.name", "propNames": ["ro.product.mod_device", "persist.sys.hardcoder.name", "persist.sys.device_name", "persist.odm.ril.factory_id", "ro.product.system_ext.name", "ro.product.vendor.marketname", "ro.product.system_ext.marketname", "ro.product.system.marketname", "ro.product.product.marketname", "ro.product.odm.marketname", "ro.product.marketname", "ro.vendor_dlkm.build.device", "ro.product.nickname","ro.vendor.product.device", "ro.build.product","ro.product.device","ro.product.odm.device","ro.product.system.device","ro.product.system_ext.device","ro.product.vendor.device", "ro.product.system.name"] },
-  { "settingName": "device.model", "propNames": [ "ro.vendor_dlkm.build.model", "persist.sys.exif.model", "ro.vendor.product.model", "ro.product.odm.model","ro.product.system.model","ro.product.system_ext.model","ro.product.vendor.model"] },
+  { "settingName": "device.nick.name", "propNames": ["ro.product.mod_device", "persist.sys.hardcoder.name", "persist.sys.device_name", "persist.odm.ril.factory_id", "ro.product.system_ext.name", "ro.product.vendor.marketname", "ro.product.system_ext.marketname", "ro.product.bootimage.marketname", "ro.product.system.marketname", "ro.product.product.marketname", "ro.product.odm.marketname", "ro.product.marketname", "ro.vendor_dlkm.build.device", "ro.product.nickname","ro.vendor.product.device", "ro.build.product","ro.product.device","ro.product.odm.device","ro.product.system.device","ro.product.system_ext.device","ro.product.vendor.device", "ro.product.system.name"] },
+  { "settingName": "device.model", "propNames": [ "ro.product.model", "ro.vendor_dlkm.build.model", "persist.sys.exif.model", "ro.vendor.product.model", "ro.product.odm.model","ro.product.system.model","ro.product.system_ext.model","ro.product.vendor.model"] },
   { "settingName": "device.codename", "propNames": [ "ro.boot.device" ] },
-  { "settingName": "device.bootloader", "propNames": [ "ro.bootloader" ] },
-  { "settingName": "device.boot.mode", "propNames": [ "ro.bootmode" ] },
 
+  { "settingName": "device.product.code", "propNames": [ "ril.product_code", "vendor.ril.product_code" ] },
+
+  //Make sure if this is unknown then set it
+  { "settingName": "device.bootloader", "propNames": [ "ro.bootloader" ] },
+
+  //[DEPRECATED]
+  //{ "settingName": "device.boot.mode", "propNames": [ "ro.bootmode" ] },
   //Android Build Default Settings
-  { "settingName": "android.build.version", "propNames": [ "os.version", "ro.build.version.release", "ro.build.version.release_or_codename", "ro.build.version.release_or_preview_display", "ro.system.build.version.release", "ro.system.build.version.release_or_codename", "ro.system_ext.build.version.release", "ro.system_ext.build.version.release_or_codename", "ro.vendor.build.version.release", "ro.vendor.build.version.release_or_codename", "ro.vendor_dlkm.build.version.release", "ro.vendor_dlkm.build.version.release_or_codename"] },
-  { "settingName": "android.build.version.sdk", "propNames": ["ro.vendor_dlkm.build.version.sdk", "ro.system.build.version.sdk", "ro.system_ext.build.version.sdk", "ro.build.version.sdk", "ro.vendor.build.version.sdk"] },
-  { "settingName": "android.build.version.min.sdk", "propNames": ["ro.product.first_api_level", "ro.build.version.min_supported_target_sdk"]},
-  { "settingName": "android.build.tags", "propNames": ["ro.vendor_dlkm.build.tags", "ro.build.tags","ro.system.build.tags","ro.system_ext.build.tags","ro.vendor.build.tags"] },
-  { "settingName": "android.build.type", "propNames": [ "ro.vendor_dlkm.build.type", "ro.build.type","ro.system.build.type","ro.system_ext.build.type","ro.vendor.build.type"] },
-  { "settingName": "android.build.date.utc",  "propNames": ["ro.bootimage.build.date.utc", "ro.build.date.utc","ro.odm.build.date.utc","ro.system.build.date.utc","ro.system_ext.build.date.utc","ro.vendor.build.date.utc"] },
+
+  { "settingName": "android.build.date.epoc",  "propNames": ["ro.bootimage.build.date.utc", "ro.build.date.utc","ro.odm.build.date.utc","ro.system.build.date.utc","ro.system_ext.build.date.utc","ro.vendor.build.date.utc"] },
   { "settingName": "android.build.date", "propNames": ["persist.sys.ccm.date", "persist.sys.drs.date", "persist.sys.kap.date", "persist.sys.knoxvpn.date", "ro.bootimage.build.date", "ro.vendor_dlkm.build.date", "ro.build.date","ro.odm.build.date","ro.system.build.date","ro.system_ext.build.date","ro.vendor.build.date"] },
   { "settingName": "android.build.date.one", "propNames": [ "ril.rfcal_date" ] },
   { "settingName": "android.build.date.two", "propNames": [ "ril.manufacturedate" ] },
 
 
-  { "settingName": "android.build.dev.codename", "propNames": [ "ro.build.version.codename", "ro.build.version.preview_sdk_fingerprint", "ro.build.version.all_codenames"] },
+  { "settingName": "android.build.version", "propNames": [ "os.version", "ro.build.version.release", "ro.build.version.release_or_codename", "ro.build.version.release_or_preview_display", "ro.system.build.version.release", "ro.system.build.version.release_or_codename", "ro.system_ext.build.version.release", "ro.system_ext.build.version.release_or_codename", "ro.vendor.build.version.release", "ro.vendor.build.version.release_or_codename", "ro.vendor_dlkm.build.version.release", "ro.vendor_dlkm.build.version.release_or_codename"] },
+  { "settingName": "android.build.version.sdk", "propNames": ["ro.vendor_dlkm.build.version.sdk", "ro.system.build.version.sdk", "ro.system_ext.build.version.sdk", "ro.build.version.sdk", "ro.vendor.build.version.sdk"] },
+  { "settingName": "android.build.version.min.sdk", "propNames": ["ro.product.first_api_level", "ro.build.version.min_supported_target_sdk"]},
+  { "settingName": "android.build.tags", "propNames": ["ro.vendor_dlkm.build.tags", "ro.build.tags","ro.system.build.tags","ro.system_ext.build.tags","ro.vendor.build.tags"] },
+
   { "settingName": "android.build.incremental", "propNames": ["ro.vendor_dlkm.build.version.incremental", "ro.build.version.incremental","ro.system.build.version.incremental","ro.system_ext.build.version.incremental"] },
   { "settingName": "android.build.description", "propNames": [ "ro.build.description" ] },
   { "settingName": "android.build.id", "propNames": [ "ro.build.id", "ro.system.build.id", "ro.system_ext.build.id", "ro.vendor.build.id" ] },
   { "settingName": "android.build.display.id", "propNames": [ "ro.vendor_dlkm.build.id", "ro.build.display.id" ] },
   { "settingName": "android.build.flavor", "propNames": [ "build.flavor" ] },
   { "settingName": "android.build.host", "propNames": [ "ro.build.host" ] },
-  { "settingName": "android.build.user", "propNames": [ "ro.build.user" ] },
   { "settingName": "android.build.patch", "propNames": [ "ro.build.version.security_patch" ] },
   { "settingName": "android.build.codename", "propNames": [ "ro.vendor_dlkm.build.name", "ro.vendor.product.name", "ro.product.name","ro.product.odm.name","ro.product.system_ext.name","ro.product.vendor.name"] },
   { "settingName": "android.build.fingerprint", "propNames": ["ro.bootimage.build.fingerprint", "ro.build.fingerprint", "ro.vendor_dlkm.build.fingerprint", "ro.odm.build.fingerprint","ro.system.build.fingerprint","ro.system_ext.build.fingerprint","ro.vendor.build.fingerprint"] },
 
+  //Do something with these
+  //{ "settingName": "android.vendor.api.level", "propNames": [ "ro.vendor.api_level" ] },
+  //{ "settingName": "android.first.api.level", "propNames": [ "ro.product.first_api_level" ] },
+
+
+  //android.build.base.os
+  { "settingName": "android.etc.build.rom.base.os", "propNames": [ "ro.build.version.base_os" ] },
+  //android.build.user
+  { "settingName": "android.etc.build.rom.user", "propNames": [ "ro.build.user" ] },
+  //android.build.dev.codename
+  { "settingName": "android.etc.build.rom.version.codename", "propNames": [ "ro.build.version.codename", "ro.build.version.preview_sdk_fingerprint", "ro.build.version.all_codenames"] },
+  //android.build.type
+  { "settingName": "android.etc.build.rom.variant", "propNames": [ "ro.vendor_dlkm.build.type", "ro.build.type","ro.system.build.type","ro.system_ext.build.type","ro.vendor.build.type"] },
+
   //Java VM Settings
-  { "settingName": "java.vendor", "propNames": [ "java.vendor", "java.specification.vendor", "java.vm.vendor", "java.vm.specification.vendor" ] },
-  { "settingName": "java.vendor.url", "propNames": [ "java.vendor.url" ] },
-  { "settingName": "java.vm.version", "propNames": [ "java.vm.version", "java.runtime.version" ] },
-  { "settingName": "java.vm.name", "propNames": [ "java.vm.name", "java.runtime.name" ] },
+  //ALL DEPRECATED
+  //{ "settingName": "java.vendor", "propNames": [ "java.vendor", "java.specification.vendor", "java.vm.vendor", "java.vm.specification.vendor" ] },
+  //{ "settingName": "java.vendor.url", "propNames": [ "java.vendor.url" ] },
+  //{ "settingName": "java.vm.version", "propNames": [ "java.vm.version", "java.runtime.version" ] },
+  //{ "settingName": "java.vm.name", "propNames": [ "java.vm.name", "java.runtime.name" ] },
 
   //Android Kernel Settings
   { "settingName": "android.kernel.sys.name", "propNames": [ "os.name" ] },
@@ -44,54 +63,165 @@
 
 
   //Android GPU Settings
-  { "settingName": "gpu.opengls.version", "propNames": [ "ro.opengls.version" ] },
-  { "settingName": "gpu.egl.code.name", "propNames": [ "ro.hardware.egl", "persist.graphics.egl" ] },
+  //{ "settingName": "gpu.opengls.version", "propNames": [ "ro.opengls.version" ] },
+  //{ "settingName": "gpu.egl.code.name", "propNames": [ "ro.hardware.egl", "persist.graphics.egl", "ro.hardware.vulkan" ] },
 
   //Android CPU Settings
-  { "settingName": "cpu.arch", "propNames": [ "os.arch", "ro.bionic.2nd_arch", "ro.bionic.arch" ] },
-  { "settingName": "cpu.abi", "propNames": [ "ro.product.cpu.abi" ] },
-  { "settingName": "cpu.abilist", "propNames": [ "ro.vendor.product.cpu.abilist", "ro.system.product.cpu.abilist", "ro.odm.product.cpu.abilist", "ro.product.cpu.abilist" ] },
-  { "settingName": "cpu.abilist32", "propNames": [ "ro.vendor.product.cpu.abilist32", "ro.system.product.cpu.abilist32", "ro.odm.product.cpu.abilist32", "ro.product.cpu.abilist32" ] },
-  { "settingName": "cpu.abilist64", "propNames": [ "ro.vendor.product.cpu.abilist64", "ro.system.product.cpu.abilist64", "ro.odm.product.cpu.abilist64", "ro.product.cpu.abilist64" ] },
-  { "settingName": "cpu.dalvik.vm.variant", "propNames": [ "dalvik.vm.isa.arm.variant", "dalvik.vm.isa.arm64.variant" ] },
-  { "settingName": "cpu.platform.name", "propNames": [ "ro.board.platform", "ro.product.board" ] },
-  { "settingName": "cpu.base.band", "propNames": [ "ro.baseband", "ro.baseband.arch" ] },
-  { "settingName": "cpu.hardware.name", "propNames": [ "ro.hardware" ] },
-  { "settingName": "cpu.soc.model", "propNames": [ "ro.soc.model", "ro.hardware.chipname" ] },
-  { "settingName": "cpu.soc.manufacturer", "propNames": [ "ro.soc.manufacturer" ] },
-  { "settingName": "cpu.cpuid", "propNames": [ "ro.boot.cpuid" ] },
+  //{ "settingName": "cpu.arch", "propNames": [ "os.arch", "ro.bionic.2nd_arch", "ro.bionic.arch" ] },
+  //{ "settingName": "cpu.abi", "propNames": [ "ro.product.cpu.abi" ] },
+  //{ "settingName": "cpu.abilist", "propNames": [ "ro.vendor.product.cpu.abilist", "ro.system.product.cpu.abilist", "ro.odm.product.cpu.abilist", "ro.product.cpu.abilist" ] },
+  //{ "settingName": "cpu.abilist32", "propNames": [ "ro.vendor.product.cpu.abilist32", "ro.system.product.cpu.abilist32", "ro.odm.product.cpu.abilist32", "ro.product.cpu.abilist32" ] },
+  //{ "settingName": "cpu.abilist64", "propNames": [ "ro.vendor.product.cpu.abilist64", "ro.system.product.cpu.abilist64", "ro.odm.product.cpu.abilist64", "ro.product.cpu.abilist64" ] },
+  //{ "settingName": "cpu.dalvik.vm.variant", "propNames": [ "dalvik.vm.isa.arm.variant", "dalvik.vm.isa.arm64.variant" ] },
+  //{ "settingName": "cpu.platform.name", "propNames": [ "ro.board.platform", "ro.product.board" ] },
+  //{ "settingName": "cpu.base.band", "propNames": [ "ro.baseband", "ro.baseband.arch" ] },
+  //{ "settingName": "cpu.hardware.name", "propNames": [ "ro.hardware", "ro.boot.hardware" ] },
+  //{ "settingName": "cpu.soc.model", "propNames": [ "ro.soc.model", "ro.hardware.chipname", "ro.vendor.soc.model.part_name", "ro.vendor.soc.model_name" ] },
+  //{ "settingName": "cpu.soc.manufacturer", "propNames": [ "ro.soc.manufacturer" ] },
+  //{ "settingName": "cpu.cpuid", "propNames": [ "ro.boot.cpuid" ] },
 
   //Android ROM Specific Settings
-  { "settingName": "android.rom.adb.secure", "propNames": [ "ro.adb.secure" ] },
-  { "settingName": "android.rom.secure", "propNames": [ "ro.secure" ] },
-  { "settingName": "android.rom.debuggable", "propNames": [ "ro.debuggable" ] },
-  { "settingName": "android.rom.allow.mock",  "propNames": [ "ro.allow.mock.location" ] },
-  { "settingName": "android.rom.enforce", "propNames": [ "ro.control_privapp_permissions" ] },
-  { "settingName": "android.rom.flash.locked", "propNames": [ "ro.boot.flash.locked" ] },
-  { "settingName": "android.rom.verified.boot", "propNames": [ "ro.boot.verifiedbootstate" ] },
-  { "settingName": "android.rom.root.image.bool", "propNames": [ "ro.build.system_root_image" ] },
-  { "settingName": "android.rom.netflix", "propNames": [ "ro.netflix.bsp_rev" ] },
+  //{ "settingName": "android.rom.adb.secure", "propNames": [ "ro.adb.secure" ] },
+  //{ "settingName": "android.rom.secure", "propNames": [ "ro.secure" ] },
+  //{ "settingName": "android.rom.debuggable", "propNames": [ "ro.debuggable" ] },
+  //{ "settingName": "android.rom.allow.mock",  "propNames": [ "ro.allow.mock.location" ] },
+  //{ "settingName": "android.rom.enforce", "propNames": [ "ro.control_privapp_permissions" ] },
+  //{ "settingName": "android.rom.flash.locked", "propNames": [ "ro.boot.flash.locked" ] },
+  //{ "settingName": "android.rom.verified.boot", "propNames": [ "ro.boot.verifiedbootstate" ] },
+  //{ "settingName": "android.rom.root.image.bool", "propNames": [ "ro.build.system_root_image" ] },
+  //{ "settingName": "android.rom.netflix", "propNames": [ "ro.netflix.bsp_rev" ] },
 
-  { "settingName": "android.system.supports.ab.bool", "propNames": [ "ro.build.ab_update" ] },
-  { "settingName": "android.system.treble.enabled.bool", "propNames": [ "ro.treble.enabled" ] },
+  //BOTH [DEPRECATED] for now
+  //{ "settingName": "android.system.supports.ab.bool", "propNames": [ "ro.build.ab_update" ] },
+  //{ "settingName": "android.system.treble.enabled.bool", "propNames": [ "ro.treble.enabled" ] },
 
 
   //System hardware Settings
-  { "settingName": "hardware.efuse", "propNames": [ "ro.boot.efuse" ] },
+  //{ "settingName": "hardware.efuse", "propNames": [ "ro.boot.efuse" ] },
+  //[DEPRECATED]
   { "settingName": "hardware.nfc.kind", "propNames": [ "ro.nfc.port" ] },
   { "settingName": "hardware.camera.app", "propNames": [ "persist.vendor.camera.privapp.list" ] },
   { "settingName": "hardware.fp.sensor", "propNames": [ "ro.boot.fpsensor" ] },
   { "settingName": "hardware.fp.sensor.name", "propNames": [ "ro.boot.fp" ] },
-  { "settingName": "hardware.boot.sku", "propNames": [ "ro.boot.hardware.sku" ] },
-  { "settingName": "hardware.boot.product.sku", "propNames": [ "ro.boot.product.hardware.sku" ] },
-  { "settingName": "hardware.gsm.version", "propNames": [ "gsm.version.ril-impl" ] },
-  { "settingName": "hardware.gsm.band.version", "propNames": [ "gsm.version.baseband" ] },
+  //{ "settingName": "hardware.boot.sku", "propNames": [ "ro.boot.hardware.sku", "ro.boot.product.hardware.sku" ] },
+  //{ "settingName": "hardware.boot.product.sku", "propNames": [ "ro.boot.product.hardware.sku" ] },
+  //{ "settingName": "hardware.gsm.version", "propNames": [ "gsm.version.ril-impl" ] },
+  //{ "settingName": "hardware.gsm.band.version", "propNames": [ "gsm.version.baseband" ] },
+  { "settingName": "hardware.nfc.controller.interface", "propNames": [ "ro.hardware.nfc_nci" ] },
 
-  //Bluetooth Settings
-  { "settingName": "bluetooth.name", "propNames": [ "net.bt.name" ] },
-  { "settingName": "bluetooth.soc", "propNames": [ "vendor.bluetooth.soc" ] },
+  //Make a wild card option but dumps your props and find any ??
+  //Make a hide list ? or compare to props on phone to know what to hide or add feature to hide ??
+  //Parse all of users to then make a list what the app needs ?? hmm then cache so we dont need to keep calling to DB
+  //Like "vendor.*.bluetooth.soc, vendor.??.bluetooth.soc (anything in between vendor. and .bluetooth.soc
+  //Add extreme cleaner for VD Infos App as well as System checks if that value already existed etc should align or log err
+  //Start Spoof File System ??? leats try CPU cores
+
+  //PS
+  //.product. usually is a VARIANT of that device like there is "OnePlus 7 Pro" then theres "OnePlus 7 Pro 5g" variant
+  //       BASE("OnePlus 7", "GM1901", "regular"),    // Base variant
+  //        PRO("OnePlus 7 Pro", "GM1911", "pro"),     // Pro variant
+  //        PRO_5G("OnePlus 7 Pro 5G", "GM1920", "noese"); // Your variant
+
+  //
+  //   ABIs / Instructions / Architecture
+  //
+  //    Common ABIs:        [ABIS HELP]
+  //    64-bit:
+  //    - arm64-v8a (Most common 64-bit ABI)
+  //        └── Uses aarch64 instruction set
+  //        └── Modern Android devices
+  //
+  //    32-bit:
+  //    - armeabi-v7a (Common 32-bit ABI)
+  //        └── Uses armv7 instruction set
+  //        └── Backwards compatibility
+  //    - armeabi (Obsolete)
+  //        └── Original ARM ABI
+  //        └── No longer supported
+  //
+  //    Main Architecture Types:
+  //
+  //    arm64/aarch64:
+  //    - 64-bit ARM architecture
+  //    - Newer, more capable
+  //    - Better performance
+  //    - More registers
+  //    - Larger address space
+  //
+  //    arm:
+  //    - 32-bit ARM architecture
+  //    - Legacy support
+  //    - Older instruction set
+  //    - Limited address space
+  //
+  //    Instruction sets
+  //    dalvik.vm.isa.arm.variant and dalvik.vm.isa.arm64.variant
+  //    represent CPU instruction set architecture variants
+  //
+  //    Examples:
+  //    dalvik.vm.isa.arm.variant="cortex-a75"    // 32-bit ARM core
+  //    dalvik.vm.isa.arm64.variant="cortex-a75"  // 64-bit ARM core
+  //
+  //    These are specifically about CPU architecture,
+  //    not the whole chipset
+  //
+
+  //!!!!!!!!!! Make sure out .index. parser does not parse instruction set ?
+  //Ignore 64,32
+  //vendor.??.bluetooth.soc
+
+  //New System we take VERY VERY high priority of the dump FIRST in every way , we also cache it in globally so not a bunch of copies ?
+  //Make a button for the setting that attaches to the randomizer it gets the device detail from your device ?
+  //Add as Hook Called " nvm
+
+
+  //cpu.soc.model
+  { "settingName": "soc.hardware.model", "propNames": [ "ro.soc.model", "ro.vendor.soc.model", "ro.vendor.soc.model_name", "vendor.cpu.model_name" ] },
+  //cpu.hardware.name
+  { "settingName": "soc.hardware.manufacturer.id", "propNames": [ "ro.hardware", "ro.boot.hardware" ] },  //qcom
+  //cpu.platform.name
+  { "settingName": "soc.hardware.config.code.name", "propNames": [ "ro.board.platform", "ro.product.board" ] },
+  //cpu.soc.manufacturer
+  { "settingName": "soc.hardware.manufacturer", "propNames": [ "ro.soc.manufacturer" ] },
+
+  //cpu.dalvik.vm.variant
+  { "settingName": "soc.cpu.instruction.set.32", "propNames": [ "dalvik.vm.isa.arm.variant" ] },
+  { "settingName": "soc.cpu.instruction.set.64", "propNames": [ "dalvik.vm.isa.arm64.variant" ] },
+  //cpu.arch
+  { "settingName": "soc.cpu.architecture", "propNames": [ "os.arch", "ro.bionic.2nd_arch", "ro.bionic.arch" ] },
+  //cpu.abi
+  { "settingName": "soc.cpu.abi", "propNames": [ "ro.product.cpu.abi" ] },
+  //cpu.abilist
+  { "settingName": "soc.cpu.abi.list", "propNames": [ "ro.vendor.product.cpu.abilist", "ro.system.product.cpu.abilist", "ro.odm.product.cpu.abilist", "ro.product.cpu.abilist" ] },
+  //cpu.abilist32
+  { "settingName": "soc.cpu.abi.list.32", "propNames": [ "ro.vendor.product.cpu.abilist32", "ro.system.product.cpu.abilist32", "ro.odm.product.cpu.abilist32", "ro.product.cpu.abilist32" ] },
+  //cpu.abilist64
+  { "settingName": "soc.cpu.abi.list.64", "propNames": [ "ro.vendor.product.cpu.abilist64", "ro.system.product.cpu.abilist64", "ro.odm.product.cpu.abilist64", "ro.product.cpu.abilist64" ] },
+
+  //gpu.egl.code.name
+  { "settingName": "soc.gpu.egl.implementor", "propNames": [ "ro.hardware.egl", "persist.graphics.egl" ] },
+  { "settingName": "soc.gpu.vulkan.implementor", "propNames": [ "ro.hardware.vulkan" ] },
+  //gpu.opengls.version
+  { "settingName": "soc.gpu.open.gles.version.encoded", "propNames": [ "ro.opengls.version" ] },
+  { "settingName": "soc.gpu.gfx.driver.name.[1,2]", "propNames": [ "ro.gfx.driver.1", "ro.gfx.driver.0" ] },
+
+  //cpu.base.band
+  { "settingName": "soc.baseband.hardware.config.name", "propNames": [ "ro.baseband", "ro.baseband.arch", "ro.boot.baseband" ] },
+  //hardware.gsm.band.version
+  { "settingName": "soc.baseband.hardware.radio.version", "propNames": [ "gsm.version.baseband", "vendor.gsm.project.baseband"] },
+  //hardware.gsm.version
+  { "settingName": "soc.baseband.hardware.implementor", "propNames": [ "gsm.version.ril-impl" ] },
+
+  //bluetooth.soc
+  { "settingName": "soc.bluetooth.board.config.name", "propNames": [ "vendor.bluetooth.soc", "ro.vendor.bluetooth.soc" , "vendor.qcom.bluetooth.soc", "ro.bluetooth.soc", "persist.bluetooth.soc" ] },
+
+
+
+  //Bluetooth
+  { "settingName": "bluetooth.name", "propNames": [ "net.bt.name", "bluetooth.device.default_name" ] },
 
   //Unique Identifiers
+  { "settingName": "unique.gsm.sim.serial", "propNames": [ "gsm.serial" ] },
   { "settingName": "unique.serial.no", "propNames": [ "vendor.gsm.serial", "ro.kernel.androidboot.serialno", "ro.build.serial", "persist.odm.ril.oem.sno", "persist.odm.ril.oem.psno", "persist.odm.ril.odm.ril.oem.psno", "ro.ril.oem.psno", "ro.ril.oem.sno","ro.serialno", "ro.boot.serialno", "ril.serialnumber", "gsm.sn1", "sys.serialnumber" ] },
   { "settingName": "unique.gsm.imei", "propNames": [ "persist.sys.imei1", "persist.sys.imei", "persist.sys.imei0",  "gsm.device.imei0", "gsm.device.imei", "gsm.device.imei1", "persist.sys.verizon_test_plan_imei", "ro.ril.miui.imei2", "ro.ril.miui.imei1", "ro.ril.miui.imei0", "ro.ril.miui.imei", "persist.radio.imei2", "persist.radio.imei1", "persist.radio.imei0", "persist.radio.imei", "persist.odm.ril.oem.imei2", "persist.odm.ril.oem.imei1", "persist.odm.ril.oem.imei0", "persist.odm.ril.oem.imei", "persist.radio.imei1", "persist.radio.imei0", "ro.ril.oem.imei", "ro.ril.oem.imei0", "ro.ril.oem.imei1", "ro.ril.oem.imei2" ] },
   { "settingName": "unique.gsm.meid", "propNames": [ "ro.ril.oem.meid" ] },
@@ -99,25 +229,80 @@
   { "settingName": "unique.network.mac.address", "propNames": [ "ro.boot.wifimacaddr", "ro.boot.wifi_mac", "ro.ril.oem.btmac", "persist.odm.ril.oem.btmac", "ro.ril.oem.wifimac", "wlan.driver.macaddr", "persist.odm.ril.oem.wifimac" ] },
   { "settingName": "unique.bluetooth.address", "propNames": [ "ro.boot.bt_map" ] },
 
-  { "settingName": "unique.netd.secret.key", "propNames": [ "persist.netd.stable_secret" ] },
 
+
+  //Region
+  //Country
+  { "settingName": "region.country.iso", "propNames": [  "gsm.operator.iso-country", "gsm.sim.operator.iso-country", "ro.product.locale.region", "ro.miui.region", "ro.vendor.miui.cust_variant", "ro.omc.region"  ] },
+  { "settingName": "region.country.code", "propNames": [ "ro.csc.country_code", "persist.sys.country" ] },
+  //Language
+  { "settingName": "region.language", "propNames": [ "ro.product.locale.language" ] },
+  { "settingName": "region.language.iso", "propNames": [ "persist.sys.language" ] },
+  { "settingName": "region.language.tag", "propNames": [ "persist.sys.locale", "persist.sys.localenosim", "persist.sys.localedefault" ] },
+  //TimeZone
+  { "settingName": "region.timezone.id", "propNames": [ "persist.sys.timezone" ] },
+
+  //NETWORK
+  { "settingName": "network.dns", "propNames": [ "net.dns", "net.dns1", "net.dns2", "net.dns3", "net.dns4", "dhcp.wlan0.dns1" ] },
+  { "settingName": "network.gateway", "propNames": [ "dhcp.wlan0.gateway", "dhcp.wlan0.ipaddress", "dhcp.wlan0.server" ] },
+  { "settingName": "network.host.name", "propNames": [ "net.hostname", "sys.device_name" ] },
+
+
+
+  //cpu.platform.name
+  //{ "settingName": "soc.modem.board.code.name", "propNames": [ "ril.modem.board" ] },
+  //We need finally ril.modem.board & ro.hardware.chipname
+  //{ "settingName": "soc.hwd.chip.name", "propNames": [ "ro.hardware.chipname" ] },
+  //{ "settingName": "hwd.soc.chipset.board.code.name", "propNames": [ "ro.board.platform", "ro.product.board", "ro.chipname" ] },
+  //cpu.soc.model
+  //{ "settingName": "soc.hwd.model", "propNames": [ "ro.soc.model", "ro.vendor.soc.model", "ro.vendor.soc.model_name", "vendor.cpu.model_name" ] },
+  //{ "settingName": "soc.hwd.model.name", "propNames": [ "ro.vendor.soc.model_name", "vendor.cpu.model_name" ] },
+  //{ "settingName": "soc.hwd.model.part.name", "propNames": [ "ro.vendor.soc.model.part_name" ] },
+  //{ "settingName": "soc.hwd.model.external.name", "propNames": [ "ro.vendor.soc.model.external_name" ] },
+  //cpu.cpuid (Do something with this ?)
+  //{ "settingName": "soc.cpu.cpuid", "propNames": [ "ro.boot.cpuid", "persist.vendor.connsys.chipid" ] },
+  //{ "settingName": "soc.gpu.gfx.driver.one", "propNames": [ "ro.gfx.driver.0" ] },
+  //{ "settingName": "soc.gpu.gfx.driver.two", "propNames": [ "ro.gfx.driver.1" ] },
+
+
+  //NFC Bullshit
+  //hardware.boot.sku
+  //{ "settingName": "soc.hwd.config.sku.name", "propNames": [ "ro.boot.hardware.sku"] },
+  //hardware.boot.product.sku
+  //{ "settingName": "soc.hwd.config.product.sku", "propNames": [ "ro.boot.product.hardware.sku" ] },
+
+
+  //  { "settingName": "cpu.soc.model", "propNames": [ "ro.soc.model", "ro.hardware.chipname", "ro.vendor.soc.model.part_name", "ro.vendor.soc.model_name" ] },
+
+
+  //Ensure some props end in a comma ??
+
+  //Bluetooth Settings
+
+  //{ "settingName": "bluetooth.soc", "propNames": [ "vendor.bluetooth.soc", "vendor.qcom.bluetooth.soc" ] }, DEPRECATED
+
+
+
+  //[DEPRECATED]
+  //{ "settingName": "unique.netd.secret.key", "propNames": [ "persist.netd.stable_secret" ] },
+
+
+  //ro.miui.build.region=cn
 
   //Zone Settings (Time, Date, Region, Language)
-  { "settingName": "zone.timezone.id", "propNames": [ "persist.sys.timezone" ] },
-  { "settingName": "zone.country.iso", "propNames": [  "persist.sys.country", "gsm.operator.iso-country", "gsm.sim.operator.iso-country" ] },
-  { "settingName": "zone.language.iso", "propNames": [ "persist.sys.language" ] },
-  { "settingName": "zone.language.tag", "propNames": [ "ro.product.locale" ] },
-  { "settingName": "zone.region", "propNames": [ "ro.product.locale.region", "ro.miui.region" ] },
-  { "settingName": "zone.language", "propNames": [ "ro.product.locale.language" ] },
 
 
+
+
+  //{ "settingName": "factory.zone.language.tag", "propNames": [ "ro.product.locale" ] },
+  //{ "settingName": "zone.region", "propNames": [ "ro.product.locale.region", "ro.miui.region" ] },
   //  { "name": "zone.language", "description": "Language Name", "value": "Icelandic" },
   //  { "name": "zone.region", "description": "Region Specification (IS)", "value": "IS" },
 
   //Network Settings
   { "settingName": "network.dns", "propNames": [ "net.dns", "net.dns1", "net.dns2", "net.dns3", "net.dns4", "dhcp.wlan0.dns1" ] },
   { "settingName": "network.gateway", "propNames": [ "dhcp.wlan0.gateway", "dhcp.wlan0.ipaddress", "dhcp.wlan0.server" ] },
-  { "settingName": "network.interface", "propNames": [ "wifi.interface" ] },
+  //{ "settingName": "network.interface", "propNames": [ "wifi.interface" ] },
 
   { "settingName": "network.host.name", "propNames": [ "net.hostname", "sys.device_name" ] },
 
@@ -130,11 +315,10 @@
 
 
   //GSM Settings
-  { "settingName": "gsm.network.type", "propNames": [ "gsm.network.type" ] },
+  //{ "settingName": "gsm.network.type", "propNames": [ "gsm.network.type" ] },
   { "settingName": "gsm.network.carrier", "propNames": [ "ro.carrier", "ro.cdma.home.operator.alpha", "gsm.operator.alpha", "gsm.sim.operator.alpha"] },
   { "settingName": "gsm.phone.type", "propNames": [ "gsm.current.phone-type" , "gsm.phone.type"] },
   { "settingName": "gsm.sim.state", "propNames": [ "gsm.sim.state" ] },
-  { "settingName": "unique.gsm.sim.serial", "propNames": [ "gsm.serial" ] },
 
   { "settingName": "gsm.setting.network.roaming.bool", "propNames": [ "gsm.operator.isroaming" ] },
   { "settingName": "gsm.operator.id", "propNames": [ "gsm.operator.numeric", "gsm.sim.operator.numeric", "vendor.gsm.ril.uicc.mccmnc", "vendor.gsm.ril.uicc.mccmnc.1", "persist.vendor.mtk.provision.mccmnc.0", "persist.vendor.mtk.provision.mccmnc.1" ] },
@@ -142,15 +326,30 @@
   { "settingName": "gsm.operator.mcc", "propNames": [  "ro.miui.mcc" ] },
   { "settingName": "gsm.operator.mnc", "propNames": [  "ro.miui.mnc" ] },
 
-  { "settingName": "gsm.sim.count", "propNames": [ "ro.telephony.sim.count" ] },
+  //R we sure we are doing these values right ?
+  { "settingName": "gsm.sim.count", "propNames": [ "ro.telephony.sim.count", "ro.telephony.sim_slots.count" ] },
   { "settingName": "gsm.network.carrier", "propNames": [ "vendor.gsm.sim.operator.default-name" ] },
 
   //gsm.network.carrier
 
-  //Google
-  { "settingName": "google.client.id.base", "propNames": [ "ro.com.google.clientidbase" ] },
-  { "settingName": "google.client.id.base.name", "propNames": [ "ro.com.google.clientidbase.ax", "ro.com.google.clientidbase.ms", "ro.com.google.clientidbase.tx", "ro.com.google.clientidbase.vs" ] },
-  { "settingName": "google.gms.version", "propNames": [ "ro.com.google.gmsversion" ] },
+
+  //hardware.efuse
+  //{ "settingName": "security.efuse", "propNames": [ "ro.boot.efuse" ] },
+
+  //Google, put these last please
+  //android-{manufacturer} or android-{manufacturer}-{region/carrier}
+  //{ "settingName": "google.client.config.base", "propNames": [ "ro.com.google.clientidbase" ] },
+  //{ "settingName": "google.client.config.armenian", "propNames": [ "ro.com.google.clientidbase.am" ] },
+  //{ "settingName": "google.client.config.amazon", "propNames": [ "ro.com.google.clientidbase.ax" ] },
+  //{ "settingName": "google.client.config.carrier.regional", "propNames": [ "ro.com.google.clientidbase.cr" ] },
+  //{ "settingName": "google.client.config.mobile.services", "propNames": [ "ro.com.google.clientidbase.ms" ] },
+  //{ "settingName": "google.client.config.t.mobile", "propNames": [ "ro.com.google.clientidbase.tx" ] },
+  //{ "settingName": "google.client.config.verizon", "propNames": [ "ro.com.google.clientidbase.vs" ] },
+  //{ "settingName": "google.client.config.youtube", "propNames": [ "ro.com.google.clientidbase.yt" ] },
+  //{ "settingName": "google.client.config.regional.language", "propNames": [ "ro.com.google.clientidbase.el" ] },
+  //{ "settingName": "google.client.config.asia", "propNames": [ "ro.com.google.clientidbase.asi" ] },
+  //{ "settingName": "google.client.config.european", "propNames": [ "ro.com.google.clientidbase.eur" ] },
+  //{ "settingName": "google.gms.version", "propNames": [ "ro.com.google.gmsversion" ] },
   //ro.frp.pst
 
 

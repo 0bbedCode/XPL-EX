@@ -37,7 +37,7 @@ import eu.faircode.xlua.api.settings.LuaSettingExtended;
 import eu.faircode.xlua.api.settings.LuaSettingPacket;
 import eu.faircode.xlua.logger.XLog;
 import eu.faircode.xlua.random.GlobalRandoms;
-import eu.faircode.xlua.random.IRandomizer;
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.randomizers.NARandomizer;
 import eu.faircode.xlua.ui.dialogs.NoRandomDialog;
 import eu.faircode.xlua.ui.transactions.PropTransactionResult;
@@ -55,7 +55,7 @@ import eu.faircode.xlua.utilities.UiUtil;
 import eu.faircode.xlua.utilities.ViewUtil;
 
 public class AdapterPropertiesGroup extends RecyclerView.Adapter<AdapterPropertiesGroup.ViewHolder> implements Filterable {
-    private final List<IRandomizer> randomizers = GlobalRandoms.getRandomizers();
+    private final List<IRandomizerOld> randomizers = GlobalRandoms.getRandomizers();
 
     private final List<MockPropGroupHolder> groups = new ArrayList<>();
     private List<MockPropGroupHolder> filtered = new ArrayList<>();
@@ -88,7 +88,7 @@ public class AdapterPropertiesGroup extends RecyclerView.Adapter<AdapterProperti
         final RecyclerView rvGroupProps;
 
         final Spinner spRandomSelector;
-        final ArrayAdapter<IRandomizer> spRandomizer;
+        final ArrayAdapter<IRandomizerOld> spRandomizer;
 
         ViewHolder(View itemView) {
             super(itemView);

@@ -1,4 +1,5 @@
 function after(hook, param)
+    param:printInetAddress()
     local res = param:getResult()
     if res == nil then
         return false

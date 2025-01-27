@@ -12,7 +12,7 @@ import eu.faircode.xlua.utilities.StringUtil;
 public class UnameIntercept extends CommandInterceptor implements ICommandIntercept  {
     private static final String TAG = "XLua.SuIntercept";
 
-    private static final String SU_INTERCEPT_SETTING = "intercept.shell.uname.bool";
+    private static final String UNAME_INTERCEPT_SETTING = "intercept.shell.uname.bool";
 
     //Android Kernel Default Settings
     //{ "name": "android.kernel.sys.name", "description": "Kernel Kind Name (Linux, Unix...)", "value": "Linux" },
@@ -21,7 +21,7 @@ public class UnameIntercept extends CommandInterceptor implements ICommandInterc
     //{ "name": "android.kernel.node.name", "description": "Kernel Build nodename (localhost)", "value": "localhost" },
 
     @SuppressWarnings("unused")
-    public UnameIntercept() { this.command = "uname"; }
+    public UnameIntercept() { this.command = "uname"; this.setting = UNAME_INTERCEPT_SETTING; }
 
     @Override
     public boolean interceptCommand(ShellInterception result) {
@@ -36,7 +36,7 @@ public class UnameIntercept extends CommandInterceptor implements ICommandInterc
                     return false;
                 }
 
-                if(!keepGoing(maps, SU_INTERCEPT_SETTING)) {
+                if(!keepGoing(maps, UNAME_INTERCEPT_SETTING)) {
                     if(BuildConfig.DEBUG)
                         Log.w(TAG, "Found " + this.command + " but Setting is not allowing interception bye bye");
 
@@ -47,7 +47,7 @@ public class UnameIntercept extends CommandInterceptor implements ICommandInterc
                 String version = maps.getSetting("android.kernel.version", "SMP PREEMPT Tue Sep 3 14:02:52 KST 2019");  //-v    [version]
                 String release = maps.getSetting("android.kernel.release", "4.9.112-16352588");                         //-r    [release]
                 String nodeNme = maps.getSetting("android.kernel.node.name", "localhost");                              //-n    [node name]
-                String machine = maps.getSetting("cpu.arch", "aarch64");                                                //-m    [machine]
+                String machine = maps.getSetting("soc.cpu.architecture", "aarch64");                                                //-m    [machine]
                 String systems = maps.getSetting("android.build.base.os", "Android");                                   //
 
                 if(low.contains("-s")) {

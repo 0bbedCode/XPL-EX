@@ -26,6 +26,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Process;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -37,8 +38,10 @@ import java.util.Locale;
 import eu.faircode.xlua.api.XResult;
 import eu.faircode.xlua.api.xlua.XLuaCall;
 import eu.faircode.xlua.utilities.PrefUtil;
+import eu.faircode.xlua.x.xlua.commands.call.GetSettingExCommand;
 
 public class ActivityBase extends AppCompatActivity {
+    private static final String TAG = "XLua.ActivityBase";
     private String theme;
     private boolean isForceEnglish;
     //private Locale mCurrentLocale;
@@ -68,7 +71,10 @@ public class ActivityBase extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        theme = XLuaCall.getTheme(this);
+        theme = GetSettingExCommand.getTheme(this, Process.myUid());
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "OnCreate Theme=" + theme);
+
         isForceEnglish = getIsForceEnglish();
         setTheme("dark".equals(theme) ? R.style.AppThemeDark : R.style.AppThemeLight);
         if(isForceEnglish) {

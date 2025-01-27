@@ -5,11 +5,11 @@ import androidx.annotation.NonNull;
 import java.util.List;
 import java.util.UUID;
 
-import eu.faircode.xlua.random.IRandomizer;
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
-import eu.faircode.xlua.utilities.RandomStringGenerator;
+import eu.faircode.xlua.x.runtime.BuildInfo;
 
-public class RandomUUID implements IRandomizer {
+public class RandomUUID implements IRandomizerOld {
     //google.advertisingid
     //Now its "ad.id"
     //84630630-u4ls-k487-f35f-h37afe0pomwq
@@ -27,9 +27,11 @@ public class RandomUUID implements IRandomizer {
         return setting.equalsIgnoreCase(getSettingName()) ||
                 "unique.google.advertising.id".equalsIgnoreCase(setting) ||
                 "unique.facebook.advertising.id".equalsIgnoreCase(setting) ||
-                "unique.open.anon.advertising.id".equalsIgnoreCase(setting) ||
+                ("unique.open.anon.advertising.id".equalsIgnoreCase(setting) && !BuildInfo.isMiuiOrHyperOs()) ||
                 "unique.guid.uuid".equalsIgnoreCase(setting) ||
-                "unique.boot.id".equalsIgnoreCase(setting);
+                "unique.boot.id".equalsIgnoreCase(setting) ||
+                "unique.app.va.id".equalsIgnoreCase(setting) ||
+                "unique.app.anon.id".equalsIgnoreCase(setting);
     }
 
     @Override

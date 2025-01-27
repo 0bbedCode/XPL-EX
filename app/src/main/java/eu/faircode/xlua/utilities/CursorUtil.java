@@ -13,8 +13,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.api.xstandard.interfaces.IJsonSerial;
 import eu.faircode.xlua.logger.XLog;
+import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.data.utils.ListUtil;
+import eu.faircode.xlua.x.runtime.RuntimeUtils;
+import eu.faircode.xlua.x.xlua.interfaces.IJsonType;
+import eu.faircode.xlua.x.xlua.interfaces.IParcelType;
 
 public class CursorUtil {
     private static final String TAG = "XLua.CursorUtil";
@@ -78,7 +84,8 @@ public class CursorUtil {
                         String kName = e.getKey();
                         rowBuilder.add(kName);
                         rowBuilder.add(newValue);
-                        Log.i(TAG, "Cursor Replacing at Key: " + kName + " Value: " + newValue);
+                        if(DebugUtil.isDebug())
+                            Log.d(TAG, "Cursor Replacing at Key: " + kName + " Value: " + newValue);
                     }
                 } else {
                     for(Map.Entry<String, String> e : vals.entrySet()) {
@@ -91,7 +98,8 @@ public class CursorUtil {
                             if(k.equalsIgnoreCase(pk)) {
                                 replaced = true;
                                 rowBuilder.add(newValue);
-                                Log.i(TAG, "Cursor Replacing at Key: " + k + " Value: " + newValue);
+                                if(DebugUtil.isDebug())
+                                    Log.d(TAG, "Cursor Replacing at Key: " + k + " Value: " + newValue);
                                 break;
                             }
                         }
@@ -187,6 +195,14 @@ public class CursorUtil {
         return c.getString(ix);
     }
 
+    public static Boolean getBoolean(Cursor c, String columnName, Boolean defaultValue) {
+        int ix = c.getColumnIndex(columnName);
+        if(ix == -1) return defaultValue;
+        String v = c.getString(ix).toLowerCase();
+        Boolean parsed = Str.toBoolean(v);
+        return parsed == null ? defaultValue : parsed;
+    }
+
     public static Boolean getBoolean(Cursor c, String columnName) {
         int ix = c.getColumnIndex(columnName);
         if(ix == -1) return null;
@@ -218,6 +234,48 @@ public class CursorUtil {
 
         return dic;
     }
+
+
+    /*public static <T extends IParcelType> Cursor toMatrixCursor_final(Collection<T> items, boolean marshall, int flags)  {
+        MatrixCursor result = new MatrixCursor(new String[]{marshall ? "blob" : "json"});
+        if(!CollectionUtil.isValid(items)) {
+            Log.w(TAG, "Collection passed to Convert into Matrix Cursor was Null or Empty...");
+            return result;
+        }
+
+        IParcelType lastItem = null;
+        String logEnd = " collection size=" + items.size() + " marshall=" + marshall + " flags=" + flags;
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Converting collection into Matrix Cursor..." + logEnd);
+
+        int pos = 0;
+        try {
+            for (IParcelType item : items) {
+                lastItem = item;
+                if (marshall) {
+                    Parcel parcel = Parcel.obtain();
+                    item.writeToParcel(parcel, flags);
+                    result.newRow().add(parcel.marshall());
+                    parcel.recycle();
+                } else {
+                    //String jData = item.toJSON();
+                    //if(jData == null) continue;
+                    //result.addRow(new Object[]{ jData });
+                } pos++;
+            }
+        //}catch (JSONException je) {
+        //    XLog.e("Failed to write IJsonSerial object as Json Blob using IJsonSerial inherited method [toJSON]. last position=" + pos + " last item=" + lastItem + logEnd, je, true);
+        //    return result;
+        }catch (Exception e) {
+            XLog.e("Failed to write IJsonSerial Collection to Matrix Cursor. last position=" + pos + " last item=" + lastItem + logEnd, e, true);
+            return result;
+        }
+
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Finished Writing IJsonSerial Collection to Matrix Cursor. last position=" + pos + logEnd);
+
+        return result;
+    }*/
 
     public static <T extends IJsonSerial> Cursor toMatrixCursor(Collection<T> items, boolean marshall, int flags)  {
         MatrixCursor result = new MatrixCursor(new String[]{marshall ? "blob" : "json"});
@@ -304,6 +362,91 @@ public class CursorUtil {
         }
 
         XLog.i("Finished Reading Cursor to IJsonSerial Collection. Total elements read=" + items.size() + " last position=" + pos);
+        return items;
+    }
+
+
+    public static <T extends IParcelType & IJsonType> Cursor toMatrixCursor_final(Collection<T> items, boolean marshall, int flags)  {
+        MatrixCursor result = new MatrixCursor(new String[]{marshall ? "blob" : "json"});
+        if(!CollectionUtil.isValid(items)) {
+            Log.e(TAG, "Failed to Convert Collection to Cursor! Collection passed is Null or Empty!");
+            return result;
+        }
+
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Converting Collection to Cursor, Count=" + ListUtil.size(items));
+
+        try {
+            for (T item : items) {
+                if (marshall) {
+                    Parcel parcel = Parcel.obtain();
+                    item.writeToParcel(parcel, flags);
+                    result.newRow().add(parcel.marshall());
+                    parcel.recycle();
+                } else {
+                    String jData = item.toJSONString();
+                    if(jData == null)
+                        continue;
+
+                    result.addRow(new Object[]{ jData });
+                }
+            }
+        }catch (JSONException je) {
+            Log.e(TAG, Str.fm("Failed to Write Collection to Cursor JSON, Error=%s Stack=%s", je, RuntimeUtils.getStackTraceSafeString(je)));
+            return result;
+        }catch (Exception e) {
+            Log.e(TAG, Str.fm("Failed to Write Collection to Cursor, Error=%s Stack=%s", e, RuntimeUtils.getStackTraceSafeString(e)));
+            return result;
+        }
+
+        return result;
+    }
+
+
+    public static <T extends IParcelType & IJsonType> Collection<T> readCursorAs_final(Cursor cursor, boolean marshall, Class<T> classType) {
+        Collection<T> items = new ArrayList<>();
+        if(classType == null) {
+            Log.e(TAG, "Failed to Read JSON Object Cursor, Class Type is null! Stack=" + RuntimeUtils.getStackTraceSafeString());
+            return items;
+        }
+
+        //int pos = 0;
+        try {
+            if(cursor != null && !cursor.isClosed() && cursor.moveToFirst()) {
+                //XLog.i("Reading Matrix Cursor to a IJsonSerial Collection. marshall=" + marshall + " class type=" + classType.getName());
+                if (marshall) {
+                    do {
+                        T inst = classType.newInstance();
+                        byte[] marshaled = cursor.getBlob(0);
+                        Parcel parcel = Parcel.obtain();
+                        parcel.unmarshall(marshaled, 0, marshaled.length);
+                        parcel.setDataPosition(0);
+                        inst.fromParcel(parcel);
+                        parcel.recycle();
+                        items.add(inst);
+                        //pos++;
+                    }while (cursor.moveToNext());
+                } else {
+                    do {
+                        T inst = classType.newInstance();
+                        String json = cursor.getString(0);
+                        inst.fromJSONObject(new JSONObject(json));
+                        items.add(inst);
+                        //pos++;
+                    }while (cursor.moveToNext());
+                }
+            }else {
+                Log.e(TAG, Str.fm("Cursor is Empty or Null failed to Read, Marshall=%s Class=%s Stack=%s", marshall, classType, RuntimeUtils.getStackTraceSafeString()));
+                return items;
+            }
+        }catch (JSONException je) {
+            Log.e(TAG, Str.fm("Error Reading Objects from Cursor JSON, Error=%s Class=%s Stack=%s", je, classType, RuntimeUtils.getStackTraceSafeString(je)));
+            return items;
+        } catch (Exception e) {
+            Log.e(TAG, Str.fm("Error Reading Objects from Cursor JSON, Error=%s Marshall=%s Class=%s Stack=%s", e, marshall, classType, RuntimeUtils.getStackTraceSafeString(e)));
+            return items;
+        }
+
         return items;
     }
 }

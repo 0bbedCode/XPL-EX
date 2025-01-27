@@ -7,8 +7,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import eu.faircode.xlua.XSecurity;
-import eu.faircode.xlua.api.xstandard.command.CallPacket;
+import eu.faircode.xlua.api.xstandard.command.CallPacket_old;
 import eu.faircode.xlua.api.xstandard.interfaces.ISecurityObject;
+import eu.faircode.xlua.x.data.string.StrBuilder;
 
 public abstract class CallCommandHandler implements ISecurityObject {
     protected String name;
@@ -21,7 +22,7 @@ public abstract class CallCommandHandler implements ISecurityObject {
         this.requiresPermissionCheck = requirePermissionCheck;
     }
 
-    public abstract Bundle handle(CallPacket rawData) throws Throwable;
+    public abstract Bundle handle(CallPacket_old rawData) throws Throwable;
 
     @Override
     public void throwOnPermissionCheck(Context context) { XSecurity.checkCaller(context); }
@@ -44,12 +45,10 @@ public abstract class CallCommandHandler implements ISecurityObject {
     @NonNull
     @Override
     public String toString() {
-        return new StringBuilder()
-                .append(" name=")
-                .append(name)
-                .append(" requires permission check=")
-                .append(requiresPermissionCheck)
-                .append(" requires single thread=")
-                .append(requiresSingleThread).toString();
+        return StrBuilder.create()
+                .appendFieldLine("Name", name)
+                .appendFieldLine("Requires UID Check", String.valueOf(requiresPermissionCheck))
+                .appendFieldLine("Single Thread", String.valueOf(requiresSingleThread))
+                .toString(true);
     }
 }

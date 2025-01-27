@@ -1,11 +1,9 @@
 package eu.faircode.xlua;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,32 +16,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import eu.faircode.xlua.api.XResult;
-import eu.faircode.xlua.api.properties.MockPropGroupHolder;
 import eu.faircode.xlua.api.settings.LuaSettingExtended;
 import eu.faircode.xlua.api.settings.LuaSettingPacket;
-import eu.faircode.xlua.api.xstandard.interfaces.ISettingUpdate;
 import eu.faircode.xlua.logger.XLog;
 import eu.faircode.xlua.random.GlobalRandoms;
-import eu.faircode.xlua.random.IRandomizer;
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.randomizers.NARandomizer;
-import eu.faircode.xlua.ui.AlertMessage;
 import eu.faircode.xlua.ui.dialogs.NoRandomDialog;
 import eu.faircode.xlua.ui.dialogs.SettingDeleteDialogEx;
 import eu.faircode.xlua.ui.interfaces.ILoader;
-import eu.faircode.xlua.ui.interfaces.ISettingTransaction;
 import eu.faircode.xlua.ui.SettingsQue;
-import eu.faircode.xlua.ui.dialogs.SettingDeleteDialog;
 import eu.faircode.xlua.ui.interfaces.ISettingUpdateEx;
 import eu.faircode.xlua.ui.transactions.SettingTransactionResult;
 import eu.faircode.xlua.utilities.SettingUtil;
@@ -51,7 +41,7 @@ import eu.faircode.xlua.utilities.UiUtil;
 import eu.faircode.xlua.utilities.ViewUtil;
 
 public class AdapterHookSettings extends RecyclerView.Adapter<AdapterHookSettings.ViewHolder> {
-    private final List<IRandomizer> randomizers = GlobalRandoms.getRandomizers();
+    private final List<IRandomizerOld> randomizers = GlobalRandoms.getRandomizers();
     private final List<LuaSettingExtended> settings = new ArrayList<>();
     private final HashMap<String, Boolean> expanded = new HashMap<>();
 
@@ -72,7 +62,7 @@ public class AdapterHookSettings extends RecyclerView.Adapter<AdapterHookSetting
         final TextInputEditText tiSettingValue;
         final ImageView btRandomize, btReset, btSave, btDelete, ivExpander;
         final Spinner spRandomSelector;
-        final ArrayAdapter<IRandomizer> adapterRandomizer;
+        final ArrayAdapter<IRandomizerOld> adapterRandomizer;
 
         ViewHolder(View itemView) {
             super(itemView);

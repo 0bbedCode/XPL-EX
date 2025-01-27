@@ -7,11 +7,9 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,12 +20,11 @@ import java.util.List;
 
 import eu.faircode.xlua.ActivityBase;
 import eu.faircode.xlua.AdapterApp;
-import eu.faircode.xlua.AdapterHookSettings;
 import eu.faircode.xlua.R;
 import eu.faircode.xlua.api.settings.LuaSettingExtended;
 import eu.faircode.xlua.api.xlua.XLuaCall;
 import eu.faircode.xlua.logger.XLog;
-import eu.faircode.xlua.random.IRandomizer;
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.DataNullElement;
 import eu.faircode.xlua.random.elements.IManagedSpinnerElement;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
@@ -69,9 +66,9 @@ public class UiUtil {
         else return AdapterApp.enumShow.icon;
     }
 
-    public static boolean initRandomizer(ArrayAdapter<IRandomizer> adapterRandomizer, Spinner spRandomSelector, LuaSettingExtended setting, List<IRandomizer> randomizers) {
+    public static boolean initRandomizer(ArrayAdapter<IRandomizerOld> adapterRandomizer, Spinner spRandomSelector, LuaSettingExtended setting, List<IRandomizerOld> randomizers) {
         adapterRandomizer.clear();
-        IRandomizer randomizer = setting.getRandomizer();
+        IRandomizerOld randomizer = setting.getRandomizer();
         boolean enable = false;
         if(randomizer != null) {
             List<ISpinnerElement> elements = randomizer.getOptions();
@@ -82,7 +79,7 @@ public class UiUtil {
                     String setModValue = setting.getModifiedValue();
                     if(setModValue != null && !TextUtils.isEmpty(setModValue)) {
                         for(int i = 0; i < adapterRandomizer.getCount(); i++) {
-                            IRandomizer r = adapterRandomizer.getItem(i);
+                            IRandomizerOld r = adapterRandomizer.getItem(i);
                             if(r == null) continue;
                             if(r instanceof ISpinnerElement) {
                                 ISpinnerElement spe = (ISpinnerElement) r;
@@ -98,7 +95,7 @@ public class UiUtil {
                 }
                 if(!found) {
                     for(int i = 0; i < adapterRandomizer.getCount(); i++) {
-                        IRandomizer r = adapterRandomizer.getItem(i);
+                        IRandomizerOld r = adapterRandomizer.getItem(i);
                         if(r == null) continue;
                         if(r.getName().equals(DataNullElement.EMPTY_ELEMENT.getName())) {
                             spRandomSelector.setSelection(i);
@@ -111,7 +108,7 @@ public class UiUtil {
                 adapterRandomizer.addAll(randomizers);
                 boolean found = false;
                 for(int i = 0; i < adapterRandomizer.getCount(); i++) {
-                    IRandomizer r = adapterRandomizer.getItem(i);
+                    IRandomizerOld r = adapterRandomizer.getItem(i);
                     if(r == null) continue;
                     //if(r.isSetting(randomizer))
                     if(r.getName().equalsIgnoreCase(randomizer.getName())) {
@@ -126,7 +123,7 @@ public class UiUtil {
     }
 
     public static boolean handleSpinnerSelection(Spinner spRandomizer, LuaSettingExtended setting) {
-        IRandomizer selected = (IRandomizer) spRandomizer.getSelectedItem();
+        IRandomizerOld selected = (IRandomizerOld) spRandomizer.getSelectedItem();
         String name = selected.getName();
         try {
             if (name == null ? spRandomizer.getTag() != null : !name.equals(spRandomizer.getTag())) {
@@ -137,7 +134,7 @@ public class UiUtil {
             if(setting == null)
                 return false;
 
-            IRandomizer randomizer = setting.getRandomizer();
+            IRandomizerOld randomizer = setting.getRandomizer();
             if(randomizer != null) {
                 List<ISpinnerElement> options = randomizer.getOptions();
                 if(options != null && !options.isEmpty() && (randomizer.isSetting(setting.getName()))) {
@@ -159,7 +156,7 @@ public class UiUtil {
     }
 
     public static boolean handleSpinnerSelection(Spinner spRandomizer, List<LuaSettingExtended> filtered, int position) {
-        IRandomizer selected = (IRandomizer) spRandomizer.getSelectedItem();
+        IRandomizerOld selected = (IRandomizerOld) spRandomizer.getSelectedItem();
         String name = selected.getName();
         try {
             if (name == null ? spRandomizer.getTag() != null : !name.equals(spRandomizer.getTag())) {
@@ -171,7 +168,7 @@ public class UiUtil {
             if(setting == null)
                 return false;
 
-            IRandomizer randomizer = setting.getRandomizer();
+            IRandomizerOld randomizer = setting.getRandomizer();
             if(randomizer != null) {
                 List<ISpinnerElement> options = randomizer.getOptions();
                 if(options != null && !options.isEmpty() && (randomizer.isSetting(setting.getName()))) {

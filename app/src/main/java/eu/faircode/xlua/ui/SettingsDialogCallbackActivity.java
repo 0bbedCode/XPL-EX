@@ -33,7 +33,7 @@ public class SettingsDialogCallbackActivity extends ActivityBase implements ISet
 
     public ILoader getLoaderFragment() { return this.loaderFragment; }
 
-    public <T extends  ILoader> void initFragmentTransaction(Class<T> loaderClass, int replaceResource, boolean passArgs) {
+    public <T extends ILoader> void initFragmentTransaction(Class<T> loaderClass, int replaceResource, boolean passArgs) {
         setLoaderFragment(loaderClass, passArgs);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

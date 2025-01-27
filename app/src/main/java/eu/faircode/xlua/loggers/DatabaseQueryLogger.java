@@ -5,7 +5,7 @@ import android.util.Log;
 
 import java.util.List;
 
-import eu.faircode.xlua.XDatabase;
+import eu.faircode.xlua.XDatabaseOld;
 import eu.faircode.xlua.api.xstandard.database.SqlQuerySnake;
 
 public class DatabaseQueryLogger {
@@ -31,7 +31,7 @@ public class DatabaseQueryLogger {
         log.append(snake.getOrderBy());
         log.append("\n");
 
-        XDatabase db = snake.getDatabase();
+        XDatabaseOld db = snake.getDatabase();
         log.append("[5] db=");
         log.append(db);
         if(db != null && db.getDatabase() != null){

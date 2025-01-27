@@ -3,6 +3,11 @@
   <component name="WizardSettings">
     <option name="children">
       <map>
+        <entry key="imageWizard">
+          <value>
+            <PersistentState />
+          </value>
+        </entry>
         <entry key="vectorWizard">
           <value>
             <PersistentState>
@@ -14,8 +19,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="i8_prop_24" />
-                            <entry key="sourceFile" value="C:\Users\user\Desktop\Projects\ICONS\property-deed-real-estate-sale-house-title-house-deed-svgrepo-com.svg" />
+                            <entry key="outputName" value="hook_icon_main" />
+                            <entry key="sourceFile" value="C:\Users\Jake\Desktop\Android\XPLEX\IMGS\phishing_24dp_E8EAED_FILL0_wght400_GRAD0_opsz24.svg" />
                           </map>
                         </option>
                       </PersistentState>

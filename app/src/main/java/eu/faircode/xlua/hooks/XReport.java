@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-import eu.faircode.xlua.XDatabase;
+import eu.faircode.xlua.XDatabaseOld;
 import eu.faircode.xlua.XUtil;
 import eu.faircode.xlua.api.xmock.database.LuaSettingsManager;
 import eu.faircode.xlua.api.xstandard.interfaces.IDBSerial;
@@ -65,7 +65,7 @@ public class XReport implements IDBSerial {
         return userid;
     }
 
-    public boolean getNotify(XDatabase db) {
+    public boolean getNotify(XDatabaseOld db) {
         if(notify == null)//This is where error can arrive , context is null and context is used and abused alot :P
             notify = LuaSettingsManager.getSettingBoolean(null, db, "notify", getUserId(), packageName);
 

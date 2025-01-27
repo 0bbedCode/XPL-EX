@@ -3,14 +3,12 @@ package eu.faircode.xlua.random.randomizers;
 import androidx.annotation.NonNull;
 
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.random.IRandomizer;
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
-import eu.faircode.xlua.utilities.RandomStringGenerator;
 import eu.faircode.xlua.utilities.RandomUtil;
 
-public class RandomSDKInit implements IRandomizer {
+public class RandomSDKInit implements IRandomizerOld {
     @Override
     public boolean isSetting(String setting) { return setting.equalsIgnoreCase(getSettingName()) || "android.build.version.sdk".equalsIgnoreCase(setting); }
 

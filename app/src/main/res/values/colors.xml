@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#1C8ADB</color>
-    <color name="colorPrimaryDark">#005DA9</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#AA3939</color>
+    <color name="colorPrimaryDark">#D94C4C</color>
+    <color name="colorAccent">#5FA8D3 </color>
+    <color name="colorUnsavedSetting">#D94C4C</color>
+
 
     <!-- Light theme -->
     <color name="lightColorDrawerScrim">#99000000</color>
@@ -14,6 +16,12 @@
     <color name="lightColorSettingSaved">#EEE</color>
     <color name="lightColorDividerBack">#D8CBCB</color>
 
+    <!-- Light Theme Button Colors -->
+    <color name="lightColorPrimaryButton">#AA3939</color> <!-- Matches colorPrimary -->
+    <color name="lightColorPrimaryButtonText">#FFFFFF</color> <!-- White text -->
+
+
+
 
     <!-- Dark theme -->
     <color name="darkColorDrawerScrim">#997F7F7F</color>
@@ -24,6 +32,11 @@
     <color name="darkColorTextDivider">#CCC6C6</color>
     <color name="darkColorSettingSaved">#00447b</color>
     <color name="darkColorDividerBack">#277F7F7F</color>
+
+    <!-- Dark Theme Button Colors -->
+    <color name="darkColorPrimaryButton">#D94C4C</color> <!-- Matches colorPrimaryDark -->
+    <color name="darkColorPrimaryButtonText">#FFFFFF</color> <!-- White text -->
+
 
     <!-- Primokorn -->
     <color name="_primaryColor">#1c8adb</color>

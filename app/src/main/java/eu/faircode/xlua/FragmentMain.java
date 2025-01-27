@@ -21,13 +21,11 @@ package eu.faircode.xlua;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
+import android.os.Process;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,13 +36,11 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
 import java.text.Collator;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -54,7 +50,6 @@ import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.Group;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -77,8 +72,14 @@ import eu.faircode.xlua.utilities.CollectionUtil;
 import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.api.app.XLuaApp;
 import eu.faircode.xlua.utilities.PrefUtil;
-import eu.faircode.xlua.utilities.StringUtil;
 import eu.faircode.xlua.utilities.UiUtil;
+import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.data.utils.ListUtil;
+import eu.faircode.xlua.x.xlua.commands.call.GetGroupsCommand;
+import eu.faircode.xlua.x.xlua.commands.call.GetSettingExCommand;
+import eu.faircode.xlua.x.xlua.commands.query.GetAppsCommand;
+import eu.faircode.xlua.x.xlua.commands.query.GetHooksCommand;
+import eu.faircode.xlua.x.xlua.hook.AppXpPacket;
 
 
 public class FragmentMain extends Fragment implements ILoader {
@@ -102,8 +103,8 @@ public class FragmentMain extends Fragment implements ILoader {
         final View main = inflater.inflate(R.layout.restrictions, container, false);
 
         //Ensure collections
-        List<String> collections = XLuaCall.getCollections(getContext());
-        if(!collections.isEmpty()) {
+        //List<String> collections = XLuaCall.getCollections(getContext());
+        /*if(!collections.isEmpty()) {
             if(collections.contains("Privacy")) {
                 boolean privacyWarning = PrefUtil.getBoolean(getContext(), "privacyWarn", false, true);
                 if(!privacyWarning) {
@@ -115,7 +116,7 @@ public class FragmentMain extends Fragment implements ILoader {
                             .show(Objects.requireNonNull(getFragmentManager()), getString(R.string.title_collection_privacy));
                 }
             }
-        }
+        }*/
 
         pbApplication = main.findViewById(R.id.pbApplication);
         btnRestrict = main.findViewById(R.id.btnRestrict);
@@ -169,9 +170,9 @@ public class FragmentMain extends Fragment implements ILoader {
                 XUiGroup selected = (XUiGroup) spGroup.getSelectedItem();
                 String group = (selected == null ? null : selected.name);
                 if (group == null ? spGroup.getTag() != null : !group.equals(spGroup.getTag())) {
-                    Log.i(TAG, "Select group=" + group);
                     spGroup.setTag(group);
                     rvAdapter.setGroup(group);
+                    if(DebugUtil.isDebug()) Log.i(TAG, "Select group=" + group);
                 }
 
                 tvRestrict.setVisibility(group == null ? View.VISIBLE : View.GONE);
@@ -292,16 +293,15 @@ public class FragmentMain extends Fragment implements ILoader {
         @Nullable
         @Override
         public DataHolder loadInBackground() {
-            Log.i(TAG, "Data loader started");
+            if(DebugUtil.isDebug())
+                Log.d(TAG, "Data Loader Started!");
 
             DataHolder data = new DataHolder();
             try {
-                Log.i(TAG, "Getting Theme");
-                data.theme = XLuaCall.getTheme(getContext());
-                Log.i(TAG, "Theme=" + data.theme);
+                data.theme = GetSettingExCommand.getTheme(getContext(), Process.myUid());
 
                 // Define hooks
-                if (BuildConfig.DEBUG) {
+                /*if (BuildConfig.DEBUG) {
                     String apk = getContext().getApplicationInfo().publicSourceDir;
                     List<XLuaHook> hooks = XLuaHook.readHooks(getContext(), apk);
                     //Have one but that just takes in HookPacket / HookDatabase Entry
@@ -313,24 +313,34 @@ public class FragmentMain extends Fragment implements ILoader {
 
                         PutHookCommand.invoke(getContext(), (LuaHookPacket)entry);
                     }
-                }
+                }*/
 
                 //Get Show
-                String show = XLuaCall.getSettingValue(getContext(), "show");
+                String show = GetSettingExCommand.getShow(getContext(), Process.myUid());
+                List<String> collections = GetSettingExCommand.getCollections(getContext(), Process.myUid());
+                if(DebugUtil.isDebug())
+                    Log.d(TAG, "Data Loader Got Show, Show=" + show + " Collections=" + Str.joinList(collections));
 
-                if (show != null && show.equals("user")) data.show = AdapterApp.enumShow.user;
-                else if (show != null && show.equals("all")) data.show = AdapterApp.enumShow.all;
-                else data.show = AdapterApp.enumShow.icon;
+                if (show != null && show.equals("user"))
+                    data.show = AdapterApp.enumShow.user;
+                else if (show != null && show.equals("all"))
+                    data.show = AdapterApp.enumShow.all;
+                else
+                    data.show = AdapterApp.enumShow.icon;
 
                 // Get collection
-                data.collection.addAll(XLuaCall.getCollections(getContext()));
+                data.collection.addAll(collections);
 
-                Log.i(TAG, "Getting groups");
+                if(DebugUtil.isDebug())
+                    Log.d(TAG, "Getting Groups...");
+
                 // Load groups
                 Resources res = getContext().getResources();
-                List<String> groupsCopy = XLuaCall.getGroups(getContext());
+                List<String> groupsCopy = GetGroupsCommand.get(getContext());
+                if(DebugUtil.isDebug())
+                    Log.d(TAG, "Got Groups, Size=" + ListUtil.size(groupsCopy));
+
                 if(CollectionUtil.isValid(groupsCopy)) {
-                    Log.i(TAG, " groups=" + groupsCopy.size());
                     for(String name : groupsCopy) {
                         String g = name.toLowerCase().replaceAll("[^a-z]", "_");
                         int id = res.getIdentifier("group_" + g, "string", getContext().getPackageName());
@@ -340,8 +350,6 @@ public class FragmentMain extends Fragment implements ILoader {
                         group.title = (id > 0 ? res.getString(id) : name);
                         data.groups.add(group);
                     }
-                }else {
-                    Log.i(TAG, "Groups list is null...");
                 }
 
                 final Collator collator = Collator.getInstance(Locale.getDefault());
@@ -358,13 +366,17 @@ public class FragmentMain extends Fragment implements ILoader {
                 all.title = getContext().getString(R.string.title_all);
                 data.groups.add(0, all);
 
-                // Load hooks
-                Collection<XLuaHook> hooksCopy = XLuaQuery.getHooks(getContext(), true);
-                Log.i(TAG, "Hooks loaded=" + hooksCopy.size());
+                List<XLuaHook> hooksCopy = GetHooksCommand.getHooks(getContext(), true, false);
+                if(DebugUtil.isDebug())
+                    Log.d(TAG, "Hooks loaded=" + ListUtil.size(hooksCopy));
+
                 data.hooks.addAll(hooksCopy);
+
                 // Load apps
-                Collection<XLuaApp> appsCopy = XLuaQuery.getApps(getContext(), true);
-                Log.i(TAG, "Apps loaded=" + appsCopy.size());
+                List<AppXpPacket> appsCopy = GetAppsCommand.get(getContext(), true);
+                if(DebugUtil.isDebug())
+                    Log.d(TAG, "Apps Loaded=" + ListUtil.size(appsCopy));
+
                 data.apps.addAll(appsCopy);
             } catch (Throwable ex) {
                 data.collection = null;
@@ -383,10 +395,14 @@ public class FragmentMain extends Fragment implements ILoader {
     private final BroadcastReceiver packageChangedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i(TAG, "Received " + intent);
+            if(DebugUtil.isDebug())
+                Log.d(TAG, "Received Package!");
+
             String packageName = Objects.requireNonNull(intent.getData()).getSchemeSpecificPart();
             int uid = intent.getIntExtra(Intent.EXTRA_UID, -1);
-            Log.i(TAG, "pkg=" + packageName + ":" + uid);
+            if(DebugUtil.isDebug())
+                Log.d(TAG, "pkg=" + packageName + ":" + uid);
+
             loadData();
         }
     };
@@ -397,7 +413,7 @@ public class FragmentMain extends Fragment implements ILoader {
         List<String> collection = new ArrayList<>();
         List<XUiGroup> groups = new ArrayList<>();
         List<XLuaHook> hooks = new ArrayList<>();
-        List<XLuaApp> apps = new ArrayList<>();
+        List<AppXpPacket> apps = new ArrayList<>();
         Throwable exception = null;
     }
 }

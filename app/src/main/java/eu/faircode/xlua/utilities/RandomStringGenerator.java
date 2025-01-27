@@ -1,7 +1,8 @@
 package eu.faircode.xlua.utilities;
 
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
+
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
 public class RandomStringGenerator {
     // Define character sets for numbers and letters
@@ -9,6 +10,10 @@ public class RandomStringGenerator {
     public static final String UPPER_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public static final String LOWER_LETTERS = "abcdefghijklmnopqrstuvwxyz";
     public static final String HEX_CHARS = "0123456789ABCDEF";
+
+    public static String randomStringIfRandomElse(String inputString) {
+        return "random".equalsIgnoreCase(inputString) ? generateRandomAlphanumericString(RandomGenerator.nextInt(6, 25)) : inputString;
+    }
 
     public static String generateRandomHexString(int length) {
         StringBuilder result = new StringBuilder(length);
@@ -49,7 +54,7 @@ public class RandomStringGenerator {
 
         for (int i = 0; i < length; i++) {
             //int index = random.nextInt(characters.length());
-            int index = ThreadLocalRandom.current().nextInt(characters.length());
+            int index = RandomGenerator.nextInt(characters.length());
             sb.append(characters.charAt(index));
         }
 

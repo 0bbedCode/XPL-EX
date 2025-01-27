@@ -27,17 +27,14 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import eu.faircode.xlua.api.XResult;
 import eu.faircode.xlua.api.configs.MockConfig;
-import eu.faircode.xlua.api.properties.MockPropGroupHolder;
 import eu.faircode.xlua.api.settings.LuaSettingExtended;
 import eu.faircode.xlua.api.settings.LuaSettingPacket;
 import eu.faircode.xlua.api.xlua.XLuaCall;
 import eu.faircode.xlua.logger.XLog;
-import eu.faircode.xlua.random.IRandomizer;
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.GlobalRandoms;
 import eu.faircode.xlua.random.randomizers.NARandomizer;
 import eu.faircode.xlua.ui.ViewFloatingAction;
@@ -48,7 +45,7 @@ import eu.faircode.xlua.utilities.UiUtil;
 import eu.faircode.xlua.utilities.ViewUtil;
 
 public class AdapterConfig extends RecyclerView.Adapter<AdapterConfig.ViewHolder> {
-    private final List<IRandomizer> randomizers = GlobalRandoms.getRandomizers();
+    private final List<IRandomizerOld> randomizers = GlobalRandoms.getRandomizers();
     private final List<LuaSettingExtended> settings = new ArrayList<>();
     private final HashMap<String, Boolean> expanded = new HashMap<>();
 
@@ -71,7 +68,7 @@ public class AdapterConfig extends RecyclerView.Adapter<AdapterConfig.ViewHolder
         final CheckBox cbEnable;
         final ImageView ivBtRandom, ivBtReset, ivExpanderSettings;
         final Spinner spRandomSelector;
-        final ArrayAdapter<IRandomizer> spRandomizer;
+        final ArrayAdapter<IRandomizerOld> spRandomizer;
 
         ViewHolder(View itemView) {
             super(itemView);

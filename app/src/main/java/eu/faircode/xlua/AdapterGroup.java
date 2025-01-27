@@ -35,7 +35,6 @@ import android.widget.TextView;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -49,24 +48,22 @@ import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.recyclerview.widget.RecyclerView;
 
 import eu.faircode.xlua.api.hook.LuaHooksGroup;
-import eu.faircode.xlua.api.hook.assignment.LuaAssignment;
 import eu.faircode.xlua.api.hook.XLuaHook;
 
-import eu.faircode.xlua.api.app.XLuaApp;
 import eu.faircode.xlua.api.xstandard.interfaces.IDividerKind;
 import eu.faircode.xlua.ui.GroupHelper;
 import eu.faircode.xlua.ui.HookWarnings;
 import eu.faircode.xlua.ui.dialogs.HookWarningDialog;
-import eu.faircode.xlua.ui.dialogs.SettingAddDialogEx;
 import eu.faircode.xlua.ui.interfaces.ILoader;
 import eu.faircode.xlua.utilities.SettingUtil;
+import eu.faircode.xlua.x.xlua.hook.AssignmentPacket;
+import eu.faircode.xlua.x.xlua.hook.AppXpPacket;
 
 
 public class AdapterGroup extends RecyclerView.Adapter<AdapterGroup.ViewHolder> implements IDividerKind {
-    private XLuaApp app;
+    private AppXpPacket app;
     private List<LuaHooksGroup> groups = new ArrayList<>();
     private ILoader fragmentLoader;
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Override
     public String getDividerID(int position) { return groups.get(position).groupId; }
@@ -124,13 +121,13 @@ public class AdapterGroup extends RecyclerView.Adapter<AdapterGroup.ViewHolder> 
             switch (view.getId()) {
                 case R.id.ivException:
                     StringBuilder sb = new StringBuilder();
-                    for (LuaAssignment assignment : app.getAssignments(group.name))
-                        if (assignment.getHook().getGroup().equals(group.name))
-                            if (assignment.getException() != null) {
+                    for (AssignmentPacket assignment : app.getAssignments(group.name))
+                        if (assignment.hookObj.getGroup().equals(group.name))
+                            if (assignment.exception != null) {
                                 sb.append("<b>");
-                                sb.append(Html.escapeHtml(assignment.getHook().getId()));
+                                sb.append(Html.escapeHtml(assignment.hookObj.getId()));
                                 sb.append("</b><br><br>");
-                                for (String line : assignment.getException().split("\n")) {
+                                for (String line : assignment.exception.split("\n")) {
                                     sb.append(Html.escapeHtml(line));
                                     sb.append("<br>");
                                 }
@@ -171,7 +168,7 @@ public class AdapterGroup extends RecyclerView.Adapter<AdapterGroup.ViewHolder> 
                                     .show(fragmentLoader.getManager(), compoundButton.getContext().getString(R.string.title_hook_warning));
                     }
 
-                    app.notifyAssign(compoundButton.getContext(), group.name, checked);
+                    app.setAssigned(compoundButton.getContext(), group.name, checked);
                     break;
             }
         }
@@ -183,16 +180,15 @@ public class AdapterGroup extends RecyclerView.Adapter<AdapterGroup.ViewHolder> 
     AdapterGroup(ILoader loader) { this(); this.fragmentLoader = loader; }
 
     @SuppressLint("NotifyDataSetChanged")
-    void set(XLuaApp app, List<XLuaHook> hooks, Context context) {
+    void set(AppXpPacket app, List<XLuaHook> hooks, Context context) {
         this.app = app;
 
         Map<String, LuaHooksGroup> map = new HashMap<>();
         for (XLuaHook hook : hooks) {
-            LuaHooksGroup group;
-            if (map.containsKey(hook.getGroup()))
-                group = map.get(hook.getGroup());
-            else {
+            LuaHooksGroup group = map.get(hook.getGroup());
+            if(group == null) {
                 group = new LuaHooksGroup();
+                map.put(hook.getGroup(), group);
 
                 Resources resources = context.getResources();
                 String name = hook.getGroup().toLowerCase().replaceAll("[^a-z]", "_");
@@ -201,23 +197,27 @@ public class AdapterGroup extends RecyclerView.Adapter<AdapterGroup.ViewHolder> 
                 group.title = (group.id > 0 ? resources.getString(group.id) : hook.getGroup());
                 group.groupId = GroupHelper.getGroupId(group.name);
                 group.hasWarning = HookWarnings.hasWarning(context, group.name);
-                map.put(hook.getGroup(), group);
             }
+
             group.hooks.add(hook);
         }
 
         for (String groupId : map.keySet()) {
-            for (LuaAssignment assignment : app.getAssignments())
-                if (assignment.getHook().getGroup().equals(groupId)) {
+            for (AssignmentPacket assignment : app.assignments)
+                if (assignment.hookObj.getGroup().equals(groupId)) {
                     LuaHooksGroup group = map.get(groupId);
-                    if (assignment.getException() != null)
+                    if(group == null)
+                        continue;
+
+                    if (assignment.exception != null)
                         group.exception = true;
-                    if (assignment.getInstalled() >= 0)
+                    if (assignment.installed >= 0)
                         group.installed++;
-                    if (assignment.getHook().isOptional())
+                    if (assignment.hookObj.isOptional())
                         group.optional++;
-                    if (assignment.getRestricted())
-                        group.used = Math.max(group.used, assignment.getUsed());
+                    if (assignment.restricted)
+                        group.used = Math.max(group.used, assignment.used);
+
                     group.assigned++;
                 }
         }
@@ -226,25 +226,16 @@ public class AdapterGroup extends RecyclerView.Adapter<AdapterGroup.ViewHolder> 
 
         final Collator collator = Collator.getInstance(Locale.getDefault());
         collator.setStrength(Collator.SECONDARY); // Case insensitive, process accents etc
-        Collections.sort(this.groups, new Comparator<LuaHooksGroup>() {
-            @Override
-            public int compare(LuaHooksGroup group1, LuaHooksGroup group2) {
-                return collator.compare(group1.groupId, group2.groupId);
-            }
-        });
+        Collections.sort(this.groups, (group1, group2) -> collator.compare(group1.groupId, group2.groupId));
 
         notifyDataSetChanged();//Invoke to Update the UI
     }
 
     @Override
-    public long getItemId(int position) {
-        return groups.get(position).id;
-    }
+    public long getItemId(int position) { return groups.get(position).id; }
 
     @Override
-    public int getItemCount() {
-        return groups.size();
-    }
+    public int getItemCount() { return groups.size(); }
 
     @NonNull
     @Override
@@ -255,7 +246,6 @@ public class AdapterGroup extends RecyclerView.Adapter<AdapterGroup.ViewHolder> 
         holder.unWire();
         LuaHooksGroup group = groups.get(position);
 
-        // Get localized group name
         Context context = holder.itemView.getContext();
         Resources resources = holder.itemView.getContext().getResources();
 
@@ -265,8 +255,10 @@ public class AdapterGroup extends RecyclerView.Adapter<AdapterGroup.ViewHolder> 
         holder.tvUsed.setVisibility(group.lastUsed() < 0 ? View.GONE : View.VISIBLE);
         holder.tvUsed.setText(DateUtils.formatDateTime(context, group.lastUsed(),
                 DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_ALL));
-        //holder.tvGroup.setText(group.title);
-        holder.tvGroup.setText(SettingUtil.cleanSettingName(group.title));
+
+        String cleanName = SettingUtil.cleanSettingName(group.title);
+
+        holder.tvGroup.setText(cleanName);
         holder.cbAssigned.setChecked(group.hasAssigned());
         holder.cbAssigned.setButtonTintList(ColorStateList.valueOf(resources.getColor(
                 group.allAssigned() ? R.color.colorAccent : android.R.color.darker_gray, null)));

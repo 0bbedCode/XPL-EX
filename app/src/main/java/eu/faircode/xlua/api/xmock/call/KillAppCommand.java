@@ -8,7 +8,7 @@ import eu.faircode.xlua.api.XProxyContent;
 import eu.faircode.xlua.api.XResult;
 import eu.faircode.xlua.api.settings.LuaSettingPacket;
 import eu.faircode.xlua.api.xstandard.CallCommandHandler;
-import eu.faircode.xlua.api.xstandard.command.CallPacket;
+import eu.faircode.xlua.api.xstandard.command.CallPacket_old;
 import eu.faircode.xlua.api.xlua.provider.XLuaAppProvider;
 
 public class KillAppCommand extends CallCommandHandler {
@@ -19,7 +19,7 @@ public class KillAppCommand extends CallCommandHandler {
     }
 
     @Override
-    public Bundle handle(CallPacket commandData) throws Throwable {
+    public Bundle handle(CallPacket_old commandData) throws Throwable {
         LuaSettingPacket packet = commandData.readExtrasAs(LuaSettingPacket.class);
         XResult res = XResult.create().setMethodName("killApp").setExtra(packet.toString());
         return res.setResult(XLuaAppProvider.forceStop(

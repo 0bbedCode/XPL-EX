@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,10 +16,7 @@ import androidx.appcompat.app.AppCompatDialogFragment;
 import java.util.Objects;
 
 import eu.faircode.xlua.R;
-import eu.faircode.xlua.Str;
-import eu.faircode.xlua.api.app.XLuaApp;
 import eu.faircode.xlua.api.hook.LuaHooksGroup;
-import eu.faircode.xlua.api.settings.LuaSettingExtended;
 import eu.faircode.xlua.ui.HookWarnings;
 
 public class HookWarningDialog extends AppCompatDialogFragment {

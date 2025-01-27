@@ -7,12 +7,22 @@ import eu.faircode.xlua.interceptors.shell.ShellInterception;
 import eu.faircode.xlua.utilities.MemoryUtil;
 
 public class MemInfoIntercept extends CommandInterceptor implements ICommandIntercept {
-    private static final String MEMORY_TOTAL_SETTING = "memory.total";
-    private static final String MEMORY_AVAILABLE_SETTING = "memory.available";
+    private static final String MEMORY_TOTAL_SETTING = "hardware.memory.total";
+    private static final String MEMORY_AVAILABLE_SETTING = "hardware.memory.available";
     private static final String MEMORY_INTERCEPT_SETTING = "intercept.shell.meminfo.bool";
 
     @SuppressWarnings("unused")
-    public MemInfoIntercept() { this.command = "meminfo"; }
+    public MemInfoIntercept() { this.command = "meminfo"; this.setting = MEMORY_INTERCEPT_SETTING; }
+
+
+    @Override
+    public boolean isCommand(ShellInterception results) {
+        for(String com : results.commandLine)
+            if(com.toLowerCase().contains("meminfo"))
+                return true;
+
+        return false;
+    }
 
     @Override
     public boolean interceptCommand(ShellInterception result) {

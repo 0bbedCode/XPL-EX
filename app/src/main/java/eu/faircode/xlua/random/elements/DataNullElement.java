@@ -6,8 +6,8 @@ import java.util.List;
 
 public class DataNullElement implements ISpinnerElement  {
     public static final ISpinnerElement EMPTY_ELEMENT = new DataNullElement();
-    private String displayName = "N/A";
-    private String value = "N/A";
+    private String displayName = "Select Option";
+    private String value = "Select Option";
 
     public DataNullElement() { }
 

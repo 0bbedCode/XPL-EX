@@ -3,12 +3,13 @@ package eu.faircode.xlua.random.randomizers;
 import androidx.annotation.NonNull;
 
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.random.IRandomizer;
+
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
-public class RandomBuildType implements IRandomizer {
+public class RandomBuildType implements IRandomizerOld {
     private static final String[] DEFAULT_BUILD_TYPES = new String[] {
             "user",
             "userdebug",
@@ -32,7 +33,7 @@ public class RandomBuildType implements IRandomizer {
     }
 
     @Override
-    public String generateString() { return DEFAULT_BUILD_TYPES[ThreadLocalRandom.current().nextInt(0, DEFAULT_BUILD_TYPES.length)]; }
+    public String generateString() { return DEFAULT_BUILD_TYPES[RandomGenerator.nextInt(0, DEFAULT_BUILD_TYPES.length)]; }
 
     @Override
     public int generateInteger() { return 0; }

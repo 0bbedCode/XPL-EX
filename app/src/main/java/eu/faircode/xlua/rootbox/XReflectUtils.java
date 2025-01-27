@@ -5,6 +5,8 @@ import android.util.Log;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import eu.faircode.xlua.BuildConfig;
+
 public class XReflectUtils {
     private static final String TAG = "XLua.rootbox.XReflectUtils";
 
@@ -111,7 +113,8 @@ public class XReflectUtils {
                 Method[] methods = clzz.getMethods();
                 for(Method m : methods) {
                     if(m.getName().equals(methodName)) {
-                        Log.i(TAG, "Found Method via Reflect: " + methodName + " => " + classPath);
+                        if(BuildConfig.DEBUG)
+                            Log.i(TAG, "Found Method via Reflect: " + methodName + " => " + classPath);
                         return m;
                     }
                 }
@@ -122,7 +125,8 @@ public class XReflectUtils {
             Method[] decMethods = clzz.getDeclaredMethods();
             for(Method m : decMethods) {
                 if(m.getName().equals(methodName)) {
-                    Log.i(TAG, "Found Method via Reflect2: " + methodName + " => " + classPath);
+                    if(BuildConfig.DEBUG)
+                        Log.i(TAG, "Found Method via Reflect2: " + methodName + " => " + classPath);
                     return m;
                 }
             }

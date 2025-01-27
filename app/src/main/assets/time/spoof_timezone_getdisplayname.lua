@@ -4,7 +4,7 @@ function after(hook, param)
 	    return false
 	end
 
-	local fake = param:getSettingReMap("zone.timezone.display.name", "zone.displayname", "Greenwich Mean Time")
+	local fake = param:getSettingReMap("region.timezone.display.label", "zone.displayname", "Greenwich Mean Time")
 	if fake == nil then
 	    return false
 	end

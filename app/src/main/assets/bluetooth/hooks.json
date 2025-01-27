@@ -306,9 +306,9 @@
     "notify":false,
     "luaScript": "@id_bluetoothadapter_getname",
     "settings": ["bluetooth.name"]
-  },
+  }
 
-  {
+  /*{
     "builtin": true,
     "collection": "PrivacyEx",
     "group": "Get.Bluetooth",
@@ -327,5 +327,5 @@
     "usage":true,
     "notify":false,
     "luaScript": "@id_settingssecure_bluetooth"
-  }
+  }*/
 ]

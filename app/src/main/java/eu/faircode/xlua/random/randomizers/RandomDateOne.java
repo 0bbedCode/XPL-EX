@@ -2,14 +2,13 @@ package eu.faircode.xlua.random.randomizers;
 
 import androidx.annotation.NonNull;
 
-import java.util.Arrays;
 import java.util.List;
 
-import eu.faircode.xlua.random.IRandomizer;
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
 import eu.faircode.xlua.utilities.RandomUtil;
 
-public class RandomDateOne implements IRandomizer {
+public class RandomDateOne implements IRandomizerOld {
     public static final String FORMAT = "%s.%s.%s";
 
     @Override

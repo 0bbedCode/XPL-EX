@@ -3,13 +3,14 @@ package eu.faircode.xlua.random.randomizers;
 import androidx.annotation.NonNull;
 
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.random.IRandomizer;
+
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
-import eu.faircode.xlua.utilities.RandomStringGenerator;
 
-public class RandomManufacturer implements IRandomizer {
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
+
+public class RandomManufacturer implements IRandomizerOld {
     private static final String[] DEFAULT_MANUFACTURERS = new String[] {
             "Apple",
             "Samsung",
@@ -46,7 +47,7 @@ public class RandomManufacturer implements IRandomizer {
     }
 
     @Override
-    public String generateString() { return DEFAULT_MANUFACTURERS[ThreadLocalRandom.current().nextInt(0, DEFAULT_MANUFACTURERS.length)]; }
+    public String generateString() { return DEFAULT_MANUFACTURERS[RandomGenerator.nextInt(0, DEFAULT_MANUFACTURERS.length)]; }
 
     @Override
     public int generateInteger() { return 0; }

@@ -22,6 +22,7 @@ public class LuaHookWrapper {
     public final LuaValue func;
     public final LuaValue[] args;
     public final boolean isMemberOrMethod;
+
     public LuaHookWrapper(
             Context context,
             XLuaHook hook,

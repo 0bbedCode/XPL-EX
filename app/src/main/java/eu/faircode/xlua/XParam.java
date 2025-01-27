@@ -22,16 +22,11 @@ package eu.faircode.xlua;
 import android.app.ActivityManager;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
-import android.system.StructStat;
-import android.system.StructTimespec;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.InputDevice;
 
@@ -40,31 +35,43 @@ import java.io.FileDescriptor;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.WeakHashMap;
-import java.util.concurrent.ThreadLocalRandom;
 
 import de.robv.android.xposed.XC_MethodHook;
+import eu.faircode.xlua.api.hook.XLuaHookBase;
+import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.data.GroupedMap;
 import eu.faircode.xlua.api.properties.MockPropSetting;
 import eu.faircode.xlua.api.xmock.XMockCall;
 import eu.faircode.xlua.interceptors.shell.ShellInterception;
 import eu.faircode.xlua.interceptors.UserContextMaps;
 import eu.faircode.xlua.interceptors.ShellIntercept;
-import eu.faircode.xlua.interceptors.shell.util.RandomDateHelper;
 import eu.faircode.xlua.logger.XLog;
+import eu.faircode.xlua.x.data.string.StrBuilder;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
+import eu.faircode.xlua.x.hook.interceptors.devices.InputDeviceInterceptor;
+import eu.faircode.xlua.x.hook.interceptors.file.FileInterceptor;
+import eu.faircode.xlua.x.hook.interceptors.file.StatInterceptor;
+import eu.faircode.xlua.x.hook.interceptors.ipc.BinderInterceptor;
+import eu.faircode.xlua.x.hook.interceptors.ipc.holders.IntentQueryData;
+import eu.faircode.xlua.x.hook.interceptors.ipc.holders.SettingsIntentCallData;
+import eu.faircode.xlua.x.hook.interceptors.network.DhcpInfoInterceptor;
+import eu.faircode.xlua.x.hook.interceptors.network.LinkPropertiesInterceptor;
+import eu.faircode.xlua.x.hook.interceptors.network.NetworkInterfaceInterceptor;
+import eu.faircode.xlua.x.hook.interceptors.network.WifiInfoInterceptor;
 import eu.faircode.xlua.random.randomizers.RandomMediaCodec;
 import eu.faircode.xlua.random.randomizers.RandomMediaCodecInfo;
 import eu.faircode.xlua.rootbox.XReflectUtils;
-import eu.faircode.xlua.tools.BytesReplacer;
 import eu.faircode.xlua.utilities.Evidence;
 import eu.faircode.xlua.utilities.ListFilterUtil;
 import eu.faircode.xlua.utilities.CollectionUtil;
-import eu.faircode.xlua.utilities.CursorUtil;
 import eu.faircode.xlua.utilities.MemoryUtilEx;
 import eu.faircode.xlua.utilities.MockFileUtil;
 import eu.faircode.xlua.display.MotionRangeUtil;
@@ -76,7 +83,9 @@ import eu.faircode.xlua.utilities.RandomStringGenerator;
 import eu.faircode.xlua.utilities.ReflectUtilEx;
 import eu.faircode.xlua.utilities.StringUtil;
 import eu.faircode.xlua.utilities.MockUtils;
-import eu.faircode.xlua.utilities.reflect.DynamicField;
+import eu.faircode.xlua.x.hook.interceptors.pkg.PackageInfoInterceptor;
+import eu.faircode.xlua.x.process.ProcessUtils;
+//import eu.faircode.xlua.x.hook.handlers.settings.CallData;
 
 public class XParam {
     private static final List<String> ALLOWED_PACKAGES = Arrays.asList("google", "system", "settings", "android", "webview");
@@ -97,6 +106,19 @@ public class XParam {
     private static final Map<Object, Map<String, Object>> nv = new WeakHashMap<>();
     private UserContextMaps getUserMaps() { return new UserContextMaps(this.settings, this.propMaps, this.propSettings); }
 
+    private String oldResult = "";
+    private String newResult = "";
+
+    public void setOldResult(String oldResult) { this.oldResult = oldResult; }
+
+    @SuppressWarnings("unused")
+    public String getOldResult() { return this.oldResult; }
+
+    public void setNewResult(String newResult) { this.newResult = newResult; }
+
+    @SuppressWarnings("unused")
+    public String getNewResult() { return this.newResult; }
+
     // Field param
     public XParam(
             Context context,
@@ -107,6 +129,7 @@ public class XParam {
             String key,
             boolean useDefault,
             String packageName) {
+
         this.context = context;
         this.field = field;
         this.param = null;
@@ -131,7 +154,6 @@ public class XParam {
             boolean useDefault,
             String packageName) {
 
-
         this.context = context;
         this.field = null;
         this.param = param;
@@ -150,9 +172,19 @@ public class XParam {
         this.packageName = packageName;
     }
 
-    //
-    //Start of FILTER Functions
-    //
+    @SuppressWarnings("unused")
+    public GroupedMap getGroupedMap(String category) {
+        //category, applicationContext
+        Context ctx = getApplicationContext();
+        Object v = getValue(category, ctx);
+        if(!(v instanceof GroupedMap)) {
+            GroupedMap map = new GroupedMap();
+            putValue(category, map, ctx);
+            return map;
+        }
+
+        return (GroupedMap) v;
+    }
 
     @SuppressWarnings("unused")
     public boolean isDriverFiles(String pathOrFile) { return FileUtil.isDeviceDriver(pathOrFile); }
@@ -205,317 +237,36 @@ public class XParam {
 
         return MockUtils.NOT_BLACKLISTED;
     }
-    //
-    //
-    //CLEAN LOGGING BEFORE FINAL RELEASE
-    //
-    //
 
     @SuppressWarnings("unused")
-    public String filterBinderProxyAfter(String filterKind) {
-        try {
-            Object ths = getThis();
-            Method mth = XReflectUtils.getMethodFor("android.os.BinderProxy", "getInterfaceDescriptor");
-            if (ths == null || mth == null) throw new RuntimeException("No such Member [getInterfaceDescriptor] for Binder proxy and or the current Instance is NULL!");
-
-            String interfaceName = (String) mth.invoke(ths);
-            if (!Str.isValidNotWhitespaces(interfaceName)) throw new RuntimeException("Invalid Interface Name for the Binder Proxy! Method has failed to invoke...");
-
-            int code = (int) getArgument(0);
-            Parcel data = (Parcel) getArgument(1);
-            Parcel reply = (Parcel) getArgument(2);
-
-            if("adid".equalsIgnoreCase(filterKind)) {
-                if ("com.google.android.gms.ads.identifier.internal.IAdvertisingIdService".equalsIgnoreCase(interfaceName)) {
-                    Log.i(TAG, "Filtering [" + interfaceName + "] Result...");
-                    try {
-                        //this is way to extra tbh we can MAJOR shorten this even combine it into one function
-                        //Kinda of pissing me off how fucking dumb this looks
-                        boolean wasSuccessful = (boolean) getResult();
-                        if (!wasSuccessful) {
-                            Log.e(TAG, "Result of Binder Transaction was not Successful (not a XPL-EX issue) returning [" + interfaceName + "]");
-                            return null;
-                        }
-
-                        byte[] bytes = reply.marshall();
-                        reply.setDataPosition(0);
-                        if (bytes == null) {
-                            Log.e(TAG, "Raw Data from the Parcel is Null [" + interfaceName + "]");
-                            return null;
-                        }
-
-                        Log.i(TAG, "Raw Data From the Reply Parcel, Size: " + bytes.length + " Data: " + Str.bytesToHex(bytes));
-                        if (bytes.length != 84) {
-                            Log.e(TAG, "Raw Data Length of AD ID Data is not Equal to (84), it was " + bytes.length + " Skipping Replacement...");
-                            return null;
-                        }
-
-                        reply.readException();  //Read Exception as it should always Write Exception on the Reply Parcel
-                        String realAdId = reply.readString();
-                        String fakeAdId = getSetting("unique.google.advertising.id");
-                        if (TextUtils.isEmpty(fakeAdId) || realAdId == null) {
-                            Log.e(TAG, "Real AD ID Result or the Fake one From Settings [unique.google.advertising.id] is Null or Empty...");
-                            return null;
-                        }
-
-                        if (fakeAdId.length() < 5 || realAdId.length() < 5) {
-                            Log.e(TAG, "The Size of the AD ID either Real or Fake is not correct: Real Size=" + realAdId.length() + " Fake Size=" + fakeAdId.length());
-                            return null;
-                        }
-
-                        if(BuildConfig.DEBUG)
-                            Log.i(TAG, "Real AD ID:" + realAdId + "\n" + Str.toHex(realAdId) + "\nReplacing With: " + fakeAdId + "\n" + Str.toHex(fakeAdId));
-
-
-                        byte[] realAdIdBytes = realAdId.getBytes(StandardCharsets.UTF_16);
-                        realAdIdBytes = Arrays.copyOfRange(realAdIdBytes, 2, realAdIdBytes.length);
-
-                        //Why are we skipping two bytes ?
-
-                        byte[] fakeAdIdBytes = fakeAdId.getBytes(StandardCharsets.UTF_16);
-                        fakeAdIdBytes = Arrays.copyOfRange(fakeAdIdBytes, 2, fakeAdIdBytes.length);
-
-                        if(BuildConfig.DEBUG)
-                            Log.i(TAG, "Replacing AD ID Bytes Now:\nFrom=" + Str.bytesToHex(realAdIdBytes) + "\nTo=" + Str.bytesToHex(fakeAdIdBytes));
-
-                        //Ensure its the same size
-                        BytesReplacer bytesReplacer = new BytesReplacer(realAdIdBytes, fakeAdIdBytes);
-                        byte[] newBytes = bytesReplacer.replace(bytes);
-
-                        if(BuildConfig.DEBUG)
-                            Log.i(TAG, "Replaced Bytes new Bytes: " + Str.bytesToHex(newBytes) + "\nOld Bytes:" + Str.bytesToHex(bytes));
-
-                        reply.unmarshall(newBytes, 0, newBytes.length);
-                        if(BuildConfig.DEBUG)
-                            Log.i(TAG, "Finished Replacing AD ID Bytes...");
-
-                        return realAdId;
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error Filtering Interface Transact Result: " + interfaceName + " Error: " + e);
-                        return null;
-                    } finally {
-                        reply.setDataPosition(0);
-                    }
-                }
-            } else if("samad".equalsIgnoreCase(filterKind) || "levad".equalsIgnoreCase(filterKind)) {
-                if("com.samsung.android.deviceidservice.IDeviceIdService".equalsIgnoreCase(interfaceName) || "com.zui.deviceidservice.IDeviceidInterface".equalsIgnoreCase(interfaceName)) {
-                    if(code == 1) {
-                        //Fuck the check
-                        try {
-                            reply.setDataPosition(0);
-                            reply.readException();
-                            String realId = reply.readString();
-                            String fakeId = getSetting("unique.open.anon.advertising.id");
-
-                            if(TextUtils.isEmpty(realId) || TextUtils.isEmpty(fakeId)) {
-                                XLog.e(TAG, "Real ID or Fake ID for Samsung/Lenovo Spoof is empty or null..");
-                                return null;
-                            }
-
-                            reply.setDataPosition(0);
-                            byte[] bytes = reply.marshall();
-
-                            byte[] realAdIdBytes = realId.getBytes(StandardCharsets.UTF_16);
-                            realAdIdBytes = Arrays.copyOfRange(realAdIdBytes, 2, realAdIdBytes.length);
-
-                            byte[] fakeAdIdBytes = fakeId.getBytes(StandardCharsets.UTF_16);
-                            fakeAdIdBytes = Arrays.copyOfRange(fakeAdIdBytes, 2, fakeAdIdBytes.length);
-
-                            BytesReplacer bytesReplacer = new BytesReplacer(realAdIdBytes, fakeAdIdBytes);
-                            byte[] newBytes = bytesReplacer.replace(bytes);
-                            reply.unmarshall(newBytes, 0, newBytes.length);
-
-                            return realId;
-                        } catch (Exception e) {
-                            XLog.e(TAG, "Failed Intercepting Samsung/Lenovo ID Service: " + e);
-                        } finally {
-                            reply.setDataPosition(0);
-                        }
-                    }
-                }
-            }
-            else if("asusad".equalsIgnoreCase(filterKind)) {
-                if("com.asus.msa.SupplementaryDID.IDidAidlInterface".equalsIgnoreCase(interfaceName)) {
-                    if(code == 3) {
-                        try {
-                            reply.setDataPosition(0);
-                            reply.readException();
-                            String realId = reply.readString();
-                            String fakeId = getSetting("unique.open.anon.advertising.id");
-
-                            if(TextUtils.isEmpty(realId) || TextUtils.isEmpty(fakeId)) {
-                                XLog.e(TAG, "Real ID or Fake ID for Asus Spoof is empty or null..");
-                                return null;
-                            }
-
-                            reply.setDataPosition(0);
-                            byte[] bytes = reply.marshall();
-
-                            byte[] realAdIdBytes = realId.getBytes(StandardCharsets.UTF_16);
-                            realAdIdBytes = Arrays.copyOfRange(realAdIdBytes, 2, realAdIdBytes.length);
-
-                            byte[] fakeAdIdBytes = fakeId.getBytes(StandardCharsets.UTF_16);
-                            fakeAdIdBytes = Arrays.copyOfRange(fakeAdIdBytes, 2, fakeAdIdBytes.length);
-
-                            BytesReplacer bytesReplacer = new BytesReplacer(realAdIdBytes, fakeAdIdBytes);
-                            byte[] newBytes = bytesReplacer.replace(bytes);
-                            reply.unmarshall(newBytes, 0, newBytes.length);
-
-                            return realId;
-                        } catch (Exception e) {
-                            XLog.e(TAG, "Failed Intercepting Asus ID Service: " + e);
-                        } finally {
-                            reply.setDataPosition(0);
-                        }
-                    }
-                }
-            }
-        }catch (Throwable e) {
-            Log.e(TAG, "Failed to get Result / Transaction! after Error:"  + e);
-        } return null;
-    }
+    public boolean interceptRemoveExternalDeviceIds() { return InputDeviceInterceptor.removeExternalDevices(this); }
 
     @SuppressWarnings("unused")
-    public void spoofLastModified() {
-        try {
-            //Look I am getting tired of this fucking xplex old base xD
-            setResult(RandomDateHelper.generateLastModified());
-        }catch (Throwable ignored) { }
-    }
+    public boolean interceptDevice(boolean isResult) { return InputDeviceInterceptor.interceptDevice(this, isResult); }
 
     @SuppressWarnings("unused")
-    public StructStat cleanStructStat() {
-        try {
-            StructStat stat = (StructStat) getResult();
-            if(stat == null) return null;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                String[] fieldsOne = new String[] { "st_mtim", "st_atim", "st_ctim" };
-                for(String f : fieldsOne) {
-                    DynamicField field = new DynamicField(StructStat.class, f)
-                            .setAccessible(true)
-                            .bindInstance(stat);
-
-                    if(field.isValid()) {
-                        try {
-                            StructTimespec inst = field.tryGetValueInstance();
-                            if(inst != null) {
-                                field.trySetValueInstance(new StructTimespec(
-                                        inst.tv_sec + ThreadLocalRandom.current().nextInt(100, 80000),
-                                        inst.tv_nsec + ThreadLocalRandom.current().nextInt(100, 80000)));
-                            }
-                        }catch (Exception ignored) { }
-                    }
-                }
-            }
-
-            String[] fields = new String[] { "st_atime", "st_ctime", "st_dev", "st_ino", "st_rdev" };
-            for(String f : fields) {
-                DynamicField field = new DynamicField(StructStat.class, f)
-                        .setAccessible(true)
-                        .bindInstance(stat);
-
-                if(field.isValid()) {
-                    try {
-                        long val = field.tryGetValueInstance();
-                        field.trySetValueInstance(val +  ThreadLocalRandom.current().nextInt(100, 80000));
-                    }catch (Exception ignored) { }
-                }
-            }
-
-            return stat;
-        }catch (Throwable ignored) { }
-        return null;
-    }
-
-
-    //public boolean filterCall(String )
-
-    //public boolean filterContentProviderClientCall() {
-    //}
+    public boolean interceptOpen() { return FileInterceptor.interceptOpen(this); }
 
     @SuppressWarnings("unused")
-    public boolean filterSettingsCall(String setting, String newValue) {
-        try {
-            //This is called always, URI calls to this one
-            // public final @Nullable Bundle call(@NonNull String authority, @NonNull String method,
-            //            @Nullable String arg, @Nullable Bundle extras)
-
-            //Bundle callResult = context.getContentResolver().call(
-            // Uri.parse("content://settings/secure"), "GET_secure", "android_id", new Bundle()
-            //);
-            //String androidIdValue = callResult.getString("value");
-            //content://settings/secure
-            Object authObj = getArgument(0);
-            String auth = authObj instanceof Uri ? ((Uri) authObj).getAuthority() : (String)authObj;
-            if(auth == null) return false;
-            auth = auth.toLowerCase();
-            if(auth.contains("settings")) {
-                //&& (auth.contains("secure") || auth.contains("global")
-                String method = (String)getArgument(1);
-                if("GET_secure".equalsIgnoreCase(method)) {
-                    String arg = (String)getArgument(2);
-                    if(arg == null) return false;
-                    //Log.w(TAG, "Hello this is ObbedCode its weird this app is using Such Methods to get Secure Setting, please report App to ObbedCode! Setting:" + arg);
-                    Object res = getResult();
-                    if(res == null) return false;
-                    Bundle resBundle = (Bundle) res;
-                    if(!resBundle.containsKey("value")) return false;
-                    String value = resBundle.getString("value");
-                    if(value == null || value.isEmpty()) return false;
-                    if(setting.contains("|")) {
-                        String[] parts = setting.split("\\|");
-                        for(String p : parts) {
-                            if(p.trim().equalsIgnoreCase(arg)) {
-                                Bundle fakeResult = new Bundle();
-                                fakeResult.putString("value", newValue);
-                                setResult(fakeResult);
-                                return true;
-                            }
-                        }
-                    }
-                    else if(setting.equals("*") || setting.equalsIgnoreCase(arg)) {
-                        Bundle fakeResult = new Bundle();
-                        fakeResult.putString("value", newValue);
-                        setResult(fakeResult);
-                        return true;
-                    }
-                }
-            }
-        }catch (Throwable e) {
-            Log.e(TAG, "Filter SettingsSecure IPC Error: " + e.getMessage());
-        }
-        return false;
-    }
+    public boolean interceptFileList() { return FileInterceptor.interceptList(this); }
 
     @SuppressWarnings("unused")
-    public boolean filterSettingsSecure(String setting, String newValue) {
-        try {
-            Object arg = getArgument(1);
-            if(setting != null && newValue != null && arg instanceof String) {
-                String set = ((String)arg);
-                if(setting.contains("|")) {
-                    String[] parts = setting.split("\\|");
-                    for(String p : parts) {
-                        if(p.trim().equalsIgnoreCase(set)) {
-                            setResult(newValue);
-                            return true;
-                        }
-                    }
-                }
-                else if(setting.equalsIgnoreCase(set)) {
-                    setResult(newValue);
-                    return true;
-                }
-            }
-        }catch (Throwable e) {
-            Log.e(TAG, "Filter SettingsSecure Error: " + e.getMessage());
-        }
-        return false;
-    }
+    public boolean interceptFileBool() { return FileInterceptor.interceptExistsOrIsFileOrDirectory(this); }
 
-    //
-    //End of FILTER Functions
-    //
+    @SuppressWarnings("unused")
+    public boolean packageInfoInstallTimeSpoof(boolean isReturn) { return PackageInfoInterceptor.interceptTimeStamps(this, isReturn); }
+
+    @SuppressWarnings("unused")
+    public String randomUUIDString() { return UUID.randomUUID().toString(); }
+
+    @SuppressWarnings("unused")
+    public UUID randomUUID() { return UUID.randomUUID();  }
+
+    @SuppressWarnings("unused")
+    public boolean spoofLastModified() { return StatInterceptor.interceptFileLastModified(this); }
+
+    @SuppressWarnings("unused")
+    public boolean cleanStructStat() { return StatInterceptor.interceptOsStat(this); }
 
     @SuppressWarnings("unused")
     public boolean isDriverFile(String path) { return FileUtil.isDeviceDriver(path); }
@@ -536,11 +287,11 @@ public class XParam {
     public boolean isPackageAllowed(String str) {
         if(str == null || str.isEmpty() || str.equalsIgnoreCase(this.packageName)) return true;
         str = str.toLowerCase().trim();
-        String blackSetting = getSetting("applications.blacklist.mode.bool");
+        String blackSetting = getSetting("apps.blacklist.mode.bool");
         if(blackSetting != null) {
             boolean isBlacklist = StringUtil.toBoolean(blackSetting, false);
             if(isBlacklist) {
-                String block = getSetting("applications.block.list");
+                String block = getSetting("apps.block.list");
                 if(Str.isValidNotWhitespaces(block)) {
                     block = block.trim();
                     if(block.contains(",")) {
@@ -574,122 +325,131 @@ public class XParam {
                 if(Evidence.packageName(str, 3))
                     return false;
 
-                for(String p : ALLOWED_PACKAGES)
-                    if(str.contains(p))
-                        return true;
+                //Revert this
+                if(getSettingBool("apps.blacklist.allow.vital.apps.bool", true)) {
+                    for(String p : ALLOWED_PACKAGES)
+                        if(str.contains(p))
+                            return true;
+                }
 
                 return false;
             }
         } return !Evidence.packageName(str, 3);
     }
 
-    //
-    //Shell Intercept
-    //
+    @SuppressWarnings("unused")
+    public boolean ensureIpcIsSafe(boolean getResult) { return BinderInterceptor.intercept(this, getResult); }
+
+
+    @SuppressWarnings("unused")
+    public void isNullError(Object h) {
+        StrBuilder report = StrBuilder.create()
+                .ensureOneNewLinePer(true);
+        String possibleLuaScript = null;
+        report.appendLine("[(0x8835)ERROR NIL LUA SCRIPT CODE] *Interesting*...");
+        try {
+            if(h instanceof XLuaHookBase) {
+                XLuaHookBase hookBase = (XLuaHookBase) h;
+                try { possibleLuaScript = hookBase.getLuaScript(); } catch (Exception ignored) { }
+                report.appendLine("[[HOOK INFO]]")
+                        .appendFieldLine("Class", hookBase.getClassName())
+                        .appendFieldLine("Method", hookBase.getMethodName())
+                        .appendFieldLine("Group", hookBase.getGroup())
+                        .appendFieldLine("ID", hookBase.getId())
+                        .appendFieldLine("Collection", hookBase.getCollection())
+                        .appendFieldLine("Author", hookBase.getAuthor());
+            } else {
+                report.appendLine("[Hook Info] ERROR Printing")
+                        .appendFieldLine("Is Null", String.valueOf(h == null))
+                        .appendFieldLine("ClasName if not Null", h == null ? "null" : h.getClass().getName());
+            }
+        }catch (Exception e) {
+            report.appendLine("[!] ERROR WRITING HOOK INFO!").appendFieldLine("Error", e.getMessage());
+        }
+        try {
+            Object r = tryGetResult(null);
+            if(r == null) {
+                report.appendLine("[[RESULT]]:").appendLine("[>] Is null...");
+            } else {
+                report.appendLine("[[RESULT]]:")
+                                .appendFieldLine("Type Result", r.getClass().getName())
+                                .appendFieldLine("Result[valueOf]", String.valueOf(r))
+                                .appendFieldLine("Result[toString]", r.toString());
+            }
+        }catch (Exception e) {
+            report.appendLine("[!] ERROR WRITING RESULT!").appendFieldLine("Error", e.getMessage());
+        }
+        try {
+            report.appendLine("[[XPARAM METHOD DUMP]]");
+            List<Method> methods = new ArrayList<>();
+            methods.addAll(Arrays.asList(XParam.class.getMethods()));
+            methods.addAll(Arrays.asList(XParam.class.getDeclaredMethods()));
+            for(Method m : methods) report.appendLine(m.getName());
+        }catch (Exception e) {
+            report.appendLine("[!] ERROR WRITING XPARAM METHOD DUMP!").appendFieldLine("Error", e.getMessage());
+        }
+        //Dump "this" methods ???
+        //For logging generic errors sure but for this not needed
+        report.appendLine("[[STACK TRACE]]");
+        report.appendLine(Log.getStackTraceString(new Throwable()));
+        report.appendLine("[[LUA SCRIPT]]");
+        report.appendLine(possibleLuaScript == null ? "null" : possibleLuaScript);
+        Log.e(TAG, report.toString(true));
+    }
 
     @SuppressWarnings("unused")
     public ShellInterception createShellContext(boolean isProcessBuilder) { return new ShellInterception(this, isProcessBuilder, getUserMaps()); }
 
     @SuppressWarnings("unused")
-    public String ensureCommandIsSafe(ShellInterception shellData) {
-        if(shellData == null) return null;
+    public boolean isQueryBad(boolean getResult) { return new IntentQueryData(this, getResult).intercept(this); }
+
+    @SuppressWarnings("unused")
+    public boolean isSettingsContentBad(boolean getResult) { return new SettingsIntentCallData(this, getResult).replaceSettingStringResult(this); }
+
+    @SuppressWarnings("unused")
+    public boolean isCommandBad(ShellInterception shellData) {
+        if(shellData == null) {
+            Log.w(TAG, "[ShellIntercept] Command Shell Data Object is Null...");
+            return false;
+        }
+
         ShellInterception res = ShellIntercept.intercept(shellData);
-        if(!res.isMalicious() || res.getNewValue() == null) return null;
-        if(!returnType.equals(Process.class)) return null;
+        if(!res.isMalicious() || res.getNewValue() == null) {
+            if(DebugUtil.isDebug()) Log.d(TAG, "[ShellIntercept] Command is not Malicious: " + shellData.getCommandLine());
+            return false;
+        }
+
         try {
-            setResult(res.getEchoProcess());
-            return res.getNewValue();
+            setOldResult(res.getCommandLine());
+            setNewResult(res.getNewValue());
+            setResult(ProcessUtils.createProcess(res.process, res.getNewValue()));
+            return true;
         }catch (Throwable e) {
             Log.e(TAG, "Error Setting the new Intercepted Process Command Value " + e);
-            return null;
+            return false;
         }
     }
 
-    /*@SuppressWarnings("unused")
-    public String interceptCommand(String command) {
-        //We would accept args and even do some of this in LUAJ but LUAJ LOVES and I mean LOVES to Gas light us
-        //Its one thing for me as the programmer to make a mistake another thing when LUAJ just lies to me and wont work
-        if(command != null) {
-            try {
-                ShellInterception res = ShellIntercept.intercept(ShellInterception.create(command, getUserMaps()).setProcess(getResult()));
-                if(res != null && res.isMalicious()) {
-                    if(res.getNewValue() != null) {
-                        if(BuildConfig.DEBUG) {
-                            Log.w(TAG, "Command Intercepted: " + command);
-                            Log.w(TAG, "Replacing Command with: " + res.getNewValue());
-                        }
-
-                        if(returnType.equals(Process.class))
-                            setResult(res.getEchoProcess());
-
-                        return res.getNewValue();
-                    }
-                }
-            }catch (Throwable e) {
-                Log.e(TAG, "Failed to intercept e=" + e);
-            }
-        } return null;
-    }
+    @SuppressWarnings("unused")
+    public boolean interceptFileOpenProcIfNet6() { return NetworkInterfaceInterceptor.interceptFileOpenProcIfNet6(this); }
 
     @SuppressWarnings("unused")
-    public String interceptCommandArray(String[] commands) {
-        if(commands != null) {
-            try {
-                ShellInterception res = ShellIntercept.intercept(ShellInterception.create(commands, getUserMaps()).setProcess(getResult()));
-                if(res != null && res.isMalicious()) {
-                    if(res.getNewValue() != null) {
-                        if(BuildConfig.DEBUG) {
-                            Log.w(TAG, "Command Intercepted: " + joinArray(commands));
-                            Log.w(TAG, "Replacing Command with: " + res.getNewValue());
-                        }
-
-                        if(returnType.equals(Process.class))
-                            setResult(res.getEchoProcess());
-
-                        return res.getNewValue();
-                    }else {
-                        Log.e(TAG, "[getNewValue] is NULL!");
-                    }
-                }
-            }catch (Throwable e) {
-                Log.e(TAG, "Failed to intercept e=" + e);
-            }
-        } return null;
-    }
+    public boolean interceptIoctlInetAddress() { return NetworkInterfaceInterceptor.interceptIoctlInetAddress(this); }
 
     @SuppressWarnings("unused")
-    public String interceptCommandList(List<String> commands) {
-        if(commands != null) {
-            try {
-                ShellInterception res = ShellIntercept.intercept(ShellInterception.create(commands, getUserMaps()).setProcess(getResult()));
-                if(res != null && res.isMalicious()) {
-                    if(res.getNewValue() != null) {
-                        if(BuildConfig.DEBUG) {
-                            Log.w(TAG, "Command Intercepted: " + joinList(commands));
-                            Log.w(TAG, "Replacing Command with: " + res.getNewValue());
-                        }
+    public boolean interceptFileListForNetworkInterfaces() { return NetworkInterfaceInterceptor.interceptFileList(this); }
 
-                        if(returnType.equals(Process.class))
-                            setResult(res.getEchoProcess());
+    @SuppressWarnings("unused")
+    public boolean interceptGetifaddrs() { return NetworkInterfaceInterceptor.interceptGetifaddrs(this); }
 
-                        return res.getNewValue();
-                    }else {
-                        Log.e(TAG, "[getNewValue] is NULL!");
-                    }
-                }
-            }catch (Throwable e) {
-                Log.e(TAG, "Failed to intercept e=" + e);
-            }
-        } return null;
-    }*/
+    @SuppressWarnings("unused")
+    public boolean interceptDhcpInfo(boolean isResult) { return DhcpInfoInterceptor.intercept(this, isResult); }
 
-    //
-    //End of Shell Intercept
-    //
+    @SuppressWarnings("unused")
+    public boolean interceptLinkProperties(boolean isResult) {  return LinkPropertiesInterceptor.intercept(this, isResult); }
 
-    //
-    //Start of Memory/CPU Functions
-    //
+    @SuppressWarnings("unused")
+    public boolean interceptWifiInfo(boolean isResult) { return WifiInfoInterceptor.intercept(this, isResult); }
 
     @SuppressWarnings("unused")
     public int getFileDescriptorId(FileDescriptor fs) { return FileUtil.getDescriptorNumber(fs);  }
@@ -712,21 +472,11 @@ public class XParam {
     @SuppressWarnings("unused")
     public File createFakeCpuinfoFile() { return MockFileUtil.generateFakeFile(XMockCall.getSelectedMockCpu(getApplicationContext())); }
 
-
     @SuppressWarnings("unused")
     public FileDescriptor createFakeUUIDFileDescriptor() { return MockFileUtil.generateFakeBootUUIDDescriptor(getSetting("unique.boot.id")); }
 
     @SuppressWarnings("unused")
     public File createFakeUUIDFile() { return MockFileUtil.generateFakeBootUUIDFile(getSetting("unique.boot.id")); }
-
-
-    //
-    //End of Memory/CPU Functions
-    //
-
-    //
-    //Start of Bluetooth Functions
-    //
 
     @SuppressWarnings("unused")
     public Set<BluetoothDevice> filterSavedBluetoothDevices(Set<BluetoothDevice> devices, List<String> allowList) { return ListFilterUtil.filterSavedBluetoothDevices(devices, allowList); }
@@ -737,13 +487,6 @@ public class XParam {
     @SuppressWarnings("unused")
     public List<WifiConfiguration> filterSavedWifiNetworks(List<WifiConfiguration> results, List<String> allowList) { return ListFilterUtil.filterSavedWifiNetworks(results, allowList); }
 
-    //
-    //End of Bluetooth Functions
-    //
-
-    //
-    //Start of Display Functions
-    //
 
     @SuppressWarnings("unused")
     public InputDevice.MotionRange createXAxis(int height) { return MotionRangeUtil.createXAxis(height); }
@@ -751,16 +494,8 @@ public class XParam {
     @SuppressWarnings("unused")
     public InputDevice.MotionRange createYAxis(int width) { return MotionRangeUtil.createYAxis(width); }
 
-    //
-    //End of Display Functions
-    //
-
-    //
-    //Start of ETC Util Functions
-    //
-
     @SuppressWarnings("unused")
-    public int generateRandomInt(int origin, int bound) { return ThreadLocalRandom.current().nextInt(origin, bound); }
+    public int generateRandomInt(int origin, int bound) { return RandomGenerator.nextInt(origin, bound); }
 
     @SuppressWarnings("unused")
     public String[] generateMediaCodecSupportedTypeList() { return RandomMediaCodecInfo.generateSupportedTypes(); }
@@ -770,17 +505,17 @@ public class XParam {
 
     @SuppressWarnings("unused")
     public int[] generateIntArray() {
-        int sz = ThreadLocalRandom.current().nextInt(2, 8);
+        int sz = RandomGenerator.nextInt(2, 8);
         int[] elements = new int[sz];
         for(int i = 0; i < sz; i++) {
-            elements[i] = ThreadLocalRandom.current().nextInt(5000, 9999999);
+            elements[i] = RandomGenerator.nextInt(5000, 9999999);
         }
 
         return elements;
     }
 
     @SuppressWarnings("unused")
-    public String generateRandomString(int min, int max) { return generateRandomString(ThreadLocalRandom.current().nextInt(min, max + 1)); }
+    public String generateRandomString(int min, int max) { return generateRandomString(RandomGenerator.nextInt(min, max + 1)); }
 
     @SuppressWarnings("unused")
     public String generateRandomString(int length) { return RandomStringGenerator.generateRandomAlphanumericString(length); }
@@ -843,82 +578,6 @@ public class XParam {
         }catch (Exception ignore) { }
         return sel;
     }
-
-    @SuppressWarnings("unused")
-    public boolean isAuthority(String authority) {
-        try {
-            Object o = getArgument(0);
-            if(o == null) return false;
-            Uri uri = (Uri)o;
-            String a = uri.getAuthority();
-            if(a == null) return false;
-            return a.toLowerCase().contains(authority.toLowerCase());
-        }catch (Exception e) {
-            Log.e(TAG, "Failed to Compare Authority... " + authority + " Error: " + e);
-            return false;
-        }
-    }
-
-    @SuppressWarnings("unused")
-    public boolean queryFilterAfter(String serviceName, String columnName, String newValue) { return queryFilterAfter(serviceName, columnName, newValue, (Uri)getArgument(0)); }
-
-    @SuppressWarnings("unused")
-    public boolean queryFilterAfter(String serviceName, String columnName, String newValue, Uri uri) {
-        if(newValue != null && serviceName != null && columnName != null) {
-            try {
-                String authority = uri.getAuthority();
-                Cursor ret = (Cursor) getResult();
-                if(ret != null && authority != null) {
-                    //content://com.vivo.vms.IdProvider/IdentifierId/OAID
-                    String sLow = serviceName.toLowerCase();
-                    String cLow = columnName.toLowerCase().trim();
-                    String aLow = authority.toLowerCase();
-                    if (serviceName.equals("*") || aLow.contains(sLow)) {
-                        if (cLow.equals("*")) {
-                            //Replace alllll
-                            //to do
-                        } else {
-                            String[] cs = cLow.contains("|") ? cLow.split("\\|") : new String[]{cLow};
-                            String[] args = extractSelectionArgs();
-                            //Final Check
-                            boolean isTarget = false;
-                            for (String c : cs) {
-                                if (args != null) {
-                                    for (String a : args) {
-                                        if (a.equalsIgnoreCase(c)) {
-                                            isTarget = true;
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                if (isTarget) break;
-                                if (aLow.contains(c)) {
-                                    isTarget = true;
-                                    break;
-                                }
-                            }
-
-                            if (isTarget) {
-                                if(BuildConfig.DEBUG)
-                                    Log.i(TAG, "Found Query Service [" + authority + "] and Column [" + columnName + "] new Value [" + newValue + "]");
-
-                                setResult(CursorUtil.replaceValue(ret, newValue, cs));
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }catch (Throwable e) {
-                Log.e(TAG, "LUA PARAM [queryFilterAfter] Error: " + e.getMessage());
-            }
-        }
-        return false;
-    }
-
-    //
-    //End of Query / Call Functions
-    //
 
     @SuppressWarnings("unused")
     public Context getApplicationContext() { return this.context; }
@@ -1075,8 +734,17 @@ public class XParam {
 
     @SuppressWarnings("unused")
     public Object getThis() {
-        if (this.field == null) return this.param.thisObject;
-        else return null;
+        return this.field == null ? this.param.thisObject : null;
+    }
+
+    @SuppressWarnings("unused")
+    public<T> T tryGetArgument(int index, T defaultValue) {
+        try {
+            return (T)getArgument(index);
+        }catch (Throwable t) {
+            Log.e(TAG, "Error Getting Argument at Index: " + index + " Error: " + t);
+            return defaultValue;
+        }
     }
 
     @SuppressWarnings("unused")
@@ -1101,12 +769,22 @@ public class XParam {
         } this.param.args[index] = value;
     }
 
-
     @SuppressWarnings("unused")
     public Throwable getException() {
         Throwable ex = (this.field == null ? this.param.getThrowable() : null);
-        if(DebugUtil.isDebug()) Log.i(TAG, "Get " + this.getPackageName() + ":" + this.getUid() + " result=" + ex.getMessage());
+        if(DebugUtil.isDebug())
+            Log.i(TAG, "Get " + this.getPackageName() + ":" + this.getUid() + " result=" + (ex == null ? "null" : ex.getMessage()));
         return ex;
+    }
+
+    @SuppressWarnings("unused")
+    public<T> T  tryGetResult(T defaultValue) {
+        try {
+            return (T)getResult();
+        }catch (Throwable t) {
+            Log.e(TAG, "Error Getting Result! Error: " + t);
+            return null;
+        }
     }
 
     @SuppressWarnings("unused")
@@ -1157,6 +835,10 @@ public class XParam {
         if (BuildConfig.DEBUG)
             Log.i(TAG, "Set " + this.getPackageName() + ":" + this.getUid() +
                     " result=" + result + " return=" + this.returnType);
+
+        //
+        //WORK ON UNBOXING ARRAY TYPES NOT HIGH PRIORITY but still
+        //
 
         if (result != null && !(result instanceof Throwable) && this.returnType != null) {
             result = coerceValue(this.returnType, result);
@@ -1212,13 +894,11 @@ public class XParam {
     }
 
     @SuppressWarnings("unused")
-    public String getSetting(String name) {
-        synchronized (this.settings) { return (this.settings.containsKey(name) ? this.settings.get(name) : null); }
-    }
+    public String getSetting(String name) { synchronized (this.settings) { return (this.settings.containsKey(name) ? this.settings.get(name) : null); } }
 
     @SuppressWarnings("unused")
     public void putValue(String name, Object value, Object scope) {
-        Log.i(TAG, "Put value " + this.getPackageName() + ":" + this.getUid() + " " + name + "=" + value + " @" + scope);
+        if(DebugUtil.isDebug()) Log.i(TAG, "Put value " + this.getPackageName() + ":" + this.getUid() + " " + name + "=" + value + " @" + scope);
         synchronized (nv) {
             if (!nv.containsKey(scope))
                 nv.put(scope, new HashMap<String, Object>());
@@ -1227,9 +907,23 @@ public class XParam {
     }
 
     @SuppressWarnings("unused")
+    public <T> T tryGetValue(String name) {
+        Object value = getValueInternal(name, getApplicationContext());
+        if(value == null) return null;
+        try {
+            if(DebugUtil.isDebug()) Log.i(TAG, "Get value " + this.getPackageName() + ":" + this.getUid() + " " + name + "=" + value);
+            return (T)value;
+        }catch (Exception e) {
+            Log.e(TAG, "Failed to get Value, Name=" + name + " Error=" + e);
+            return null;
+        }
+    }
+
+    @SuppressWarnings("unused")
     public Object getValue(String name, Object scope) {
         Object value = getValueInternal(name, scope);
-        //Log.i(TAG, "Get value " + this.getPackageName() + ":" + this.getUid() + " " + name + "=" + value + " @" + scope);
+        if(DebugUtil.isDebug())
+            Log.i(TAG, "Get value " + this.getPackageName() + ":" + this.getUid() + " " + name + "=" + value + " @" + scope);
         return value;
     }
 

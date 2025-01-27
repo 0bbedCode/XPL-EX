@@ -64,13 +64,13 @@ Use a root file explorer navigate to the Directory "/data/system/xlua/" Backup a
 Later versions this will be 'fixed' / alot easier to work with within the UI etc <br>
 
 ### Telegram Group
-https://t.me/xplexex
+https://t.me/xpl_ex
 
 ### Telegram
 https://t.me/obbedcode
 
 ### Telegram Discussion Chat
-https://t.me/XPLEXCHAT
+https://t.me/XPL_EX_CHAT
 
 ### XDA Thread
 https://xdaforums.com/t/xpl-ex-xprivacylua-ex-android-privacy-manager-hooking-manager-extended.4652573/
@@ -186,6 +186,7 @@ https://lua.xprivacy.eu/<br>
 https://github.com/M66B/XPrivacyLua
 
 Thanks M66B for what you have left us now I will continue <3 
+
 
 
 More From Obbed

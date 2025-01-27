@@ -7,14 +7,15 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.random.IRandomizer;
+
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.DataNullElement;
 import eu.faircode.xlua.random.elements.DataNameValueElement;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
-public class RandomDataState implements IRandomizer {
+public class RandomDataState implements IRandomizerOld {
     private static final List<Integer> dataCodes33Higher = Arrays.asList(
             -1,                                     //DATA_ENABLED_REASON_UNKNOWN           (Api 33)
             TelephonyManager.DATA_DISCONNECTED,     //DATA_ENABLED_REASON_USER              (Api 1) DATA_DISCONNECTED   | (Api 31) DATA_ENABLED_REASON_USER
@@ -56,7 +57,7 @@ public class RandomDataState implements IRandomizer {
 
     @Override
     public String generateString() {
-        ISpinnerElement el = dataStates.get(ThreadLocalRandom.current().nextInt(1, dataStates.size()));
+        ISpinnerElement el = dataStates.get(RandomGenerator.nextInt(1, dataStates.size()));
         return el.getValue();
     }
 

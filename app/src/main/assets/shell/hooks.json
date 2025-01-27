@@ -18,13 +18,12 @@
     "maxSdk": 999,
     "version": 0,
     "description": "",
-    "enabled":true,
+    "enabled":false,
     "optional":true,
     "usage":true,
     "notify":false,
     "luaScript": "@id_shell_one"
   },
-
   {
     // exec(String command, String[] envp)
     "builtin": true,
@@ -40,13 +39,12 @@
     "maxSdk": 999,
     "version": 0,
     "description": "",
-    "enabled":true,
+    "enabled":false,
     "optional":true,
     "usage":true,
     "notify":false,
     "luaScript": "@id_shell_one"
   },
-
   {
     //exec(String command, String[] envp, File dir)
     "builtin": true,
@@ -62,13 +60,12 @@
     "maxSdk": 999,
     "version": 0,
     "description": "",
-    "enabled":true,
+    "enabled":false,
     "optional":true,
     "usage":true,
     "notify":false,
     "luaScript": "@id_shell_one"
   },
-
   {
     //exec(String[] cmdarray)
     "builtin": true,
@@ -84,13 +81,12 @@
     "maxSdk": 999,
     "version": 0,
     "description": "",
-    "enabled":true,
+    "enabled":false,
     "optional":true,
     "usage":true,
     "notify":false,
     "luaScript": "@id_shell_two"
   },
-
   {
     //exec(String[] cmdarray, String[] envp)
     "builtin": true,
@@ -106,13 +102,12 @@
     "maxSdk": 999,
     "version": 0,
     "description": "",
-    "enabled":true,
+    "enabled":false,
     "optional":true,
     "usage":true,
     "notify":false,
     "luaScript": "@id_shell_two"
   },
-
   {
     //exec(String[] cmdarray, String[] envp, File dir)
     "builtin": true,
@@ -128,15 +123,13 @@
     "maxSdk": 999,
     "version": 0,
     "description": "",
-    "enabled":true,
+    "enabled":false,
     "optional":true,
     "usage":true,
     "notify":false,
     "luaScript": "@id_shell_two"
   },
-
   {
-    //ProcessBuilder.start()
     "builtin": true,
     "collection": "PrivacyEx",
     "group": "Intercept.Shell",
@@ -150,7 +143,7 @@
     "maxSdk": 999,
     "version": 0,
     "description": "",
-    "enabled":true,
+    "enabled":false,
     "optional":true,
     "usage":true,
     "notify":false,

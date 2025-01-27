@@ -123,9 +123,7 @@ public class XUtil {
     public static String getSha1FingerprintString(Context context, String packageName) throws Throwable {
         byte[] bys = getSha1Fingerprint(context, packageName);
         StringBuilder sb = new StringBuilder();
-        for (byte b : bys)
-            sb.append(Integer.toString(b & 0xff, 16).toLowerCase());
-
+        for (byte b : bys) sb.append(Integer.toString(b & 0xff, 16).toLowerCase());
         return sb.toString();
     }
 
@@ -159,7 +157,7 @@ public class XUtil {
             PackageManager pm = context.getPackageManager();
             Resources resources = pm.getResourcesForApplication(BuildConfig.APPLICATION_ID);
             NotificationChannel channel = new NotificationChannel(
-                    XGlobals.cChannelName, resources.getString(R.string.channel_privacy), NotificationManager.IMPORTANCE_HIGH);
+                    UberCore888.cChannelName, resources.getString(R.string.channel_privacy), NotificationManager.IMPORTANCE_HIGH);
             /*NotificationChannel channel = new NotificationChannel(
                     XProvider.cChannelName, resources.getString(R.string.channel_privacy), NotificationManager.IMPORTANCE_HIGH);*/
             channel.setSound(null, Notification.AUDIO_ATTRIBUTES_DEFAULT);

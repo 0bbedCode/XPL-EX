@@ -1,10 +1,6 @@
 package eu.faircode.xlua.tools;
 
 
-import android.util.Log;
-
-import eu.faircode.xlua.Str;
-
 public class BytesReplacer {
     private byte[] searchBytes;
     private byte[] replacementBytes;

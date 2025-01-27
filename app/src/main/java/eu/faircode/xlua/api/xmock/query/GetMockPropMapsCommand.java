@@ -6,7 +6,7 @@ import android.database.Cursor;
 import eu.faircode.xlua.api.XProxyContent;
 import eu.faircode.xlua.api.xmock.provider.MockPropProvider;
 import eu.faircode.xlua.api.xstandard.QueryCommandHandler;
-import eu.faircode.xlua.api.xstandard.command.QueryPacket;
+import eu.faircode.xlua.api.xstandard.command.QueryPacket_old;
 import eu.faircode.xlua.utilities.CursorUtil;
 
 public class GetMockPropMapsCommand extends QueryCommandHandler {
@@ -19,7 +19,7 @@ public class GetMockPropMapsCommand extends QueryCommandHandler {
     }
 
     @Override
-    public Cursor handle(QueryPacket commandData) throws Throwable {
+    public Cursor handle(QueryPacket_old commandData) throws Throwable {
         return CursorUtil.toMatrixCursor(
                 MockPropProvider.getMockPropMaps(
                         commandData.getContext(),

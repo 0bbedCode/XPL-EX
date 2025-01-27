@@ -12,11 +12,10 @@ import eu.faircode.xlua.interceptors.shell.util.CommandOutputHelper;
 public class LSIntercept extends CommandInterceptor implements ICommandIntercept {
     private static final String TAG = "XLua.LSIntercept";
 
-
     private static final String LS_INTERCEPT_SETTING = "intercept.shell.ls.bool";
 
     @SuppressWarnings("unused")
-    public LSIntercept() { this.command = "ls"; }
+    public LSIntercept() { this.command = "ls"; this.setting = LS_INTERCEPT_SETTING; }
 
     @Override
     public boolean interceptCommand(ShellInterception result) {

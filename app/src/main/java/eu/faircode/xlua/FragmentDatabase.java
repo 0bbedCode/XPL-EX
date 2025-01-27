@@ -150,7 +150,7 @@ public class FragmentDatabase extends Fragment {
 
     private static class DBsDataHolder {
         String theme;
-        List<XDatabase> dbs = new ArrayList<>();
+        List<XDatabaseOld> dbs = new ArrayList<>();
         Throwable exception = null;
     }
 }

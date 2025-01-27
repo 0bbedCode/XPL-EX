@@ -1,0 +1,23 @@
+[
+  {
+    "builtin": true,
+    "collection": "PrivacyEx",
+    "group": "ID.Unique",
+    "name": "DoorDash/JSONObject.put(string)",
+    "author": "OBC",
+    "className": "org.json.JSONObject",
+    "methodName": "put",
+    "parameterTypes": [ "java.lang.String", "java.lang.String" ],
+    "returnType": "org.json.JSONObject",
+    "minSdk": 1,
+    "maxSdk": 999,
+    "version": 1,
+    "description": "",
+    "enabled":true,
+    "optional":true,
+    "usage":true,
+    "notify":false,
+    "luaScript": "@json_put_string_dd",
+    "settings":[ "unique.google.advertising.id", "unique.android.id"]
+  }
+]

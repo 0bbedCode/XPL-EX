@@ -5,7 +5,7 @@ function after(hook, param)
 	end
 
     local fake = param:getSetting("device.bootloader", "G1HZK00500")
-    if fake == nil then
+    if fake == nil or fake == 'unknown' then
         return false
     end
 

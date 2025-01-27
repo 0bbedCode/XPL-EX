@@ -10,7 +10,7 @@ public class XReportFormat {
     public static String exception(Exception exception, Context optionalContext) {
         return new StringBuilder()
                 .append("Exception:\n")
-                .append(Log.getStackTraceString(exception)).append("\n")
+                .append(exception == null ? "null" : Log.getStackTraceString(exception)).append("\n")
                 .append("Package:\n")
                 .append(optionalContext == null ? "null package" : optionalContext.getPackageName()).append(":")
                 .append(optionalContext == null ? "0" : optionalContext.getApplicationInfo().uid).append("\n")

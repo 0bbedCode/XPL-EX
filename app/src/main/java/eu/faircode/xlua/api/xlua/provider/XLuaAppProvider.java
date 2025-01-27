@@ -17,8 +17,9 @@ import java.util.List;
 import java.util.Map;
 
 import eu.faircode.xlua.BuildConfig;
-import eu.faircode.xlua.XDatabase;
-import eu.faircode.xlua.XGlobals;
+import eu.faircode.xlua.DebugUtil;
+import eu.faircode.xlua.XDatabaseOld;
+import eu.faircode.xlua.UberCore888;
 import eu.faircode.xlua.api.XResult;
 
 import eu.faircode.xlua.XUtil;
@@ -30,7 +31,7 @@ import eu.faircode.xlua.api.xstandard.UserIdentityPacket;
 import eu.faircode.xlua.api.xstandard.database.SqlQuerySnake;
 import eu.faircode.xlua.api.app.XLuaApp;
 import eu.faircode.xlua.api.hook.XLuaHook;
-import eu.faircode.xlua.logger.XLog;
+import eu.faircode.xlua.x.runtime.RuntimeUtils;
 
 public class XLuaAppProvider {
     private static final String TAG = "XLua.XAppProvider";
@@ -47,18 +48,17 @@ public class XLuaAppProvider {
             return false;
         }
 
-        XLog.i("Clearing App Data for Package: " + packageName);
+        Log.i(TAG, "Clearing App Data for Package: " + packageName);
         try {
             long identity = Binder.clearCallingIdentity();
             try {
                 //android.content.pm.IPackageDataObserver java
                 ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
                 Method mForceStop = am.getClass().getMethod("clearApplicationUserData", String.class, Class.forName("android.content.pm.IPackageDataObserver"));
-                XLog.i("Found method [clearApplicationUserData] Now invoking....");
                 mForceStop.invoke(am, packageName, null);
                 return true;
             } catch (Exception e) {
-                XLog.e("Failed to clear App Data for Package: " + packageName, e, true);
+                Log.e(TAG, "Failed to clear App Data for Package:" + packageName + " error=" + e + " Stack=" + RuntimeUtils.getStackTraceSafeString(e));
                 return false;
             } finally {
                 Binder.restoreCallingIdentity(identity);
@@ -98,7 +98,7 @@ public class XLuaAppProvider {
     }
 
 
-    public static XLuaApp getApp(Context context, XDatabase db, int cuid, String packageName, boolean initForceStop, boolean initSettings) {
+    public static XLuaApp getApp(Context context, XDatabaseOld db, int cuid, String packageName, boolean initForceStop, boolean initSettings) {
         long identity = Binder.clearCallingIdentity();
         int userid = XUtil.getUserId(cuid);
         try {
@@ -156,7 +156,7 @@ public class XLuaAppProvider {
         } return new XLuaApp();
     }
 
-    public static Map<String, XLuaApp> getApps(Context context, XDatabase db, int cuid, boolean initForceToStop, boolean initSettings) {
+    public static Map<String, XLuaApp> getApps(Context context, XDatabaseOld db, int cuid, boolean initForceToStop, boolean initSettings) {
         int userid = XUtil.getUserId(cuid);
         Map<String, XLuaApp> apps = new HashMap<>();
 
@@ -199,7 +199,9 @@ public class XLuaAppProvider {
             Binder.restoreCallingIdentity(identity);
         }
 
-        Log.i(TAG, "Installed apps=" + apps.size() + " userId=" + userid + " cuid=" + cuid);
+        if(DebugUtil.isDebug())
+            Log.i(TAG, "Installed apps=" + apps.size() + " userId=" + userid + " cuid=" + cuid);
+
         if(initForceToStop)
             initAppForceToStop(apps, db, userid);
 
@@ -210,8 +212,11 @@ public class XLuaAppProvider {
         return apps;
     }
 
-    private static void initAppForceToStop(Map<String, XLuaApp> apps, XDatabase db, int userid) {
+    private static void initAppForceToStop(Map<String, XLuaApp> apps, XDatabaseOld db, int userid) {
         //direct insert here
+
+
+
         SqlQuerySnake snake = SqlQuerySnake
                 .create(db, LuaSetting.Table.NAME)
                 .whereColumn("user", Integer.toString(userid))
@@ -247,7 +252,7 @@ public class XLuaAppProvider {
         }
     }
 
-    private static void initAppDatabaseSettings(Context context, XDatabase db, Map<String, XLuaApp> apps, int userid) {
+    private static void initAppDatabaseSettings(Context context, XDatabaseOld db, Map<String, XLuaApp> apps, int userid) {
         int start = XUtil.getUserUid(userid, 0);
         int end = XUtil.getUserUid(userid, Process.LAST_APPLICATION_UID);
         SqlQuerySnake snake = SqlQuerySnake
@@ -282,13 +287,15 @@ public class XLuaAppProvider {
                     if (app.getUid() != uid)
                         continue;
 
-                    XLuaHook hook = XGlobals.getHook(hookId, pkg, collections);
+                    XLuaHook hook = UberCore888.getHook(hookId, pkg, collections);
                     if(hook != null) {
+
                         LuaAssignmentWriter assignment = new LuaAssignmentWriter(hook);
                         assignment.setInstalled(c.getLong(colInstalled));
                         assignment.setUsed(c.getLong(colUsed));
                         assignment.setRestricted((c.getInt(colRestricted) == 1));
                         assignment.setException(c.getString(colException));
+
                         app.addAssignment(assignment);
                     }
 

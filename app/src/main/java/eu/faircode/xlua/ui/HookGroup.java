@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import eu.faircode.xlua.AppGeneric;
+import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.api.XResult;
 import eu.faircode.xlua.api.app.XLuaApp;
 import eu.faircode.xlua.api.hook.XLuaHook;
@@ -37,11 +39,14 @@ import eu.faircode.xlua.ui.interfaces.IHookTransaction;
 import eu.faircode.xlua.ui.interfaces.IHookTransactionEx;
 import eu.faircode.xlua.ui.transactions.HookTransactionResult;
 import eu.faircode.xlua.ui.transactions.PropTransactionResult;
+import eu.faircode.xlua.x.Str;
 
 public class HookGroup {
     public int id;
     public String name;
     public String title;
+
+    private static final String TAG = "XLua.HookGroup";
 
     public HookGroup() { }
     public HookGroup(Context context, String groupName) {
@@ -125,7 +130,10 @@ public class HookGroup {
                 !assign,
                 !application.isGlobal() && application.getForceStop());
 
-        XLog.i("Packet=" + packet + " assign=" + assign + " pos=" + adapterPosition + " hood id=" + hook.getId());
+        if(DebugUtil.isDebug())
+            Log.d(TAG, Str.ensureNoDoubleNewLines("Packet=" + packet + " assign=" + assign + " pos=" + adapterPosition + " hook id=" + hook.getId()));
+
+        //XLog.i("Packet=" + packet + " assign=" + assign + " pos=" + adapterPosition + " hood id=" + hook.getId());
 
         final HookTransactionResult result = new HookTransactionResult();
         result.context = context;
@@ -137,7 +145,9 @@ public class HookGroup {
         result.group = this;
 
         try {
-            XLog.i("Assignment Packet created: Property packet=" + packet);
+            if(DebugUtil.isDebug())
+                Log.d(TAG, "Assignment Packet created: Property packet=" + packet);
+
             executor.submit(new Runnable() {
                 @Override
                 public void run() {
@@ -171,6 +181,10 @@ public class HookGroup {
                 hookIds.add(hook.getId());
                 assignments.add(new LuaAssignment(hook));
             }
+
+
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Sending Assignments, App=" + application + " Hooks Size=" + hookIds.size());
 
         executor.submit(new Runnable() {
             @Override

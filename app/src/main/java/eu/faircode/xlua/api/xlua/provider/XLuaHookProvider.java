@@ -15,8 +15,8 @@ import java.util.List;
 import de.robv.android.xposed.XposedBridge;
 import eu.faircode.xlua.BuildConfig;
 import eu.faircode.xlua.DebugUtil;
-import eu.faircode.xlua.XDatabase;
-import eu.faircode.xlua.XGlobals;
+import eu.faircode.xlua.XDatabaseOld;
+import eu.faircode.xlua.UberCore888;
 import eu.faircode.xlua.XUiGroup;
 import eu.faircode.xlua.api.XResult;
 import eu.faircode.xlua.api.hook.LuaHookPacket;
@@ -32,7 +32,7 @@ import eu.faircode.xlua.utilities.StringUtil;
 public class XLuaHookProvider {
     private static final String TAG = "XLua.XHookProvider";
 
-    public static List<String> getCollections(Context context, XDatabase db, int userId) {
+    public static List<String> getCollections(Context context, XDatabaseOld db, int userId) {
         //check this
         String value = LuaSettingsManager.getSettingValue(context, db, "collection",  userId, UserIdentityPacket.GLOBAL_NAMESPACE);
         List<String> result = new ArrayList<>();
@@ -54,8 +54,8 @@ public class XLuaHookProvider {
         return result;
     }
 
-    public static XResult putHook(Context context, XDatabase database, LuaHookPacket packet) throws Throwable { return putHook(context, database, packet.getId(), packet.getDefinition());  }
-    public static XResult putHook(Context context, XDatabase database, String id, String definition) throws Throwable {
+    public static XResult putHook(Context context, XDatabaseOld database, LuaHookPacket packet) throws Throwable { return putHook(context, database, packet.getId(), packet.getDefinition());  }
+    public static XResult putHook(Context context, XDatabaseOld database, String id, String definition) throws Throwable {
         XResult res = XResult.create().setMethodName("putHook").setExtra("id=" + id);
         if (!StringUtil.isValidString(id))
             return res.appendErrorMessage("ID Missing from Hook!", TAG).setFailed();
@@ -73,7 +73,7 @@ public class XLuaHookProvider {
             }
         }
 
-        if(!XGlobals.updateHookCache(context, hook, id))
+        if(!UberCore888.updateHookCache(context, hook, id))
             return res.appendErrorMessage("Failed at Updating Hook Cache, id=" + id, TAG).setFailed();
 
         return LuaHookManager.updateHook(database, hook, id);

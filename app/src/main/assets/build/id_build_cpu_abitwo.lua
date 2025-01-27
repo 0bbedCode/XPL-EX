@@ -4,7 +4,7 @@ function after(hook, param)
 		return false
 	end
 
-    local fake = param:getSetting("cpu.abi", "")
+    local fake = param:getSetting("soc.cpu.abi", "")
     if fake == nil then
         return false
     end

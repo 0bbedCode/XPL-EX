@@ -9,59 +9,15 @@
     android:paddingBottom="6dp">
 
     <ImageView
-        android:id="@+id/ivPropertiesButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/ivGroupProfile"
+        android:layout_width="?android:attr/listPreferredItemHeightSmall"
+        android:layout_height="?android:attr/listPreferredItemHeightSmall"
         android:alpha="0.6"
         android:clickable="true"
         android:focusable="true"
         android:foreground="?android:attr/selectableItemBackground"
         android:padding="6dp"
-        android:src="@drawable/i8_prop_24"
-        app:layout_constraintBottom_toBottomOf="@+id/ivSettingsExButton"
-        app:layout_constraintStart_toEndOf="@+id/ivSettingsExButton"
-        app:layout_constraintTop_toTopOf="@+id/ivSettingsExButton"
-        app:layout_constraintVertical_bias="1.0" />
-
-    <ImageView
-        android:id="@+id/ivSettingsExButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:alpha="0.6"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:padding="6dp"
-        android:src="@drawable/ic_remix_settings_line"
-        app:layout_constraintBottom_toBottomOf="@+id/ivConfigsButton"
-        app:layout_constraintStart_toEndOf="@+id/ivConfigsButton"
-        app:layout_constraintTop_toTopOf="@+id/ivConfigsButton"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <ImageView
-        android:id="@+id/ivConfigsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:alpha="0.6"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:padding="6dp"
-        android:src="@drawable/document_config_svgrepo_com"
-        app:layout_constraintBottom_toBottomOf="@+id/ivGroupHooks"
-        app:layout_constraintStart_toEndOf="@+id/ivGroupHooks"
-        app:layout_constraintTop_toTopOf="@+id/ivGroupHooks" />
-
-    <ImageView
-        android:id="@+id/ivGroupHooks"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:alpha="0.6"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:padding="6dp"
-        android:src="@drawable/hook_svgrepo_com__1_"
+        android:src="?attr/configMenu"
         app:layout_constraintStart_toStartOf="@+id/cbForceStop"
         app:layout_constraintTop_toBottomOf="@+id/cbForceStop" />
 
@@ -148,18 +104,22 @@
 
     <ImageView
         android:id="@+id/ivSettings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="?android:attr/listPreferredItemHeightSmall"
+        android:layout_height="?android:attr/listPreferredItemHeightSmall"
+
         android:layout_marginEnd="12dp"
         android:alpha="0.6"
         android:clickable="true"
         android:focusable="true"
         android:foreground="?android:attr/selectableItemBackground"
         android:padding="6dp"
-        android:src="?attr/appSettings"
+        android:src="?attr/settingMenu"
         app:layout_constraintBottom_toBottomOf="@+id/ivIcon"
         app:layout_constraintEnd_toStartOf="@+id/cbAssigned"
         app:layout_constraintTop_toTopOf="@+id/ivIcon" />
+
+
+
 
     <androidx.appcompat.widget.AppCompatCheckBox
         android:id="@+id/cbAssigned"
@@ -201,11 +161,11 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivGroupHooks" />
+        app:layout_constraintTop_toBottomOf="@+id/ivGroupProfile" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/grpExpanded"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:constraint_referenced_ids="cbForceStop,rvGroup,ivGroupHooks,ivConfigsButton,ivPropertiesButton,ivSettingsExButton" />
+        app:constraint_referenced_ids="cbForceStop,rvGroup,ivGroupProfile" />
 </androidx.constraintlayout.widget.ConstraintLayout>

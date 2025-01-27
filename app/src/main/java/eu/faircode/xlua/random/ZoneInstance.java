@@ -2,7 +2,9 @@ package eu.faircode.xlua.random;
 
 import androidx.annotation.NonNull;
 
-import java.util.concurrent.ThreadLocalRandom;
+
+
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
 public class ZoneInstance {
     public String country;
@@ -15,7 +17,7 @@ public class ZoneInstance {
     public ZoneInstance() { }
 
     public void randomizeAll() {
-        int selection = ThreadLocalRandom.current().nextInt(0, 50);
+        int selection = RandomGenerator.nextInt(0, 50);
         country = ZoneRandom.TIMEZONE_COUNTRIES[selection];
         countryIso = ZoneRandom.TIMEZONE_ISO[selection];
         languageTag = ZoneRandom.LANGUAGE_TAGS[selection];

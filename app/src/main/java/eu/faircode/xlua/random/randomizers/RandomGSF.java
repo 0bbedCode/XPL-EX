@@ -3,13 +3,12 @@ package eu.faircode.xlua.random.randomizers;
 import androidx.annotation.NonNull;
 
 import java.util.List;
-import java.util.Random;
 
-import eu.faircode.xlua.random.IRandomizer;
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
 import eu.faircode.xlua.utilities.RandomStringGenerator;
 
-public class RandomGSF implements IRandomizer {
+public class RandomGSF implements IRandomizerOld {
     @Override
     public boolean isSetting(String setting) {
         return setting.equalsIgnoreCase(getSettingName()) || setting.equalsIgnoreCase("unique.gsf.id");

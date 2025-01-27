@@ -20,14 +20,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
-import eu.faircode.xlua.Str;
-import eu.faircode.xlua.XSecurity;
+import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.api.XProxyContent;
 import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.builders.SimpleReport;
 import eu.faircode.xlua.builders.SimpleReportData;
-import eu.faircode.xlua.utilities.BundleUtil;
+import eu.faircode.xlua.x.xlua.hook.AssignmentLegacy;
 
 public class XReport {
     public static final String EVENT_USE = "use";
@@ -52,7 +50,7 @@ public class XReport {
 
     public static void memberException(Context context, Exception exception, XLuaHook hook, Member member, String function, Object[] args, Object result) { memberException(context, exception, hook, member, function, args, result, true); }
     public static void memberException(Context context, Exception exception, XLuaHook hook, Member member, String function, Object[] args, Object result, boolean log) {
-        if(log) XLog.e("Member Hook Exception", exception, true);
+        if(log) XLog.e("Member Hook Exception", (exception == null ? "null error" : exception) + " Hook ID=" + hook.getId() + " Class=" + hook.getClassName() + " Method=" + hook.getMethodName() + " Collection=" + hook.getCollection() + " Group=" + hook.getGroup(), true);
         exception(hook,
                 Str.combine(XReportFormat.exception(exception, context), XReportFormat.member(member, function,  args, result)),
                 function, context);
@@ -81,7 +79,9 @@ public class XReport {
     public static void installException(XLuaHook hook, Throwable exception, Context context, boolean log) {
         if(log) XLog.e("Hook Install Exception", exception, true);
         SimpleReportData data = new SimpleReportData();
-        data.exception = exception instanceof LuaError ? exception.getMessage() : Log.getStackTraceString(exception);
+        if(exception != null)
+            data.exception = exception instanceof LuaError ? exception.getMessage() : Log.getStackTraceString(exception);
+
         data.function = FUNCTION_NONE;
         push(hook, EVENT_INSTALL, data, context);
     }
@@ -108,7 +108,9 @@ public class XReport {
         try {
             synchronized (queue) {
                 String key = (report.data.function == null ? Str.ASTERISK : report.data.function) + Str.COLLEN + event;
-                if (!queue.containsKey(key)) queue.put(key, new HashMap<String, Bundle>());
+                if (!queue.containsKey(key))
+                    queue.put(key, new HashMap<String, Bundle>());
+
                 Objects.requireNonNull(queue.get(key)).put(report.hook, report.toBundle());
                 if (timer == null) {
                     timer = new Timer();

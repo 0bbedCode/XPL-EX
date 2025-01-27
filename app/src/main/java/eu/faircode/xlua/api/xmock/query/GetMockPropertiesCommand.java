@@ -7,7 +7,7 @@ import eu.faircode.xlua.api.XProxyContent;
 import eu.faircode.xlua.api.properties.MockPropPacket;
 import eu.faircode.xlua.api.xmock.provider.MockPropProvider;
 import eu.faircode.xlua.api.xstandard.QueryCommandHandler;
-import eu.faircode.xlua.api.xstandard.command.QueryPacket;
+import eu.faircode.xlua.api.xstandard.command.QueryPacket_old;
 import eu.faircode.xlua.utilities.CursorUtil;
 
 public class GetMockPropertiesCommand extends QueryCommandHandler {
@@ -22,7 +22,7 @@ public class GetMockPropertiesCommand extends QueryCommandHandler {
     }
 
     @Override
-    public Cursor handle(QueryPacket commandData) throws Throwable {
+    public Cursor handle(QueryPacket_old commandData) throws Throwable {
         MockPropPacket packet = commandData.readFullPacketFrom(MockPropPacket.class, MockPropPacket.USER_QUERY_PACKET_ONE);
         if(packet == null) return null;
         packet.resolveUserID();

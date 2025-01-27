@@ -3,12 +3,12 @@ package eu.faircode.xlua.random.randomizers;
 import androidx.annotation.NonNull;
 
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.faircode.xlua.random.IRandomizer;
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
+import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 
-public class Random6DigitNumber implements IRandomizer  {
+public class Random6DigitNumber implements IRandomizerOld {
     //"gsm.operator.mcc"
     @Override
     public boolean isSetting(String setting) { return getSettingName().equalsIgnoreCase(setting); }
@@ -27,7 +27,7 @@ public class Random6DigitNumber implements IRandomizer  {
     }
 
     @Override
-    public String generateString() { return Integer.toString(ThreadLocalRandom.current().nextInt(100000, 999999)); }
+    public String generateString() { return Integer.toString(RandomGenerator.nextInt(100000, 999999)); }
 
     @Override
     public int generateInteger() { return 0; }

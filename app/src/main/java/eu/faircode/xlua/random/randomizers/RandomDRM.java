@@ -5,10 +5,10 @@ import androidx.annotation.NonNull;
 import java.util.List;
 import java.util.Random;
 
-import eu.faircode.xlua.random.IRandomizer;
+import eu.faircode.xlua.random.IRandomizerOld;
 import eu.faircode.xlua.random.elements.ISpinnerElement;
 
-public class RandomDRM implements IRandomizer {
+public class RandomDRM implements IRandomizerOld {
     @Override
     public boolean isSetting(String setting) {
         return setting.equalsIgnoreCase(getSettingName()) || setting.equalsIgnoreCase("drm") || setting.equalsIgnoreCase("unique.drm.id");
