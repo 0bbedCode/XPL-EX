@@ -19,14 +19,27 @@ android {
         versionName "1.5.1.4"
         archivesBaseName = "XPL-EX-v$versionName-$versionCode"
     }
-    /signingConfigs {
+
+    signingConfigs {
         release {
-            storeFile file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
+            if (System.getenv('GITHUB_WORKSPACE') != null) {
+                storeFile file("${System.getenv('GITHUB_WORKSPACE')}/KEYSTORE.JKS")
+                storePassword System.getenv('KEYSTORE_PASSWORD')
+                keyAlias System.getenv('KEY_ALIAS')
+                keyPassword System.getenv('KEY_PASSWORD')
+            }
         }
-    }/
+
+        // Keys from release are being used anyway but whatever
+        debug {
+            if (System.getenv('GITHUB_WORKSPACE') != null) {
+                storeFile file("${System.getenv('GITHUB_WORKSPACE')}/KEYSTORE.JKS")
+                storePassword System.getenv('KEYSTORE_PASSWORD')
+                keyAlias System.getenv('KEY_ALIAS')
+                keyPassword System.getenv('KEY_PASSWORD')
+            }
+        }
+    }
 
 
 
@@ -40,16 +53,23 @@ android {
             minifyEnabled false
             useProguard = false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            //signingConfig signingConfigs.release
+            if (signingConfigs.release.storeFile) {
+                signingConfig signingConfigs.release
+            }
         }
+
         debug {
             debuggable true
             shrinkResources false
             minifyEnabled false
             useProguard = false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (signingConfigs.release.storeFile) {
+                signingConfig signingConfigs.release
+            }
         }
     }
+
 
     packagingOptions {
         exclude 'META-INF/kotlinx_coroutines_core.version'
