@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <!-- For dark theme, use darker background -->
+            <solid android:color="#33000000" />
+            <!-- Use slightly rounded corners -->
+            <corners android:radius="12dp"/>
+            <!-- Use a thinner stroke with accent color -->
+            <stroke android:width="0.5dp" android:color="?attr/colorAccent"/>
+            <!-- Add padding inside the EditText -->
+            <padding
+                android:left="12dp"
+                android:right="12dp"
+                android:top="8dp"
+                android:bottom="8dp"/>
+        </shape>
+    </item>
+</selector>

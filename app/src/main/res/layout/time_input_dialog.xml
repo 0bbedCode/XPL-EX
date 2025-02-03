@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Value Input -->
+    <TextView
+        android:id="@+id/tvTimeValueLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text_time_value"
+        android:textAppearance="@android:style/TextAppearance.Small"
+        android:layout_marginTop="8dp" />
+
+    <EditText
+        android:id="@+id/etTimeValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:maxLength="8"
+        android:hint="@string/text_enter_time_value" />
+
+    <!-- Time Unit Spinner -->
+    <TextView
+        android:id="@+id/tvTimeUnitLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text_time_unit"
+        android:textAppearance="@android:style/TextAppearance.Small"
+        android:layout_marginTop="16dp" />
+
+    <androidx.appcompat.widget.AppCompatSpinner
+        android:id="@+id/spinnerTimeUnit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:spinnerMode="dropdown" />
+
+</LinearLayout>
