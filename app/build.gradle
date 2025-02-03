@@ -15,7 +15,7 @@ android {
         applicationId "eu.faircode.xlua"
         minSdkVersion 23
         targetSdkVersion 33
-        versionCode 140
+        versionCode 151
         versionName "1.5.1.7"
         archivesBaseName = "XPL-EX-v$versionName-$versionCode"
     }
@@ -40,6 +40,8 @@ android {
             }
         }
     }
+
+
 
     buildFeatures {
         viewBinding true
