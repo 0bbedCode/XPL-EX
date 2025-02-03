@@ -1,8 +1,6 @@
 package eu.faircode.xlua.x.ui.core.view_registry;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -19,12 +17,9 @@ import java.util.Stack;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
-import eu.faircode.xlua.DebugUtil;
-import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.PrefManager;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.data.utils.ObjectUtils;
-import eu.faircode.xlua.x.runtime.RuntimeUtils;
 import eu.faircode.xlua.x.xlua.LibUtil;
 
 /**
@@ -62,6 +57,8 @@ public class SharedRegistry implements ISessionObject {
     private static final int INITIAL_CAPACITY = 16;
     private static final float LOAD_FACTOR = 0.9f;
 
+    public static final String STATE_TAG_KILL = "pkg_kill";
+
     public static final String STATE_TAG_GROUPS = "setting_container_groups";
     public static final String STATE_TAG_SETTINGS = "setting_settings";
     public static final String STATE_TAG_CONTAINERS = "setting_containers";
@@ -74,7 +71,7 @@ public class SharedRegistry implements ISessionObject {
 
     @IntDef({STATE_CHECKED, STATE_EXPANDED})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface StateFlag {}
+    public @interface StateFlag { }
 
     private boolean pinThis = false;
     private final String ID;
@@ -209,7 +206,7 @@ public class SharedRegistry implements ISessionObject {
         if(!ListUtil.isValid(objects)) return;
         for(IIdentifiableObject o : objects) {
             if(o != null) {
-                long hash = RegistryUtils.hashStringToLong_cache(o.getId());
+                long hash = RegistryUtils.hashStringToLong_cache(o.getSharedId());
                 byte currentState = tagStates.get(hash, (byte)0);
                 byte newState = (byte)(checked ? (currentState | STATE_CHECKED) : (currentState & ~STATE_CHECKED));
                 tagStates.put(hash, newState);
@@ -270,7 +267,7 @@ public class SharedRegistry implements ISessionObject {
 
         for(IIdentifiableObject o : objects) {
             if(o != null) {
-                long hash = RegistryUtils.hashStringToLong_cache(o.getId());
+                long hash = RegistryUtils.hashStringToLong_cache(o.getSharedId());
                 if(tagStates.get(hash, (byte)0) != 0)
                     count++;
 

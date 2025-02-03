@@ -33,4 +33,7 @@ public class GetHooksCommand extends QueryCommandHandlerEx {
                 context,
                 marshall ? "getHooks2" : "getHooks", all ? new String[] { "all" } : null);
     }
+
+
+    //return XLuaHookConversions.fromCursor(GetHooksCommand.invoke(context, marshall, true), marshall, true);
 }

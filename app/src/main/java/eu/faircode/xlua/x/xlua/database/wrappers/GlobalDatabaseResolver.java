@@ -521,7 +521,7 @@ public class GlobalDatabaseResolver {
 
         LinkedHashMap<String, LinkedHashMap<String, T>> map = new LinkedHashMap<>();
         for(T item : database_values) {
-            if(TextUtils.isEmpty(item.getCategory()) || TextUtils.isEmpty(item.getId()))
+            if(TextUtils.isEmpty(item.getCategory()) || TextUtils.isEmpty(item.getSharedId()))
                 continue;
 
             LinkedHashMap<String, T> category_values = map.get(item.getCategory());
@@ -529,10 +529,10 @@ public class GlobalDatabaseResolver {
                 category_values = new LinkedHashMap<>();
                 map.put(item.getCategory(), category_values);
                 if(DebugUtil.isDebug())
-                    Log.d(TAG, "Created Map for UID Compression, Category=" + item.getCategory() + " Id=" + item.getId());
+                    Log.d(TAG, "Created Map for UID Compression, Category=" + item.getCategory() + " Id=" + item.getSharedId());
             }
 
-            category_values.put(item.getId(), item);
+            category_values.put(item.getSharedId(), item);
         }
 
         if(DebugUtil.isDebug())

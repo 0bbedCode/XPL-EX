@@ -3,12 +3,20 @@ package eu.faircode.xlua.x.hook.interceptors.file.stat;
 import android.system.StructStat;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 
 import androidx.annotation.NonNull;
 
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.XParam;
+import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 import eu.faircode.xlua.x.runtime.reflect.DynamicField;
 import eu.faircode.xlua.x.data.string.StrBuilder;
@@ -168,9 +176,7 @@ public class StatMockSettings {
     }
 
     public String getField(String fieldName, String originalValue) {
-        String f = internalGetField(fieldName, originalValue);
-        if(DebugUtil.isDebug()) Log.d(TAG, "[getField] Field Name=" + fieldName + " Original Value=" + originalValue + " New Value=" + f);
-        return f;
+        return internalGetField(fieldName, originalValue);
     }
 
     private String internalGetField(String fieldName, String originalValue) {
@@ -198,7 +204,8 @@ public class StatMockSettings {
                             createdSeconds,
                             startRomSeconds,
                             offset);
-                    long[] times = StatUtils.parseTimestamp(lastChangeTimeStamp);
+
+                    long[] times = StatUtils.parseTimestamp(lastAccessTimeStamp);
                     lastAccessTimeSeconds = times[0];
                     lastAccessTimeNanoSeconds = times[1];
                 }
@@ -268,8 +275,12 @@ public class StatMockSettings {
 
             long iNode = STAT_INODE_FIELD.tryGetValueInstanceEx(obj, 0L);
             if(iNode != 0) {
-                if(DebugUtil.isDebug()) Log.d(TAG, "Struct STAT Inode=" + iNode);
-                if(this.inode == 0) getField("inode", String.valueOf(iNode));
+                if(DebugUtil.isDebug())
+                    Log.d(TAG, "Struct STAT Inode=" + iNode);
+
+                if(this.inode == 0)
+                    getField("inode", String.valueOf(iNode));
+
                 STAT_INODE_FIELD.trySetValueInstanceEx(obj, this.inode);
                 if(param != null || DebugUtil.isDebug()) {
                     orgValue.appendFieldLine("Inode", iNode);
@@ -282,7 +293,9 @@ public class StatMockSettings {
                 if(DebugUtil.isDebug())
                     Log.d(TAG, "Struct STAT access, Seconds=" + access[0] +  " Nano Seconds=" + access[1] + " Time Stamp=" + StatUtils.timespecToString(access[0], access[1]));
 
-                if(TextUtils.isEmpty(this.lastAccessTimeStamp)) getField("access", StatUtils.timespecToString(access[0], access[1]));
+                if(TextUtils.isEmpty(this.lastAccessTimeStamp))
+                    getField("access", StatUtils.timespecToString(access[0], access[1]));
+
                 setTimes(obj, TimeKind.ACCESS, access[0], access[1]);
                 if(param != null || DebugUtil.isDebug()) {
                     orgValue.appendFieldLine("Access", StatUtils.timespecToString(access[0], access[1]));
@@ -290,12 +303,20 @@ public class StatMockSettings {
                 }
             }
 
+            //Nanos     [0]
+            //Seconds   [1]
+
             long[] modified = getTimes(obj, TimeKind.MODIFY);
             if(modified[0] > 0) {
                 if(DebugUtil.isDebug())
                     Log.d(TAG, "Struct STAT modified, Seconds=" + modified[0] +  " Nano Seconds=" + modified[1] + " Time Stamp=" + StatUtils.timespecToString(modified[0], modified[1]));
 
-                if(TextUtils.isEmpty(this.lastModifiedTimeStamp)) getField("modify", StatUtils.timespecToString(modified[0], modified[1]));
+                String offset = param.getSetting("file.modify.time.offset");
+
+
+                if(TextUtils.isEmpty(this.lastModifiedTimeStamp))
+                    getField("modify", StatUtils.timespecToString(modified[0], modified[1]));
+
                 setTimes(obj, TimeKind.MODIFY, modified[0], modified[1]);
                 if(param != null || DebugUtil.isDebug()) {
                     orgValue.appendFieldLine("Modify", StatUtils.timespecToString(modified[0], modified[1]));
@@ -308,7 +329,9 @@ public class StatMockSettings {
                 if(DebugUtil.isDebug())
                     Log.d(TAG, "Struct STAT Change, Seconds=" + change[0] +  " Nano Seconds=" + change[1] + " Time Stamp=" + StatUtils.timespecToString(change[0], change[1]));
 
-                if(TextUtils.isEmpty(this.lastChangeTimeStamp)) getField("change", StatUtils.timespecToString(change[0], change[1]));
+                if(TextUtils.isEmpty(this.lastChangeTimeStamp))
+                    getField("change", StatUtils.timespecToString(change[0], change[1]));
+
                 setTimes(obj, TimeKind.CHANGE, change[0], change[1]);
                 if(param != null || DebugUtil.isDebug()) {
                     orgValue.appendFieldLine("Change", StatUtils.timespecToString(change[0], change[1]));
@@ -330,6 +353,8 @@ public class StatMockSettings {
             }
         }
     }
+
+    //We can store settings like "file.timestamp.[FILE].modify.time" or "file.timestamp.[FILE].modify.time.offset"
 
     public static void setTimes(Object instance, TimeKind kind, long seconds, long nanoSeconds) {
         if(instance == null) return;

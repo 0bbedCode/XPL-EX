@@ -48,7 +48,6 @@ import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import eu.faircode.xlua.x.LogX;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.hook.filter.HookRepository;
@@ -76,6 +75,10 @@ import eu.faircode.xlua.x.xlua.hook.PackageHookContext;
         [>] Add the remaining remapped Entries
         [>] Ensure use Proper abstraction, Returning Collection is useless as Caller function Can cast to get it as Collection so have it return something like list
         [>] When doing "toString" function ensure the "appendFieldLine" takes in the Constant for the Field Name if available
+        [>] Make a System that for one compresses more of the fragment bullshit
+        [>] Make a Application shared system
+        [>] Clean up shared
+        [>] Make a System for like "onDataEvent(Object o)"
  */
 
 public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
@@ -251,7 +254,7 @@ public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
         for(final XLuaHook hook : HookRepository.create().doFiltering(context, hooks, app.settings).getHooks()) {
             try {
                 if(!hook.isAvailable(pInfo.versionCode)) {
-                    Log.w(TAG, "Hook is not compatible with Target SDK: " + hook.getId());
+                    Log.w(TAG, "Hook is not compatible with Target SDK: " + hook.getSharedId());
                     continue;
                 }
 
@@ -286,9 +289,9 @@ public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
                             }
 
                             Varargs result = luaField.invoke();
-                            //XReport.usage(hook, result, run, XReport.FUNCTION_AFTER, context);
+                            XReport.usage(hook, result, run, XReport.FUNCTION_AFTER, context);
                         }catch (Exception e) {
-                            //XReport.fieldException(context, e, hook, field);
+                            XReport.fieldException(context, e, hook, field);
                         }
                     }
                 }else {
@@ -298,7 +301,7 @@ public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
                             Log.d(TAG, "Hook Member Name=" + member.getName());
 
                         if(target.hasMismatchReturn(member)) {
-                            Log.e(TAG, Str.fm("Hook has an Invalid Return Type, Hook id=%s Return Type=%s", hook.getId(), hook.getReturnType()));
+                            Log.e(TAG, Str.fm("Hook has an Invalid Return Type, Hook id=%s Return Type=%s", hook.getSharedId(), hook.getReturnType()));
                             continue;
                         }
 
@@ -356,18 +359,19 @@ public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
                                     }
 
                                     Varargs result = luaMember.invoke();
-                                    //XReport.usage(hook, result, run, function, context);
+                                    //Log.d(TAG, "Result=" + Str.toStringOrNull(result));
+                                    XReport.usage(hook, result, run, function, context);
                                 }catch (Exception ex) {
                                     synchronized (threadGlobals) {
                                         threadGlobals.remove(Thread.currentThread());
                                     }
-                                    //XReport.memberException(context, ex, hook, member, function, param);
+                                    XReport.memberException(context, ex, hook, member, function, param);
                                 }
                             }
                         });
                     }
                     else
-                        Log.e(TAG, Str.fm("Member is NULL, Hook Name=%s Id=%s", hook.getName(), hook.getId()));
+                        Log.e(TAG, Str.fm("Member is NULL, Hook Name=%s Id=%s", hook.getName(), hook.getSharedId()));
                 }
 
 
@@ -376,14 +380,14 @@ public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
 
 
                 //XReport.install();
-                //if (BuildConfig.DEBUG)
-                    //XReport.install(hook, install, context);
+                if (BuildConfig.DEBUG)
+                    XReport.install(hook, install, context);
 
             }catch (Throwable fe) {
                 if (hook.isOptional() && ReflectUtilEx.isReflectError(fe))
-                    XLog.e("Optional Hook=" + hook.getId() + " class=" + fe.getClass().getName(), fe, true);
-                //else
-                    //XReport.installException(hook, fe, context);
+                    XLog.e("Optional Hook=" + hook.getSharedId() + " class=" + fe.getClass().getName(), fe, true);
+                else
+                    XReport.installException(hook, fe, context);
             }
         }
     }

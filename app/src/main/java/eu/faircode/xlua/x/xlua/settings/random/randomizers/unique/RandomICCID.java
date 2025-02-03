@@ -41,7 +41,7 @@ public class RandomICCID extends RandomElement {
     @Override
     public void randomize(RandomizerSessionContext context) {
         String name = context.stack.pop();
-        if(!context.values.containsKey(name)) {
+        if(!context.wasRandomized(name)) {
             List<String> req = context.resolveRequirements(getRequirements(name));
             String countryCode = context.getValue(req.get(0));
             String mnc = context.getValue( req.get(1));

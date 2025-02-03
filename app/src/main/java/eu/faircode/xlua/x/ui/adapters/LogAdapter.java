@@ -42,7 +42,7 @@ public class LogAdapter  extends RecyclerView.Adapter<LogAdapter.LogViewHolder> 
         //holder.ivLogIcon.setImageResource(log.getIconResId()); // Assuming a resource ID for icons
 
         holder.tvLogType.setText(String.valueOf(log.type));
-        holder.tvLogTime.setText(formatTime(log.time));
+        holder.tvLogTime.setText(log.time > 1 ? formatTime(log.time) : formatTime(System.currentTimeMillis()));
 
         // Set log category and message
         holder.tvLogCategory.setText(log.category);

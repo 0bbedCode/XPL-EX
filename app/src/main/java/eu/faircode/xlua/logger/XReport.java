@@ -25,7 +25,6 @@ import eu.faircode.xlua.api.XProxyContent;
 import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.builders.SimpleReport;
 import eu.faircode.xlua.builders.SimpleReportData;
-import eu.faircode.xlua.x.xlua.hook.AssignmentLegacy;
 
 public class XReport {
     public static final String EVENT_USE = "use";
@@ -39,7 +38,7 @@ public class XReport {
 
     public static void fieldException(Context context, Exception exception, XLuaHook hook, Field field) { fieldException(context, exception, hook, field, true); }
     public static void fieldException(Context context, Exception exception, XLuaHook hook, Field field, boolean log) {
-        if(log) XLog.e("Field Hook Exception", exception, true);
+        //if(log) XLog.e("Field Hook Exception", exception, true);
         exception(hook,
                 Str.combine(XReportFormat.exception(exception, context), XReportFormat.field(field)),
                 FUNCTION_AFTER, context);
@@ -50,7 +49,7 @@ public class XReport {
 
     public static void memberException(Context context, Exception exception, XLuaHook hook, Member member, String function, Object[] args, Object result) { memberException(context, exception, hook, member, function, args, result, true); }
     public static void memberException(Context context, Exception exception, XLuaHook hook, Member member, String function, Object[] args, Object result, boolean log) {
-        if(log) XLog.e("Member Hook Exception", (exception == null ? "null error" : exception) + " Hook ID=" + hook.getId() + " Class=" + hook.getClassName() + " Method=" + hook.getMethodName() + " Collection=" + hook.getCollection() + " Group=" + hook.getGroup(), true);
+        //if(log) XLog.e("Member Hook Exception", (exception == null ? "null error" : exception) + " Hook ID=" + hook.getId() + " Class=" + hook.getClassName() + " Method=" + hook.getMethodName() + " Collection=" + hook.getCollection() + " Group=" + hook.getGroup(), true);
         exception(hook,
                 Str.combine(XReportFormat.exception(exception, context), XReportFormat.member(member, function,  args, result)),
                 function, context);
@@ -77,7 +76,7 @@ public class XReport {
 
     public static void installException(XLuaHook hook, Throwable exception, Context context) { installException(hook, exception, context, true); }
     public static void installException(XLuaHook hook, Throwable exception, Context context, boolean log) {
-        if(log) XLog.e("Hook Install Exception", exception, true);
+        //if(log) XLog.e("Hook Install Exception", exception, true);
         SimpleReportData data = new SimpleReportData();
         if(exception != null)
             data.exception = exception instanceof LuaError ? exception.getMessage() : Log.getStackTraceString(exception);
@@ -95,7 +94,7 @@ public class XReport {
 
     public static void push(XLuaHook hook, String event, SimpleReportData data, Context context) {
         SimpleReport report = new SimpleReport();
-        report.hook = hook.getId();
+        report.hook = hook.getSharedId();
         report.packageName = context.getPackageName();
         report.uid = context.getApplicationInfo().uid;
         report.event = event;
@@ -132,7 +131,7 @@ public class XReport {
                 }
             }
         }catch (Exception e) {
-            XLog.e("Failed to Push Report Message to Database!", e, true);
+            //XLog.e("Failed to Push Report Message to Database!", e, true);
         }
     }
 }

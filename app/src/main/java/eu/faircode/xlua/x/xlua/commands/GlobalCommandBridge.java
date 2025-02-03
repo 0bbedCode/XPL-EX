@@ -22,12 +22,14 @@ import eu.faircode.xlua.x.xlua.commands.call.GetVersionExCommand;
 import eu.faircode.xlua.x.xlua.commands.call.PutAppProfileCommand;
 import eu.faircode.xlua.x.xlua.commands.call.PutConfigCommand;
 import eu.faircode.xlua.x.xlua.commands.call.PutSettingExCommand;
+import eu.faircode.xlua.x.xlua.commands.call.ReportCommand;
 import eu.faircode.xlua.x.xlua.commands.call.SetAppProfileCommand;
 import eu.faircode.xlua.x.xlua.commands.packet.CallPacket;
 import eu.faircode.xlua.x.xlua.commands.packet.QueryPacket;
 import eu.faircode.xlua.x.xlua.commands.query.GetAppsCommand;
 import eu.faircode.xlua.x.xlua.commands.query.GetAssignedHooksExCommand;
 import eu.faircode.xlua.x.xlua.commands.query.GetAssignedHooksLegacyCommand;
+import eu.faircode.xlua.x.xlua.commands.query.GetAssignmentsCommand;
 import eu.faircode.xlua.x.xlua.commands.query.GetConfigsCommand;
 import eu.faircode.xlua.x.xlua.commands.query.GetHooksCommand;
 import eu.faircode.xlua.x.xlua.commands.query.GetSettingsExCommand;
@@ -47,6 +49,8 @@ public class GlobalCommandBridge {
                 .registerCall(AssignHooksCommand.class)
                 .registerCall(GetAppInfoCommand.class)
 
+                .registerCall(ReportCommand.class)
+
 
                 .registerCall(PutConfigCommand.class)
 
@@ -63,6 +67,8 @@ public class GlobalCommandBridge {
 
                 .registerQuery(GetAppsCommand.class, true)
                 .registerQuery(GetHooksCommand.class, true)
+
+                .registerQuery(GetAssignmentsCommand.class, true)
 
                 .registerQuery(GetConfigsCommand.class, true)
 

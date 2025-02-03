@@ -21,20 +21,30 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.R;
+import eu.faircode.xlua.api.hook.XLuaHook;
+import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 import eu.faircode.xlua.x.ui.adapters.LogAdapter;
+import eu.faircode.xlua.x.xlua.LibUtil;
+import eu.faircode.xlua.x.xlua.commands.query.GetAssignedHooksExCommand;
+import eu.faircode.xlua.x.xlua.commands.query.GetAssignmentsCommand;
+import eu.faircode.xlua.x.xlua.hook.AssignmentPacket;
 import eu.faircode.xlua.x.xlua.log.LogPacket;
 
 public class LogDialog extends AppCompatDialogFragment {
-    private static final String TAG = "XLua.LuaDialog";
+    private static final String TAG = LibUtil.generateTag(LogDialog.class);
 
-    public static LogDialog create(Context context) { return new LogDialog(context); }
+    public static LogDialog create() { return new LogDialog(); }
+
+    //public static LogDialog create(Context context) { return new LogDialog(context); }
 
     private Context context;
     private RecyclerView rvLogs;
@@ -42,15 +52,49 @@ public class LogDialog extends AppCompatDialogFragment {
     private CheckBox cbNewToOld;
     private Spinner spLogType;
     private LogAdapter logAdapter;
-    private List<LogPacket> logs;
+    private final List<LogPacket> logs = new ArrayList<>();
 
-    public LogDialog(Context context) { this.context = context; test(); }
-    public LogDialog(Context context, List<LogPacket> logs) {
-        this.context = context;
-        this.logs = logs;
+    //public LogDialog(Context context) { this.context = context; }
+    //public LogDialog(Context context, List<LogPacket> logs) {
+    //    this.context = context;
+    //    this.logs = logs;
+    //}
+
+    private int uid;
+    private String packageName;
+
+    public LogDialog setApp(int uid, String packageName) {
+        this.uid = uid;
+        this.packageName = packageName;
+        return this;
     }
 
-    public LogDialog test() {
+    public LogDialog refresh(Context context) {
+        List<AssignmentPacket> assignments = GetAssignmentsCommand.get(context, true, uid, packageName, 0);
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Got Assignments=" + ListUtil.size(assignments));
+
+        this.logs.clear();
+        if(ListUtil.isValid(assignments)) {
+            for(AssignmentPacket packet : assignments) {
+                Log.e(TAG, "HookId=" + packet.getHookId());
+                LogPacket log = new LogPacket();
+                log.category = packet.getHookId();
+                log.message = Str.isEmpty(packet.oldValue) && Str.isEmpty(packet.newValue) ? "Installed" :
+                        Str.combineEx("New:\n", packet.newValue, "\n\nOld:\n", packet.oldValue);
+                log.type = 0;
+                log.time = packet.used;
+                if(DebugUtil.isDebug())
+                    Log.d(TAG, "Log Hook Id=" + packet.hook + " Data=" + Str.toStringOrNull(packet));
+
+                this.logs.add(log);
+            }
+        }
+
+        return this;
+    }
+
+    /*public LogDialog test() {
         int ran = RandomGenerator.nextInt(3, 50);
 
         List<LogPacket> packets = new ArrayList<>();
@@ -70,7 +114,7 @@ public class LogDialog extends AppCompatDialogFragment {
         this.logs = packets;
 
         return this;
-    }
+    }*/
 
     @NonNull
     @Override
@@ -100,9 +144,7 @@ public class LogDialog extends AppCompatDialogFragment {
         spLogType.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, new String[]{"Error", "Usage", "Deploy"}));
 
         // Setup checkbox listener for sorting
-        cbNewToOld.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            sortLogsByDate(isChecked);
-        });
+        cbNewToOld.setOnCheckedChangeListener((buttonView, isChecked) -> sortLogsByDate(isChecked));
     }
 
     private void setupRecyclerView() {
@@ -159,5 +201,11 @@ public class LogDialog extends AppCompatDialogFragment {
             });
         }
         logAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.context = context;
     }
 }

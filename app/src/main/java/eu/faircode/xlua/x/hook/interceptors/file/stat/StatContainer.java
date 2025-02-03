@@ -96,9 +96,10 @@ public class StatContainer {
         try {
             Object result = param.tryGetResult(null);
             if(result instanceof StructStat) {
-                if(DebugUtil.isDebug()) Log.d(TAG, "Handling Struct STAT, on File=" + file);
-                if(DebugUtil.isDebug()) Log.d(TAG, fakeSettings.toString());
                 fakeSettings.cleanStructure(result, param);
+
+
+
                 param.setResult(result);
                 if(DebugUtil.isDebug()) Log.d(TAG, fakeSettings.toString());
                 return true;

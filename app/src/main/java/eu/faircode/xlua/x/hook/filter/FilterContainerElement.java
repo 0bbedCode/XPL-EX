@@ -1,44 +1,66 @@
 package eu.faircode.xlua.x.hook.filter;
 
-import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.api.hook.XLuaHook;
+import eu.faircode.xlua.utilities.JSONUtil;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.FilterHooksHolder;
 import eu.faircode.xlua.x.data.string.StrBuilder;
 import eu.faircode.xlua.x.data.TypeMap;
 import eu.faircode.xlua.x.data.utils.ArrayUtils;
+import eu.faircode.xlua.x.runtime.RuntimeUtils;
+import eu.faircode.xlua.x.xlua.LibUtil;
 
 public class FilterContainerElement implements IFilterContainer {
-    private static final String TAG = "XLua.FilterContainerElement";
+    private static final String TAG = LibUtil.generateTag(FilterContainerElement.class);
 
-    protected FilterHooksHolder holder = FilterHooksHolder.create();
     protected TypeMap definitions;
     protected String groupName;
-    protected HashMap<String, String> settings = new HashMap<>();
+    protected FilterHooksHolder factory = FilterHooksHolder.create();
+    protected HashMap<String, String> createdSettings = new HashMap<>();
 
+    public FilterContainerElement() { }
     public FilterContainerElement(String groupName, TypeMap definitions) { this.groupName = groupName; this.definitions = definitions; }
 
     @Override
     public String getGroupName() { return groupName; }
 
+    public void putSettingPair(String name, String value) {
+        if(Str.isEmpty(name)) {
+            Log.e(TAG, Str.fm("Setting for Group [%s] Passed was NULL or Empty! Stack=[%s]", groupName, RuntimeUtils.getStackTraceSafeString(new Throwable())));
+            return;
+        }
+
+        if(value == null) {
+            Log.w(TAG, Str.fm("Setting [%s] has a NULL Value! Replacing with a Empty String! Group [%s]", name, groupName));
+            value = Str.EMPTY;
+        }
+
+        if(createdSettings.containsKey(name)) {
+            String old = createdSettings.get(name);
+            Log.e(TAG, Str.fm("Setting [%s] is already in the List of Created Settings! Replacing old! Group=[%s] New Value=[%s] Old Value=[%s]", name, groupName, value, old));
+        }
+
+        createdSettings.put(name, value);
+    }
+
     @Override
     public boolean hasSwallowedAsDefinition(XLuaHook hook) {
-        if(hook.getGroup().equalsIgnoreCase(groupName)) {
+        if(isGroup(hook)) {
             if(definitions.hasDefinition(hook.getClassName(), hook.getMethodName())) {
-                holder.addBase(hook);
+                factory.addBase(hook);
                 if(DebugUtil.isDebug())
-                    Log.d(TAG, "Hook [" + hook.getId() + "] Is a base Hook from Group [" + groupName + "] " + Str.ensureNoDoubleNewLines(Str.hookToJsonString(hook)));
-                //Rules can be parsed in different ways, only thing reserved is class name indicating the group
-                //Group is Reserved for the group as well but they are base hooks (actual hooks) when the group is the class name (below) then its a rule
+                    Log.d(TAG, Str.fm("Found a Hook Definition [%s] For this Group [%s] added to List of Definitions, Count=[%s]", hook.getSharedId(), groupName, factory.baseCount()));
+
                 return true;
             }
         }
@@ -48,10 +70,10 @@ public class FilterContainerElement implements IFilterContainer {
 
     @Override
     public boolean hasSwallowedAsRule(XLuaHook hook) {
-        if(hook.getClassName().equalsIgnoreCase(groupName)) {
-            holder.addRule(hook);
+        if(isClassGroup(hook)) {
+            factory.addRule(hook);
             if(DebugUtil.isDebug())
-                Log.d(TAG, "Hook [" + hook.getId() + "] Is a Rule Hook from Group [" + groupName + "] " + Str.ensureNoDoubleNewLines(Str.hookToJsonString(hook)));
+                Log.d(TAG, Str.fm("Found a Rule [%s] for this Hook Group [%s], added Rules Count=[%s]", hook.getSharedId(), groupName, factory.ruleCount()));
 
             String[] params = hook.getParameterTypes();
             if(ArrayUtils.isValid(params)) {
@@ -64,9 +86,8 @@ public class FilterContainerElement implements IFilterContainer {
                         if(p.length() == 2) {
                             String settingName = parts[0].trim();
                             String settingValue = parts[1];
-                            if(!TextUtils.isEmpty(settingValue)) {
-                                settings.put(settingName, settingValue);
-                            }
+                            if(!Str.isEmpty(settingValue))
+                                createdSettings.put(settingName, settingValue);
                         }
                     }
                 }
@@ -78,23 +99,150 @@ public class FilterContainerElement implements IFilterContainer {
 
     @Override
     public void initializeDefinitions(List<XLuaHook> hooks, Map<String, String> settings) {
-        if(hooks != null) {
-            if(holder.hasRules() && holder.hasBases())
-                hooks.addAll(holder.getBaseHooks());
-        }
+        if(hooks != null)
+            if(factory.hasRules() && factory.hasBases())
+                hooks.addAll(factory.getBaseHooks());
 
-        if(settings != null) {
-            if(!this.settings.isEmpty()) {
-                settings.putAll(this.settings);
-            }
-        }
+        if(settings != null)
+            if(!this.createdSettings.isEmpty())
+                settings.putAll(this.createdSettings);
     }
 
     @Override
-    public List<XLuaHook> getRules() { return holder.getRuleHooks();  }
+    public List<XLuaHook> getRules() { return factory.getRuleHooks();  }
 
     @Override
-    public List<XLuaHook> getFilterBases() { return holder.getBaseHooks(); }
+    public List<XLuaHook> getFilterBases() { return factory.getBaseHooks(); }
+
+    public boolean isClassGroup(XLuaHook hook) { return isClassGroup(hook, false, false); }
+    public boolean isClassGroup(XLuaHook hook, boolean checkHasParams) { return isClassGroup(hook, checkHasParams, false); }
+    public boolean isClassGroup(XLuaHook hook, boolean checkHasParams, boolean checkHasSettings) {
+        if(!isDefinitionValid(hook, checkHasParams, checkHasSettings))
+            return false;
+
+        return hook.getClassName().equalsIgnoreCase(groupName);
+    }
+
+    public boolean isGroup(XLuaHook hook) { return isGroup(hook, false, false); }
+    public boolean isGroup(XLuaHook hook, boolean checkHasParams) { return isGroup(hook, checkHasParams, false); }
+    public boolean isGroup(XLuaHook hook, boolean checkHasParams, boolean checkHasSettings) {
+        if(!isDefinitionValid(hook, checkHasParams, checkHasSettings))
+            return false;
+
+        return hook.getGroup().equalsIgnoreCase(groupName);
+    }
+
+    public boolean isDefinitionValid(XLuaHook hook) { return isDefinitionValid(hook, false, false); }
+    public boolean isDefinitionValid(XLuaHook hook, boolean checkHasParams) { return isDefinitionValid(hook, checkHasParams, false); }
+    public boolean isDefinitionValid(XLuaHook hook, boolean checkHasParams, boolean checkHasSettings) {
+        if(hook == null) {
+            Log.e(TAG, "Critical Error, some how the Hook Definition passed is Null ? Check your fucking Code! Stack=" + RuntimeUtils.getStackTraceSafeString(new Throwable()));
+            return false;
+        }
+
+        if(Str.isEmpty(hook.getClassName()) || Str.isEmpty(hook.getMethodName()) || Str.isEmpty(hook.getGroup())) {
+            Log.e(TAG, "Error, Hook Definition is Invalid, is Missing Class Name, Method Name or Group Name! Hook=" + JSONUtil.toJsonString(hook));
+            return false;
+        }
+
+        return !(checkHasParams && !hasParams(hook) || checkHasSettings && !hasSettings(hook));
+    }
+
+    public boolean hasParams(XLuaHook hook) {
+        if(hook == null) {
+            Log.e(TAG, "(hasParams) Error Hook Input is Null! Stack=" + RuntimeUtils.getStackTraceSafeString(new Throwable()));
+            return false;
+        }
+
+        if(!ArrayUtils.isValid(hook.getParameterTypes())) {
+            Log.e(TAG, "Error, Hook Definition is Invalid, is Missing Parameter Types! Hook=" + JSONUtil.toJsonString(hook));
+            return false;
+        }
+
+        return true;
+    }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public boolean hasSettings(XLuaHook hook) {
+        if(hook == null) {
+            Log.e(TAG, "(hasSettings) Error Hook Input is Null! Stack=" + RuntimeUtils.getStackTraceSafeString(new Throwable()));
+            return false;
+        }
+
+        if(!ArrayUtils.isValid(hook.getSettings())) {
+            Log.e(TAG, "Error, Hook Definition is Invalid, is Missing Settings! Hook=" + JSONUtil.toJsonString(hook));
+            return false;
+        }
+
+        return true;
+    }
+
+    public List<String> parseArgsAsAuthorities(XLuaHook hook) {
+        List<String> auths = new ArrayList<>();
+        if(!hasParams(hook)) {
+            Log.w(TAG, "Hook is Some how missing param types or is Null, using [*] (wild card) for Authorities! Hook=" + JSONUtil.toJsonString(hook));
+            auths.add("*");
+            return auths;
+        }
+
+        String[] params = hook.getParameterTypes();
+        for(String auth : params) {
+            if(!Str.isEmpty(auth)) {
+                String trimmed = Str.trimEx(auth, true, true);
+                if(!Str.isEmpty(trimmed))
+                    auths.add(trimmed);
+            }
+        }
+
+        if(auths.isEmpty()) {
+            Log.w(TAG, Str.fm("No Valid Param Types for Hook [%s] under Group [%s], using [*] (wild card) for Authorities!", hook.getSharedId(), groupName));
+            auths.add("*");
+        }
+
+        return auths;
+    }
+
+    @SuppressWarnings("IndexOfReplaceableByContains")
+    public List<String> parseMethodAsFilter(XLuaHook hook, boolean trimWhiteSpace) {
+        //Also Support parse by new line!
+        List<String> filter = new ArrayList<>();
+        if(hook == null || Str.isEmpty(hook.getMethodName())) {
+            Log.w(TAG, "Hook is Some how missing method name or is Null, using [*] (wild card), Hook=" + JSONUtil.toJsonString(hook));
+            filter.add("*");
+            return filter;
+        }
+
+        String method = hook.getMethodName();
+        if(method.indexOf("|") > -1) {
+            String[] parts = hook.getMethodName().split("\\|");
+            for(String p : parts) {
+                if(!Str.isEmpty(p)) {
+                    if(trimWhiteSpace) {
+                        String trimmed = Str.trimEx(p, true, true);
+                        if(!Str.isEmpty(trimmed))
+                            filter.add(trimmed);
+                    } else {
+                        filter.add(p);
+                    }
+                }
+            }
+        } else {
+            filter.add(method);
+        }
+
+        if(filter.isEmpty()) {
+            Log.w(TAG, Str.fm("No Valid Filters for Hook [%s] under Group [%s], using [*] (wild card) for Filters!", hook.getSharedId(), groupName));
+            filter.add("*");
+        }
+
+        return filter;
+    }
+
+    // "query:[" + auth + "]:" + pair.name;
+
+    public String createQuerySetting(String auth, String name) { return Str.isEmpty(auth) || Str.isEmpty(name) ? null : Str.combineEx("query:[", auth, "]:", name);  }
+    public String createAuthoritySetting(String rule) { return !Str.isEmpty(rule) ? Str.combine("query:", rule) : rule; }
+    public String createCallSetting(String rule) { return !Str.isEmpty(rule) ? Str.combine("call:", rule) : rule; }
 
     @NonNull
     @Override
@@ -103,9 +251,9 @@ public class FilterContainerElement implements IFilterContainer {
                 .ensureOneNewLinePer(true)
                 .appendLine("==============================")
                 .appendFieldLine("Group Name", groupName)
-                .appendFieldLine("Base Hook Count", holder.baseCount())
-                .appendFieldLine("Rule Hook Count", holder.ruleCount())
-                .appendFieldLine("Settings Count", settings.size())
+                .appendFieldLine("Base Hook Count", factory.baseCount())
+                .appendFieldLine("Rule Hook Count", factory.ruleCount())
+                .appendFieldLine("Settings Count", createdSettings.size())
                 .appendLine("==============================")
                 .toString(true);
     }

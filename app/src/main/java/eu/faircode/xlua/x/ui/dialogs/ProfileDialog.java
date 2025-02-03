@@ -2,7 +2,6 @@ package eu.faircode.xlua.x.ui.dialogs;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -22,7 +21,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -96,7 +94,7 @@ public class ProfileDialog extends AppCompatDialogFragment {
         for(SettingHolder setting : settings) {
             SettingPacket packet = new SettingPacket(setting.getName(), setting.getValue());
             this.settings.add(packet);
-            sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, packet.getId(), true); // Auto-check all settings
+            sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, packet.getSharedId(), true); // Auto-check all settings
         }
 
         if(DebugUtil.isDebug())
@@ -115,7 +113,7 @@ public class ProfileDialog extends AppCompatDialogFragment {
         int checked = 0;
         int total = this.settings.size();
         for(SettingPacket setting : this.settings)
-            if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getId()))
+            if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId()))
                 checked++;
 
         return Pair.create(checked, total);
@@ -182,7 +180,7 @@ public class ProfileDialog extends AppCompatDialogFragment {
         cbCheckSettingsBulk.setOnClickListener(v -> {
             boolean bulkChecked = cbCheckSettingsBulk.isChecked();
             for (SettingPacket setting : settings) {
-                sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getId(), bulkChecked);
+                sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId(), bulkChecked);
             }
             settingsAdapter.notifyDataSetChanged(); // Update UI
             updateBulkCheckboxAndLabel(cbCheckSettingsBulk, tvSelectedSettingsLabel);
@@ -250,7 +248,7 @@ public class ProfileDialog extends AppCompatDialogFragment {
                     ListUtil.addAllIfValid(profile.fileBackups, enabledDirs);
                     List<SettingPacket> enabledSettings = new ArrayList<>();
                     for(SettingPacket setting : settings)
-                        if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getId()))
+                        if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId()))
                             enabledSettings.add(setting);
 
                     XPConfig config = XPConfig.create(profile, null, enabledSettings);
@@ -358,7 +356,7 @@ public class ProfileDialog extends AppCompatDialogFragment {
 
         // Count the number of checked items
         for (SettingPacket setting : settings) {
-            if (sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getId())) {
+            if (sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId())) {
                 checked++;
             }
         }

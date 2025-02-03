@@ -16,6 +16,74 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/flSettingsButtonSix"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:visibility="invisible"
+        android:focusable="true"
+        android:clickable="true"
+        app:layout_constraintBottom_toTopOf="@+id/flSettingsButtonFive"
+        app:layout_constraintEnd_toEndOf="@+id/flSettingsButtonFive"
+        app:layout_constraintStart_toStartOf="@+id/flSettingsButtonFive"
+        app:srcCompat="@drawable/ic_rnd18" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/flSettingsButtonFive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:visibility="invisible"
+        android:focusable="true"
+        android:clickable="true"
+        app:layout_constraintBottom_toTopOf="@+id/flSettingsButtonFour"
+        app:layout_constraintEnd_toEndOf="@+id/flSettingsButtonFour"
+        app:layout_constraintStart_toStartOf="@+id/flSettingsButtonFour"
+        app:srcCompat="@drawable/ic_delete18" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/flSettingsButtonFour"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:visibility="invisible"
+        android:focusable="true"
+        android:clickable="true"
+        app:layout_constraintBottom_toTopOf="@+id/flSettingsButtonThree"
+        app:layout_constraintEnd_toEndOf="@+id/flSettingsButtonThree"
+        app:layout_constraintStart_toStartOf="@+id/flSettingsButtonThree"
+        app:srcCompat="@drawable/ic_save18" />
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/flSettingsButtonThree"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:visibility="invisible"
+        android:focusable="true"
+        android:clickable="true"
+        app:layout_constraintBottom_toTopOf="@+id/flSettingsButtonTwo"
+        app:layout_constraintEnd_toEndOf="@+id/flSettingsButtonTwo"
+        app:layout_constraintStart_toStartOf="@+id/flSettingsButtonTwo"
+        app:srcCompat="@drawable/ic_add18" />
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/flSettingsButtonTwo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/flSettingsButtonOne"
+        app:layout_constraintEnd_toEndOf="@+id/flSettingsButtonOne"
+        app:layout_constraintStart_toStartOf="@+id/flSettingsButtonOne"
+        app:srcCompat="@drawable/ic_random18" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/flSettingsButtonOne"
         android:layout_width="wrap_content"
@@ -29,54 +97,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_edit_button" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/flSettingsButtonTwo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/flSettingsButtonOne"
-        app:layout_constraintEnd_toEndOf="@+id/flSettingsButtonOne"
-        app:layout_constraintStart_toStartOf="@+id/flSettingsButtonOne"
-        app:srcCompat="@drawable/ic_remix_dice_fill" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/flSettingsButtonThree"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:visibility="invisible"
-        android:clickable="true"
-        app:layout_constraintBottom_toTopOf="@+id/flSettingsButtonTwo"
-        app:layout_constraintEnd_toEndOf="@+id/flSettingsButtonTwo"
-        app:layout_constraintStart_toStartOf="@+id/flSettingsButtonTwo"
-        app:srcCompat="@drawable/ic_remix_add_fill" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/flSettingsButtonFour"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:visibility="invisible"
-        android:clickable="true"
-        app:layout_constraintBottom_toTopOf="@+id/flSettingsButtonThree"
-        app:layout_constraintEnd_toEndOf="@+id/flSettingsButtonThree"
-        app:layout_constraintStart_toStartOf="@+id/flSettingsButtonThree"
-        app:srcCompat="@drawable/ic_remix_save_3_fill" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/flSettingsButtonFive"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:visibility="invisible"
-        android:clickable="true"
-        app:layout_constraintBottom_toTopOf="@+id/flSettingsButtonFour"
-        app:layout_constraintEnd_toEndOf="@+id/flSettingsButtonFour"
-        app:layout_constraintStart_toStartOf="@+id/flSettingsButtonFour"
-        app:srcCompat="@drawable/ic_remix_delete_bin_2_line" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvAppIsland"

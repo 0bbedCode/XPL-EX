@@ -12,14 +12,16 @@ import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.UberCore888;
 import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.database.ActionFlag;
 import eu.faircode.xlua.x.xlua.database.A_CODE;
 import eu.faircode.xlua.x.xlua.database.DatabaseHelpEx;
 import eu.faircode.xlua.x.xlua.database.sql.SQLDatabase;
 import eu.faircode.xlua.x.xlua.database.sql.SQLSnake;
+import eu.faircode.xlua.x.xlua.settings.data.SettingPacket;
 
 public class AssignmentApi {
-    private static final String TAG = "XLua.AssignmentApi";
+    private static final String TAG = LibUtil.generateTag(AssignmentApi.class);
 
     public static A_CODE assignHooks(Context context, SQLDatabase database, AssignmentsPacket packet) {
         try {
@@ -107,7 +109,28 @@ public class AssignmentApi {
         }
     }
 
+    public static AssignmentPacket getAssignment(SQLDatabase db, int userId, String category, String hookId) {
+        return SQLSnake.create(db, AssignmentPacket.TABLE_NAME)
+                .ensureDatabaseIsReady()
+                .whereIdentity(userId, category)
+                .whereColumn(AssignmentPacket.FIELD_HOOK, hookId)
+                .asSnake()
+                .queryGetFirstAs(AssignmentPacket.class, true, false);
+    }
+
+    public static SettingPacket getSetting(SQLDatabase db, int userId, String category, String name) {
+        return SQLSnake.create(db, SettingPacket.TABLE_NAME)
+                .ensureDatabaseIsReady()
+                .whereIdentity(userId, category)
+                .whereColumn(SettingPacket.FIELD_NAME, name)
+                .asSnake()
+                .queryGetFirstAs(SettingPacket.class, true, false);
+    }
+
     public static Collection<AssignmentPacket> getAssignments(SQLDatabase db, int userId, String category) {
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "DB=" + Str.toStringOrNull(db) + " User Id=" + userId + " Category=" + category);
+
         return SQLSnake.create(db, AssignmentPacket.TABLE_NAME)
                 .ensureDatabaseIsReady()
                 .whereIdentity(userId, category)

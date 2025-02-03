@@ -29,6 +29,8 @@ public class CatBootIDIntercept extends CommandInterceptor implements ICommandIn
         if (result != null && result.isValid) {
             UserContextMaps maps = result.getUserMaps();
             if (maps != null) {
+                //Improve this ? make some storage emulation shit ?
+                //ashmem device etc stat
                 if (!keepGoing(maps, CAT_BOOT_ID_INTERCEPT_SETTING)) return true;
                 String setting = maps.getSetting("unique.boot.id");
                 result.setNewValue(setting == null ? UUID.randomUUID().toString() : setting);

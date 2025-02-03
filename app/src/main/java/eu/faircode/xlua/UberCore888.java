@@ -29,9 +29,7 @@ import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.xlua.database.DatabaseUtils;
 import eu.faircode.xlua.x.xlua.database.sql.SQLDatabase;
-import eu.faircode.xlua.x.xlua.identity.UserIdentity;
 import eu.faircode.xlua.x.xlua.identity.UserIdentityUtils;
-import eu.faircode.xlua.x.xlua.settings.data.SettingPacket;
 import eu.faircode.xlua.x.xlua.settings.data.SettingsApi;
 
 public class UberCore888 {
@@ -118,8 +116,8 @@ public class UberCore888 {
         ApplicationInfo ai = pm.getApplicationInfo(BuildConfig.APPLICATION_ID, 0);
         for (XLuaHook builtin : XLuaHook.readHooks(context, ai.publicSourceDir)) {
             builtin.resolveClassName(context);
-            builtIn.put(builtin.getId(), builtin);
-            hooks.put(builtin.getId(), builtin);
+            builtIn.put(builtin.getSharedId(), builtin);
+            hooks.put(builtin.getSharedId(), builtin);
         }
 
         /*database.executeWithReadLock(() -> {
@@ -196,8 +194,8 @@ public class UberCore888 {
         ApplicationInfo ai = pm.getApplicationInfo(BuildConfig.APPLICATION_ID, 0);
         for (XLuaHook builtin : XLuaHook.readHooks(context, ai.publicSourceDir)) {
             builtin.resolveClassName(context);
-            builtIn.put(builtin.getId(), builtin);
-            hooks.put(builtin.getId(), builtin);
+            builtIn.put(builtin.getSharedId(), builtin);
+            hooks.put(builtin.getSharedId(), builtin);
         }
 
         DatabasePathUtil.log("loaded hook size=" + hooks.size(), false);
@@ -214,7 +212,7 @@ public class UberCore888 {
                 hook.fromJSONObject(new JSONObject(definition));
                 hook.resolveClassName(context);
                 //Log.i(TAG, " loading hook=" + hook.getId());
-                hooks.put(hook.getId(), hook);
+                hooks.put(hook.getSharedId(), hook);
             }
         }catch (Exception e) {
             DatabasePathUtil.log("Failed to init hooks, e=" + e + "\n" + Log.getStackTraceString(e), true);
@@ -233,9 +231,10 @@ public class UberCore888 {
     }
 
     public static Collection<XLuaHook> getHooksEx(SQLDatabase database, boolean all) {
-        List<String> collections = database.executeWithWriteLock(() -> SettingsApi.getCollectionsValue(database, UserIdentityUtils.getUserId(Binder.getCallingUid())));
+        List<String> collections = database.executeWithWriteLock(() ->
+                SettingsApi.getCollectionsValue(database, UserIdentityUtils.getUserId(Binder.getCallingUid())));
         if(DebugUtil.isDebug())
-            Log.d(TAG, Str.fm("Grabbing Hooks! Collection Size=%s  All=%s  Database=%s", ListUtil.size(collections), all, Str.noNL(database)));
+            Log.d(TAG, Str.fm("Grabbing Hooks! Collection Size=%s  All=%s  Database=%s Collections=[%s]", ListUtil.size(collections), all, Str.noNL(database), Str.joinList(collections)));
 
         List<XLuaHook> hv = new ArrayList<>();
         synchronized (hookLock) {
@@ -244,9 +243,9 @@ public class UberCore888 {
                     hv.add(hook);
         }
 
-        Collections.sort(hv, (h1, h2) -> h1.getId().compareTo(h2.getId()));
+        Collections.sort(hv, (h1, h2) -> h1.getSharedId().compareTo(h2.getSharedId()));
         if(DebugUtil.isDebug())
-            Log.d(TAG, Str.fm("Grabbing Hooks! Collection Size=%s  All=%s  Database=%s  Hook Count=%s", ListUtil.size(collections), all, Str.noNL(database), ListUtil.size(hv)));
+            Log.d(TAG, Str.fm("Grabbing Hooks! Collection Size=%s  All=%s  Database=%s  Hook Count=%s Collections=[%s]", ListUtil.size(collections), all, Str.noNL(database), ListUtil.size(hv), Str.joinList(collections)));
 
         return hv;
     }
@@ -269,7 +268,7 @@ public class UberCore888 {
         Collections.sort(hv, new Comparator<XLuaHook>() {
             @Override
             public int compare(XLuaHook h1, XLuaHook h2) {
-                return h1.getId().compareTo(h2.getId());
+                return h1.getSharedId().compareTo(h2.getSharedId());
             }
         });
 
@@ -371,7 +370,7 @@ public class UberCore888 {
         synchronized (hookLock) {
             for (XLuaHook hook : hooks.values())
                 if (hook.isAvailable(pkg, collections))
-                    hook_ids.add(hook.getId());
+                    hook_ids.add(hook.getSharedId());
         }
 
         return hook_ids;

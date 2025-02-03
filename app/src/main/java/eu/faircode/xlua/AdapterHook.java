@@ -1,7 +1,6 @@
 package eu.faircode.xlua;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -90,7 +88,7 @@ public class AdapterHook extends RecyclerView.Adapter<AdapterHook.ViewHolder> {
                 switch (id) {
                     case R.id.itemViewHooks:
                     case R.id.tvHookName:
-                        ViewUtil.internalUpdateExpanded(expanded, hook.getId());
+                        ViewUtil.internalUpdateExpanded(expanded, hook.getSharedId());
                         updateExpanded();
                         break;
                 }
@@ -111,7 +109,7 @@ public class AdapterHook extends RecyclerView.Adapter<AdapterHook.ViewHolder> {
 
         void updateExpanded() {
             XLuaHook hook = hooks.get(getAdapterPosition());
-            String name = hook.getId();
+            String name = hook.getSharedId();
             boolean isExpanded = expanded.containsKey(name) && Boolean.TRUE.equals(expanded.get(name));
             ViewUtil.setViewsVisibility(null, isExpanded, rvHookSettings);
         }
@@ -189,7 +187,7 @@ public class AdapterHook extends RecyclerView.Adapter<AdapterHook.ViewHolder> {
         public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
             XLuaHook h1 = prev.get(oldItemPosition);
             XLuaHook h2 = next.get(newItemPosition);
-            return (!refresh && h1.getId().equalsIgnoreCase(h2.getId()));
+            return (!refresh && h1.getSharedId().equalsIgnoreCase(h2.getSharedId()));
         }
 
         @Override
@@ -202,7 +200,7 @@ public class AdapterHook extends RecyclerView.Adapter<AdapterHook.ViewHolder> {
     }
 
     @Override
-    public long getItemId(int position) { return hooks.get(position).getId().hashCode(); }
+    public long getItemId(int position) { return hooks.get(position).getSharedId().hashCode(); }
 
     @Override
     public int getItemCount() { return hooks.size(); }
@@ -218,7 +216,7 @@ public class AdapterHook extends RecyclerView.Adapter<AdapterHook.ViewHolder> {
         holder.tvHookName.setText(hook.getName());
         holder.tvHookName.setSelected(true);
         holder.adapterSettings.set(hook.getManagedSettings());
-        holder.cbEnableHook.setChecked(this.group.containsAssignedHook(hook.getId()));
+        holder.cbEnableHook.setChecked(this.group.containsAssignedHook(hook.getSharedId()));
         holder.updateExpanded();
         holder.wire();
     }

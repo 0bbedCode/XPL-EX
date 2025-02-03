@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.WeakHashMap;
 
 import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.utilities.CursorUtil;
@@ -26,6 +27,7 @@ import eu.faircode.xlua.x.data.string.StrBuilder;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.ui.core.view_registry.IIdentifiableObject;
 import eu.faircode.xlua.x.xlua.IBundleData;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.PacketBase;
 import eu.faircode.xlua.x.xlua.commands.PkgInfo;
 import eu.faircode.xlua.x.xlua.commands.call.AssignHooksCommand;
@@ -49,6 +51,7 @@ import eu.faircode.xlua.x.xlua.settings.data.SettingPacket;
 
 /*
 
+    //Ignore this todo
     ToDo: Lets start to do it the other way around
             We have the base Objects like
                 "Config"
@@ -70,7 +73,7 @@ public class XPConfig extends PkgInfo implements IJsonType, IDatabaseEntry, IPar
     public static final List<String> DEFAULT_TAGS = List.of("cell", "region", "hardware", "location", "network", "soc", "unique", "device", "rom", "etc", "custom");
 
 
-    private static final String TAG = "XLua.XPConfig";
+    private static final String TAG = LibUtil.generateTag(XPConfig.class);
 
     public static XPConfig fromJsonString(String s) {
         XPConfig c = new XPConfig();
@@ -123,7 +126,27 @@ public class XPConfig extends PkgInfo implements IJsonType, IDatabaseEntry, IPar
             .putText(FIELD_HOOKS)
             .putPrimaryKey(false, FIELD_USER,  FIELD_NAME);
 
-    //public int userId = 0;
+
+    //Example of JSON File or what it SHOULD look like im not good at pshudo code syntax
+    /*
+      {
+        "name": "Nice Config",
+        "type": "Cool",
+        "author": "me",
+        "version": "1.0",
+        "settings": {
+          "zone.language.iso": "IS",
+          "gsm.cell.location.lac": "2345"
+        }
+
+        "hooks": [
+            "hook_1",
+            "hook_2",
+            "hook_3" ]
+      }
+
+     */
+
     public String name;
     public String type;
     public String author;
@@ -327,7 +350,8 @@ public class XPConfig extends PkgInfo implements IJsonType, IDatabaseEntry, IPar
         }
     }
 
-    public void applySettings(Context context, int uid, String packageName, boolean cleanOutOld) {
+    public List<SettingPacket> applySettings(Context context, int uid, String packageName, boolean cleanOutOld) {
+        WeakHashMap<String, SettingPacket> changed = new WeakHashMap<>();
         if(!Str.isEmpty(packageName) && !UserIdentity.GLOBAL_NAMESPACE.equalsIgnoreCase(packageName)) {
             if(cleanOutOld && (ListUtil.isValid(hooks) || ListUtil.isValid(settings))) {
                 //Fix the un marshall
@@ -342,11 +366,13 @@ public class XPConfig extends PkgInfo implements IJsonType, IDatabaseEntry, IPar
                             packet.value = null;
                             packet.setUserIdentity(UserIdentity.fromUid(uid, packageName));
                             packet.setActionPacket(ActionPacket.create(ActionFlag.DELETE, false));
-                            PutSettingExCommand.call(context, packet);
+                            if(A_CODE.isSuccessful(PutSettingExCommand.call(context, packet))) {
+                                packet.value = null;
+                                changed.put(packet.name, packet);
+                            }
 
                             if(DebugUtil.isDebug())
                                 Log.d(TAG, "Deleting Setting: "  + Str.toStringOrNull(packet));
-                            //A_CODE code = PutSettingExCommand.call(context, setting, app, forceKill, true);
                         }
                     }
                 }
@@ -356,10 +382,16 @@ public class XPConfig extends PkgInfo implements IJsonType, IDatabaseEntry, IPar
                 for(SettingPacket packet : settings) {
                     packet.setUserIdentity(UserIdentity.fromUid(uid, packageName));
                     packet.setActionPacket(ActionPacket.create(ActionFlag.PUSH, false));
-                    PutSettingExCommand.call(context, packet);
+                    if(A_CODE.isSuccessful(PutSettingExCommand.call(context, packet)))
+                        changed.put(packet.name, packet);
                 }
             }
         }
+
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Finished Updating Settings, Settings that were Changed Count=" + changed.size());
+
+        return changed.isEmpty() ? new ArrayList<>() : new ArrayList<>(changed.values());
     }
 
     public static final Parcelable.Creator<XPConfig> CREATOR = new Parcelable.Creator<XPConfig>() {
@@ -385,7 +417,7 @@ public class XPConfig extends PkgInfo implements IJsonType, IDatabaseEntry, IPar
     }
 
     @Override
-    public String getId() {
+    public String getSharedId() {
         return name;
     }
 
@@ -417,6 +449,7 @@ public class XPConfig extends PkgInfo implements IJsonType, IDatabaseEntry, IPar
         "hooks": [
             "hook_1",
             "hook_2",
-            "hook_3"]
+            "hook_3"
+            ]
     }
  */

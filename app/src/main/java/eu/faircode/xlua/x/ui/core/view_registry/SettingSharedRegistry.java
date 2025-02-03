@@ -12,6 +12,8 @@ import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.utils.ListUtil;
+import eu.faircode.xlua.x.runtime.RuntimeUtils;
+import eu.faircode.xlua.x.ui.core.UserClientAppContext;
 import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.commands.call.GetAppInfoCommand;
 import eu.faircode.xlua.x.xlua.commands.query.GetHooksCommand;
@@ -39,6 +41,7 @@ public class SettingSharedRegistry extends SharedRegistry {
     private final Map<String, XLuaHook> hooks = new WeakHashMap<>();
 
 
+    //ToDo:
     //private final Map<String, SettingsContainer> settings = new WeakHashMap<>();
     private HookGroupOrganizer groups;
 
@@ -51,6 +54,11 @@ public class SettingSharedRegistry extends SharedRegistry {
     public static String getAppAssignmentDataTag(String packageName) { return packageName + "_assignment_data"; }
     public static String getAppPacketTag(String packageName) { return packageName + "_packet"; }
 
+    public void bindToUserContext(UserClientAppContext ctx) {
+        if(ctx != null)
+            ctx.bindShared(this);
+    }
+
     public boolean hasRandomizers() { return !randomizers.isEmpty(); }
     public List<IRandomizer> getRandomizers() {
         doDebugTest();
@@ -60,7 +68,6 @@ public class SettingSharedRegistry extends SharedRegistry {
         doDebugTest();
         return randomizers;
     }
-
 
     public IRandomizer getRandomizer(String settingName) {
         doDebugTest();
@@ -78,7 +85,7 @@ public class SettingSharedRegistry extends SharedRegistry {
     }
 
     public int randomize(List<SettingHolder> settings, Context context) {
-        doDebugTest();
+        /*doDebugTest();
         int randomized = 0;
         if(!settings.isEmpty()) {
             RandomizerSessionContext ctx = RandomizerSessionContext.create();
@@ -105,9 +112,10 @@ public class SettingSharedRegistry extends SharedRegistry {
             }
         } else {
             Log.e(TAG, "Error Invalid Input, Settings List if Null or Empty!");
-        }
+        }*/
 
-        return randomized;
+        //return randomized;
+        return 0;
     }
 
     public List<SettingHolder> getSettingsForContainer(SettingsContainer container) { return getSettingsForContainer(container, true); }
@@ -118,7 +126,7 @@ public class SettingSharedRegistry extends SharedRegistry {
 
         List<SettingHolder> enabled = new ArrayList<>();
         for(SettingHolder setting : settings)
-            if(!ensureIsChecked || isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getId()))
+            if(!ensureIsChecked || isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId()))
                 enabled.add(setting);
 
         if(DebugUtil.isDebug())
@@ -147,12 +155,25 @@ public class SettingSharedRegistry extends SharedRegistry {
             Log.d(TAG, Str.fm("Getting States for Settings (2), PackageName=%s  Settings Count=%s  Tag Id=%s  Session Id=%s", packageName, setting_names.size(), tagIdHooks, getSessionId()));
 
         assignmentData.refresh();
-        List<XLuaHook> hooksList = groups.getHooksForSettings(setting_names);
-        for(XLuaHook hook : hooksList) {
-            AssignmentState state = new AssignmentState();
-            state.hook = hook;
-            state.enabled = isChecked(tagIdHooks, hook.getId());
-            assignmentData.addAssignment(state);
+        if(!ListUtil.isValid(setting_names)) {
+            if(DebugUtil.isDebug())
+                Log.d(TAG, Str.fm("Empty Setting names, Package=%s Count=%s  Stack=%s", packageName, ListUtil.size(setting_names), RuntimeUtils.getStackTraceSafeString(new Exception())));
+
+            return;
+        }
+
+        //Crash unexpectedly: java.lang.NullPointerException: Attempt to invoke virtual method
+        // 'java.util.List eu.faircode.xlua.x.xlua.hook.HookGroupOrganizer.getHooksForSettings(java.util.List)' on a null object reference
+        if(groups != null) {
+            List<XLuaHook> hooksList = groups.getHooksForSettings(setting_names);
+            if(ListUtil.isValid(hooksList)) {
+                for(XLuaHook hook : hooksList) {
+                    AssignmentState state = new AssignmentState();
+                    state.hook = hook;
+                    state.enabled = isChecked(tagIdHooks, hook.getSharedId());
+                    assignmentData.addAssignment(state);
+                }
+            }
         }
     }
 
@@ -174,7 +195,7 @@ public class SettingSharedRegistry extends SharedRegistry {
             hooks.clear();
             List<XLuaHook> hookList = GetHooksCommand.getHooks(context, true, false);
             for(XLuaHook hook : hookList)
-                hooks.put(hook.getId(), hook);
+                hooks.put(hook.getSharedId(), hook);
 
             groups = new HookGroupOrganizer();
             groups.initGroups(hookList, context);

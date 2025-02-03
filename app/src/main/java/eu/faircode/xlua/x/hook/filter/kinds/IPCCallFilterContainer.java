@@ -3,22 +3,25 @@ package eu.faircode.xlua.x.hook.filter.kinds;
 import android.content.ContentResolver;
 import android.util.Log;
 
+import java.util.List;
+
 import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.TypeMap;
-import eu.faircode.xlua.x.data.utils.ArrayUtils;
 import eu.faircode.xlua.x.hook.filter.FilterContainerElement;
 import eu.faircode.xlua.x.hook.filter.IFilterContainer;
 import eu.faircode.xlua.x.hook.filter.SettingPair;
+import eu.faircode.xlua.x.xlua.LibUtil;
 
 public class IPCCallFilterContainer extends FilterContainerElement implements IFilterContainer {
-    private static final String TAG = "XLua.IPCCallFilterContainer";
+    private static final String TAG = LibUtil.generateTag(IPCCallFilterContainer.class);
 
-    public static IFilterContainer create() { return new IPCQueryFilterContainer(); }
+    public static IFilterContainer create() { return new IPCCallFilterContainer(); }
 
     public static final String GROUP_NAME = "Intercept.Settings.Call";
-    public static final TypeMap DEFINITIONS = TypeMap.create()
+    public static final TypeMap DEFINITIONS =
+            TypeMap.create()
             .add(ContentResolver.class, "call")
             .add("android.provider.Settings$Secure", "getString")
             .add("android.provider.Settings$Global", "getString")
@@ -26,33 +29,27 @@ public class IPCCallFilterContainer extends FilterContainerElement implements IF
 
     public IPCCallFilterContainer() { super(GROUP_NAME, DEFINITIONS); }
 
+    /*
+        ToDO: Add Support for Authority
+     */
+
     @Override
     public boolean hasSwallowedAsRule(XLuaHook hook) {
         boolean isRule = super.hasSwallowedAsRule(hook);
         if(isRule) {
-            String authority = Str.ensureIsValidOrDefault(hook.getMethodName(), "*");
-            String[] badKeys = hook.getParameterTypes();
-            String[] settingsForKeys = hook.getSettings();
-
-            if(!ArrayUtils.isValid(badKeys) || !ArrayUtils.isValid(settingsForKeys)) {
+            if(!hasSettings(hook)) {
+                factory.removeRule(hook);
+            } else {
+                //We need to eventually support authority
+                List<String> filter = parseMethodAsFilter(hook, true);
+                String[] settings = hook.getSettings();
                 if(DebugUtil.isDebug())
-                    Log.d(TAG, "Call/Settings Rule is Invalid, Keys or Settings for Keys is Null, hookId=" + hook.getId() + " " + Str.ensureNoDoubleNewLines(Str.hookToJsonString(hook)));
+                    Log.d(TAG, Str.fm("Hook Call [%s] Rule for Group [%s] was parsed, Filter=[%s] Settings=[%s]", hook.getSharedId(), groupName, Str.joinList(filter), Str.joinArray(settings)));
 
-                holder.removeRule(hook);
-                return true;
-            }
-
-            if(DebugUtil.isDebug())
-                Log.d(TAG, "Call/Settings Rule Settings: " + authority + " (we ignore authority) Parsing the Keys... Key Size=" + badKeys.length + " Settings for Keys Size=" + settingsForKeys.length + " Hook=" + Str.ensureNoDoubleNewLines(Str.hookToJsonString(hook)));
-
-            for(int i = 0; i < badKeys.length; i++) {
-                String key = Str.trim(badKeys[i], " ", true, true);
-                if(Str.isValidNotWhitespaces(key)) {
-                    SettingPair pair = new SettingPair(key, i, settingsForKeys);
-                    String settingRemap = "call:" + pair.name;
-                    settings.put(settingRemap, pair.settingName);
-                    if(DebugUtil.isDebug())
-                        Log.d(TAG, "Pushed Call/Settings Setting=" + settingRemap + " Setting Map=" + pair.settingName);
+                for(int i = 0; i < filter.size(); i++) {
+                    String item = filter.get(i);
+                    SettingPair pair = new SettingPair(item, i, settings);
+                    putSettingPair(createCallSetting(pair.name), pair.settingName);
                 }
             }
         }

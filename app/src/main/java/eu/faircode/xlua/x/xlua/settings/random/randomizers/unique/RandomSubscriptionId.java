@@ -37,7 +37,7 @@ public class RandomSubscriptionId extends RandomElement {
     @Override
     public void randomize(RandomizerSessionContext context) {
         String name = context.stack.pop();
-        if(!context.values.containsKey(name)) {
+        if(!context.wasRandomized(name)) {
             List<String> req = context.resolveRequirements(getRequirements(name));
             String mcc = context.getValue(req.get(0));  //MCC
             String mnc = context.getValue(req.get(1));  //MNC

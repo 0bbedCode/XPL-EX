@@ -22,7 +22,7 @@ public class ShellFilterContainer extends FilterContainerElement implements IFil
             String method = hook.getMethodName();
             for(CommandInterceptor interceptor : ShellIntercept.getInterceptors()) {
                 if(interceptor.getCommand().toLowerCase().endsWith(method.toLowerCase())) {
-                    settings.put(interceptor.getSetting(), "true");
+                    createdSettings.put(interceptor.getSetting(), "true");
                     break;
                 }
             }

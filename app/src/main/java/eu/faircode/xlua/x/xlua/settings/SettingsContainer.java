@@ -66,7 +66,7 @@ public class SettingsContainer extends NameInformationTypeBase implements IDiffF
     public boolean hasSettings() { return !settings.isEmpty(); }
 
     @Override
-    public String getId() { return "con::" + nameInformation.name; }
+    public String getSharedId() { return "con::" + nameInformation.name; }
 
     @Override
     public void setId(String id) {

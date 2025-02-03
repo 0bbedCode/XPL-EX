@@ -34,7 +34,7 @@ public class XLuaHook extends XLuaHookBase implements IJsonSerial, Parcelable, I
 
     public HookDatabaseEntry toHookDatabase() {
         try {
-            LuaHookPacket packet = new LuaHookPacket(getId(), toJSON());
+            LuaHookPacket packet = new LuaHookPacket(getSharedId(), toJSON());
             return packet;
         }catch (Exception e) {
             Log.e(TAG, "Error converting xHook to Hook Packet! e=" + e + "\n" + Log.getStackTraceString(e));
@@ -64,7 +64,7 @@ public class XLuaHook extends XLuaHookBase implements IJsonSerial, Parcelable, I
     public void writeToParcel(Parcel dest, int flags) {
         if(flags == FLAG_WITH_DB) {
             //dest.writeString(this.name);
-            dest.writeString(this.getId());
+            dest.writeString(this.getSharedId());
             try {
                 dest.writeString(toJSON());
             }catch (JSONException e) {
@@ -101,7 +101,7 @@ public class XLuaHook extends XLuaHookBase implements IJsonSerial, Parcelable, I
     @Override
     public ContentValues createContentValues() {
         ContentValues cv = new ContentValues();
-        cv.put("id", this.getId());
+        cv.put("id", this.getSharedId());
 
         try {
             cv.put("definition", toJSON());
@@ -247,7 +247,7 @@ public class XLuaHook extends XLuaHookBase implements IJsonSerial, Parcelable, I
     @Override
     public Bundle toBundle() {
         Bundle b = new Bundle();
-        b.putString("id", this.getId());
+        b.putString("id", this.getSharedId());
         try {
             b.putString("definition", toJSON());
         }catch (JSONException e) {

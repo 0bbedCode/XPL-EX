@@ -3,7 +3,6 @@ package eu.faircode.xlua;
 import android.annotation.SuppressLint;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -193,7 +191,7 @@ public class AdapterGroupHooks extends RecyclerView.Adapter<AdapterGroupHooks.Vi
                                 List<XLuaHook> hooks = new ArrayList<>();
                                 if(filterSubHooks) {
                                     for(XLuaHook h : group.getHooks()) {
-                                        if(h.getId().toLowerCase().contains(q))
+                                        if(h.getSharedId().toLowerCase().contains(q))
                                             hooks.add(h);
                                         else {
                                             for(LuaSettingExtended s : h.getManagedSettings()) {

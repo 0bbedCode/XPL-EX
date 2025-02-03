@@ -16,7 +16,7 @@ public class AssignmentData {
     public static final AssignmentData DEFAULT = new AssignmentData();
     public static final String EMPTY_STRING = "---";
 
-    public final List<AssignmentState> states;
+    public List<AssignmentState> states = new ArrayList<>();
     public int enabled = 0;
     public int total = 0;
     public boolean hasInit = false;
@@ -27,6 +27,9 @@ public class AssignmentData {
     public AssignmentData(int size) { states = new ArrayList<>(size); }
 
     public void refresh() {
+        if(states == null)
+            states = new ArrayList<>();
+
         states.clear();
         enabled = 0;
         total = 0;

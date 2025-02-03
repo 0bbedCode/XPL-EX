@@ -11,9 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.robv.android.xposed.XposedBridge;
-import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.api.hook.XLuaHook;
-import eu.faircode.xlua.utilities.DatabasePathUtil;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.xlua.database.sql.SQLDatabase;
 
@@ -88,7 +86,7 @@ public class XLuaDatabaseHelp {
                             String definition = cursor.getString(colDefinition);
                             XLuaHook hook = new XLuaHook();
                             hook.fromJSONObject(new JSONObject(definition));
-                            tmp.put(hook.getId(), hook);
+                            tmp.put(hook.getSharedId(), hook);
                         }
                     } finally {
                         if (cursor != null)

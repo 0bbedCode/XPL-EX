@@ -16,6 +16,7 @@ import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.ui.core.UserClientAppContext;
 import eu.faircode.xlua.x.ui.core.util.CoreUiUtils;
 import eu.faircode.xlua.x.ui.core.view_registry.SharedRegistry;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.database.ActionFlag;
 import eu.faircode.xlua.x.xlua.database.ActionPacket;
 import eu.faircode.xlua.x.xlua.hook.data.AssignmentData;
@@ -27,7 +28,7 @@ import eu.faircode.xlua.x.xlua.settings.SettingsGroup;
 import eu.faircode.xlua.x.xlua.settings.data.SettingPacket;
 
 public class SettingFragmentUtils {
-    private static final String TAG = "XLua.SettingFragmentUtils";
+    private static final String TAG = LibUtil.generateTag(SettingFragmentUtils.class);
 
 
     public static List<String> getHookIds(
@@ -40,6 +41,9 @@ public class SettingFragmentUtils {
         try {
             ///            SharedRegistry.ItemState state = sharedRegistry.getItemState(SharedRegistry.STATE_TAG_CONTAINERS, item.getContainerName());
             List<SettingsGroup> data = liveData.getValue();
+            if(DebugUtil.isDebug())
+                Log.d(TAG, "Size of Data Groups for Hook Ids=" + ListUtil.size(data));
+
             if(ListUtil.isValid(data)) {
                 for(SettingsGroup g : data) {
                     for(SettingsContainer c : g.getContainers()) {
@@ -53,15 +57,36 @@ public class SettingFragmentUtils {
                                     false);
 
                             for(AssignmentState state : assignmentData.states) {
-                                String id = state.hook.getId();
+                                String id = state.hook.getSharedId();
                                 if(!hookIds.contains(id)) {
                                     hookIds.add(id);
+                                }
+                            }
+                        } else {
+                            for(SettingHolder holder : c.getSettings()) {
+                                if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, holder.getSharedId())) {
+                                    AssignmentData assignmentData = CoreUiUtils.ensureAssignmentDataInit(
+                                            context,
+                                            uid,
+                                            packageName,
+                                            sharedRegistry,
+                                            c,
+                                            false);
+
+                                    for(AssignmentState state : assignmentData.states) {
+                                        String id = state.hook.getSharedId();
+                                        if(!hookIds.contains(id))
+                                            hookIds.add(id);
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+
+            if(DebugUtil.isDebug())
+                Log.d(TAG, "Hook Id Count=" + ListUtil.size(hookIds));
 
             return hookIds;
         }catch (Exception e) {
@@ -88,7 +113,7 @@ public class SettingFragmentUtils {
     public static List<SettingPacket> filterCheckedAsPackets(List<SettingHolder> holders, SharedRegistry sharedRegistry) {
         List<SettingPacket> list = new ArrayList<>();
         for(SettingHolder holder : holders) {
-            if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, holder.getId())) {
+            if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, holder.getSharedId())) {
                 SettingPacket packet = new SettingPacket(holder.getName(), holder.getValue());
                 list.add(packet);
             }
@@ -100,7 +125,7 @@ public class SettingFragmentUtils {
     public static List<SettingHolder> filterChecked(List<SettingHolder> holders, SharedRegistry sharedRegistry) {
         List<SettingHolder> list = new ArrayList<>();
         for(SettingHolder holder : holders) {
-            if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, holder.getId()))
+            if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, holder.getSharedId()))
                 list.add(holder);
         }
 
@@ -159,20 +184,17 @@ public class SettingFragmentUtils {
                             Log.w(TAG, "Invalid amount of Containers, WTF! Group Name=" + g.getGroupName() + " Container = " + c.getSettings());
 
                         for(SettingHolder h : c.getSettings()) {
-                            if(registry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, h.getId())) {
+                            if(registry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, h.getSharedId())) {
                                 if(DebugUtil.isDebug())
-                                    Log.d(TAG, "Setting Is Checked: " + h.getName() + " Value=" + h.getValue() + " New Value=" + h.getNewValue() + " Is Not Saved=" + h.isNotSaved() + " Id=" + h.getId());
+                                    Log.d(TAG, "Setting Is Checked: " + h.getName() + " Value=" + h.getValue() + " New Value=" + h.getNewValue() + " Is Not Saved=" + h.isNotSaved() + " Id=" + h.getSharedId());
 
                                 if(h.isNotSaved() && !added.contains(h.getName())) {
-
                                     added.add(h.getName());
-
                                     SettingPacket packet = new SettingPacket();
                                     packet.setUserIdentity(UserIdentity.fromUid(context.appUid, context.appPackageName));
                                     packet.setActionPacket(ActionPacket.create(flag, context.kill));
                                     packet.name = h.getName();
                                     packet.value = h.getNewValue();
-
                                     packets.put(h, packet);
                                 }
                             }

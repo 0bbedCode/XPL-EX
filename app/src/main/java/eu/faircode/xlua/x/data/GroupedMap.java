@@ -8,6 +8,7 @@ import java.util.Map;
 import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.XParam;
 import eu.faircode.xlua.random.IRandomizerOld;
+import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.interfaces.INullableInit;
 import eu.faircode.xlua.x.runtime.reflect.DynamicType;
 
@@ -157,6 +158,62 @@ public class GroupedMap {
         synchronized (mMaps) {
             internalSetGroupFocus(groupName, useModifiedMap);
             return internalGetValue(keyName, useModifiedMap);
+        }
+    }
+
+    public long getValueLong(String groupName, String keyName) { return getValueLong(groupName, keyName, true); }
+    public long getValueLong(
+            String groupName,
+            String keyName,
+            boolean useModifiedMap) {
+        if(keyName == null || groupName == null)
+            return 0;
+        synchronized (mMaps) {
+            internalSetGroupFocus(groupName, useModifiedMap);
+            if(DebugUtil.isDebug())
+                Log.d(TAG, "[GetValueLong] KeyName=" + keyName + " Use Modified=" + useModifiedMap);
+
+            if(useModifiedMap) {
+                if(internalIsModified(keyName)) {
+                    String originalKey = internalGetOriginalModifiedKey(keyName);
+                    Object val = internalGetValue(originalKey);
+                    if(!(val instanceof Number)) {
+                        Log.e(TAG, "(2) Failed to Get Value Long [" + keyName + "] Original:" + originalKey + " Value=" + Str.toStringOrNull(val) + " Group=" + groupName);
+                        return 0;
+                    }
+
+                    return (long)val;
+
+                }
+            }
+
+            Object val = internalGetValue(keyName);
+            if(!(val instanceof Number)) {
+                Log.e(TAG, "(2) Failed to Get Value Long [" + keyName + "]  Value=" + Str.toStringOrNull(val) + " Group=" + groupName);
+                return 0;
+            }
+
+            return (long)val;
+        }
+    }
+
+
+    public void pushValueLong(String groupName, String keyName, long value) { pushValueLong(groupName, keyName, value, true); }
+    public void pushValueLong(
+            String groupName,
+            String keyName,
+            long value,
+            boolean useModified) {
+        synchronized (mMaps) {
+            internalSetGroupFocus(groupName, useModified);
+            if(DebugUtil.isDebug())
+                Log.d(TAG, "[PushValueLong] KeyName=" + keyName + " Value=" + value + " Use Modified=" + useModified);
+
+            if(useModified && mCurrentModifiedMap != null)
+                mCurrentModifiedMap.put(value, keyName);
+            if(mCurrentGroupMap != null)
+                mCurrentGroupMap.put(keyName, value);
+
         }
     }
 

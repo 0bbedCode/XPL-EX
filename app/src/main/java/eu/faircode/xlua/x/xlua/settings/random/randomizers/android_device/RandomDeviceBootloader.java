@@ -9,7 +9,7 @@ public class RandomDeviceBootloader extends RandomElement {
     public RandomDeviceBootloader() {
         super("Device Bootloader String");
         putSettings(RandomizersCache.SETTING_DEVICE_BOOTLOADER);
-        putParents(RandomizersCache.SETTING_PARENT_DEVICE);
+        //putParents(RandomizersCache.SETTING_PARENT_DEVICE);
     }
 
     @Override

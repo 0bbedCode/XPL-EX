@@ -4,9 +4,12 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckedTextView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -60,8 +63,8 @@ public abstract class CheckableDialog<T extends IIdentifiableObject> extends App
         boolean[] initialCheckedStates = new boolean[items.size()];
         for (int i = 0; i < items.size(); i++) {
             T item = items.get(i);
-            ids[i] = item.getId();
-            initialCheckedStates[i] = viewRegistry.isChecked(TAG_ITEMS, item.getId());
+            ids[i] = item.getSharedId();
+            initialCheckedStates[i] = viewRegistry.isChecked(TAG_ITEMS, item.getSharedId());
         }
 
         builder.setTitle(title)
@@ -74,7 +77,7 @@ public abstract class CheckableDialog<T extends IIdentifiableObject> extends App
                         T item = items.get(i);
                         boolean isChecked = listView.isItemChecked(i);
                         if(useOriginalState) {
-                            boolean originalFlag = viewRegistry.isChecked(TAG_ITEMS, item.getId());
+                            boolean originalFlag = viewRegistry.isChecked(TAG_ITEMS, item.getSharedId());
                             if (isChecked && !originalFlag) {
                                 enabled.add(item);
                             } else if (!isChecked && originalFlag) {
@@ -118,11 +121,35 @@ public abstract class CheckableDialog<T extends IIdentifiableObject> extends App
         AlertDialog dialog = builder.create();
 
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+
+
+        /*ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 context,
                 android.R.layout.simple_list_item_multiple_choice,
                 ids
-        );
+        );*/
+
+        // In your onCreateDialog method, replace the ArrayAdapter creation with:
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                context,
+                R.layout.dialog_list_item,  // Use our custom layout
+                R.id.optionText,         // ID of the TextView in our layout
+                ids
+        ) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                CheckedTextView textView = view.findViewById(R.id.optionText);
+
+                // Optional: Adjust text size if needed
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+
+                // Optional: Set custom line spacing
+                textView.setLineSpacing(4f, 1f);
+
+                return view;
+            }
+        };
 
         listView.setAdapter(adapter);
 

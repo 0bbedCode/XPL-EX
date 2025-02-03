@@ -39,8 +39,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -125,7 +123,7 @@ public class AdapterGroup extends RecyclerView.Adapter<AdapterGroup.ViewHolder> 
                         if (assignment.hookObj.getGroup().equals(group.name))
                             if (assignment.exception != null) {
                                 sb.append("<b>");
-                                sb.append(Html.escapeHtml(assignment.hookObj.getId()));
+                                sb.append(Html.escapeHtml(assignment.hookObj.getSharedId()));
                                 sb.append("</b><br><br>");
                                 for (String line : assignment.exception.split("\n")) {
                                     sb.append(Html.escapeHtml(line));

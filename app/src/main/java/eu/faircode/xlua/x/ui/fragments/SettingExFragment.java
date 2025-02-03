@@ -10,12 +10,15 @@ import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import  eu.faircode.xlua.R;
 
@@ -24,16 +27,16 @@ import eu.faircode.xlua.databinding.SettingsExGroupBinding;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.PrefManager;
 import eu.faircode.xlua.x.data.utils.ListUtil;
+import eu.faircode.xlua.x.ui.activities.SettingsExActivity;
 import eu.faircode.xlua.x.ui.adapters.settings.OptimizedSettingGroupAdapter;
 import eu.faircode.xlua.x.ui.core.RecyclerDynamicSizeAdjuster;
 import eu.faircode.xlua.x.ui.core.CoreUiColors;
 import eu.faircode.xlua.x.ui.core.CoreUiLog;
 import eu.faircode.xlua.x.ui.core.DataEventKind;
-import eu.faircode.xlua.x.ui.core.interfaces.IGenericViewHolder;
+import eu.faircode.xlua.x.ui.core.interfaces.IListChange;
 import eu.faircode.xlua.x.ui.core.util.CoreUiUtils;
 import eu.faircode.xlua.x.ui.core.UserClientAppContext;
 import eu.faircode.xlua.x.ui.core.fragment.ListFragment;
-import eu.faircode.xlua.x.ui.core.interfaces.IGenericElementEvent;
 import eu.faircode.xlua.x.ui.core.util.ListFragmentUtils;
 import eu.faircode.xlua.x.ui.core.view_registry.SettingSharedRegistry;
 import eu.faircode.xlua.x.ui.core.view_registry.SharedRegistry;
@@ -45,15 +48,26 @@ import eu.faircode.xlua.x.ui.dialogs.OptionsListDialog;
 import eu.faircode.xlua.x.ui.dialogs.ProfileDialog;
 import eu.faircode.xlua.x.ui.dialogs.SettingsProgressDialog;
 import eu.faircode.xlua.x.ui.models.SettingsExGroupViewModel;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.commands.call.ClearAppDataCommand;
 import eu.faircode.xlua.x.xlua.commands.call.ForceStopAppCommand;
 import eu.faircode.xlua.x.xlua.commands.call.GetSettingExCommand;
-import eu.faircode.xlua.x.xlua.commands.query.GetConfigsCommand;
+import eu.faircode.xlua.x.xlua.commands.call.PutSettingExCommand;
+import eu.faircode.xlua.x.xlua.commands.query.GetSettingsExCommand;
 import eu.faircode.xlua.x.xlua.database.A_CODE;
 import eu.faircode.xlua.x.xlua.database.ActionFlag;
+import eu.faircode.xlua.x.xlua.database.ActionPacket;
+import eu.faircode.xlua.x.xlua.identity.UserIdentity;
 import eu.faircode.xlua.x.xlua.settings.SettingHolder;
 import eu.faircode.xlua.x.xlua.settings.SettingsGroup;
+import eu.faircode.xlua.x.xlua.settings.data.SettingPacket;
 import eu.faircode.xlua.x.xlua.settings.random.RandomizerSessionContext;
+import eu.faircode.xlua.x.xlua.settings.random.interfaces.IRandomizer;
+import eu.faircode.xlua.x.xlua.settings.random.randomizers.RandomizersCache;
+import eu.faircode.xlua.x.xlua.settings.test.EventTrigger;
+import eu.faircode.xlua.x.xlua.settings.test.SharedSpace;
+import eu.faircode.xlua.x.xlua.settings.test.SharedViewControl;
+import eu.faircode.xlua.x.xlua.settings.test.interfaces.IUIViewControl;
 
 /**
  * Ensure system takes but some data ?
@@ -77,36 +91,59 @@ public class SettingExFragment
                 extends
         ListFragment<SettingsGroup, SettingsExFragmentBinding, SettingsExGroupBinding>
         implements
-        IGenericElementEvent<SettingsGroup, SettingsExGroupBinding>, CompoundButton.OnCheckedChangeListener {
+        IListChange<SettingPacket>,
+        IUIViewControl,
+        CompoundButton.OnCheckedChangeListener {
 
-    private static final String TAG = "XLua.SettingExFragment";
+    private static final String TAG = LibUtil.generateTag(SettingExFragment.class);
     public static SettingExFragment newInstance(UserClientAppContext context) { return ListFragmentUtils.newInstance(SettingExFragment.class, context); }
 
+    private SharedViewControl sharedViewControl;
     private boolean isViewOpen = true;
     private final SettingSharedRegistry sharedRegistry = new SettingSharedRegistry();
+
+    @Override
+    public SharedViewControl getSharedViewControl() {
+        if(this.sharedViewControl == null) this.sharedViewControl = new SharedViewControl().setTag(SettingsExActivity.SHARED_TAG).setFragment(this);
+        return sharedViewControl;
+    }
+
+    @Override
+    public void setSharedViewControl(SharedViewControl sharedViewControl) { this.sharedViewControl = sharedViewControl; }
+
 
     @Override
     public SharedRegistry getSharedRegistry() { return sharedRegistry; }
 
     @Override
+    public Fragment getAsFragment() {
+        return this;
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.createViewModel(SettingsExGroupViewModel.class, true);
         super.onCreate(savedInstanceState);
-    }
 
-    /*@Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ensureHasUserContext();
-        binding = SettingsExFragmentBinding.inflate(inflater, container, false);
-        return binding.getRoot();
-    }*/
+        sharedRegistry.bindToUserContext(getUserContext());
+        PrefManager prefManager = sharedRegistry.ensurePrefsOpen(getContext(), PrefManager.SETTINGS_NAMESPACE);
+        if(prefManager != null) {
+            List<String> checked = prefManager.getStringList(PrefManager.nameForChecked(true), ListUtil.emptyList(), false);
+            String pkgName = getAppPackageName();
+            if(pkgName != null && !UserIdentity.GLOBAL_NAMESPACE.equalsIgnoreCase(pkgName))
+                ListUtil.addAllIfValid(checked, prefManager.getStringList(PrefManager.nameForChecked(false, pkgName), ListUtil.emptyList(), false));
+
+            if(ListUtil.isValid(checked))
+                for(String setting : checked)
+                    sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, RandomizerSessionContext.sharedSettingName(setting), true);
+        }
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         super.ensureHasUserContext();
-        super.setAdapter(new OptimizedSettingGroupAdapter(requireContext(), this, this, getUserContext()));
+        super.setAdapter(new OptimizedSettingGroupAdapter(requireContext(), null, this, getUserContext().bindShared(sharedRegistry)));
 
         super.initApplicationView(
                 binding.ivAppIslandAppIcon,
@@ -144,7 +181,8 @@ public class SettingExFragment
                 binding.flSettingsButtonTwo,
                 binding.flSettingsButtonThree,
                 binding.flSettingsButtonFour,
-                binding.flSettingsButtonFive);
+                binding.flSettingsButtonFive,
+                binding.flSettingsButtonSix);
 
         super.setProgressBar(binding.pbSettings);
         super.initSwipeRefreshLayout(binding.swipeRefreshSettings, CoreUiColors.getSwipeRefreshColor(requireContext()));
@@ -164,9 +202,7 @@ public class SettingExFragment
         super.wire();
         binding.cbForceStop.setOnCheckedChangeListener(this);
         binding.cbUseDefaultValues.setOnCheckedChangeListener(this);
-
         binding.btAppIslandProfileDialog.setOnClickListener(this);
-
     }
 
     public void initCheckboxes() {
@@ -175,7 +211,7 @@ public class SettingExFragment
             binding.cbForceStop.setEnabled(!ctx.isGlobal());
             if(!ctx.isGlobal()) {
                 binding.cbForceStop.setChecked(ctx.kill);
-                sharedRegistry.setChecked("pkg_kill", getUserContext().appPackageName, ctx.kill);
+                sharedRegistry.setChecked(SharedRegistry.STATE_TAG_KILL, getUserContext().appPackageName, ctx.kill);
             }
         }
     }
@@ -214,7 +250,7 @@ public class SettingExFragment
         int id = compoundButton.getId();
         switch (id) {
             case R.id.cbForceStop:
-                sharedRegistry.setChecked("pkg_kill", getUserContext().appPackageName, checked);
+                sharedRegistry.setChecked(SharedRegistry.STATE_TAG_KILL, getUserContext().appPackageName, checked);
                 break;
             case R.id.cbUseDefaultValues:
                 //
@@ -239,6 +275,36 @@ public class SettingExFragment
             case R.id.flSettingsButtonOne:
                 recyclerViewWrapper.getFloatingActionButtonContext().invokeFloatingActions();
                 break;
+            case R.id.flSettingsButtonSix:
+                Map<String, IRandomizer> randomizers = RandomizersCache.getCopy();
+                for(SettingHolder holder : SettingFragmentUtils.filterChecked(SettingFragmentUtils.getSettings(getLiveData()), sharedRegistry)) {
+                    if(randomizers.containsKey(holder.getName())) {
+                        String rnd = "%random%";
+                        holder.setNewValue(rnd);
+                        holder.ensureUiUpdated(rnd);
+                        holder.setNameLabelColor(context);
+                    }
+                }
+                break;
+            case R.id.flSettingsButtonFive:
+                List<SettingHolder> holders = SettingFragmentUtils.filterChecked(SettingFragmentUtils.getSettings(getLiveData()), sharedRegistry);
+                ConfirmDialog.create()
+                        .setContext(context)
+                        .setMessage(Str.combine(getString(R.string.msg_confirm_delete_settings), String.valueOf(holders.size())))
+                        .setDelay(2) // 5 second delay before OK is enabled
+                        .setImage(R.drawable.ic_warining_one) // Optional warning icon
+                        .onConfirm(() -> {
+                            for(SettingHolder holder : holders) {
+                                if(A_CODE.isSuccessful(PutSettingExCommand.call(context, holder, getUserContext(), getUserContext().isKill(), true))) {
+                                    holder.setValue(null, true);
+                                    holder.ensureUiUpdated(Str.EMPTY);
+                                    holder.setNameLabelColor(context);
+                                }
+                            }
+                        })
+                        .show(getFragmentMan(), getString(R.string.title_confirm));
+
+                break;
             case R.id.flSettingsButtonFour:
                 new SettingsProgressDialog()
                         .setData(SettingFragmentUtils.getSettingPackets(
@@ -249,16 +315,23 @@ public class SettingExFragment
                         .show(getFragmentMan(), getString(R.string.title_deploy_settings));
                 break;
             case R.id.flSettingsButtonTwo:
-                List<SettingHolder> settings = SettingFragmentUtils.getSettings(getLiveData());
-
-                RandomizerSessionContext ctx = RandomizerSessionContext.create();
+                /*RandomizerSessionContext ctx = RandomizerSessionContext.create();
                 ctx.setContext(context);
                 ctx.setSharedRegistry(sharedRegistry);
-                ctx.setSettings(settings);
+                //ctx.setSettings(SettingFragmentUtils.filterChecked(SettingFragmentUtils.getSettings(getLiveData()), sharedRegistry));
                 ctx.setRandomizers();
-                ctx.randomizeAll();
+                //ctx.randomizeAll();
+                List<SettingHolder> all = SettingFragmentUtils.getSettings(getLiveData());
+                ctx.randomize(false, all, SettingFragmentUtils.filterChecked(all, sharedRegistry));*/
 
-                Snackbar.make(v, getString(R.string.msg_succeeded_count), Snackbar.LENGTH_LONG)
+                RandomizerSessionContext ctx = new RandomizerSessionContext()
+                        .randomize(
+                                this,
+                                null,
+                                context,
+                                sharedRegistry);
+
+                Snackbar.make(v, Str.combineEx(getString(R.string.msg_succeeded_count), " =", String.valueOf(ctx.getRandomizedCount())), Snackbar.LENGTH_LONG)
                         .show();
                 break;
             case R.id.btAppIslandProfileDialog:
@@ -269,8 +342,9 @@ public class SettingExFragment
                         .show(getFragmentMan(),  getString(R.string.title_profile_manager));
                 break;
             case R.id.btAppIslandToLogsDialog:
-                LogDialog.create(context)
-                        .test()
+                LogDialog.create()
+                        .setApp(getAppUid(), getAppPackageName())
+                        .refresh(context)
                         .show(getFragmentMan(), getString(R.string.title_logs));
                 break;
             case R.id.btAppIslandForceStop:
@@ -279,15 +353,7 @@ public class SettingExFragment
                         .setMessage(getString(R.string.msg_confirm_force_stop))
                         .setDelay(1) // 5 second delay before OK is enabled
                         .setImage(R.drawable.ic_serv_cold) // Optional warning icon
-                        .onConfirm(() -> {
-                            // Handle confirmation
-                            //forceStopApp();
-                            handleCodeToSnack(ForceStopAppCommand.stop(context, getAppUid(), getAppPackageName()), getString(R.string.result_prefix_force_stop), v);
-                        })
-                        .onCancel(() -> {
-                            // Handle cancellation
-                            //Toast.makeText(context, "Operation cancelled", Toast.LENGTH_SHORT).show();
-                        })
+                        .onConfirm(() -> handleCodeToSnack(ForceStopAppCommand.stop(context, getAppUid(), getAppPackageName()), getString(R.string.result_prefix_force_stop), v))
                         .show(getFragmentMan(), getString(R.string.title_confirm));
                 break;
             case R.id.btAppIslandClearData:
@@ -296,15 +362,7 @@ public class SettingExFragment
                         .setMessage(getString(R.string.msg_confirm_clear_data))
                         .setDelay(5) // 5 second delay before OK is enabled
                         .setImage(R.drawable.ic_warining_one) // Optional warning icon
-                        .onConfirm(() -> {
-                            // Handle confirmation
-                            //forceStopApp();
-                            handleCodeToSnack(ClearAppDataCommand.clear(context, getAppPackageName()), getString(R.string.result_prefix_cleared_app_data), v);
-                        })
-                        .onCancel(() -> {
-                            // Handle cancellation
-                            //Toast.makeText(context, "Operation cancelled", Toast.LENGTH_SHORT).show();
-                        })
+                        .onConfirm(() -> handleCodeToSnack(ClearAppDataCommand.clear(context, getAppPackageName()), getString(R.string.result_prefix_cleared_app_data), v))
                         .show(getFragmentMan(), getString(R.string.title_confirm));
                 break;
             case R.id.btAppIslandSaveChecked:
@@ -328,11 +386,11 @@ public class SettingExFragment
                 break;
             case R.id.btAppIslandConfigDialog:
                 ConfigDialog.create()
-                        .setApp(getAppUid(), getAppPackageName())
+                        .setOnChange(this)
+                        .setApp(getAppUid(), getAppPackageName(), getUserContext().isKill())
                         .setConfigs(context)
                         .setRootView(v)
                         .show(getFragmentMan(), getString(R.string.title_config_manager));
-
                         //We need to some how force full update the main fragment
                 break;
             case R.id.btAppIslandCreateConfigDialog:
@@ -343,6 +401,34 @@ public class SettingExFragment
                         .setHookIds(SettingFragmentUtils.getHookIds(context, getAppUid(), getAppPackageName(), getLiveData(), sharedRegistry))
                         .show(getFragmentMan(), getString(R.string.title_config_modify));
                 break;
+            case R.id.btAppIslandSettingsResetAll:
+                ConfirmDialog.create()
+                        .setContext(context)
+                        .setMessage(getString(R.string.msg_confirm_delete_all_settings))
+                        .setDelay(3) // 5 second delay before OK is enabled
+                        .setImage(R.drawable.ic_warining_one) // Optional warning icon
+                        .onConfirm(() -> {
+                            List<SettingPacket> changed = new ArrayList<>();
+                            int uid = getAppUid();
+                            String pkg = getAppPackageName();
+                            for(SettingPacket packet : GetSettingsExCommand.get(context, true, uid, pkg, GetSettingsExCommand.FLAG_ONE)) {
+                                if(!GetSettingExCommand.SETTING_SELECTED_CONFIG.equalsIgnoreCase(packet.name) && packet.value != null) {
+                                    packet.value = null;
+                                    packet.setUserIdentity(UserIdentity.fromUid(uid, pkg));
+                                    packet.setActionPacket(ActionPacket.create(ActionFlag.DELETE, false));
+                                    if(A_CODE.isSuccessful(PutSettingExCommand.call(context, packet))) {
+                                        packet.value = null;
+                                        changed.add(packet);
+                                    }
+                                }
+                            }
+
+                            onItemsChange(changed);
+                        })
+                        .show(getFragmentMan(), getString(R.string.title_confirm));
+
+
+                break;
         }
     }
 
@@ -351,7 +437,6 @@ public class SettingExFragment
     @Override
     public boolean onLongClick(View v) {
         int id = CoreUiLog.getViewIdOnLongClick(v, TAG);
-
         switch (id) {
             case R.id.btAppIslandProfileDialog:
                 Snackbar.make(v, getString(R.string.msg_hint_create_profile), Snackbar.LENGTH_LONG).show();
@@ -368,57 +453,49 @@ public class SettingExFragment
             case R.id.btAppIslandSettingsResetAll:
                 Snackbar.make(v, getString(R.string.msg_hint_reset_settings), Snackbar.LENGTH_LONG).show();
                 break;
+            case R.id.btAppIslandCreateConfigDialog:
+                Snackbar.make(v, getString(R.string.msg_hint_create_configs), Snackbar.LENGTH_LONG).show();
+                break;
+            case R.id.btAppIslandConfigDialog:
+                Snackbar.make(v, getString(R.string.msg_hint_manage_configs), Snackbar.LENGTH_LONG).show();
+                break;
+            case R.id.btAppIslandSaveChecked:
+                Snackbar.make(v, getString(R.string.msg_hint_save_checked), Snackbar.LENGTH_LONG).show();
+                break;
         }
 
         return false;
     }
 
-    @SuppressLint("NonConstantResourceId")
     @Override
-    public void onClick(IGenericViewHolder<SettingsGroup, SettingsExGroupBinding> holder, View view) {
-        int id = CoreUiLog.getViewIdOnClickItem(view);
-        SettingsExGroupBinding binding = holder.getBinding();
-        switch (id) {
-            case R.id.ivExpanderSettingGroup:
-                /*CoreUiUtils.setViewsVisibility(
-                        binding.ivExpanderSettingGroup,
-                        getStateManager().flipExpanded("groups", holder.getObject().getGroupName(), false, true).second,
-                        binding.recyclerView,
-                        binding.spSettingGroupRandomizer);*/
-                break;
+    public void onItemsChange(List<SettingPacket> items) {
+        Log.i(TAG, "On Item Change! Item Count=" + ListUtil.size(items));
+        if(!ListUtil.isValid(items))
+            return;
+
+        try {
+            List<SettingHolder> cachedSettings = SettingFragmentUtils.getSettings(getLiveData());
+            if(!ListUtil.isValid(cachedSettings))
+                return;
+
+            Log.i(TAG, Str.fm("On Items Change! Cached Size=[%s] Updated Size=[%s]", ListUtil.size(cachedSettings), ListUtil.size(items)));
+            WeakHashMap<String, SettingHolder> holders = new WeakHashMap<>();
+            for(SettingHolder holder : cachedSettings)
+                holders.put(holder.getName(), holder);
+
+            //ToDo: Check for added / removed ?
+            for(SettingPacket packet : items) {
+                SettingHolder holder = holders.get(packet.name);
+                if(holder != null) {
+                    String value = packet.value;
+                    holder.setValue(value, true);
+                    holder.ensureUiUpdated(value == null ? Str.EMPTY : value);
+                    holder.setNameLabelColor(getContext());
+                }
+            }
+        }catch (Exception e) {
+            Log.e(TAG, Str.fm("On Event Item Change Count [%s] Failed, Error=%s", ListUtil.size(items), e));
         }
-    }
-
-    @Override
-    public void onLongClick(IGenericViewHolder<SettingsGroup, SettingsExGroupBinding> holder, View view) {
-
-    }
-
-    @SuppressLint("NonConstantResourceId")
-    @Override
-    public void onCheckChanged(IGenericViewHolder<SettingsGroup, SettingsExGroupBinding> holder, CompoundButton compoundButton, boolean isChecked) {
-        int id = compoundButton.getId();
-        switch (id) {
-            case R.id.cbSettingGroupEnabled:
-                /*getStateManager().flipEnabled(
-                        "groups",
-                        holder.getObject().getGroupName(),
-                        false,
-                        false);*/
-                break;
-        }
-    }
-
-    @Override
-    public void onBindFinished(IGenericViewHolder<SettingsGroup, SettingsExGroupBinding> holder) {
-        /*Pair<Boolean, Boolean> pair = getStateManager().ensureState("groups", holder.getObject().getGroupName(), false, false);
-        SettingsExGroupBinding binding = holder.getBinding();
-        binding.cbSettingGroupEnabled.setChecked(pair.first);
-        CoreUiUtils.setViewsVisibility(
-                binding.ivExpanderSettingGroup,
-                pair.second,
-                binding.recyclerView,
-                binding.spSettingGroupRandomizer);*/
     }
 
     public void handleCodeToSnack(A_CODE code, String extraIfSucceeded, View v) {
@@ -426,5 +503,22 @@ public class SettingExFragment
                 A_CODE.isSuccessful(code) ?
                         Str.combine(getString(R.string.msg_task_finished_command), TextUtils.isEmpty(extraIfSucceeded) ? "" :  " >> " + extraIfSucceeded) :
                         Str.combine(getString(R.string.msg_task_failure), " >> " + code.name(), false) , Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onEvent(EventTrigger event) {
+        IUIViewControl.super.onEvent(event);
+        //We can handle refresh events
+        //Or adding shit etc
+    }
+
+    @Override
+    public void onView() {
+        IUIViewControl.super.onView();
+    }
+
+    @Override
+    public void onClean() {
+        IUIViewControl.super.onClean();
     }
 }

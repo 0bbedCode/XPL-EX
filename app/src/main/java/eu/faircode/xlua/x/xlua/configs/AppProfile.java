@@ -183,7 +183,7 @@ public class AppProfile extends PacketBase implements IBundleData, IParcelType, 
     }
 
     @Override
-    public String getId() { return name; }
+    public String getSharedId() { return name; }
 
     @Override
     public void setId(String id) {

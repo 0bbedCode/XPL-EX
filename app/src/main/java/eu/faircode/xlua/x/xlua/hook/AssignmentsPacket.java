@@ -72,7 +72,7 @@ public class AssignmentsPacket extends PacketBase {
     }
 
     @Override
-    public String getId() { return id; }
+    public String getSharedId() { return id; }
 
     @Override
     public void setId(String id) {

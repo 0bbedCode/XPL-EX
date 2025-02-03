@@ -8,7 +8,6 @@ import android.util.Log;
 
 import java.text.Collator;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,19 +25,14 @@ import eu.faircode.xlua.api.app.XLuaApp;
 import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.api.hook.assignment.LuaAssignment;
 import eu.faircode.xlua.api.hook.assignment.LuaAssignmentPacket;
-import eu.faircode.xlua.api.properties.MockPropPacket;
-import eu.faircode.xlua.api.properties.MockPropSetting;
 import eu.faircode.xlua.api.settings.LuaSettingExtended;
 import eu.faircode.xlua.api.xlua.XLuaCall;
 import eu.faircode.xlua.api.xlua.XLuaQuery;
-import eu.faircode.xlua.api.xlua.call.AssignHooksCommand;
-import eu.faircode.xlua.api.xmock.XMockCall;
 import eu.faircode.xlua.api.xmock.XMockQuery;
 import eu.faircode.xlua.logger.XLog;
 import eu.faircode.xlua.ui.interfaces.IHookTransaction;
 import eu.faircode.xlua.ui.interfaces.IHookTransactionEx;
 import eu.faircode.xlua.ui.transactions.HookTransactionResult;
-import eu.faircode.xlua.ui.transactions.PropTransactionResult;
 import eu.faircode.xlua.x.Str;
 
 public class HookGroup {
@@ -83,7 +77,7 @@ public class HookGroup {
 
     public boolean containsAssignedHook(String hookId) { return hasAssigned() && assignments.containsKey(hookId); }
 
-    public void removeAssignment(LuaAssignment assignment) { removeAssignment(assignment.getHook().getId()); }
+    public void removeAssignment(LuaAssignment assignment) { removeAssignment(assignment.getHook().getSharedId()); }
     public void removeAssignment(String hookId) {
         synchronized (lock) {
             assignments.remove(hookId);
@@ -102,7 +96,7 @@ public class HookGroup {
 
     public void putAssignment(LuaAssignment assignment) {
         synchronized (lock) {
-            String hId = assignment.getHook().getId();
+            String hId = assignment.getHook().getSharedId();
             if(!assignments.containsKey(hId)) {
                 if (assignment.getException() != null) exception = true;
                 if (assignment.getInstalled() >= 0) installed++;
@@ -110,7 +104,7 @@ public class HookGroup {
                 if (assignment.getRestricted()) used = Math.max(used, assignment.getUsed());
             }
 
-            assignments.put(assignment.getHook().getId(), assignment);
+            assignments.put(assignment.getHook().getSharedId(), assignment);
         }
     }
 
@@ -122,7 +116,7 @@ public class HookGroup {
             final IHookTransactionEx iCallback) {
 
         final List<String> hookIds = new ArrayList<>();
-        hookIds.add(hook.getId());
+        hookIds.add(hook.getSharedId());
         final LuaAssignmentPacket packet = LuaAssignmentPacket.create(
                 application.getUid(),
                 application.getPackageName(),
@@ -131,13 +125,13 @@ public class HookGroup {
                 !application.isGlobal() && application.getForceStop());
 
         if(DebugUtil.isDebug())
-            Log.d(TAG, Str.ensureNoDoubleNewLines("Packet=" + packet + " assign=" + assign + " pos=" + adapterPosition + " hook id=" + hook.getId()));
+            Log.d(TAG, Str.ensureNoDoubleNewLines("Packet=" + packet + " assign=" + assign + " pos=" + adapterPosition + " hook id=" + hook.getSharedId()));
 
         //XLog.i("Packet=" + packet + " assign=" + assign + " pos=" + adapterPosition + " hood id=" + hook.getId());
 
         final HookTransactionResult result = new HookTransactionResult();
         result.context = context;
-        result.id = hook.getId().hashCode();
+        result.id = hook.getSharedId().hashCode();
         result.hooks.add(hook);
         result.adapterPosition = adapterPosition;
         result.code = packet.getCode();
@@ -164,7 +158,7 @@ public class HookGroup {
                 }
             });
         }catch (Exception e) {
-            XLog.e("Failed to Add Assignment: hook=" + hook.getId(), e, true);
+            XLog.e("Failed to Add Assignment: hook=" + hook.getSharedId(), e, true);
             result.result = XResult.create().setFailed("Failed to send assignments error!");
             result.failed.add(hook);
             try { if(iCallback != null) iCallback.onHookUpdate(result);
@@ -178,7 +172,7 @@ public class HookGroup {
         for (XLuaHook hook : hooks.values())
             if (hook.isAvailable(application.isGlobal() ? null : application.getPackageName(), collection) &&
                     (name == null || name.equalsIgnoreCase(hook.getGroup()))) {
-                hookIds.add(hook.getId());
+                hookIds.add(hook.getSharedId());
                 assignments.add(new LuaAssignment(hook));
             }
 
@@ -227,7 +221,7 @@ public class HookGroup {
 
     public HookGroup putHook(XLuaHook hook) {
         if(hook.getGroup().equalsIgnoreCase(this.name))
-            hooks.put(hook.getId(), hook);
+            hooks.put(hook.getSharedId(), hook);
 
         return this;
     }
@@ -241,7 +235,7 @@ public class HookGroup {
                     if (assignment.getInstalled() >= 0) installed++;
                     if (assignment.getHook().isOptional()) optional++;
                     if (assignment.getRestricted()) used = Math.max(used, assignment.getUsed());
-                    assignments.put(assignment.getHook().getId(), assignment);
+                    assignments.put(assignment.getHook().getSharedId(), assignment);
                 }
 
             return this;

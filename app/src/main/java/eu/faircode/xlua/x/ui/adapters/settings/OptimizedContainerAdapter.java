@@ -47,6 +47,9 @@ import eu.faircode.xlua.x.xlua.commands.call.PutSettingExCommand;
 import eu.faircode.xlua.x.xlua.settings.random.RandomOptionNullElement;
 import eu.faircode.xlua.x.xlua.settings.random.RandomizerSessionContext;
 import eu.faircode.xlua.x.xlua.settings.random.interfaces.IRandomizer;
+import eu.faircode.xlua.x.xlua.settings.test.EventTrigger;
+import eu.faircode.xlua.x.xlua.settings.test.SharedViewControl;
+import eu.faircode.xlua.x.xlua.settings.test.interfaces.IUIViewControl;
 
 
 public class OptimizedContainerAdapter
@@ -59,7 +62,7 @@ public class OptimizedContainerAdapter
                                      UserClientAppContext userContext) {
         super(context, events, stateManager, null);
         this.userContext = userContext;
-        //this.userContext.kill = stateManager.getSharedRegistry().isChecked("pkg_kill", this.userContext.appPackageName);
+        this.userContext.bindShared(stateManager.getSharedRegistry());
     }
 
     @NonNull
@@ -69,7 +72,6 @@ public class OptimizedContainerAdapter
         return new ContainerViewHolder(binding, events, stateManager, userContext);
     }
 
-
     static class ContainerViewHolder
             extends
             BaseViewHolder<SettingsContainer, SettingsExItemContainerBinding>
@@ -78,7 +80,7 @@ public class OptimizedContainerAdapter
             View.OnLongClickListener,
             CompoundButton.OnCheckedChangeListener,
             AdapterView.OnItemSelectedListener,
-            IStateChanged {
+            IStateChanged, IUIViewControl {
 
         private final SettingsListManager settingsManager;
         private final UserClientAppContext userContext;
@@ -89,7 +91,6 @@ public class OptimizedContainerAdapter
                                    UserClientAppContext userContext) {
             super(binding, events, stateManager);
             this.userContext = userContext;
-            //this.userContext.kill = stateManager.getSharedRegistry().isChecked("pkg_kill", this.userContext.appPackageName);
             this.settingsManager = new SettingsListManager(binding.getRoot().getContext(), binding.settingsList, stateManager);
         }
 
@@ -212,7 +213,7 @@ public class OptimizedContainerAdapter
                 case R.id.ivBtSettingContainerSave:
                     for(SettingHolder holder : settingShared.getSettingsForContainer(currentItem)) {
                         if(holder.isNotSaved()) {
-                            A_CODE code = PutSettingExCommand.call(view.getContext(), holder, userContext, true, false);
+                            A_CODE code = PutSettingExCommand.call(view.getContext(), holder, userContext, userContext.isKill(), false);
                             if(code == A_CODE.FAILED)
                                 Snackbar.make(view, res.getString(R.string.save_setting_error), Snackbar.LENGTH_LONG)
                                         .show();
@@ -226,17 +227,37 @@ public class OptimizedContainerAdapter
                     }
                     break;
                 case R.id.ivBtSettingContainerRandomize:
-                    RandomizerSessionContext ctx = new RandomizerSessionContext();
+                   /* RandomizerSessionContext ctx = new RandomizerSessionContext();
                     ctx.setContext(context);
                     ctx.setSharedRegistry(sharedRegistry);
                     ctx.setRandomizers();
                     ctx.setSettings(settingShared.getSettingsForContainer(currentItem));
+                    //ctx.
                     ctx.setForceUpdate(true);
-                    ctx.randomizeAll();
+                    ctx.randomizeAll();*/
+
+                    RandomizerSessionContext ctx = new RandomizerSessionContext()
+                            .randomize(
+                                    manager.getAsFragment(),
+                                    settingShared.getSettingsForContainer(currentItem),
+                                    context,
+                                    sharedRegistry);
+
+                    //manager.
+
+                    /*RandomizerSessionContext ctx = RandomizerSessionContext.create();
+                    ctx.setContext(context);
+                    ctx.setSharedRegistry(sharedRegistry);
+
+                    //ctx.setSettings(SettingFragmentUtils.filterChecked(SettingFragmentUtils.getSettings(getLiveData()), sharedRegistry));
+                    ctx.setRandomizers();
+                    //ctx.randomizeAll();
+                    List<SettingHolder> all = SettingFragmentUtils.getSettings(getLiveData());
+                    ctx.randomize(false, all, SettingFragmentUtils.filterChecked(all, sharedRegistry));*/
 
 
                     //int randomized = settingShared.randomize(settingShared.getSettingsForContainer(currentItem), context);
-                    Snackbar.make(view, res.getString(ctx.getSavedCount() == 0 ?
+                    Snackbar.make(view, res.getString(ctx.getRandomizedCount() == 0 ?
                                     R.string.msg_error_randomizer_none :
                                     R.string.msg_result_randomized), Snackbar.LENGTH_LONG).show();
                     break;
@@ -306,6 +327,13 @@ public class OptimizedContainerAdapter
 
             int id = compoundButton.getId();
             if(id == R.id.cbSettingContainerEnabled) {
+
+                //SharedViewControl sharedViewControl = getSharedViewControl();
+                //for (SettingHolder holder : currentItem.getSettings())
+                //    sharedViewControl.setChecked(SharedViewControl.G_SETTINGS, holder.getSharedId(), isChecked);
+                //sharedViewControl.notifyChecked(SharedViewControl.G_S_CONTAINERS);
+
+
                 /* Update our Checked State Cache */
                 sharedRegistry.setChecked(SharedRegistry.STATE_TAG_CONTAINERS, currentItem.getContainerName(), isChecked);
 
@@ -334,7 +362,7 @@ public class OptimizedContainerAdapter
             wireContainerEvents(false);
             settingsManager.clear();
             if(currentItem != null) {
-                sharedRegistry.putGroupChangeListener(null, currentItem.getId());
+                sharedRegistry.putGroupChangeListener(null, currentItem.getSharedId());
                 currentItem = null;
             }
         }
@@ -409,7 +437,7 @@ public class OptimizedContainerAdapter
                 binding.ivBtWildcard.setOnLongClickListener(wire ? this : null);
 
                 if(currentItem != null)
-                    sharedRegistry.putGroupChangeListener(this, currentItem.getId());
+                    sharedRegistry.putGroupChangeListener(this, currentItem.getSharedId());
             }
         }
 
@@ -422,9 +450,6 @@ public class OptimizedContainerAdapter
                 if(packet.isFrom(SharedRegistry.STATE_TAG_SETTINGS)) {
                     /*Update Our Check Box State using our Children*/
                     CheckBoxState stateControl = CheckBoxState.from(currentItem.getSettings(), SharedRegistry.STATE_TAG_SETTINGS, sharedRegistry);
-
-                    if(DebugUtil.isDebug())
-                        Log.d("XLua.OptimizedContainerAdapter", "Group: " + currentItem.getGroup() + " Container: " + currentItem.getContainerName() + " Name: " + currentItem.getName() + " Count=" + currentItem.getSettings().size() + " State=" + stateControl.toString());
 
                     /* Update our Check Box */
                     stateControl.updateCheckBox(binding.cbSettingContainerEnabled, this);
@@ -455,14 +480,10 @@ public class OptimizedContainerAdapter
         }
 
         @Override
-        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-            handleSpinnerUpdate(adapterView.getContext());
-        }
+        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) { handleSpinnerUpdate(adapterView.getContext()); }
 
         @Override
-        public void onNothingSelected(AdapterView<?> adapterView) {
-            handleSpinnerUpdate(adapterView.getContext());
-        }
+        public void onNothingSelected(AdapterView<?> adapterView) { handleSpinnerUpdate(adapterView.getContext()); }
 
         public void handleSpinnerUpdate(Context context) {
             //Check then updates spinner ??
@@ -472,7 +493,7 @@ public class OptimizedContainerAdapter
             if(randomizer.isOption()) {
                 if(!(randomizer instanceof RandomOptionNullElement)) {
                     for(SettingHolder holder : settingShared.getSettingsForContainer(currentItem, true)) {
-                        RandomizerSessionContext ctx = new RandomizerSessionContext();
+                       /* RandomizerSessionContext ctx = new RandomizerSessionContext();
                         ctx.setContext(context);
                         ctx.setSharedRegistry(sharedRegistry);
 
@@ -482,12 +503,12 @@ public class OptimizedContainerAdapter
                         String newValue = ctx.getValue(holder.getName());
                         holder.setNewValue(newValue);
                         holder.ensureUiUpdated(newValue);
-                        holder.setNameLabelColor(context);
+                        holder.setNameLabelColor(context);*/
                     }
                 }
             } else {
                 for(SettingHolder holder : settingShared.getSettingsForContainer(currentItem, false))
-                    sharedRegistry.pushSharedObject(holder.getId(), randomizer);
+                    sharedRegistry.pushSharedObject(holder.getSharedId(), randomizer);
             }
         }
 
@@ -504,6 +525,44 @@ public class OptimizedContainerAdapter
                 //We can also init once store something in data like style, then all we need to do is find the index selected
                 UiRandomUtils.initRandomizer(adapter, spinner, currentItem, sharedRegistry.asSettingShared());
             }
+        }
+
+        @Override
+        public SharedViewControl getSharedViewControl() {
+            return null;
+        }
+
+        @Override
+        public void setSharedViewControl(SharedViewControl viewControl) {
+
+        }
+
+        @Override
+        public void onEvent(EventTrigger event) {
+            SharedViewControl sharedViewControl = getSharedViewControl();
+            if(event.isCheckEvent()) {
+                int not = 0;
+                int yes = 0;
+                for (SettingHolder holder : currentItem.getSettings())
+                    if (sharedViewControl.isChecked(SharedViewControl.G_SETTINGS, holder.getSharedId())) yes++;
+                    else not++;
+                CheckBoxState.create(yes, yes + not).updateCheckBox(binding.cbSettingContainerEnabled, this);
+            }
+        }
+
+        @Override
+        public void onView() {
+            IUIViewControl.super.onView();
+        }
+
+        @Override
+        public void onClean() {
+            IUIViewControl.super.onClean();
+        }
+
+        @Override
+        public boolean isView(String id) {
+            return IUIViewControl.super.isView(id);
         }
     }
 }

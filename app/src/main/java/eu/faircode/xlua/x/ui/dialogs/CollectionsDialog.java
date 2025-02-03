@@ -33,7 +33,7 @@ public class CollectionsDialog extends CheckableDialog<CollectionsDialog.XCollec
     public static class XCollection implements IIdentifiableObject {
         public String id;
         @Override
-        public String getId() { return id; }
+        public String getSharedId() { return id; }
 
         @Override
         public void setId(String id) { this.id = id; }
@@ -56,7 +56,7 @@ public class CollectionsDialog extends CheckableDialog<CollectionsDialog.XCollec
             if(sb.length() > 0)
                 sb.append(",");
 
-            sb.append(c.getId());
+            sb.append(c.getSharedId());
         }
 
         if(DebugUtil.isDebug())

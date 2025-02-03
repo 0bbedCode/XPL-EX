@@ -19,7 +19,7 @@
             android:alpha="0.5"
             android:clickable="false"
             android:focusable="false"
-            android:src="?attr/wildcardButton"
+            android:src="?attr/diceIcon"
             app:layout_constraintBottom_toBottomOf="@+id/ivBtSettingContainerReset"
             app:layout_constraintStart_toEndOf="@+id/ivBtSettingContainerRandomize"
             app:layout_constraintTop_toTopOf="@+id/ivBtSettingContainerRandomize"

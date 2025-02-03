@@ -84,7 +84,7 @@ public class SettingDeleteDialog extends AppCompatDialogFragment  {
 
         boolean isValidForceStop = isValidApp && !app.isGlobal();
         cbForceKill.setEnabled(isValidForceStop);
-        cbForceKill.setChecked(isValidForceStop && app.kill);
+        cbForceKill.setChecked(isValidForceStop && app.isKill());
 
         builder.setView(view)
                 .setTitle(R.string.title_delete_setting)
@@ -98,7 +98,7 @@ public class SettingDeleteDialog extends AppCompatDialogFragment  {
                         if(isValidApp) {
                             int finished = 0;
                             boolean deleteSetting = cbDelete.isChecked();
-                            boolean deleteDefault = cbDeleteDefaultMap.isChecked();
+                            boolean deleteDefault = cbDeleteDefaultMap.isChecked();     //ToDo
                             boolean forceKill = cbForceKill.isChecked();
                             //Toast.makeText(context, "NULL NULL For settings delete", Toast.LENGTH_LONG).show();
                             if(deleteSetting) {

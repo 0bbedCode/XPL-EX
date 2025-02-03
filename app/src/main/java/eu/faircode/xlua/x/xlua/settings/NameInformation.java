@@ -80,6 +80,17 @@ public class NameInformation {
     public static NameInformation create(StringPartsBuilder parts) { return new NameInformation(parts); }
     public static NameInformation create(NameInformation nameInfo, int index) { return new NameInformation(nameInfo, index); }
 
+    public static NameInformation createRaw(String name) {
+        NameInformation information = new NameInformation();
+        information.index = 0;
+        information.name = name;
+        information.group = name;
+        information.nameNiceNoNumericEnding = name;
+        information.nameNice = name;
+        information.kind = NameInformationKind.UNKNOWN;
+        return information;
+    }
+
     public String getContainerName() {
         /*
             Duplicate Setting / Single Indexable Setting issue is here
@@ -89,6 +100,7 @@ public class NameInformation {
         return hasChildren() ? name : parentNameInformation != null ? parentNameInformation.name : name;
     }
 
+    public NameInformation() {  }
     public NameInformation(String setting) { this(nameToParts(setting)); }
     public NameInformation(StringPartsBuilder parts) { parseParts(parts); }
     public NameInformation(NameInformation parent, int index) {

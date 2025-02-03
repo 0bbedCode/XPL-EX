@@ -1,7 +1,6 @@
 package eu.faircode.xlua.x.ui.dialogs;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -13,9 +12,9 @@ import eu.faircode.xlua.R;
 import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.utils.ListUtil;
-import eu.faircode.xlua.x.hook.interceptors.zone.Te;
 import eu.faircode.xlua.x.ui.core.dialog.CheckableDialog;
 import eu.faircode.xlua.x.ui.core.view_registry.SharedRegistry;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.commands.call.AssignHooksCommand;
 import eu.faircode.xlua.x.xlua.commands.call.GetAppInfoCommand;
 import eu.faircode.xlua.x.xlua.commands.query.GetHooksCommand;
@@ -23,10 +22,9 @@ import eu.faircode.xlua.x.xlua.hook.AppXpPacket;
 import eu.faircode.xlua.x.xlua.hook.AssignmentsPacket;
 import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.x.xlua.hook.HookGroupOrganizer;
-import eu.faircode.xlua.x.xlua.settings.data.SettingPacket;
 
 public class HooksDialog extends CheckableDialog<XLuaHook> {
-    private static final String TAG = "XLua.HooksDialog";
+    private static final String TAG = LibUtil.generateTag(HooksDialog.class);
 
     public static HooksDialog create() { return new HooksDialog(); }
 
@@ -49,7 +47,7 @@ public class HooksDialog extends CheckableDialog<XLuaHook> {
     public List<XLuaHook> getEnabled() {
         List<XLuaHook> enabled = new ArrayList<>();
         for(XLuaHook hook : items) {
-            if(this.viewRegistry != null && this.viewRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, hook.getId())) {
+            if(this.viewRegistry != null && this.viewRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, hook.getSharedId())) {
                 enabled.add(hook);
             }
         }
@@ -60,7 +58,7 @@ public class HooksDialog extends CheckableDialog<XLuaHook> {
     public static List<String> toHookIds(List<XLuaHook> hooks) {
         List<String> ids = new ArrayList<>(hooks.size());
         for(XLuaHook h : hooks)
-            ids.add(h.getId());
+            ids.add(h.getSharedId());
 
         return ids;
     }

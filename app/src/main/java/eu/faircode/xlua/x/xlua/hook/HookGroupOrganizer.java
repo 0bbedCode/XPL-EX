@@ -18,11 +18,12 @@ import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.utils.ArrayUtils;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.ui.core.view_registry.SharedRegistry;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.commands.query.GetHooksCommand;
 import eu.faircode.xlua.x.xlua.settings.data.SettingPacket;
 
 public class HookGroupOrganizer {
-    private static final String TAG = "XLua.HookGroupOrganizer";
+    private static final String TAG = LibUtil.generateTag(HookGroupOrganizer.class);
 
     public final Map<String, HookGroup> groups = new WeakHashMap<>();
 
@@ -51,7 +52,7 @@ public class HookGroupOrganizer {
                         if(lower_names.contains(lowered)) {
                             hooks.add(hook);
                             if(DebugUtil.isDebug())
-                                Log.d(TAG, Str.fm("Found Possible Hook to Setting by Settings! Setting Count=%s Hook Name=%s Hook ID=%s  UID=%s  Package Name=%s", setting_names.size(), hook.getName(), hook.getId(), "null", "null"));
+                                Log.d(TAG, Str.fm("Found Possible Hook to Setting by Settings! Setting Count=%s Hook Name=%s Hook ID=%s  UID=%s  Package Name=%s", setting_names.size(), hook.getName(), hook.getSharedId(), "null", "null"));
 
                             found = true;
                             break;
@@ -67,7 +68,7 @@ public class HookGroupOrganizer {
                         if(script.contains(format_1) || script.contains(format_2)) {
                             hooks.add(hook);
                             if(DebugUtil.isDebug())
-                                Log.d(TAG, Str.fm("Found Possible Hook to Setting by Lua Script! Setting Name=%s Hook Name=%s Hook ID=%s  UID=%s  Package Name=%s", setting_name, hook.getName(), hook.getId(), "null", "null"));
+                                Log.d(TAG, Str.fm("Found Possible Hook to Setting by Lua Script! Setting Name=%s Hook Name=%s Hook ID=%s  UID=%s  Package Name=%s", setting_name, hook.getName(), hook.getSharedId(), "null", "null"));
 
                             break;
                         }
@@ -99,7 +100,7 @@ public class HookGroupOrganizer {
                 group.hasWarning = HookWarnings.hasWarning(context, group.name);
 
                 if(DebugUtil.isDebug())
-                    Log.d(TAG, Str.fm("Created Group for Hook:%s  Group Name=%s UID=%s Package Name=%s", hook.getId(), hook.getGroup(), "null", "null"));
+                    Log.d(TAG, Str.fm("Created Group for Hook:%s  Group Name=%s UID=%s Package Name=%s", hook.getSharedId(), hook.getGroup(), "null", "null"));
             }
 
             group.hooks.add(hook);
@@ -186,7 +187,7 @@ public class HookGroupOrganizer {
             Log.d(TAG, "Settings List String Count=" + ListUtil.size(allSettings) + " All Hooks Count=" + ListUtil.size(allHooks) + " Filtered Hooks Count=" + ListUtil.size(filteredHooks));
 
         for(XLuaHook hook : filteredHooks) {
-            String id = hook.getId();
+            String id = hook.getSharedId();
             if(!TextUtils.isEmpty(id))
                 continue;
 

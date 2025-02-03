@@ -1,7 +1,10 @@
 package eu.faircode.xlua.x.ui.dialogs;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,7 +21,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -31,9 +33,10 @@ import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
 import eu.faircode.xlua.x.ui.adapters.ConfigAdapter;
 import eu.faircode.xlua.x.ui.core.interfaces.IFragmentController;
-import eu.faircode.xlua.x.ui.core.util.CoreUiUtils;
+import eu.faircode.xlua.x.ui.core.interfaces.IListChange;
+import eu.faircode.xlua.x.ui.fragments.ConfUtils;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.commands.XPacket;
-import eu.faircode.xlua.x.xlua.commands.call.AssignHooksCommand;
 import eu.faircode.xlua.x.xlua.commands.call.ForceStopAppCommand;
 import eu.faircode.xlua.x.xlua.commands.call.GetSettingExCommand;
 import eu.faircode.xlua.x.xlua.commands.call.PutConfigCommand;
@@ -41,69 +44,46 @@ import eu.faircode.xlua.x.xlua.commands.call.PutSettingExCommand;
 import eu.faircode.xlua.x.xlua.commands.query.GetConfigsCommand;
 import eu.faircode.xlua.x.xlua.configs.XPConfig;
 import eu.faircode.xlua.x.xlua.database.A_CODE;
-import eu.faircode.xlua.x.xlua.database.ActionFlag;
-import eu.faircode.xlua.x.xlua.database.ActionPacket;
-import eu.faircode.xlua.x.xlua.hook.AppXpPacket;
-import eu.faircode.xlua.x.xlua.hook.AssignmentsPacket;
 import eu.faircode.xlua.x.xlua.identity.UserIdentity;
 import eu.faircode.xlua.x.xlua.settings.data.SettingPacket;
 
+
+
 public class ConfigDialog extends AppCompatDialogFragment implements ConfigAdapter.OnConfigActionListener {
-    private static final String TAG = "XLua.ConfigDialog";
+    private static final String TAG = LibUtil.generateTag(ConfigDialog.class);
 
     private Context context;
+
+    private IListChange<SettingPacket> onChange;
+
+    private XPConfig enabled = null;
     private final List<XPConfig> configs = new ArrayList<>();
-    private XPConfig enabledConfig;
 
     private ConfigAdapter adapter;
-    private Button btnEdit, btnApply;
+    private Button btnEdit, btnApply, btnToFile;
     private View baseView;
 
     private boolean kill = false;
     private int uid;
     private String packageName;
 
+    public XPConfig getChecked() { return this.adapter != null ? this.adapter.checkedOrEnabled(null, false) : null; }
+
     public static ConfigDialog create() {
         return new ConfigDialog();
     }
 
-    public ConfigDialog setApp(int uid, String packageName) {
-        this.uid = uid;
-        this.packageName = packageName;
+
+    public ConfigDialog setOnChange(IListChange<SettingPacket> onChange) {
+        this.onChange = onChange;
         return this;
     }
 
-    public ConfigDialog test() {
-        for(int i = 0; i < RandomGenerator.nextInt(4, 10); i++) {
-            XPConfig c = new XPConfig();
-            //For some reason some of the Names are empty Strings or white spaces maybe ?? I think they are empty
-            c.name = RandomGenerator.nextStringAlpha(3, 14);
-            c.type = "test";
-            c.author = "Obc";
-            c.version = "1.0" + RandomGenerator.nextStringAlpha(3, 8);
-            c.setTags(RandomGenerator.nextElements(XPConfig.DEFAULT_TAGS));
-
-            if(i == 0)
-                this.enabledConfig = c;
-
-            for(int j = 0; j < RandomGenerator.nextInt(3, 10); j++) {
-                String hookId = RandomGenerator.nextStringAlpha(6, 15);
-                c.hooks.add(hookId);
-            }
-
-            for(int j = 0; j < RandomGenerator.nextInt(3, 10); j++) {
-                String settingName = RandomGenerator.nextStringAlpha(6, 15);
-                String settingValue = RandomGenerator.nextStringAlpha(6, 19);
-                SettingPacket packet = new SettingPacket();
-                packet.name = settingName;
-                packet.value = settingValue;
-
-                c.settings.add(packet);
-            }
-
-            this.configs.add(c);
-        }
-
+    public ConfigDialog setApp(int uid, String packageName) { return setApp(uid, packageName, false); }
+    public ConfigDialog setApp(int uid, String packageName, boolean kill) {
+        this.uid = uid;
+        this.packageName = packageName;
+        this.kill = kill;
         return this;
     }
 
@@ -115,14 +95,15 @@ public class ConfigDialog extends AppCompatDialogFragment implements ConfigAdapt
     public ConfigDialog setConfigs(Context context) {
         List<XPConfig> configs = GetConfigsCommand.get(context);
         String selectedConfig = GetSettingExCommand.getConfig(context, uid, packageName);
-        setConfigs(configs, selectedConfig);
+        internalSetConfigs(configs, selectedConfig);
         return this;
     }
 
-    public ConfigDialog setConfigs(List<XPConfig> configs, String selectedConfig) {
+    private void internalSetConfigs(List<XPConfig> configs, String selectedConfig) {
         if(DebugUtil.isDebug())
             Log.d(TAG, "Configs Count=" + ListUtil.size(configs) + " Selected Config=" + selectedConfig);
 
+        this.enabled = null;
         this.configs.clear();
         if (configs != null && !configs.isEmpty()) {
             if (!Str.isEmpty(selectedConfig)) {
@@ -131,7 +112,7 @@ public class ConfigDialog extends AppCompatDialogFragment implements ConfigAdapt
                 for (XPConfig config : configs) {
                     if (config.name.equals(selectedConfig)) {
                         selected = config;
-                        this.enabledConfig = config;
+                        this.enabled = config;
                         break;
                     }
                 }
@@ -154,28 +135,89 @@ public class ConfigDialog extends AppCompatDialogFragment implements ConfigAdapt
             }
         }
 
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
-            adapter.setEnabledConfig(enabledConfig);
-            updateButtonStates();
-        }
-        return this;
-    }
-
-    private ConfigDialog setEnabledConfig(XPConfig config) {
-        this.enabledConfig = config;
         if (adapter != null)
-            adapter.setEnabledConfig(config);
-
-        updateButtonStates();
-        return this;
+            internalRefresh(null, false, true, true, true);
     }
 
     public void refreshConfigs() {
-        // Refresh your configs list here and update adapter
         adapter.notifyDataSetChanged();
+        updateButtonStates();
     }
 
+    private void internalRefresh(Context context, boolean initConfigs, boolean notifyAdapter, boolean updateChecked, boolean setOriginal) {
+        if(initConfigs) setConfigs(context);
+        if(this.enabled != null) {
+            boolean found = false;
+            for(XPConfig c : configs) {
+                if(c.name.equalsIgnoreCase(this.enabled.name)) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if(!found)
+                this.enabled = null;
+        }
+
+        if(adapter != null) {
+            try {
+                if(notifyAdapter) adapter.notifyDataSetChanged();
+                if(setOriginal) adapter.setOriginalConfigs(configs);
+                if(updateChecked) adapter.setCheckedConfig(adapter.checkedOrEnabled(enabled, false));
+            }catch (Exception e) {
+                Log.e(TAG, "Failed to Update Adapter! Error=" + e);
+            }
+        }
+
+        updateButtonStates();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (data == null || resultCode != Activity.RESULT_OK) return;
+        Uri uri = data.getData();
+        if (uri == null) return;
+
+        switch (requestCode) {
+            case ConfUtils.REQUEST_OPEN_CONFIG:
+                XPConfig config = ConfUtils.readConfigFromUri(context, uri);
+                if (config != null) {
+                    ConfigCreateDialog.create()
+                            .setApp(uid, packageName)
+                            .setConfigs(context, false)
+                            .consumeFileConfig(config)
+                            .setOnFinish((res, cfg) -> {
+                                if(baseView != null) {
+                                    Snackbar.make(baseView,
+                                            Str.combine(getString(R.string.msg_config_push), res.name()),
+                                            Snackbar.LENGTH_LONG).show();
+                                }
+
+                                if(A_CODE.isSuccessful(res))
+                                    internalRefresh(context, true, true,true, true);
+                            })
+                            .show(getParentFragmentManager(), context.getString(R.string.title_config_modify));
+                } else {
+                    Snackbar.make(baseView != null ? baseView : getView(),
+                            R.string.result_config_read_failed,
+                            Snackbar.LENGTH_LONG).show();
+                }
+                break;
+
+            case ConfUtils.REQUEST_SAVE_CONFIG:
+                XPConfig checked = getChecked();
+                if (checked != null) {
+                    ConfUtils.takePersistablePermissions(context, uri);
+                    boolean success = ConfUtils.writeConfigToUri(context, uri, checked);
+                    Snackbar.make(baseView != null ? baseView : getView(),
+                            success ? R.string.result_file_save_success : R.string.result_file_save_failed,
+                            Snackbar.LENGTH_LONG).show();
+                }
+                break;
+        }
+    }
 
     @NonNull
     @Override
@@ -187,21 +229,29 @@ public class ConfigDialog extends AppCompatDialogFragment implements ConfigAdapt
         EditText etSearch = view.findViewById(R.id.etSearch);
         ListView lvConfigs = view.findViewById(R.id.lvConfigs);
 
+        Button btnFromFile = view.findViewById(R.id.btnFromFile);
+        btnToFile = view.findViewById(R.id.btnToFile);
+
         adapter = new ConfigAdapter(context, configs, this);
-        adapter.setOriginalConfigs(configs);
-        adapter.setEnabledConfig(enabledConfig);
+        internalRefresh(null, false, false, true, true);
         lvConfigs.setAdapter(adapter);
         lvConfigs.setDivider(null);
         lvConfigs.setDividerHeight(0);
+
+        btnFromFile.setOnClickListener(v -> ConfUtils.startConfigFilePicker(this));
+
+        btnToFile.setOnClickListener(v -> {
+            XPConfig checked = getChecked();
+            if (checked != null) ConfUtils.startConfigSavePicker(this, checked.name);
+             else Snackbar.make(v, R.string.msg_no_config_selected, Snackbar.LENGTH_SHORT).show();
+        });
 
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                adapter.getFilter().filter(s);
-            }
+            public void onTextChanged(CharSequence s, int start, int before, int count) { adapter.getFilter().filter(s); }
 
             @Override
             public void afterTextChanged(Editable s) {}
@@ -219,49 +269,38 @@ public class ConfigDialog extends AppCompatDialogFragment implements ConfigAdapt
         dialog.setOnShowListener(dialogInterface -> {
             btnApply = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
             btnEdit = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
-            //Button btnCreate = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
-
             btnApply.setOnClickListener(v -> {
-                if(enabledConfig != null && !Str.isEmpty(enabledConfig.name) && !Str.isEmpty(packageName) && !UserIdentity.GLOBAL_NAMESPACE.equalsIgnoreCase(packageName)) {
+                XPConfig checked = getChecked();
+                if(checked != null && !Str.isEmpty(checked.name) && !Str.isEmpty(packageName) && !UserIdentity.GLOBAL_NAMESPACE.equalsIgnoreCase(packageName)) {
                     if(DebugUtil.isDebug())
-                        Log.d(TAG, "Apply, Config=" + Str.toStringOrNull(enabledConfig));
+                        Log.d(TAG, "Apply, Config=" + Str.toStringOrNull(checked));
 
-                    if(A_CODE.isSuccessful(PutSettingExCommand.putConfig(context, uid, packageName, enabledConfig.name))) {
-                        enabledConfig.applySettings(context, uid, packageName, true);
-                        enabledConfig.applyAssignments(context, uid, packageName, true);
-                        if(kill)
-                            ForceStopAppCommand.stop(context, uid, packageName);
-
+                    if(A_CODE.isSuccessful(PutSettingExCommand.putConfig(context, uid, packageName, checked.name))) {
+                        List<SettingPacket> changed = checked.applySettings(context, uid, packageName, true);
+                        checked.applyAssignments(context, uid, packageName, true);
+                        if(kill) ForceStopAppCommand.stop(context, uid, packageName);
                         if(baseView != null)
                             Snackbar.make(baseView, getString(R.string.msg_finished_applying_config), Snackbar.LENGTH_LONG).show();
 
-                        try {
-                            Fragment fragment = getParentFragment();
-                            if(fragment instanceof IFragmentController) {
-                                IFragmentController controller = (IFragmentController) fragment;
-                                controller.refresh();
-                            }
-                        }catch (Exception ignored) { }
+                        if(onChange != null)
+                            onChange.onItemsChange(changed);
                     }
                 }
             });
 
             btnEdit.setOnClickListener(v -> {
+                XPConfig checked = getChecked();
                 if(DebugUtil.isDebug())
-                    Log.d(TAG, "Edit, Config=" + Str.toStringOrNull(enabledConfig));
+                    Log.d(TAG, "Edit, Config=" + Str.toStringOrNull(checked));
 
-                if (enabledConfig != null)
+                if (checked != null)
                     ConfigCreateDialog.create()
                             .setOnFinish((r, c) -> {
-                                if(this.baseView != null)
-                                    Snackbar.make(baseView, Str.combine(getString(R.string.msg_config_push), r.name()), Snackbar.LENGTH_LONG).show();
-                                if(A_CODE.isSuccessful(r)) {
-                                    setConfigs(context);
-                                    refreshConfigs();
-                                }
+                                if(this.baseView != null) Snackbar.make(baseView, Str.combine(getString(R.string.msg_config_push), r.name()), Snackbar.LENGTH_LONG).show();
+                                if(A_CODE.isSuccessful(r)) internalRefresh(context, true, true,true, false);
                             })
                             .setApp(uid, packageName)
-                            .setConfigs(configs, enabledConfig == null ? null : enabledConfig.name)
+                            .setConfigs(configs, checked.name)
                             .show(getParentFragmentManager(), getString(R.string.title_config_modify));
             });
 
@@ -273,17 +312,33 @@ public class ConfigDialog extends AppCompatDialogFragment implements ConfigAdapt
 
     private void updateButtonStates() {
         if (btnEdit != null && btnApply != null) {
-            boolean hasSelection = enabledConfig != null;
-            btnEdit.setEnabled(hasSelection);
-            btnApply.setEnabled(!Str.isEmpty(packageName) && !UserIdentity.GLOBAL_NAMESPACE.equalsIgnoreCase(packageName) && hasSelection);
-            btnEdit.setAlpha(hasSelection ? 1.0f : 0.5f);
-            btnApply.setAlpha(hasSelection ? 1.0f : 0.5f);
+            try {
+                boolean hasSelection = getChecked() != null;
+                btnEdit.setEnabled(hasSelection);
+                btnApply.setEnabled(!Str.isEmpty(packageName) && !UserIdentity.GLOBAL_NAMESPACE.equalsIgnoreCase(packageName) && hasSelection);
+                btnEdit.setAlpha(hasSelection ? 1.0f : 0.5f);
+                btnApply.setAlpha(hasSelection ? 1.0f : 0.5f);
+            }catch (Exception e) {
+                Log.e(TAG, "Failed to Update the Edit and Apply Button States, Error=" + e);
+            }
+        }
+
+        if(btnToFile != null) {
+            try {
+                boolean hasConfigSelected = getChecked() != null;
+                String txt = hasConfigSelected ? getString(R.string.button_config_to_file) :  getString(R.string.button_select_config);
+                btnToFile.setEnabled(hasConfigSelected);
+                btnToFile.setClickable(hasConfigSelected);
+                btnToFile.setText(txt);
+            }catch (Exception e) {
+                Log.e(TAG, "Failed to Update the Config To File Button State! Error=" + e);
+            }
         }
     }
 
     @Override
     public void onConfigChecked(XPConfig config) {
-        setEnabledConfig(config);
+        internalRefresh(null, false, false,true, false);
     }
 
     @Override
@@ -298,10 +353,8 @@ public class ConfigDialog extends AppCompatDialogFragment implements ConfigAdapt
                     if(DebugUtil.isDebug())
                         Log.d(TAG, "Deleted Config with Result: " + res.name());
 
-                    if(A_CODE.isSuccessful(res)) {
-                        setConfigs(context);
-                        refreshConfigs();
-                    }
+                    if(A_CODE.isSuccessful(res))
+                        internalRefresh(context, true, true, true, false);
                 }).show(getParentFragmentManager(), getString(R.string.title_delete_config));
     }
 

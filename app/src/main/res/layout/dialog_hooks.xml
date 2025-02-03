@@ -11,7 +11,12 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:divider="@android:color/darker_gray"
-        android:dividerHeight="0.5dp"
-        android:choiceMode="multipleChoice" />
+        android:dividerHeight="1dp"
+        android:choiceMode="multipleChoice"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="false"
+        android:clipToPadding="false"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp" />
 
 </LinearLayout>

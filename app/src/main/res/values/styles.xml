@@ -39,6 +39,8 @@
     <attr name="checklistIcon" format="reference" />
     <attr name="editNoteIcon" format="reference" />
     <attr name="newWindowIcon" format="reference" />
+    <attr name="diceIcon" format="reference" />
+    <attr name="addIcon" format="reference" />
 
 
 
@@ -91,6 +93,9 @@
         <item name="checklistIcon">@drawable/ic_checklist_black24</item>
         <item name="editNoteIcon">@drawable/ic_edit_note_black24</item>
         <item name="newWindowIcon">@drawable/ic_new_window_black24</item>
+        <item name="diceIcon">@drawable/ic_dice1_black24</item>
+        <item name="addIcon">@drawable/ic_add_black24</item>
+
 
         <item name="colorSettingSaved">@color/lightColorSettingSaved</item>
         <item name="colorTextOne">@color/lightColorTextOne</item>
@@ -140,6 +145,8 @@
         <item name="checklistIcon">@drawable/ic_checklist_white24</item>
         <item name="editNoteIcon">@drawable/ic_edit_note_white24</item>
         <item name="newWindowIcon">@drawable/ic_new_window_white24</item>
+        <item name="diceIcon">@drawable/ic_dice1_white24</item>
+        <item name="addIcon">@drawable/ic_add_white24</item>
 
 
         <item name="wildcardButton">@drawable/ic_wildcard_one_white24</item>

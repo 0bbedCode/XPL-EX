@@ -23,6 +23,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.FutureTask;
 
@@ -30,6 +31,7 @@ import eu.faircode.xlua.x.data.utils.ArrayUtils;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.data.utils.NumericUtils;
 import eu.faircode.xlua.x.data.utils.ObjectUtils;
+import eu.faircode.xlua.x.hook.interceptors.pkg.PackageInfoInterceptor;
 import eu.faircode.xlua.x.runtime.RuntimeUtils;
 import eu.faircode.xlua.x.runtime.reflect.DynamicField;
 import eu.faircode.xlua.x.ui.core.FilterRequest;
@@ -39,6 +41,7 @@ import eu.faircode.xlua.x.ui.core.view_registry.IStateChanged;
 import eu.faircode.xlua.x.ui.core.view_registry.IIdentifiableObject;
 import eu.faircode.xlua.x.ui.core.view_registry.SettingSharedRegistry;
 import eu.faircode.xlua.x.ui.core.view_registry.SharedRegistry;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.hook.data.AssignmentData;
 import eu.faircode.xlua.x.xlua.identity.UserIdentity;
 import eu.faircode.xlua.x.xlua.settings.SettingsContainer;
@@ -49,7 +52,21 @@ public class CoreUiUtils {
     public static final DynamicField FIELD_SPINNER_END_OFFSET = DynamicField.create(SwipeRefreshLayout.class, "mSpinnerOffsetEnd")
             .setAccessible(true);
 
-    public static final String TAG = "XLua.CoreUiUtils";
+    public static final String TAG = LibUtil.generateTag(CoreUiUtils.class);
+
+
+    public static final List<String> SPECIAL_TIME_SETTINGS = Arrays.asList("file.time.modify.offset", "file.time.access.offset", "file.time.created.offset");
+    public static final List<String> SPECIAL_TIME_APP_SETTINGS = Arrays.asList(
+            PackageInfoInterceptor.INSTALL_OFFSET_SETTING,
+            PackageInfoInterceptor.UPDATE_OFFSET_SETTING,
+            PackageInfoInterceptor.INSTALL_CURRENT_OFFSET_SETTING,
+            PackageInfoInterceptor.UPDATE_CURRENT_OFFSET_SETTING);
+
+    public static final List<String> APP_TIME_KINDS = Arrays.asList(
+            PackageInfoInterceptor.NOW_ALWAYS,
+            PackageInfoInterceptor.NOW_ONCE,
+            PackageInfoInterceptor.RAND_ALWAYS,
+            PackageInfoInterceptor.RAND_ONCE);
 
 
     public static int dpToPx(Context context, int dp) {
@@ -298,13 +315,13 @@ public class CoreUiUtils {
             @Override
             public void onGroupChange(ChangedStatesPacket packet) {
                 if(packet.isFrom(changedGroup)) {
-                    boolean isChecked = stateRegistry.isChecked(groupNeedOfChange, item.getId());
+                    boolean isChecked = stateRegistry.isChecked(groupNeedOfChange, item.getSharedId());
                     checkBox.setOnCheckedChangeListener(null);
                     checkBox.setChecked(isChecked);
                     checkBox.setOnCheckedChangeListener(onCheckedChangeListener);
                 }
             }
-        }, item.getId());
+        }, item.getSharedId());
     }
 
     public static boolean logIsNotMainUIThread() {

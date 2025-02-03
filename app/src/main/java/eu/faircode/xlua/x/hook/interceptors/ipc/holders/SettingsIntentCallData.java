@@ -61,9 +61,8 @@ public class SettingsIntentCallData {
                     this.authority = ((Uri) pOne).getAuthority();
                 else if(pOne instanceof String)
                     this.authority = (String) pOne;
-                else {
+                else
                     Log.e(TAG, "Intent Call, First Param is not a URI or String, Error...");
-                }
 
                 if(pOne != null) {
                     this.method = param.tryGetArgument(1, null);

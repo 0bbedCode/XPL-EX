@@ -4,13 +4,10 @@ import android.util.Log;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
 import eu.faircode.xlua.DebugUtil;
-import eu.faircode.xlua.x.runtime.reflect.ReflectUtil;
-import eu.faircode.xlua.x.ui.core.view_registry.SharedRegistry;
 import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.settings.random.interfaces.IRandomizer;
 import eu.faircode.xlua.x.xlua.settings.random.randomizers.android_device.RandomAndroidBuildCodename;
@@ -40,6 +37,8 @@ import eu.faircode.xlua.x.xlua.settings.random.randomizers.android_device.kernel
 import eu.faircode.xlua.x.xlua.settings.random.randomizers.android_device.kernel.RandomAndroidKernelRelease;
 import eu.faircode.xlua.x.xlua.settings.random.randomizers.android_device.kernel.RandomAndroidKernelSysName;
 import eu.faircode.xlua.x.xlua.settings.random.randomizers.android_device.kernel.RandomAndroidKernelVersion;
+import eu.faircode.xlua.x.xlua.settings.random.randomizers.apps.RandomAppCurrentFlag;
+import eu.faircode.xlua.x.xlua.settings.random.randomizers.apps.RandomAppTime;
 import eu.faircode.xlua.x.xlua.settings.random.randomizers.cell.RandomMCC;
 import eu.faircode.xlua.x.xlua.settings.random.randomizers.cell.RandomMNC;
 import eu.faircode.xlua.x.xlua.settings.random.randomizers.cell.RandomMSIN;
@@ -449,8 +448,10 @@ public class RandomizersCache {
     public static final String SETTING_UNIQUE_ANON_ID = "unique.app.anon.id";
     public static final String SETTING_UNIQUE_OPEN_ANON_ID = "unique.open.anon.advertising.id";
     public static final String SETTING_UNIQUE_BOOT_ID = "unique.boot.id";
-    public static final String SETTING_UNIQUE_FACEBOOK_ID = "unique.boot.id";
+    public static final String SETTING_UNIQUE_FACEBOOK_ID = "unique.facebook.advertising.id";
     public static final String SETTING_UNIQUE_GOOGLE_ID = "unique.google.advertising.id";
+
+    //unique.facebook.advertising.id
 
     public static final Class<?> SETTING_UNIQUE_UUID_TYPE = RandomUUID.class;
 
@@ -514,6 +515,18 @@ public class RandomizersCache {
 
     public static final String SETTING_NET_PARENT_CONTROL = "network.parent.control.isp";
     public static final Class<?> SETTING_NET_PARENT_CONTROL_TYPE = RandomNetParentControl.class;
+
+    public static final String SETTING_APP_INSTALL_TIME_OFFSET = "apps.install.time.offset";
+    public static final String SETTING_APP_UPDATE_TIME_OFFSET = "apps.update.time.offset";
+
+    public static final String SETTING_APP_CURRENT_INSTALL_TIME_OFFSET = "apps.current.install.time.offset";
+    public static final String SETTING_APP_CURRENT_UPDATE_TIME_OFFSET = "apps.current.update.time.offset";
+
+
+    //public static final String SETTING_APP_TIME_CURRENT_ONLY = "apps.time.spoof.current";
+
+    public static final Class<?> SETTING_APP_INSTALL_TIME_OFFSET_TYPE = RandomAppTime.class;
+    public static final Class<?> SETTING_APP_TIME_CURRENT_ONLY_TYPE = RandomAppCurrentFlag.class;
 
 
     private static final Map<String, IRandomizer> randomizers = new HashMap<>();

@@ -9,7 +9,7 @@ public class RandomDeviceManufacturer extends RandomElement {
     public RandomDeviceManufacturer() {
         super("Device Manufacturer");
         putSettings(RandomizersCache.SETTING_DEVICE_MANUFACTURER);
-        putParents(RandomizersCache.SETTING_PARENT_DEVICE);
+        //putParents(RandomizersCache.SETTING_PARENT_DEVICE);
     }
 
     @Override

@@ -20,6 +20,12 @@ public class FileFilterContainer extends FilterContainerElement implements IFilt
     public static final String ALLOW_FILES_SETTING = "storage.allow.files";
     public static final String BLOCK_FILES_SETTING = "storage.block.files";
 
+    /*
+        ToDo: Maybe Add ?
+                java.libcore.io.Os.java
+                java.libcore.io.Linux.java
+     */
+
     public static final String GROUP_NAME = "Intercept.File";
     public static final TypeMap DEFINITIONS = TypeMap.create()
             .add(File.class, "exists",
@@ -45,16 +51,16 @@ public class FileFilterContainer extends FilterContainerElement implements IFilt
             String method = hook.getMethodName();
             String[] params = hook.getParameterTypes();
             if(TextUtils.isEmpty(method) || "allow".equalsIgnoreCase(method) || "block".equalsIgnoreCase(method) || !ArrayUtils.isValid(params)) {
-                holder.removeRule(hook);
+                factory.removeRule(hook);
                 //Still return true , avoid caller from adding it to list of global hooks but don't add it to our list so block it
             } else {
                 boolean isAllow = "allow".equalsIgnoreCase(method);
                 for(String p : params) {
                     if(TextUtils.isEmpty(p)) continue;
-                    String t = Str.trim(p, File.separator, true, true);
-                    if(!t.isEmpty()) {
-                        fileRules.put(t, isAllow);
-                    }
+                    String trimmed = Str.trim(p, File.separator, true, true);
+                    if(!Str.isEmpty(trimmed))
+                        fileRules.put(trimmed, isAllow);
+
                 }
             }
         }

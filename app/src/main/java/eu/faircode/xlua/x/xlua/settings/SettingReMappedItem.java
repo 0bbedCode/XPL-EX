@@ -79,7 +79,7 @@ public class SettingReMappedItem implements IJsonType {
         }
 
         @Override
-        public String getId() {
+        public String getSharedId() {
             return this.name;
         }
 

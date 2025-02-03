@@ -14,7 +14,7 @@ public class RandomDateTwo extends RandomElement {
     @Override
     public void randomize(RandomizerSessionContext context) {
         for (String setting : getSettings()) {
-            context.pushValue(setting, RanAndUtils.dateTwo(context), false);
+            context.pushValue(setting, RanAndUtils.dateTwo(context));
         }
     }
 }

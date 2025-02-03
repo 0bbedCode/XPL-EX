@@ -104,7 +104,7 @@ public class CheckBoxState {
     public <T extends IIdentifiableObject> CheckBoxState notifyObjects(List<T> objects, String groupChanged, SharedRegistry registry) {
         if(registry != null) {
             for(T o : objects) {
-                registry.notifyGroupChange(o.getId(), groupChanged);
+                registry.notifyGroupChange(o.getSharedId(), groupChanged);
             }
         }
 

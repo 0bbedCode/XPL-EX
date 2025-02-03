@@ -12,12 +12,19 @@ import eu.faircode.xlua.x.runtime.RuntimeUtils;
 import eu.faircode.xlua.x.ui.core.util.CoreUiUtils;
 import eu.faircode.xlua.x.ui.core.FilterRequest;
 import eu.faircode.xlua.x.ui.core.interfaces.IFragmentController;
+import eu.faircode.xlua.x.xlua.LibUtil;
+import eu.faircode.xlua.x.xlua.settings.test.EventTrigger;
+import eu.faircode.xlua.x.xlua.settings.test.SharedViewControl;
+import eu.faircode.xlua.x.xlua.settings.test.interfaces.IUIViewControl;
 
-public class ListBaseActivity extends ActivityBase implements IFragmentController {
-    private static final String TAG = "XLua.ListBaseActivity";
+public abstract class ListBaseActivity extends ActivityBase implements IFragmentController, IUIViewControl {
+    private static final String TAG = LibUtil.generateTag(ListBaseActivity.class);
 
     private IFragmentController controller;
     private MenuItem menuSearch;
+    private SharedViewControl sharedViewControl;
+
+    protected abstract String getSharedTagId();
 
     public <T extends IFragmentController> void startFragmentTransaction(Class<T> loaderClass, int replaceResource, boolean passArgs) {
         setLoaderFragment(loaderClass, passArgs);
@@ -33,6 +40,16 @@ public class ListBaseActivity extends ActivityBase implements IFragmentControlle
             if(passArgs) {
                 Fragment frag = controller.getFragment();
                 frag.setArguments(getIntent().getExtras());
+                if(frag instanceof IUIViewControl) {
+                    try {
+                        IUIViewControl cast = (IUIViewControl) frag;
+                        SharedViewControl svc = getSharedViewControl();
+                        svc.setFragment(frag);
+                        cast.setSharedViewControl(svc);
+                    }catch (Exception e) {
+                        Log.e(TAG, "Failed to Bind Shared View Controller! Error=" + e);
+                    }
+                }
                 //? this is it ?
             }
 
@@ -60,6 +77,8 @@ public class ListBaseActivity extends ActivityBase implements IFragmentControlle
     @Override
     public void refresh() {
         //controller.refresh();
+        //Ohhh ?
+        controller.refresh();
     }
 
     @Override
@@ -74,8 +93,25 @@ public class ListBaseActivity extends ActivityBase implements IFragmentControlle
     public FragmentManager getFragmentMan() { return controller.getFragmentMan(); }
 
     @Override
-    public IFragmentController getController() { return controller; }
+    public IFragmentController getController() {
+        return controller;
+    }
 
     @Override
     public void setController(IFragmentController controller) { this.controller = controller; }
+
+
+    @Override
+    public SharedViewControl getSharedViewControl() {
+        if(this.sharedViewControl == null) this.sharedViewControl = new SharedViewControl().setTag(getSharedTagId()).setActivity(this);
+        return this.sharedViewControl;
+    }
+
+    @Override
+    public void setSharedViewControl(SharedViewControl sharedViewControl) { }
+
+    @Override
+    public void onEvent(EventTrigger event) {
+        IUIViewControl.super.onEvent(event);
+    }
 }

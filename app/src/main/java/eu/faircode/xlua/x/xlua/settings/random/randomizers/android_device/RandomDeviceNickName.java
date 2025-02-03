@@ -9,7 +9,7 @@ public class RandomDeviceNickName extends RandomElement {
     public RandomDeviceNickName() {
         super("Device NickName");
         putSettings(RandomizersCache.SETTING_DEVICE_NICKNAME);
-        putParents(RandomizersCache.SETTING_PARENT_DEVICE);
+        //putParents(RandomizersCache.SETTING_PARENT_DEVICE);
     }
 
     @Override

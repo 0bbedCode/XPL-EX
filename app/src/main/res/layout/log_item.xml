@@ -62,7 +62,7 @@
         android:textAppearance="@android:style/TextAppearance.Small"
         android:text="This is a log message. It might span multiple lines depending on its length."
         android:ellipsize="end"
-        android:maxLines="3"
+        android:maxLines="150"
         app:layout_constraintStart_toStartOf="@id/tvLogCategory"
         app:layout_constraintTop_toBottomOf="@id/tvLogCategory"
         app:layout_constraintEnd_toEndOf="@id/tvLogCategory" />
@@ -75,6 +75,7 @@
         android:text="SomeValuesAfter:"
         android:ellipsize="end"
         android:maxLines="3"
+        android:visibility="invisible"
         app:layout_constraintStart_toStartOf="@id/tvLogMessage"
         app:layout_constraintTop_toBottomOf="@id/tvLogMessage"
         app:layout_constraintEnd_toEndOf="@id/tvLogMessage" />

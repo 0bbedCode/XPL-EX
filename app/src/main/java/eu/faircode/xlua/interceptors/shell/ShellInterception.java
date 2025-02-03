@@ -79,7 +79,7 @@ public class ShellInterception {
         }
 
         for(String c : cleanedCommandLine) {
-            if(c.equalsIgnoreCase(command)) {
+            if(c.contains(command)) {
                 if(DebugUtil.isDebug())
                     Log.d(TAG, "Command Is Bad! Original: " + Str.joinArray(cleanedCommandLine, " ") + "   >> Target Command: " + command);
                 return true;

@@ -39,6 +39,7 @@
     "id": "soc.cpu.abi.list.32",
     "oldIds": ["cpu.abilist32"]
   },
+
   {
     "id": "soc.cpu.abi.list.64",
     "oldIds": ["cpu.abilist64"]
@@ -119,44 +120,57 @@
     "id": "region.timezone.display.label",
     "oldIds": ["zone.timezone.display.name"]
   },
+
+
+
   {
-    "id": "cell.phone.type",
+    "id": "cell.phone.type.1",
     "oldIds": ["gsm.phone.type"]
   },
   {
     "id": "cell.phone.sim.card.count",
-    "oldIds": ["gsm.sim.count"]
+    "oldIds": ["gsm.sim.count", "cell.phone.sim.card.count.[1,2]", "cell.phone.sim.card.count.1", "cell.phone.sim.card.count.2"]
   },
   {
-    "id": "cell.operator.id",
+    "id": "cell.operator.id.1",
     "oldIds": ["gsm.operator.id"]
   },
   {
-    "id": "cell.operator.name",
+    "id": "cell.operator.name.1",
     "oldIds": ["gsm.network.carrier"]
   },
   {
-    "id": "cell.operator.numeric.id",
+    "id": "cell.operator.numeric.id.1",
     "oldIds": ["gsm.operator.id"]
   },
   {
-    "id": "cell.operator.display.name",
+    "id": "cell.operator.display.name.1",
     "oldIds": ["gsm.setting.display.name"]
   },
+
+
+
   {
-    "id": "cell.operator.mcc",
-    "oldIds": ["gsm.operator.mcc"]
+    "id": "cell.operator.mcc.1",
+    "oldIds": ["gsm.operator.mcc", "cell.operator.mcc"]
   },
   {
-    "id": "cell.operator.mnc",
-    "oldIds": ["gsm.operator.mnc"]
+    "id": "cell.operator.mnc.1",
+    "oldIds": ["gsm.operator.mnc", "cell.operator.mnc"]
   },
+
+
+
   {
-    "id": "cell.sim.type",
+    "id": "cell.sim.type.1",
     "oldIds": ["gsm.sim.type"]
   },
   {
-    "id": "cell.sim.state",
+    "id": "cell.sim.state.flag.[1,2]",
+    "oldIds": ["cell.sim.state.flag,[1,2]"]
+  },
+  {
+    "id": "cell.sim.state.1",
     "oldIds": ["gsm.sim.state.number"]
   },
   {
@@ -167,6 +181,9 @@
     "id": "cell.location.cid",
     "oldIds": ["gsm.cell.location.cid"]
   },
+
+
+
   {
     "id": "apps.allow.list",
     "oldIds": ["applications.allow.list"]

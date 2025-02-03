@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 
 //def keystorePropertiesFile = rootProject.file("keystore.properties")
 //def keystoreProperties = new Properties()
-
 //keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
@@ -17,7 +16,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 33
         versionCode 140
-        versionName "1.5.0"
+        versionName "1.5.1.4"
         archivesBaseName = "XPL-EX-v$versionName-$versionCode"
     }
     /signingConfigs {
@@ -29,15 +28,17 @@ android {
         }
     }/
 
+
+
     buildFeatures {
         viewBinding true
     }
 
     buildTypes {
         release {
-            shrinkResources true
-            minifyEnabled true
-            useProguard = true
+            shrinkResources false
+            minifyEnabled false
+            useProguard = false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             //signingConfig signingConfigs.release
         }
@@ -48,6 +49,14 @@ android {
             useProguard = false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/kotlinx_coroutines_core.version'
+        exclude 'META-INF/versions/**'
+        exclude 'META-INF/*.kotlin_module'
+        pickFirst 'META-INF/kotlinx_coroutines_core.version'
+        pickFirst 'META-INF/INDEX.LIST'
     }
 }
 
@@ -67,8 +76,11 @@ dependencies {
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
 
 
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
+    //implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+    //implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
+
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.5.1'
 
     // https://mvnrepository.com/artifact/androidx.appcompat/appcompat
     implementation "androidx.appcompat:appcompat:$appcompat_version"

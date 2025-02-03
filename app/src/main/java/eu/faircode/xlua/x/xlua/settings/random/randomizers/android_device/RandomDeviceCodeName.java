@@ -9,7 +9,7 @@ public class RandomDeviceCodeName extends RandomElement {
     public RandomDeviceCodeName() {
         super("Device Brand Name");
         putSettings(RandomizersCache.SETTING_DEVICE_CODENAME);
-        putParents(RandomizersCache.SETTING_PARENT_DEVICE);
+        //putParents(RandomizersCache.SETTING_PARENT_DEVICE);
     }
 
     @Override

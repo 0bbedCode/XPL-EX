@@ -118,7 +118,6 @@ public class PrefManager {
         if(preferences == null || Str.isEmpty(key))
             return defaultValue;
 
-
         if(!preferences.contains(key)) {
             if(putIfMissing) preferences.edit().putString(key, Str.joinList(defaultValue)).apply();
             return defaultValue;

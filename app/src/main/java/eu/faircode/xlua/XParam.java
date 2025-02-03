@@ -355,7 +355,7 @@ public class XParam {
                         .appendFieldLine("Class", hookBase.getClassName())
                         .appendFieldLine("Method", hookBase.getMethodName())
                         .appendFieldLine("Group", hookBase.getGroup())
-                        .appendFieldLine("ID", hookBase.getId())
+                        .appendFieldLine("ID", hookBase.getSharedId())
                         .appendFieldLine("Collection", hookBase.getCollection())
                         .appendFieldLine("Author", hookBase.getAuthor());
             } else {
@@ -404,7 +404,9 @@ public class XParam {
     public boolean isQueryBad(boolean getResult) { return new IntentQueryData(this, getResult).intercept(this); }
 
     @SuppressWarnings("unused")
-    public boolean isSettingsContentBad(boolean getResult) { return new SettingsIntentCallData(this, getResult).replaceSettingStringResult(this); }
+    public boolean isSettingsContentBad(boolean getResult) {
+        return new SettingsIntentCallData(this, getResult)
+                .replaceSettingStringResult(this); }
 
     @SuppressWarnings("unused")
     public boolean isCommandBad(ShellInterception shellData) {

@@ -22,8 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.google.android.flexbox.FlexboxLayout;
 
@@ -31,7 +29,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.R;
@@ -44,15 +41,9 @@ import eu.faircode.xlua.x.ui.core.view_registry.SharedRegistry;
 import eu.faircode.xlua.x.xlua.commands.XPacket;
 import eu.faircode.xlua.x.xlua.commands.call.GetSettingExCommand;
 import eu.faircode.xlua.x.xlua.commands.call.PutConfigCommand;
-import eu.faircode.xlua.x.xlua.commands.call.PutSettingExCommand;
 import eu.faircode.xlua.x.xlua.commands.query.GetConfigsCommand;
 import eu.faircode.xlua.x.xlua.configs.XPConfig;
 import eu.faircode.xlua.x.xlua.database.A_CODE;
-import eu.faircode.xlua.x.xlua.database.sql.SQLDatabase;
-import eu.faircode.xlua.x.xlua.hook.data.AssignmentData;
-import eu.faircode.xlua.x.xlua.settings.SettingHolder;
-import eu.faircode.xlua.x.xlua.settings.SettingsContainer;
-import eu.faircode.xlua.x.xlua.settings.SettingsHelper;
 import eu.faircode.xlua.x.xlua.settings.data.SettingPacket;
 
 public class ConfigCreateDialog extends AppCompatDialogFragment {
@@ -97,10 +88,17 @@ public class ConfigCreateDialog extends AppCompatDialogFragment {
         return this;
     }
 
+    public ConfigCreateDialog consumeFileConfig(XPConfig config) {
+        this.config = config;
+        for(SettingPacket setting : config.settings)
+            sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId(), true);
+
+        return this;
+    }
+
     public ConfigCreateDialog setHookIds(List<String> hookIds) {
         if(ListUtil.isValid(hookIds) && config != null)
            ListUtil.addAllIfValid(this.config.hooks, hookIds, true);
-
 
         return this;
     }
@@ -114,7 +112,7 @@ public class ConfigCreateDialog extends AppCompatDialogFragment {
                     if(!Str.isEmpty(selected) && c.name.equals(selected)) {
                         this.config = c;
                         for(SettingPacket setting : config.settings)
-                            sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getId(), true);
+                            sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId(), true);
                     }
                 }
             }
@@ -131,7 +129,7 @@ public class ConfigCreateDialog extends AppCompatDialogFragment {
             config.settings.clear();
             for(SettingPacket packet : settings) {
                 if(packet.value != null) {
-                    sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, packet.getId(), true);
+                    sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, packet.getSharedId(), true);
                     config.settings.add(packet);
                 }
             }
@@ -173,14 +171,14 @@ public class ConfigCreateDialog extends AppCompatDialogFragment {
         return this;
     }*/
 
-    private void updateParentDialog() {
+    /*private void updateParentDialog() {
         try {
             Fragment parentFragment = getParentFragment();
             if (parentFragment instanceof ConfigDialog) {
                 ((ConfigDialog) parentFragment).refreshConfigs();
             }
         }catch (Exception ignored) { }
-    }
+    }*/
 
     @NonNull
     @Override
@@ -236,7 +234,7 @@ public class ConfigCreateDialog extends AppCompatDialogFragment {
         cbCheckSettingsBulk.setOnClickListener(v -> {
             boolean bulkChecked = cbCheckSettingsBulk.isChecked();
             for (SettingPacket setting : config.settings)
-                sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getId(), bulkChecked);
+                sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId(), bulkChecked);
 
             settingsAdapter.notifyDataSetChanged();
             updateBulkCheckboxAndLabel(cbCheckSettingsBulk, tvSelectedSettingsLabel, config.settings.size(), SharedRegistry.STATE_TAG_SETTINGS);
@@ -324,7 +322,7 @@ public class ConfigCreateDialog extends AppCompatDialogFragment {
                             cfg.hooks.clear();
 
                             for(SettingPacket setting : config.settings)
-                                if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getId()))
+                                if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId()))
                                     cfg.settings.add(setting);
 
                             for (String hookId : config.hooks)
@@ -336,15 +334,36 @@ public class ConfigCreateDialog extends AppCompatDialogFragment {
                             if(DebugUtil.isDebug())
                                 Log.d(TAG, "Sent Config: " + Str.noNL(cfg) + " Is Known: " + isKnownConfig + " Bundle Result=" + res.name());
 
+                            /*try {
+                                Fragment parentFragment = getParentFragment();
+                                if (parentFragment instanceof ConfigDialog) {
+                                    ((ConfigDialog) parentFragment).setConfigs(context);
+                                    ((ConfigDialog) parentFragment).refreshConfigs();
+                                }
+                            }catch (Exception e) {
+                                Log.e(TAG, "Error Updating dialog config list, error=" + e);
+                            }*/
+
                             if(onFinish != null)
                                 onFinish.onFinish(res, cfg);
+
+
+                            // One final refresh after callback
+                            /*try {
+                                Fragment parentFragment = getParentFragment();
+                                if (parentFragment instanceof ConfigDialog) {
+                                    ((ConfigDialog) parentFragment).forceRefresh();
+                                }
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error doing final config list refresh", e);
+                            }*/
                         }
                     }
                 });
 
         AlertDialog dialog = builder.create();
 
-        dialog.setOnShowListener(d -> {
+        /*dialog.setOnShowListener(d -> {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
             dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(false);
 
@@ -381,9 +400,54 @@ public class ConfigCreateDialog extends AppCompatDialogFragment {
                     }
                 }
             });
+        });*/
+
+        dialog.setOnShowListener(d -> {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+            dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(false);
+
+            // Initial state update for configs loaded from file or existing configs
+            if (!Str.isEmpty(config.name)) {
+                updateButtonStates(dialog, config.name);
+            }
+
+            tiConfigName.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+                public void afterTextChanged(Editable s) {
+                    String input = s.toString().trim();
+                    updateButtonStates(dialog, input);
+                }
+            });
         });
 
         return dialog;
+    }
+
+
+    private void updateButtonStates(AlertDialog dialog, String configName) {
+        boolean isKnownConfig = configs.containsKey(configName);
+        boolean isEmpty = Str.isEmpty(configName);
+
+        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        Button neutralButton = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
+
+        positiveButton.setText(isKnownConfig ?
+                R.string.option_update : R.string.option_create);
+        positiveButton.setEnabled(!isEmpty);
+
+        if (isKnownConfig) {
+            neutralButton.setVisibility(View.VISIBLE);
+            neutralButton.setText(R.string.option_open);
+            neutralButton.setEnabled(true);
+            neutralButton.setOnClickListener(v -> openConfig(configName));
+        } else {
+            neutralButton.setVisibility(View.GONE);
+        }
     }
 
     private void openConfig(String configName) {
@@ -407,7 +471,7 @@ public class ConfigCreateDialog extends AppCompatDialogFragment {
 
         if (tag.equals(SharedRegistry.STATE_TAG_SETTINGS))
             for (SettingPacket setting : config.settings) {
-                if (sharedRegistry.isChecked(tag, setting.getId()))
+                if (sharedRegistry.isChecked(tag, setting.getSharedId()))
                     checked++;
         } else {
             for (String hookId : config.hooks)

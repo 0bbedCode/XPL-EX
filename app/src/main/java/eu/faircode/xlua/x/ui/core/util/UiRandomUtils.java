@@ -46,7 +46,7 @@ public class UiRandomUtils {
             Log.d(TAG, "Selected Randomizer Spinner Option=" + randomizer.getDisplayName());
 
         try {
-            RandomizerSessionContext ctx = RandomizerSessionContext.create();
+            /*RandomizerSessionContext ctx = RandomizerSessionContext.create();
             for(SettingHolder setting : getSettingHolders(container.getSettings(), shared)) {
                 ctx.stack.push(setting.getName());
                 //handle "options"
@@ -60,7 +60,7 @@ public class UiRandomUtils {
                 setting.ensureUiUpdated(value);
                 if(DebugUtil.isDebug())
                     Log.d(TAG, Str.fm("Spinner Option Selected, Option=%s  Updated Setting Value, Setting=%s  New Value=%s  Old Value=", randomizer.getDisplayName(), setting.getName(), value, setting.getValue()));
-            }
+            }*/
 
             return true;
         }catch (Exception e) {
@@ -146,7 +146,7 @@ public class UiRandomUtils {
     public static List<SettingHolder> getSettingHolders(List<SettingHolder> settings, SharedRegistry registry) {
         List<SettingHolder> enabled = new ArrayList<>();
         for(SettingHolder holder : settings) {
-            if(registry != null && registry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, holder.getId())) {
+            if(registry != null && registry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, holder.getSharedId())) {
                 enabled.add(holder);
             }
         }

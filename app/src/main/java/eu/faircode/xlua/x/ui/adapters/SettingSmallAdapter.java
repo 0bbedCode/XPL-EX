@@ -60,12 +60,12 @@ public class SettingSmallAdapter extends BaseAdapter {
         holder.tvSettingValue.setText(setting.value);
 
         // Update checkbox state from registry
-        boolean isChecked = sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getId());
+        boolean isChecked = sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId());
         holder.checkBoxSelect.setOnCheckedChangeListener(null);
         holder.checkBoxSelect.setChecked(isChecked);
 
         holder.checkBoxSelect.setOnCheckedChangeListener((buttonView, isChecked1) -> {
-            sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getId(), isChecked1);
+            sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId(), isChecked1);
             updateCallback.run();
         });
 

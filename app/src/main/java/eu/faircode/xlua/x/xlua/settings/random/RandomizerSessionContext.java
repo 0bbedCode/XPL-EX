@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,364 +15,372 @@ import java.util.Stack;
 import java.util.UUID;
 
 import eu.faircode.xlua.DebugUtil;
-import eu.faircode.xlua.R;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.string.StrBuilder;
 import eu.faircode.xlua.x.data.utils.ListUtil;
+import eu.faircode.xlua.x.ui.core.interfaces.IFragmentController;
 import eu.faircode.xlua.x.ui.core.view_registry.SharedRegistry;
+import eu.faircode.xlua.x.ui.fragments.SettingExFragment;
+import eu.faircode.xlua.x.ui.fragments.SettingFragmentUtils;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.settings.SettingHolder;
 import eu.faircode.xlua.x.xlua.settings.random.interfaces.IRandomizer;
 import eu.faircode.xlua.x.xlua.settings.random.randomizers.RandomizersCache;
+import eu.faircode.xlua.x.xlua.settings.random.randomizers.network.RandomNetParentControl;
+import eu.faircode.xlua.x.xlua.settings.test.RandomSettingHolder;
+import eu.faircode.xlua.x.xlua.settings.test.RandomizerFactory;
 
 /*
     ToDO: Add Helper Function ? "updateSettings(settings_list_holders, stateRegistry)
                     RZA FURY IN MY EYES
  */
 public class RandomizerSessionContext {
-    private static final String TAG = "XLua.RandomizerSessionContext";
+    private static final String TAG = LibUtil.generateTag(RandomizerSessionContext.class);
 
-    public static RandomizerSessionContext create() { return new RandomizerSessionContext(); }
+    public static String sharedSettingName(String settingName) { return settingName != null && settingName.startsWith("setting:") ? settingName : Str.combine("setting:", settingName); }
 
-    public final String sessionId = UUID.randomUUID().toString();
-
-    public final Map<String, String> values = new HashMap<>();
     public final Stack<String> stack = new Stack<>();
 
-    public int count() { return values.size(); }
-    public boolean isEmpty() { return values.isEmpty();  }
+    private final List<RandomSettingHolder> updated = new ArrayList<>();
+    private final Map<String, IRandomizer> randomizers = RandomizersCache.getCopy();
+    private final Map<String, RandomSettingHolder> checked = new HashMap<>();
+    private final Map<String, RandomSettingHolder> settings = new HashMap<>();
 
-    /*public void randomizeBulk(List<SettingHolder> settings, SharedRegistry sharedRegistry, Context context) {
-        Map<String, IRandomizer> randomizers = RandomizersCache.getCopy();
-        if(DebugUtil.isDebug())
-            Log.d(TAG, "Bulk Randomizing! Settings Count=" + settings.size() + " Randomizers Count=" + randomizers.size());
+    public int getRandomizedCount() { return updated.size(); }
 
+    //public static List<SettingHolder> getAllSettings(IFragmentController controller) { return getAllSettings(controller.getFragment()); }
+    public static List<SettingHolder> getAllSettings(Fragment fragment) {
+        try {
+            if(fragment instanceof SettingExFragment) {
+                SettingExFragment frag = (SettingExFragment) fragment;
+                List<SettingHolder> all = SettingFragmentUtils.getSettings(frag.getLiveData());
+                if(DebugUtil.isDebug())
+                    Log.d(TAG, "Static Settings Count=" + ListUtil.size(all));
 
-    }*/
-
-    public List<String> randomized = new ArrayList<>();
-
-    public SharedRegistry sharedRegistry = null;
-    public Context context = null;
-
-    public List<String> finishedParents = new ArrayList<>();
-
-    public Map<String, IRandomizer> randomizers = new HashMap<>();
-    public Map<String, SettingHolder> settings = new HashMap<>();
-
-    private int savedCount = 0;
-    private boolean forceUpdate = false;
-
-    public int getSavedCount() { return savedCount; }
-
-    public void setForceUpdate(boolean forceUpdate) {
-        this.forceUpdate = forceUpdate;
-    }
-
-    public void setContext(Context context) { this.context = context; }
-    public void setRandomizers() {
-        Map<String, IRandomizer> randomizers = RandomizersCache.getCopy();
-        for(Map.Entry<String, IRandomizer> entry : randomizers.entrySet()) {
-            String settingName = entry.getKey();
-            String settingId = sharedSettingName(settingName);
-            IRandomizer randomizer = sharedRegistry.getSharedObject(settingId);
-            this.randomizers.put(settingName,randomizer == null ? entry.getValue() : randomizer);
+                return all;
+            } else {
+                return new ArrayList<>();
+            }
+        }catch (Exception e) {
+            Log.e(TAG, "Failed to Get all Settings, Error=" + e);
+            return new ArrayList<>();
         }
     }
 
-    public void setSharedRegistry(SharedRegistry sharedRegistry) { this.sharedRegistry = sharedRegistry; }
-    public void setSettings(List<SettingHolder> settings) {
-        if(ListUtil.isValid(settings)) {
-            if(DebugUtil.isDebug())
-                Log.d(TAG, "Settings Set Size=" + settings.size());
+    public RandomizerSessionContext randomize(
+            Fragment fragment,
+            List<SettingHolder> checked,
+            Context context,
+            SharedRegistry sharedRegistry) {
+        if(fragment == null) return this;
+        return randomize(getAllSettings(fragment), checked, context, sharedRegistry);
+    }
+
+    public RandomizerSessionContext randomize(
+            List<SettingHolder> settings,
+            List<SettingHolder> checked,
+            Context context,
+            SharedRegistry sharedRegistry) {
+
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Stage (0) Settings Count=" + ListUtil.size(settings) + " Checked Count=" + ListUtil.size(checked));
+
+        if(!ListUtil.isValid(settings))
+            return this;
+
+        for(SettingHolder setting : settings) {
+            RandomSettingHolder randomHolder = new RandomSettingHolder();
+            randomHolder.holder = setting;
+            randomHolder.randomizer = getRandomizer(setting.getName(), sharedRegistry);
+            this.settings.put(randomHolder.name(), randomHolder);
+        }
+
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Stage (1) Settings Count=" + this.settings.size() + " Randomizer Count=" + this.randomizers.size());
+
+        if(ListUtil.isValid(checked)) {
+            //These are the high level checks, this is where it starts
+            for(SettingHolder setting : checked) {
+                RandomSettingHolder holder = this.settings.get(setting.getName());
+                if(holder != null && holder.hasRandomizer()) {
+                    if(!this.checked.containsKey(holder.name()))
+                        putChecked(holder);
+                }
+            }
+        } else {
+            if(sharedRegistry == null)
+                return this;
 
             for(SettingHolder setting : settings) {
-                this.settings.put(setting.getName(), setting);
-                if(!this.randomizers.containsKey(setting.getName())) {
-                    IRandomizer randomizer = this.sharedRegistry.getSharedObject(setting.getId());
-                    if(randomizer != null) {
-                        this.randomizers.put(setting.getName(), randomizer);
+                if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId())) {
+                    RandomSettingHolder holder = this.settings.get(setting.getName());
+                    if(holder != null && holder.hasRandomizer()) {
+                        String name = holder.name();
+                        if(!this.checked.containsKey(name)) {
+                            putChecked(holder);
+                        }
                     }
                 }
             }
         }
+
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Stage (2) Checked Count=" + this.checked.size());
+
+        for(Map.Entry<String, RandomSettingHolder> entry : new HashMap<>(this.checked).entrySet())
+            handleCheckedRequirements(entry.getValue());
+
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Stage (3) Checked Count=" + this.checked.size());
+
+        //Start with Parents
+        for(Map.Entry<String, RandomSettingHolder> entry : new HashMap<>(this.checked).entrySet()) {
+            RandomSettingHolder holder = entry.getValue();
+            if(holder != null && holder.isParentRandomizer() && !holder.wasRandomized())
+                invokeRandomize(holder);
+        }
+
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Stage (4) Stage (3) Finished");
+
+        //Do the Remaining
+        for(Map.Entry<String, RandomSettingHolder> entry : new HashMap<>(this.checked).entrySet()) {
+            RandomSettingHolder holder = entry.getValue();
+            if(holder != null && !holder.isParentRandomizer() && !holder.wasRandomized())
+                invokeRandomize(holder);
+        }
+
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Stage (5) Stage (4) Finished");
+
+        //Update each element
+        for(Map.Entry<String, RandomSettingHolder> entry : this.checked.entrySet()) {
+            RandomSettingHolder holder = entry.getValue();
+            if(holder != null && holder.wasRandomized()) {
+                updated.add(holder);
+                if(DebugUtil.isDebug())
+                    Log.d(TAG, Str.fm("Updated Setting [%s] Original(1)=[%s]  Original(2)=[%s]  New Random Value=[%s]  New Count=[%s]",
+                            holder.name(),
+                            Str.toStringOrNull(holder.holder.getValue()),
+                            Str.toStringOrNull(holder.holder.getNewValue()),
+                            Str.toStringOrNull(holder.getValue(false)),
+                            String.valueOf(updated.size())));
+
+                holder.updateHolder(true, true, context);
+            }
+        }
+
+        return this;
     }
 
     public List<String> resolveRequirements(List<String> requirements) {
-        for(String req : requirements) {
-            if(!values.containsKey(req)) {
-                IRandomizer randomizer = randomizers.get(req);
-                SettingHolder holder = settings.get(req);
-
-                //Handle parents
-                if(holder != null && holder.getValue() != null && !sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, sharedSettingName(req))) {
-                    values.put(req, holder.getValue());
-                } else {
-                    if(randomizer != null) {
-                        if(randomizer.hasRequirements(req))
-                            resolveRequirements(randomizer.getRequirements(req));
-
-                        stack.push(req);
-                        randomizer.randomize(this);
-                        //In theory we should be and start using the "pushSpecial"
-                    }
-                }
-            }
-        }
+        /*for(String req : requirements) {
+            RandomSettingHolder holder = this.settings.get(req);
+            if(holder != null)
+                internalRandomize(holder);
+        }*/
 
         return requirements;
     }
 
-    public static String sharedSettingName(String settingName) {
-        return Str.combine("setting:", settingName);
+    public boolean wasRandomized(String name) {
+        RandomSettingHolder holder = this.settings.get(name);
+        return holder != null && holder.wasRandomized();
     }
 
-    public void randomizeAll() {
-        for(Map.Entry<String, IRandomizer> entry : randomizers.entrySet()) {
-            String name = entry.getKey();
-            IRandomizer randomizer = entry.getValue();
-            if(!values.containsKey(name))
-                ran(randomizer, name);
-            else
-                Log.w(TAG, "Contains [" + name + "] ... in Value List!");
-        }
-
-        for(Map.Entry<String, SettingHolder> entry : settings.entrySet()) {
-            String name = entry.getKey();
-            IRandomizer randomizer = randomizers.get(name);
-            String parent = randomizer != null ? randomizer.hasParentControl() ? randomizer.getParentControlName() : null : null;
-            boolean force = forceUpdate || parent != null && sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, sharedSettingName(parent));
-            if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, sharedSettingName(name)) || force) {
-                SettingHolder holder = entry.getValue();
-                String value = values.get(name);
-                if(value != null) {
-                    holder.setNewValue(value);
-                    holder.ensureUiUpdated(value);
-                    holder.setNameLabelColor(context);
-                    savedCount++;
-                }
-            }
-        }
+    public void pushSpecial(String settingName, String value) { pushValue(settingName, value); }
+    public void pushValue(String settingName, String value) {
+        RandomSettingHolder holder = this.settings.get(settingName);
+        if(holder != null)
+            holder.setValue(value);
     }
 
-    public void ran(IRandomizer randomizer, String settingName) {
-        /*if(randomizer.hasRequirements(settingName)) {
-            //Resolve any sub requirements if any
-            List<String> requirements = randomizer.getRequirements(settingName);
-            if(DebugUtil.isDebug())
-                Log.d(TAG, "Has Requirements, Setting Name=" + settingName + " Req=[" + Str.joinList(requirements) + "]");
-
-            for(String rq : requirements) {
-                if(!values.containsKey(rq)) {
-                    IRandomizer rqRandomizer = randomizers.get(rq);
-                    if(rqRandomizer != null)
-                        ran(rqRandomizer, rq);
-                }
-            }
-        }*/
-
-        if(randomizer.hasParentControl()) {
-            String parentName = randomizer.getParentControlName();
-            if(!Str.isEmpty(parentName) && !finishedParents.contains(parentName)) {
-                IRandomizer parent = randomizers.get(parentName);
-                if(parent != null) {
-                    stack.push(parentName);
-                    parent.randomize(this);
-                    finishedParents.add(parentName);
-                }
-            }
-        } else {
-            if(!randomizer.isParentControl()) {
-                stack.push(settingName);
-                randomizer.randomize(this);
-            }else {
-                if(!finishedParents.contains(settingName)) {
-                    stack.push(settingName);
-                    randomizer.randomize(this);
-                    finishedParents.add(settingName);
-                }
-            }
-        }
+    public String getValue(String settingName) {
+        RandomSettingHolder holder = this.settings.get(settingName);
+        return holder == null ? null : holder.getValue(true);
     }
 
-    public void finalizeValue(String settingName, SharedRegistry sharedRegistry) {
-        SettingHolder holder = settings.get(settingName);
-        if(holder == null)
-            return;
-
-        //Does not matter if they are the "same" just takes more cpu cycles but who gives a shit as long as the algo works!
-        boolean useOriginal = holder.getValue() != null && !sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, holder.getId());
-        if(useOriginal)
-            values.put(settingName, holder.getValue());
-    }
-
-    public void pushSpecial(String settingName, String newValue) {
-        if(!values.containsKey(settingName)) {
-            pushValue(settingName, newValue);
-            finalizeValue(settingName, sharedRegistry);
-        }
-    }
-
-    /*public void doTest(List<SettingHolder> settings, SharedRegistry viewStateRegistry, Context context) {
-        Map<String, IRandomizer> randomizers = RandomizersCache.getCopy();
-
-        for(Map.Entry<String, IRandomizer> entryRandom : randomizers.entrySet()) {
-            String settingName = entryRandom.getKey();
-            IRandomizer randomizer = entryRandom.getValue();
-            boolean isChecked = viewStateRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, settingName);
-
-            if(randomizer.hasRequirements(settingName)) {
-
-            }
-        }
-
-        for(SettingHolder holder : settings) {
-            String name = holder.getName();
-            IRandomizer randomizer = randomizers.get(name);
-
-            if(randomizer.hasRequirements()) {
-                RandomElement element = (RandomElement) randomizer;
-                Map<String, List<String>> requirements = element.links;
-
-                for(Map.Entry<String, List<String>> entry : requirements.entrySet()) {
-                    String orgSettingName =
-                }
-            }
-        }
-    }*/
-
-
-    public void bulkRandomize(List<SettingHolder> settings, SharedRegistry viewStateRegistry, Context context) {
-        Map<String, IRandomizer> randomizers = RandomizersCache.getCopy();
-        if(DebugUtil.isDebug())
-            Log.d(TAG, "Bulk Randomizing! Settings Count=" + settings.size() + " Randomizers Count=" + randomizers.size());
-
-        //Get Enabled
-        Map<SettingHolder, IRandomizer> pairs = new HashMap<>();
-        for(SettingHolder setting : settings) {
-            if(viewStateRegistry == null || viewStateRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getId())) {
-                IRandomizer randomizer = randomizers.get(setting.getName());
-                if(randomizer == null) {
-                    Log.e(TAG, "Error No Randomizer! Setting Name=" + setting.getName());
-                    continue;
-                }
-
-                pairs.put(setting, randomizer);
-                if(DebugUtil.isDebug())
-                    Log.d(TAG, "Created Randomizer Pair, Id=" + setting.getId() + " Name=" + setting.getName() + " Value=" + setting.getValue() + " New Value=" + setting.getNewValue());
-            }
-        }
-
-        if(DebugUtil.isDebug())
-            Log.d(TAG, "Settings Pairs with Randomizers and are Enabled, Size=" + pairs.size());
-
-        //Find all parents first type things then init them ?
-        for(Map.Entry<SettingHolder, IRandomizer> pair : pairs.entrySet()) {
-            SettingHolder holder = pair.getKey();
-            IRandomizer randomizer = pair.getValue();
-            String name = holder.getName();
-            if(!hasSetting(name)) {
-                //append to the stack the setting ?
-                //Invoke Randomizer
-                randomizer.randomize(this);
-                if(hasSetting(name)) {
-                    String value = getValue(name);
-                    holder.setNewValue(value);
-                    //holder.ensureInputUpdated();
-
-                    holder.ensureUiUpdated(value);
-                    if(DebugUtil.isDebug())
-                        Log.d(TAG, "Randomized Setting, Setting=" + name + " Value=" + value);
-
-                    if(context != null) {
-                        holder.setNameLabelColor(context);
-                    }
-                } else {
-                    Log.w(TAG, "Weird Did not set Value for Setting Name=" + name);
-                }
+    private void invokeRandomize(RandomSettingHolder holder) {
+        if(holder != null && holder.hasRandomizer()) {
+            if(holder.isParentRandomizer()) {
+                this.stack.push(holder.name());
+                holder.randomizer.randomize(this);
+                //Be aware of cases where Parent Randomizer requires
+                //In that case we can seperate requirements from what it sets ....
+                //We can do that later
             } else {
-                Log.w(TAG, "Already has Setting for Set Value, Name=" + name);
-            }
-        }
-    }
-
-    public RandomizerSessionContext() { }
-
-    public boolean hasSetting(String settingName) { return settingName != null && values.containsKey(settingName); }
-
-
-    public boolean keepGoing(List<String> settingNames) {
-
-        return true;//Add
-    }
-
-    public void pushValue(String settingName, String value) { pushValue(settingName, value, false); }
-    public void pushValue(String settingName, String value, boolean overwriteIfExists) {
-        if(!TextUtils.isEmpty(settingName)) {
-            synchronized (values) {
-                if(overwriteIfExists || !values.containsKey(settingName)) {
-                    values.put(settingName, value);
-                    if(DebugUtil.isDebug())
-                        Log.d(TAG, Str.fm("Pushing Setting Value [%s], Name=%s  Value=%s", sessionId, settingName, value));
-                }
-            }
-        }
-    }
-
-    public String getValue(String settingName) { return getValue(settingName, null, false); }
-    public String getValue(String settingName, String defaultIfNonExistent) { return getValue(settingName, defaultIfNonExistent, true); }
-    public String getValue(String settingName, String defaultIfNonExistent, boolean pushIfNonExists) {
-        if(TextUtils.isEmpty(settingName))
-            return defaultIfNonExistent;
-
-        synchronized (values) {
-            if(!values.containsKey(settingName)) {
-                if(pushIfNonExists) {
-                    values.put(settingName, defaultIfNonExistent);
-                    if(DebugUtil.isDebug())
-                        Log.d(TAG, Str.fm("Pushing Setting Value from Get [%s], Name=%s  Value=%s", sessionId, settingName, defaultIfNonExistent));
-                }
-
-                return defaultIfNonExistent;
-            } else {
-                return values.get(settingName);
-            }
-        }
-    }
-
-    public long getValueLong(String settingName) { return getValueLong(settingName, 0, false); }
-    public long getValueLong(String settingName, long defaultIfNonExistent) { return getValueLong(settingName, defaultIfNonExistent, true); }
-    public long getValueLong(String settingName, long defaultIfNonExistent, boolean pushIfNonExists) {
-        if(TextUtils.isEmpty(settingName))
-            return defaultIfNonExistent;
-
-        synchronized (values) {
-            if(!values.containsKey(settingName)) {
-                if(pushIfNonExists) {
-                    values.put(settingName, String.valueOf(defaultIfNonExistent));
-                    if(DebugUtil.isDebug())
-                        Log.d(TAG, Str.fm("Pushing Setting Value from Get (long) [%s], Name=%s  Value=%s", sessionId, settingName, defaultIfNonExistent));
-                }
-
-                return defaultIfNonExistent;
-            } else {
-                try {
-                    String v = Str.trimStart(values.get(settingName), "0", "x", "X");
-                    if(TextUtils.isEmpty(v) || !Str.isNumeric(v) || v.length() > 19) {
-                        if(pushIfNonExists) {
-                            values.put(settingName, String.valueOf(defaultIfNonExistent));
-                            if(DebugUtil.isDebug())
-                                Log.d(TAG, Str.fm("Pushing Setting Value from Get (long)(2) [%s], Name=%s  Value=%s", sessionId, settingName, defaultIfNonExistent));
+                if(holder.randomizer.hasRequirements(holder.name())) {
+                    List<String> reqList = holder.randomizer.getRequirements(holder.name());
+                    if(ListUtil.isValid(reqList)) {
+                        for(String rq : reqList) {
+                            RandomSettingHolder reqHolder = this.settings.get(rq);
+                            if(this.checked.containsKey(rq))
+                                invokeRandomize(reqHolder);
                         }
-
-                        return defaultIfNonExistent;
                     }
+                }
 
-                    return Long.parseLong(v);
-                }catch (Exception ignored) {
-                    return defaultIfNonExistent;
+                if(this.checked.containsKey(holder.name()) && !holder.wasRandomized()) {
+                    stack.push(holder.name());
+                    holder.randomizer.randomize(this);
                 }
             }
         }
+    }
+
+    private void handleCheckedRequirements(RandomSettingHolder holder) {
+        if(holder != null && holder.hasRandomizer()) {
+            if(DebugUtil.isDebug())
+                Log.d(TAG,  Str.fm("Handling Randomizer [%s] Requirements, Is Parent [%s] Requirement Count [%s] Is Checked=%s",
+                        holder.name(),
+                        holder.isParentRandomizer(),
+                        ListUtil.size(holder.randomizer.getRequirements(holder.name())),
+                        this.checked.containsKey(holder.name())));
+
+            IRandomizer randomizer = holder.randomizer;
+            List<String> reqList = randomizer.getRequirements(holder.name());
+            if(ListUtil.isValid(reqList)) {
+                for(String rq : reqList) {
+                    if(DebugUtil.isDebug())
+                        Log.d(TAG, Str.fm("Resolving [%s] Randomizer Requirement [%s] Is Checked=%s",
+                                holder.name(),
+                                rq,
+                                this.checked.containsKey(rq)));
+
+                    if(!this.checked.containsKey(rq)) {
+                        //Not Checked or set to checked
+                        //BUT its required...
+                        RandomSettingHolder reqHolder = this.settings.get(rq);
+                        if(reqHolder != null) {
+                            if(reqHolder.isParentRandomizer()) {
+                                if(DebugUtil.isDebug())
+                                    Log.d(TAG, Str.fm("Holder [%s] Requirement [%s] is being pushed as a Parent",
+                                            holder.name(),
+                                            rq));
+
+                                //If its a parent that one of the checked settings require
+                                //Then push it to checked list, also resolve it's requirements
+                                //Since its a parent all of its requirements are a force check!
+                                putChecked(reqHolder);
+                                handleParentChecked(reqHolder);
+                            }
+                            else {
+                                //The randomizer is NOT a parent
+                                //BUT is required by a Randomizer, so we either (A) want its Original Value OR Randomize it
+                                String originalValue = Str.getNonNullOrEmptyString(reqHolder.holder.getNewValue(), reqHolder.holder.getValue());
+                                //boolean force = holder.isParentRandomizer() && this.checked.containsKey(holder.name());
+                                boolean force = holder.isParentRandomizer();
+                                if(DebugUtil.isDebug())
+                                    Log.d(TAG, Str.fm("Holder [%s] Requirement [%s] Determining if to be pushed. Force flag=%s Holder is Parent=%s Holder Is Checked=%s Value=%s",
+                                            holder.name(),
+                                            rq,
+                                            force,
+                                            holder.isParentRandomizer(),
+                                            this.checked.containsKey(holder.name()),
+                                            originalValue));
+
+                                //If the value is null
+                                //Hmm... its being set
+                                if(force) {
+                                    //Then we want to Randomize it
+                                    //So we will leave it out of the "checked" list trusting the process
+                                    //Tho we never actual update its actual value, ... so we don't append it to the "checked" list
+                                    //The Checked list is for settings that need to be updated / changed after randomization
+                                    reqHolder.setBlockUpdate(false);
+                                    putChecked(reqHolder);
+                                    handleCheckedRequirements(reqHolder);
+                                }
+                                else {
+                                    if(!Str.isEmpty(originalValue)) {
+                                        //Then use THAT value, it's not checked BUT it's required, so use the original value
+                                        //We do not append it to the checked list
+                                        //This will finalize it's value
+                                        reqHolder.setValue(originalValue);
+                                    } else {
+                                        //We can double check shared registry is it's checked via UI ?
+                                        //For now we can assume if it was not on the list, there for invoking this
+                                        //It is not checked and should not be visually updated
+                                        reqHolder.setBlockUpdate(true);
+                                        putChecked(reqHolder);
+                                    }
+                                }
+                            }
+                        } else {
+                            Log.w(TAG, Str.fm("Requirement [%s] Does not Have a Holder! From [%s]", rq, holder.name()));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void handleParentChecked(RandomSettingHolder holder) {
+        //Future make this so it handles requirements but not as that as Child Settings or something
+        //Settings it will force set, as it can be possible it requires a setting but not to force the value
+        if(holder != null && holder.hasRandomizer() && holder.isParentRandomizer()) {
+            if(DebugUtil.isDebug())
+                Log.d(TAG, Str.fm("Handling Parent [%s] requirements! Count=%s", holder.name(), ListUtil.size(holder.randomizer.getRequirements(holder.name()))));
+
+            //In no Context a Parent Randomizer should Require a Parent Randomizer
+            //Parent Randomizers Control a Set of Child Settings
+            //Child Settings MAY have Requirements but those Requirements should not Require a Parent Randomizer
+            //Makes no sense too, just weird, these Randomizers should be (1D)
+            IRandomizer randomizer = holder.randomizer;
+            List<String> reqList = randomizer.getRequirements(holder.name());
+            if(ListUtil.isValid(reqList)) {
+                for(String rq : reqList) {
+                    if(!this.checked.containsKey(rq)) {
+                        RandomSettingHolder reqHolder = this.settings.get(rq);
+                        if(reqHolder != null) {
+                            putChecked(reqHolder);
+                            if(reqHolder.isParentRandomizer())
+                                handleParentChecked(reqHolder);
+                            else {
+                                handleCheckedRequirements(reqHolder); //do we ?
+                            }
+                        }else {
+                            if(DebugUtil.isDebug())
+                                Log.w(TAG, Str.fm("Setting [%s] requirement [%s] has a NULL holder!", holder.name(), rq));
+                        }
+                    } else {
+                        if(DebugUtil.isDebug())
+                            Log.w(TAG, Str.fm("Setting [%s] requirement [%s] is already in the Checked List!", holder.name(), rq));
+                    }
+                }
+            }
+        }
+        else {
+            Log.w(TAG, "Error with Parent Randomizer, Null or Lack Randomizer or Not Parent! Randomizer=" + Str.toStringOrNull(holder));
+        }
+    }
+
+    private void putChecked(RandomSettingHolder randomSettingHolder) {
+        if(randomSettingHolder != null) {
+            String name = randomSettingHolder.name();
+            if(DebugUtil.isDebug())
+                Log.d(TAG, Str.fm("Putting Checked [%s] Is Already in List=%s",
+                        name,
+                        this.checked.containsKey(name)));
+
+            if(!this.checked.containsKey(name)) {
+                randomSettingHolder.ensureEmpty();
+                this.checked.put(name, randomSettingHolder);
+            }
+        }
+    }
+
+    private IRandomizer getRandomizer(String settingName, SharedRegistry sharedRegistry) {
+        IRandomizer randomizer = getRandomizerInternal(settingName, sharedRegistry);
+        //if(DebugUtil.isDebug())
+        //    Log.d(TAG, Str.fm("Got Randomizer [%s] For [%s]", Str.toStringOrNull(randomizer), settingName));
+        return randomizer;
+    }
+
+
+    private IRandomizer getRandomizerInternal(String settingName, SharedRegistry sharedRegistry) {
+        if(settingName == null) return null;
+        IRandomizer randomizer = sharedRegistry.getSharedObject(settingName);
+        return randomizer == null ? randomizers.get(settingName) : randomizer;
     }
 
     @NonNull
@@ -379,8 +388,10 @@ public class RandomizerSessionContext {
     public String toString() {
         return StrBuilder.create()
                 .ensureOneNewLinePer(true)
-                .appendFieldLine("ID", this.sessionId)
-                .appendFieldLine("Settings Set Count", this.values.size())
+                .appendFieldLine("Settings Count", this.settings.size())
+                .appendFieldLine("Checked Count", this.checked.size())
+                .appendFieldLine("Randomizers Count", this.randomizers.size())
+                .appendFieldLine("Count", this.updated.size())
                 .toString(true);
     }
 }

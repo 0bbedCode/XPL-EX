@@ -70,7 +70,9 @@
     "optional": true,
     "usage": true,
     "notify": false,
-    "luaScript": "@id_stat_attributes"
+    "luaScript": "@id_stat_attributes",
+    "settings": ["file.last.modified.offset"]
+
   },
   {
     "builtin": true,
@@ -89,6 +91,7 @@
     "optional": true,
     "usage": true,
     "notify": false,
-    "luaScript": "@id_stat_last_modified"
+    "luaScript": "@id_stat_last_modified",
+    "settings": ["file.last.modified.offset"]
   }
 ]

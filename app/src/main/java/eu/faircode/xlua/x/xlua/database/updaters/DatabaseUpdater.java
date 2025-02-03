@@ -5,7 +5,6 @@ import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -185,26 +184,26 @@ public class DatabaseUpdater<T extends IIdentifiableObject & ICursorType & IJson
                 }
 
                 for(T jsonElement : jsonElements) {
-                    T up = toUpdates.get(jsonElement.getId());
+                    T up = toUpdates.get(jsonElement.getSharedId());
                     if(up != null) {
                         if(up.consumeId(jsonElement))
                             if(DebugUtil.isDebug())
-                                XposedUtility.logD_xposed(TAG, "Consumed, id=" + up.getId());
+                                XposedUtility.logD_xposed(TAG, "Consumed, id=" + up.getSharedId());
                     } else {
-                        Pair<T, String> pItem = push.get(jsonElement.getId());
+                        Pair<T, String> pItem = push.get(jsonElement.getSharedId());
 
                         if(pItem != null) {
                             if(pItem.first.consumeId(jsonElement))
                                 if(DebugUtil.isDebug())
-                                    XposedUtility.logD_xposed(TAG, "Consumed, id=" + pItem.first.getId() + " new id=" + pItem.second);
+                                    XposedUtility.logD_xposed(TAG, "Consumed, id=" + pItem.first.getSharedId() + " new id=" + pItem.second);
                         } else {
-                            T item = all.get(jsonElement.getId());
+                            T item = all.get(jsonElement.getSharedId());
                             if(item == null)
-                                push.put(jsonElement.getId(), Pair.create(jsonElement, null));
+                                push.put(jsonElement.getSharedId(), Pair.create(jsonElement, null));
                             else if(item.consumeId(jsonElement)) {
-                                push.put(item.getId(), Pair.create(item, null));
+                                push.put(item.getSharedId(), Pair.create(item, null));
                                 if(DebugUtil.isDebug())
-                                    XposedUtility.logD_xposed(TAG, "Consumed, id=" + item.getId());
+                                    XposedUtility.logD_xposed(TAG, "Consumed, id=" + item.getSharedId());
                             }
                         }
                     }
@@ -242,14 +241,19 @@ public class DatabaseUpdater<T extends IIdentifiableObject & ICursorType & IJson
                     if(newId != null)
                         item.setId(newId);
 
-                    ContentValues cv = ic.getContentValues(pair.first);
+                    if(item == null) {
+                        Log.e(TAG_PUSH, "Item is fucking null ? " + id);
+                        continue;
+                    }
+
+                    ContentValues cv = ic.getContentValues(item);
                     if(!database.insert(toTable.name, cv)) {
                         Log.e(TAG_PUSH, "Failed to Insert Entry: " + id + " Prefix=" + getInfoPrefix(toTable));
                         failed.put(id, pair);
                         if(newId != null)
                             item.setId(id);
                     } else {
-                        success.put(item.getId(), item);
+                        success.put(item.getSharedId(), item);
                     }
                 }
 
@@ -258,6 +262,8 @@ public class DatabaseUpdater<T extends IIdentifiableObject & ICursorType & IJson
                 database.endTransaction(true, false);
                 ListUtil.addAllIfValid(this.push, failed, true);
                 ListUtil.addAllIfValid(this.all, success, false);
+                //
+
                 if(DebugUtil.isDebug())
                     XposedUtility.logD_xposed(TAG_PUSH, Str.fm("Finished Pushing %s Failed=%s Success=%s", getInfoPrefix(toTable), failed.size(), success.size()));
             }
@@ -311,13 +317,16 @@ public class DatabaseUpdater<T extends IIdentifiableObject & ICursorType & IJson
         if(DebugUtil.isDebug())
             XposedUtility.logD_xposed(TAG, "Getting Items, do=" + shouldContinue + " " + getInfoPrefix());
 
+        //This can cause user related issues
+        //If multiple users, then the ID key will be written
+        //ToDo: High Priority
         if(shouldContinue && !ObjectUtils.anyNull(clazz, tableName, database) && database.isOpen(true)) {
             List<T> items = compressUIDs ?
                     UpdateUtils.getUidDatabaseEntries(database, tableName, clazz, dropTableIfExists) :
                     DatabaseHelpEx.getFromDatabase(database, tableName, clazz, true);
 
             for(T item : items)
-                this.all.put(item.getId(), item);
+                this.all.put(item.getSharedId(), item);
 
             if(DebugUtil.isDebug())
                 XposedUtility.logD_xposed(TAG, "Got All Items, Size=" + this.all.size() + " Table Name=" + tableName);
@@ -330,16 +339,14 @@ public class DatabaseUpdater<T extends IIdentifiableObject & ICursorType & IJson
         if(shouldContinue && !ObjectUtils.anyNull(context, jsonIdFile)) {
             if(!this.all.isEmpty()) {
                 LinkedHashMap<String, T> mapFull = new LinkedHashMap<>();
-                //LinkedHashMap<String, T> toUpdate = new LinkedHashMap<>();
-
                 for(Map.Entry<String, T> entry : this.all.entrySet()) {
                     String id = entry.getKey();
                     T item = entry.getValue();
 
+                    //This is to check make sure it is not already being pushed or updated at least its ID
                     Pair<T, String> pair = this.push.get(id);
                     if(pair == null || Str.isEmpty(pair.second))
                         mapFull.put(id, item);
-
                 }
 
                 if(DebugUtil.isDebug())
@@ -347,7 +354,6 @@ public class DatabaseUpdater<T extends IIdentifiableObject & ICursorType & IJson
 
                 //Got to make sure if something is already getting updated dont push
                 //Should not matter actually should be fine
-
                 for(Map.Entry<String, Pair<T, String>> entry : this.push.entrySet()) {
                     Pair<T, String > pair = entry.getValue();
                     T item = pair.first;
@@ -365,8 +371,13 @@ public class DatabaseUpdater<T extends IIdentifiableObject & ICursorType & IJson
                         for(Map.Entry<T, String> entry : map.entrySet()) {
                             T item = entry.getKey();
                             String newId = entry.getValue();
+                            String oldId = item.getSharedId();
+                            if(push.containsKey(oldId))
+                                if(DebugUtil.isDebug())
+                                    XposedUtility.logD_xposed(TAG, "Push already Contains the ID item: " + oldId);
+
                             if(!Str.isEmpty(newId))
-                                push.put(item.getId(), Pair.create(item, newId));
+                                push.put(oldId, Pair.create(item, newId));
                         }
                     }
                 }

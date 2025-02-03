@@ -36,6 +36,7 @@
 
     <string name="button_create_profile" translatable="false">Create Profile</string>
 
+
     <string name="button_logs" translatable="false">Logs</string>
     <string name="button_force_stop" translatable="false">Force Stop</string>
     <string name="button_clear_app_data" translatable="false">Clear App Data</string>
@@ -58,7 +59,7 @@
     <string name="menu_whats_new_button" translatable="false">Whats New!</string>
 
     <string name="whats_new" translatable="false">
-        Whats new in 1.5.1 Update XPL-EX (ObbedCode) v46456456
+        Whats new in 1.5.X Update XPL-EX (ObbedCode) v464564564564
 
         <![CDATA[<br><br>]]>This is my Art! Enjoy love all, smile, be happy, enjoy what you do!
         <![CDATA[<br>]]>Free, Open Source, No Analytics, No Servers, offline ...
@@ -76,9 +77,34 @@
         <![CDATA[<br>]]><![CDATA[<a href="https://xdaforums.com/t/app-vdinfos.4097379/">XDA</a>]]>
         <![CDATA[<br>]]><![CDATA[<a href="https://github.com/VD171/VD-Infos">GitHub</a>]]>
 
+        <![CDATA[<br><br>]]> 1.5.1.5 XPL151R
+        <![CDATA[<br>]]>• Improved the Randomization Core (less bugs) more Stable better Code
+        <![CDATA[<br>]]>• ... to do Fix JSON shit
+
+        <![CDATA[<br><br>]]> 1.5.1.4 XPL151R
+        <![CDATA[<br>]]>• Fixed the 0 Hooks for Setting issue
+
+        <![CDATA[<br><br>]]> 1.5.1.3 XPL151R
+        <![CDATA[<br>]]>• Fixed the Device Randomizers
+        <![CDATA[<br>]]>• Improved and Fixed Long Int Casting with App TimeStamps
+        <![CDATA[<br>]]>• Added Log Identifiers for Hooks, still adding in Logs Dialog
+        <![CDATA[<br>]]>• Fixed Null Pointer in list for Settings UI
+
+        <![CDATA[<br><br>]]> 1.5.1.2 XPL151R
+        <![CDATA[<br>]]>• Fixed Randomizer mass Save
+        <![CDATA[<br>]]>• Fixed the Facebook Randomizer
+        <![CDATA[<br>]]>• Improved the JSON Import and Export for earlier versions of Android
+        <![CDATA[<br>]]>• Fixed App Time Stamp custom Offset
+
         <![CDATA[<br><br>]]> 1.5.1 XPL151R
+        <![CDATA[<br>]]>• Fixed all the Filter Hooks (now most hooks will work!)
+        <![CDATA[<br>]]>• Added Support for Pre Randomization (random easter egg)
+        <![CDATA[<br>]]>• Added Custom Settings Control Dialogs (list settings etc)
+        <![CDATA[<br>]]>• Added More Control for App Time Stamps
+        <![CDATA[<br>]]>• Updated more UI Icons
         <![CDATA[<br>]]>• Fixed UI Binding Bugs
         <![CDATA[<br>]]>• Fixed Internal bugs
+        <![CDATA[<br>]]>• Added more Settings to the Re Map JSON
         <![CDATA[<br>]]>• Organized Settings in Groups properly (parents first)
         <![CDATA[<br>]]>• Fixed Child Setting not Binding to its Container
         <![CDATA[<br>]]>• Added Network and Unique Randomizers
@@ -181,6 +207,12 @@
     <string name="msg_hint_logs" translatable="false">Target app Logs!</string>
     <string name="msg_hint_force_stop" translatable="false">Force Stop target Application!</string>
     <string name="msg_hint_reset_settings" translatable="false">Reset XPL-EX Settings back to Default aka Nothing!</string>
+
+    <string name="msg_hint_create_configs" translatable="false">Create a Config what more to say ?</string>
+    <string name="msg_hint_manage_configs" translatable="false">Edit and Manager your Configs</string>
+    <string name="msg_hint_save_checked" translatable="false">Save the Checked Options for a Pre Check on UI Open</string>
+
+
     <string name="msg_shared_prefs_saved" translatable="false">Shared preferences were saved!</string>
 
 
@@ -189,6 +221,16 @@
     <string name="msg_hint_randomize_container" translatable="false">Randomize Settings</string>
     <string name="msg_hint_save_container" translatable="false">Save Un Saved Settings</string>
     <string name="msg_hint_delete_container" translatable="false">Delete Settings</string>
+
+    <string name="title_save_file" translatable="false">Save File</string>
+
+
+    <string name="msg_no_config_selected" translatable="false">Please select a config first</string>
+    <string name="title_time_pairs" translatable="false">Time Pairs</string>
+    <string name="title_time_input" translatable="false">Time Input</string>
+    <string name="text_time_value" translatable="false">Value</string>
+    <string name="text_time_unit" translatable="false">Time Unit</string>
+    <string name="text_enter_time_value" translatable="false">Enter numeric value</string>
 
 
     <string name="msg_hint_hook_control" translatable="false">Hooks Control, Enabled=%s Total=%s</string>
@@ -204,6 +246,7 @@
 
 
     <string name="title_hook_warning" translatable="false">Hook Group Warning!</string>
+
 
 
     <string name="title_help_installed">Restriction installed</string>
@@ -275,8 +318,16 @@
         You will be signed out of all accounts, and will lose all data on that application.
     </string>
 
+    <string name="msg_confirm_delete_all_settings" translatable="false">
+        Are you sure you want to Delete (all) this target\'s application Saved Settings ?
+    </string>
+
     <string name="msg_confirm_delete_config" translatable="false">
         Are you sure you want to delete this Config? Name:
+    </string>
+
+    <string name="msg_confirm_delete_settings" translatable="false">
+        Are you sure you want to Delete the Settings, Count:
     </string>
 
     <string name="result_update_setting_success" translatable="false">Setting Updated Successfully</string>
@@ -352,6 +403,7 @@
     <string name="menu_add_property_name" translatable="false">Property Name</string>
     <string name="menu_add_property_setting_name" translatable="false">Setting Name</string>
 
+    <string name="option_close" translatable="false">Close</string>
     <string name="option_apply" translatable="false">Apply</string>
     <string name="option_update" translatable="false">Update</string>
     <string name="option_create" translatable="false">Create</string>
@@ -369,6 +421,7 @@
     <string name="option_rename" translatable="false">Rename</string>
     <string name="option_clear" translatable="false">Clear</string>
 
+    <string name="title_help" translatable="false">Help Guide</string>
 
     <string name="title_groups" translatable="false">Groups</string>
     <string name="title_delete_appdata" translatable="false">Clear App Data</string>
@@ -398,6 +451,10 @@
     <string name="menu_show_rev" translatable="false">Reverse Engineering</string>
     <string name="menu_show_byp" translatable="false">Bypass/Hide</string>
 
+    <string name="button_config_from_file" translatable="false">From File</string>
+    <string name="button_config_to_file" translatable="false">To File</string>
+    <string name="button_config_create" translatable="false">Create Config</string>
+    <string name="button_select_config" translatable="false">Select or Create Config</string>
 
 
 
@@ -524,6 +581,31 @@
     <string name="group_use_analytics">Use analytics</string>
     <string name="group_use_camera">Use camera</string>
     <string name="group_use_tracking">Use tracking</string>
+
+
+    <!-- Help Dialog - Delete -->
+    <string name="help_delete_title" translatable="false">Delete Setting</string>
+    <string name="help_delete_description" translatable="false">This button will delete the selected Setting(s) from the Database, resetting their values to Empty or Null. This action removes any previously saved values.</string>
+
+    <!-- Help Dialog - Save -->
+    <string name="help_save_title" translatable="false">Save Setting</string>
+    <string name="help_save_description" translatable="false">This will save the selected Setting(s) to the Database. Any new values, whether from Randomizer or manual input, will be permanently stored until changed again.</string>
+
+    <!-- Help Dialog - Reset -->
+    <string name="help_reset_title" translatable="false">Reset Setting</string>
+    <string name="help_reset_description" translatable="false">This will reset the selected Setting(s) to their last saved Database values. If you\'ve modified but haven\'t saved new values, this will revert them to their previous state, which may be Null or Empty if no value was saved.</string>
+
+    <!-- Help Dialog - Randomize -->
+    <string name="help_randomize_title" translatable="false">Randomize Setting Value</string>
+    <string name="help_randomize_description" translatable="false">For any selected Setting(s) with configured Randomizers, this will generate new random values according to their Randomizer formats. The new values won\'t be saved to the Database automatically, allowing you to reset unwanted results before saving.</string>
+
+    <!-- Help Dialog - Super Random -->
+    <string name="help_super_random_title" translatable="false">Super Random</string>
+    <string name="help_super_random_description" translatable="false">This sets the selected Setting(s) to use \"%random%\" binding flags. When XPL-EX loads settings for the Target Application at runtime, it will generate fresh random values for that app instance. These runtime values clear when the app stops, generating new randoms on next launch.</string>
+
+    <!-- Help Dialog - Hook Control -->
+    <string name="help_hook_title" translatable="false">Hook Control</string>
+    <string name="help_hook_description" translatable="false">Opens a dialog showing all Hooks linked to this Setting. You can directly enable or disable these Hooks rather than searching through Hook Groups. Note: If you\'re unfamiliar with this concept, this app may not be suitable for your needs.</string>
 
     <string-array name="scopes" translatable="false">
         <item>android</item>

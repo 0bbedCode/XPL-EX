@@ -11,19 +11,21 @@ import java.util.Map;
 
 import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.api.hook.XLuaHook;
-import eu.faircode.xlua.api.xlua.XLuaQuery;
 import eu.faircode.xlua.x.hook.filter.kinds.FileFilterContainer;
 import eu.faircode.xlua.x.hook.filter.kinds.IPCBinderFilterContainer;
 import eu.faircode.xlua.x.hook.filter.kinds.IPCCallFilterContainer;
 import eu.faircode.xlua.x.hook.filter.kinds.IPCQueryFilterContainer;
 import eu.faircode.xlua.x.hook.filter.kinds.ShellFilterContainer;
+import eu.faircode.xlua.x.xlua.LibUtil;
+import eu.faircode.xlua.x.xlua.commands.query.GetHooksCommand;
 
 public class HookRepository {
-    private static final String TAG = "XLua.HookRepository";
+    private static final String TAG = LibUtil.generateTag(HookRepository.class);
 
     public static HookRepository create() { return new HookRepository(); }
 
     private final List<XLuaHook> mHooks = new ArrayList<>();
+
     private final List<IFilterContainer> mFilters = Arrays.asList(
             FileFilterContainer.create(),
             IPCBinderFilterContainer.create(),
@@ -31,18 +33,15 @@ public class HookRepository {
             IPCQueryFilterContainer.create(),
             ShellFilterContainer.create());
 
-    public List<XLuaHook> getHooks() {
-        return mHooks;
-    }
+    public List<XLuaHook> getHooks() { return mHooks; }
 
     public HookRepository doFiltering(
             Context context,
             Collection<XLuaHook> assignedHooks,
             Map<String, String> settings) {
 
-        //Init Hook Definition Bases, so there are special Hooks under category of Filter or Interceptors
-        //We will first Init them to their groups, they are disabled so they can not be assigned via app
-        Collection<XLuaHook> allHooks = XLuaQuery.getAllHooks(context, true);
+
+        Collection<XLuaHook> allHooks = GetHooksCommand.getHooks(context, true, false);
         if(DebugUtil.isDebug())
             Log.d(TAG, "Creating the Filter/Interceptor Groups and their Disabled Hooks... Total Hook Size=" + allHooks.size() + " Settings Size=" + settings.size());
 
@@ -50,7 +49,7 @@ public class HookRepository {
             for(IFilterContainer container : mFilters) {
                 if(container.hasSwallowedAsDefinition(hook)) {
                     if(DebugUtil.isDebug())
-                        Log.d(TAG, "Hook was Swallowed into a Container as a Definition, GroupName=" + container.getGroupName() + " HookId=" + hook.getId());
+                        Log.d(TAG, "Hook was Swallowed into a Container as a Definition, GroupName=" + container.getGroupName() + " HookId=" + hook.getSharedId());
                     break;
                 }
             }
@@ -64,7 +63,7 @@ public class HookRepository {
             for(IFilterContainer container : mFilters) {
                 if(container.hasSwallowedAsRule(assignedHook)) {
                     if(DebugUtil.isDebug())
-                        Log.d(TAG, "Hook was Swallowed into a Container as a Rule, GroupName=" + container.getGroupName() + " HookId=" + assignedHook.getId());
+                        Log.d(TAG, "Hook was Swallowed into a Container as a Rule, GroupName=" + container.getGroupName() + " HookId=" + assignedHook.getSharedId());
                     wasSwallowed = true;
                     break;
                 }
@@ -72,7 +71,7 @@ public class HookRepository {
 
             if(!wasSwallowed) {
                 if(DebugUtil.isDebug())
-                    Log.d(TAG, "Adding Hook to Assigned List of Hooks (not a rule), HookId=" + assignedHook.getId());
+                    Log.d(TAG, "Adding Hook to Assigned List of Hooks (not a rule), HookId=" + assignedHook.getSharedId());
                 mHooks.add(assignedHook);
             }
         }

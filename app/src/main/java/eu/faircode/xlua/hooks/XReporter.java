@@ -121,7 +121,7 @@ public class XReporter {
         Bundle data = new Bundle();
         data.putString("function", functionName);
         data.putString("exception", sb.toString());
-        pushReport(context, hook.getId(), functionName, "use", data);
+        pushReport(context, hook.getSharedId(), functionName, "use", data);
     }
 
     public void reportUsage(XLuaHook hook, Varargs result, long startTime, String funName, Context context) {
@@ -136,7 +136,7 @@ public class XReporter {
                 data.putString("new", result.isnil(3) ? null : result.checkjstring(3));
             }
 
-            pushReport(context, hook.getId(), funName, "use", data);
+            pushReport(context, hook.getSharedId(), funName, "use", data);
         }
     }
 

@@ -52,7 +52,7 @@ public class SettingHolder extends UiBindingsController implements IValueDescrip
     public boolean hasValue(boolean treatEmptyAsNull) { return treatEmptyAsNull ? TextUtils.isEmpty(value) : value != null; }
 
     @Override
-    public String getId() {
+    public String getSharedId() {
         if(TextUtils.isEmpty(id)) id = "setting:" + getName();
         return id;
     }

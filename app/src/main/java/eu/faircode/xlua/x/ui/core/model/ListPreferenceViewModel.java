@@ -35,6 +35,5 @@ public abstract class ListPreferenceViewModel<TElement> extends ListBaseViewMode
         return PrefManager.getString(preferences, CoreUiGlobals.PREFERENCE_ORDER, CoreUiGlobals.PREFERENCE_ORDER_DEFAULT, true); }
 
     @Override
-    protected List<String> getFilters() {
-        return Collections.emptyList(); }
+    protected List<String> getFilters() { return Collections.emptyList(); }
 }

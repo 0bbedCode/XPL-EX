@@ -31,10 +31,10 @@ public class CleanHooksCommand extends CallCommandHandler {
             XDatabaseOld db = commandData.getDatabase();
             List<XLuaHook> hooks = new ArrayList<>(DatabaseHelp.getFromDatabase(db, "hook", XLuaHook.class));
             for (XLuaHook hook : hooks) {
-                if (hook.getId().startsWith("PrivacyEx")) {
+                if (hook.getSharedId().startsWith("PrivacyEx")) {
                     found++;
                     SqlQuerySnake snake = SqlQuerySnake.create(db, "hook")
-                            .whereColumn("id", hook.getId());
+                            .whereColumn("id", hook.getSharedId());
 
                     if(DatabaseHelp.deleteItem(snake)) succeeded++;
                     else failed++;

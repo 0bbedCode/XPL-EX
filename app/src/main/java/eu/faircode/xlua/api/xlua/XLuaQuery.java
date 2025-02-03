@@ -24,7 +24,8 @@ import eu.faircode.xlua.utilities.CursorUtil;
 public class XLuaQuery {
     //Clean this class as well as security class
     public static Collection<XLuaApp> getApps(Context context, boolean marshall) { return XLuaAppConversions.fromCursor(GetAppsCommand.invoke(context, marshall), marshall, true); }
-    public static Collection<XLuaHook> getAllHooks(Context context, boolean marshall) { return XLuaHookConversions.fromCursor(GetHooksCommand.invoke(context, marshall, true), marshall, true); }
+    public static Collection<XLuaHook> getAllHooks(Context context, boolean marshall) {
+        return XLuaHookConversions.fromCursor(GetHooksCommand.invoke(context, marshall, true), marshall, true); }
 
 
     public static Collection<XLuaHook> getHooks(Context context, boolean marshall) { return XLuaHookConversions.fromCursor(GetHooksCommand.invoke(context, marshall), marshall, true); }

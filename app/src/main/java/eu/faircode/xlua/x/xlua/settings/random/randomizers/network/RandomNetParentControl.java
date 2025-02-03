@@ -11,7 +11,17 @@ import eu.faircode.xlua.x.xlua.settings.random.randomizers.RandomizersCache;
 public class RandomNetParentControl extends RandomElement {
     public RandomNetParentControl() {
         super("Network ISP Parent Control");
+        this.isParent = true;
         putSettings(RandomizersCache.SETTING_NET_PARENT_CONTROL);
+        putRequirements(RandomizersCache.SETTING_NET_DHCP,
+                RandomizersCache.SETTING_NET_DNS,
+                RandomizersCache.SETTING_NET_DNS_LIST,
+                RandomizersCache.SETTING_NET_DOMAINS,
+                RandomizersCache.SETTING_NET_GATEWAY,
+                RandomizersCache.SETTING_NET_HOST,
+                RandomizersCache.SETTING_NET_HOST_NAME,
+                RandomizersCache.SETTING_NET_NETMASK,
+                RandomizersCache.SETTING_NET_ROUTES);
     }
 
     @Override
@@ -27,7 +37,7 @@ public class RandomNetParentControl extends RandomElement {
         context.pushValue(RandomizersCache.SETTING_NET_HOST_NAME, infoGenerator.getIpv4Address());
         context.pushValue(RandomizersCache.SETTING_NET_NETMASK, infoGenerator.getNetmask());
         context.pushValue(RandomizersCache.SETTING_NET_ROUTES, Str.joinList(infoGenerator.getRoutes()));
-        context.pushValue(RandomizersCache.SETTING_NET_DHCP, infoGenerator.getDhcpServer());
+        //context.pushValue(RandomizersCache.SETTING_NET_DHCP, infoGenerator.getDhcpServer());
 
         context.pushSpecial(context.stack.pop(), infoGenerator.getProvider());
     }

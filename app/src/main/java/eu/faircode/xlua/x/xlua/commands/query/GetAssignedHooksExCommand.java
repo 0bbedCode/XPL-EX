@@ -15,6 +15,7 @@ import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.api.hook.XLuaHookConversions;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.utils.ListUtil;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.hook.AssignmentApi;
 import eu.faircode.xlua.x.xlua.hook.AssignmentPacket;
 import eu.faircode.xlua.x.xlua.commands.QueryCommandHandlerEx;
@@ -27,7 +28,7 @@ import eu.faircode.xlua.x.xlua.settings.data.SettingsApi;
     Remove the Unused Constructors
  */
 public class GetAssignedHooksExCommand extends QueryCommandHandlerEx {
-    private static final String TAG = "XLua.GetAssignedHooksExCommand";
+    private static final String TAG = LibUtil.generateTag(GetAssignedHooksExCommand.class);
 
     public GetAssignedHooksExCommand() { this.name = "getExAssignedHooks"; this.requiresPermissionCheck = false; }
 
@@ -52,6 +53,31 @@ public class GetAssignedHooksExCommand extends QueryCommandHandlerEx {
 
         return result;
     }
+
+
+    /*
+     @Override
+    public Cursor handle(QueryPacket_old commandData) throws Throwable {
+        String[] selection = commandData.getSelection();
+        boolean all = (selection != null && selection.length == 1 && "all".equals(selection[0]));
+        return CursorUtil.toMatrixCursor(
+                UberCore888.getHooks(commandData.getContext(), commandData.getDatabase(), all),
+                marshall,
+                XLuaHook.FLAG_WITH_LUA);
+    }
+
+    public static Cursor invoke(Context context, boolean marshall) {
+        return XProxyContent.luaQuery(
+                context,
+                marshall ? "getHooks2" : "getHooks");
+    }
+
+    public static Cursor invoke(Context context, boolean marshall, boolean all) {
+        return XProxyContent.luaQuery(
+                context,
+                marshall ? "getHooks2" : "getHooks", new String[] { all ? "all" : "some" });
+    }
+     */
 
 
     public static Collection<XLuaHook> get(Context context, boolean marshall, int uid, String packageName) {

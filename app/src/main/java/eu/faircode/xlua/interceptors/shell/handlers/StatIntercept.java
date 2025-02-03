@@ -9,10 +9,12 @@ import eu.faircode.xlua.interceptors.UserContextMaps;
 import eu.faircode.xlua.interceptors.shell.CommandInterceptor;
 import eu.faircode.xlua.interceptors.shell.ShellInterception;
 import eu.faircode.xlua.x.hook.interceptors.file.StatInterceptor;
+import eu.faircode.xlua.x.runtime.RuntimeUtils;
+import eu.faircode.xlua.x.xlua.LibUtil;
 
 public class StatIntercept extends CommandInterceptor implements ICommandIntercept {
     public static final String REGEX_FILE = "\\s*File:\\s*";
-    private static final String TAG = "XLua.StatIntercept";
+    private static final String TAG = LibUtil.generateTag(StatIntercept.class);
 
 
     private static final String STAT_INTERCEPT_SETTING = "intercept.shell.stat.bool";
@@ -22,8 +24,11 @@ public class StatIntercept extends CommandInterceptor implements ICommandInterce
 
     @Override
     public boolean isCommand(ShellInterception results) {
-        if(results.hasCommand("stat"))
+        if(results.hasCommand("stat")) {
+            if(DebugUtil.isDebug())
+                Log.w(TAG, "Command Contains [stat]! Command Line=" + results.getCommandLine());
             return true;
+        }
 
         return false;
     }
@@ -84,7 +89,11 @@ public class StatIntercept extends CommandInterceptor implements ICommandInterce
                     Log.d(TAG, "Command Interceptor is Now Cleaning STAT command, for File=" + file + " Output=" + output);
 
                 return StatInterceptor.interceptStatCommand(file, output, result);
+            } else {
+                Log.e(TAG, "Maps for [stat] Command interception is NULL! Stack=" + RuntimeUtils.getStackTraceSafeString(new Throwable()));
             }
+        } else {
+            Log.e(TAG, "Result for Command [stat] Interception is Invalid Some how! Stack=" + RuntimeUtils.getStackTraceSafeString(new Throwable()));
         }
         return false;
     }

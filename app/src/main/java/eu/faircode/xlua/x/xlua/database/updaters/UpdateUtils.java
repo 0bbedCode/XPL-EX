@@ -1,10 +1,8 @@
 package eu.faircode.xlua.x.xlua.database.updaters;
 
 import android.content.Context;
-import android.os.Process;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import de.robv.android.xposed.XposedBridge;
 import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.XUtil;
 import eu.faircode.xlua.x.LogX;
@@ -22,12 +19,10 @@ import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.JsonHelperEx;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.data.utils.ObjectUtils;
-import eu.faircode.xlua.x.runtime.RuntimeUtils;
 import eu.faircode.xlua.x.ui.core.view_registry.IIdentifiableObject;
 import eu.faircode.xlua.x.xlua.XposedUtility;
 import eu.faircode.xlua.x.xlua.database.DatabaseHelpEx;
 import eu.faircode.xlua.x.xlua.database.sql.SQLDatabase;
-import eu.faircode.xlua.x.xlua.identity.IUidCompress;
 import eu.faircode.xlua.x.xlua.interfaces.ICursorType;
 
 /*
@@ -50,22 +45,32 @@ public class UpdateUtils {
 
         WeakHashMap<T, String> result = new WeakHashMap<>();
 
-        List<UpdateMapEntry> jsonEntries = JsonHelperEx.findJsonElementsFromAssets(XUtil.getApk(context), jsonFile, true, UpdateMapEntry.class);
+        List<UpdateMapEntry> jsonEntries = JsonHelperEx.findJsonElementsFromAssets(
+                XUtil.getApk(context),
+                jsonFile,
+                true,
+                UpdateMapEntry.class);
+
         String prefix = Str.fm("Items Count=%s JsonFile=%s Json Items Count=%s", items.size(), jsonFile, jsonEntries.size());
         try {
             if(!ListUtil.isValid(jsonEntries))
                 throw new Exception("Invalid JSON Entries Count! Count=" + jsonEntries.size());
 
+            //
+            //Lets pretend we got these two settings
+            //
+            //cell.old.mnc   => cell.mnc.2
+            //cell.older.mnc => cell.mnc.1
+            //
+            //
+
             HashMap<String, String> map = new HashMap<>(jsonEntries.size());
-            for(UpdateMapEntry updateEntry : jsonEntries) {
+            for(UpdateMapEntry updateEntry : jsonEntries)
                 for(String oldId : updateEntry.oldIds)
                     map.put(oldId, updateEntry.id);
-            }
 
-            for(T item : items) {
-                String newId = map.get(item.getId());
-                result.put(item, newId);
-            }
+            for(T item : items)
+                result.put(item, map.get(item.getSharedId()));
 
         }catch (Exception e) {
             XposedUtility.logE_xposed(TAG_R_ITEMS, Str.fm("Error Re Mapping Items to new Mappings! Error=%s %s", e, prefix));
@@ -101,7 +106,7 @@ public class UpdateUtils {
                 LinkedHashMap<String, LinkedHashMap<String, T>> organized = new LinkedHashMap<>();
                 for(T item : databaseEntries) {
                     String category = item.getCategory();
-                    String id = item.getId();
+                    String id = item.getSharedId();
 
                     if(TextUtils.isEmpty(category) || TextUtils.isEmpty(id))
                         continue;
@@ -114,7 +119,7 @@ public class UpdateUtils {
                             Log.d(TAG_COMPRESS, Str.fm("Created Category Value Map, TableName=%s, Category=%s Id=%s", tableName, category, id));
                     }
 
-                    categoryValues.put(item.getId(), item);
+                    categoryValues.put(item.getSharedId(), item);
                 }
 
                 if(DebugUtil.isDebug())

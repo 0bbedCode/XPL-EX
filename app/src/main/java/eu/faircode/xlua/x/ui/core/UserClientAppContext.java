@@ -22,9 +22,11 @@ import eu.faircode.xlua.AppGeneric;
 
 import eu.faircode.xlua.api.xstandard.UserIdentityPacket;
 import eu.faircode.xlua.builders.objects.Bundler;
+import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.interfaces.IValidator;
 import eu.faircode.xlua.x.data.string.StrBuilder;
 import eu.faircode.xlua.x.runtime.RuntimeUtils;
+import eu.faircode.xlua.x.ui.core.view_registry.SharedRegistry;
 import eu.faircode.xlua.x.xlua.hook.AppXpPacket;
 
 /**
@@ -65,12 +67,36 @@ public class UserClientAppContext implements IValidator {
         return uCtx;
     }
 
+    private SharedRegistry sharedRegistry = null;
+
     public int icon = 0;
     public int profileUserId = DEFAULT_PROFILE_USER_ID;
     public int appUid;
     public String appName;
     public String appPackageName;
     public boolean kill = false;
+
+    public UserClientAppContext bindShared(SharedRegistry sharedRegistry) {
+        if(this.sharedRegistry == null && sharedRegistry != null)
+            this.sharedRegistry = sharedRegistry;
+
+        return this;
+    }
+
+    public boolean isKill() {
+        if(Str.isEmpty(appPackageName) || isGlobal())
+            return false;
+
+        return sharedRegistry != null ? sharedRegistry.isChecked(SharedRegistry.STATE_TAG_KILL, appPackageName) : kill;
+    }
+
+    public boolean isKill(SharedRegistry sharedRegistry) {
+        if(Str.isEmpty(appPackageName) || isGlobal())
+            return false;
+
+        bindShared(sharedRegistry);
+        return sharedRegistry != null ? sharedRegistry.isChecked(SharedRegistry.STATE_TAG_KILL, appPackageName) : kill;
+    }
 
     public boolean isGlobal() { return GLOBAL_NAME_SPACE.equalsIgnoreCase(appPackageName); }
 

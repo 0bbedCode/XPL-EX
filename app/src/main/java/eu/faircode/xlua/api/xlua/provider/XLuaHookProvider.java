@@ -68,8 +68,8 @@ public class XLuaHookProvider {
 
         if(hook != null) {
             hook.validate();
-            if(!id.equals(hook.getId())) {
-                return res.appendErrorMessage("ID Mismatch: Given=" + id + "  Parsed=" + hook.getId(), TAG).setFailed();
+            if(!id.equals(hook.getSharedId())) {
+                return res.appendErrorMessage("ID Mismatch: Given=" + id + "  Parsed=" + hook.getSharedId(), TAG).setFailed();
             }
         }
 

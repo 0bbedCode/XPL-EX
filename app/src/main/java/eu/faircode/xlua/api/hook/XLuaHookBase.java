@@ -11,16 +11,30 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import eu.faircode.xlua.hooks.XHookUtil;
+import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.hook.filter.kinds.FileFilterContainer;
+import eu.faircode.xlua.x.hook.filter.kinds.IPCBinderFilterContainer;
+import eu.faircode.xlua.x.hook.filter.kinds.IPCCallFilterContainer;
+import eu.faircode.xlua.x.hook.filter.kinds.IPCQueryFilterContainer;
+import eu.faircode.xlua.x.hook.filter.kinds.ShellFilterContainer;
+import eu.faircode.xlua.x.xlua.LibUtil;
 
 public class XLuaHookBase {
-    public static ArrayList<XLuaHook> readHooks(Context context, String apk) throws IOException, JSONException {
-        return XHookUtil.readHooks(apk);
-    }
-    private final static String TAG = "XLua.XHook";
+    private final static String TAG = LibUtil.generateTag(XLuaHookBase.class);
+
+    public static ArrayList<XLuaHook> readHooks(Context context, String apk) throws IOException, JSONException { return XHookUtil.readHooks(apk); }
+    public static final List<String> SPECIAL_FILTERS = Arrays.asList(
+            FileFilterContainer.GROUP_NAME,
+            IPCCallFilterContainer.GROUP_NAME,
+            IPCBinderFilterContainer.GROUP_NAME,
+            IPCQueryFilterContainer.GROUP_NAME,
+            ShellFilterContainer.GROUP_NAME);
+
     //we can just do a key exchange system
 
     protected Boolean builtin = false;
@@ -54,7 +68,7 @@ public class XLuaHookBase {
     public final static int FLAG_WITH_DB = 5;
     public final static int FLAG_WITH_LUA = 2; // =PARCELABLE_ELIDE_DUPLICATES
 
-    public String getId() { return this.collection + "." + this.name; }
+    public String getSharedId() { return this.collection + "." + this.name; }
 
     public XLuaHookBase setCollection(String collection) { this.collection = collection; return this; }
     public XLuaHookBase setName(String name) { this.name = name; return this; }
@@ -105,7 +119,7 @@ public class XLuaHookBase {
             return false;
         if(this.name != null && this.name.toLowerCase().contains(query))
             return true;
-        if(this.getId() != null && this.getId().toLowerCase().contains(query))
+        if(this.getSharedId() != null && this.getSharedId().toLowerCase().contains(query))
             return true;
         if(checkMethod && this.methodName != null && this.methodName.toLowerCase().contains(query))
             return true;
@@ -121,13 +135,25 @@ public class XLuaHookBase {
         return false;
     }
 
+    /*
+        private final List<IFilterContainer> mFilters = Arrays.asList(
+            FileFilterContainer.create(),
+            IPCBinderFilterContainer.create(),
+            IPCCallFilterContainer.create(),
+            IPCQueryFilterContainer.create(),
+            ShellFilterContainer.create());
+     */
+
+
     public boolean isAvailable(int versionCode) { return (versionCode >= this.minApk && versionCode <= maxApk); }
     public boolean isAvailable(String packageName, List<String> collection) {
         if (!collection.contains(this.collection))
             return false;
 
-        if (!this.enabled)
-            return false;
+        if (!this.enabled) {
+            if(Str.isEmpty(this.group) || !SPECIAL_FILTERS.contains(this.group))
+                return false;
+        }
 
         if (Build.VERSION.SDK_INT < this.minSdk || Build.VERSION.SDK_INT > this.maxSdk)
             return false;
@@ -168,12 +194,12 @@ public class XLuaHookBase {
         if (parameterTypes == null)
             throw new IllegalArgumentException("parameter types missing");
         if (TextUtils.isEmpty(this.luaScript))
-            throw new IllegalArgumentException("Lua script missing " + this.methodName + " " + this.className + " " + getId());
+            throw new IllegalArgumentException("Lua script missing " + this.methodName + " " + this.className + " " + getSharedId());
     }
 
     @Override
     public int hashCode() {
-        return this.getId().hashCode();
+        return this.getSharedId().hashCode();
     }
 
     @Override
@@ -181,12 +207,12 @@ public class XLuaHookBase {
         if (!(obj instanceof XLuaHookBase))
             return false;
         XLuaHookBase other = (XLuaHookBase) obj;
-        return this.getId().equals(other.getId());
+        return this.getSharedId().equals(other.getSharedId());
     }
 
     @NonNull
     @Override
     public String toString() {
-         return this.getId() + "@" + this.className + ":" + this.methodName;
+         return this.getSharedId() + "@" + this.className + ":" + this.methodName;
     }
 }

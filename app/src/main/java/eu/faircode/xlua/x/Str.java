@@ -7,13 +7,10 @@ import android.widget.EditText;
 
 import androidx.annotation.Nullable;
 
-import com.google.android.material.textfield.TextInputEditText;
-
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -333,7 +330,7 @@ public class Str {
         try {
              return hook.toJSON();
         }catch (Exception ignored) { }
-        return "Name=" + hook.getName() + " Id=" + hook.getId() + " Class=" + hook.getClassName();
+        return "Name=" + hook.getName() + " Id=" + hook.getSharedId() + " Class=" + hook.getClassName();
     }
 
     /*public static String repeatChar(char c, int repeatTimes) {

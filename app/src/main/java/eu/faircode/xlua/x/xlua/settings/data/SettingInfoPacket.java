@@ -9,7 +9,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 
 import eu.faircode.xlua.utilities.ContentValuesUtil;
 import eu.faircode.xlua.utilities.CursorUtil;
@@ -142,7 +141,7 @@ public class SettingInfoPacket implements IDatabaseEntry, IJsonType, INameResolv
 
 
     @Override
-    public String getId() {
+    public String getSharedId() {
         return name;
     }
 
@@ -156,7 +155,7 @@ public class SettingInfoPacket implements IDatabaseEntry, IJsonType, INameResolv
         boolean wasConsumed = false;
         if(o instanceof SettingInfoPacket) {
             SettingInfoPacket other = (SettingInfoPacket) o;
-            if(other.getId().equalsIgnoreCase(this.getId()) && !Str.areEqualIgnoreCase(this.description, other.description)) {
+            if(other.getSharedId().equalsIgnoreCase(this.getSharedId()) && !Str.areEqualIgnoreCase(this.description, other.description)) {
                 this.description = other.description;
                 wasConsumed = true;
             }

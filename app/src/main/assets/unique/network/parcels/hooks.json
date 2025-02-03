@@ -18,7 +18,7 @@
     "usage": true,
     "notify": false,
     "luaScript": "@dhcp_info_parcel_two_after",
-    "settings": ["network.host.address", "network.gateway", "network.dns.list", "network.dns", "network.dhcp.server"]
+    "settings": ["network.host.address", "network.gateway", "network.dns.list", "network.dns", "network.dhcp.server", "network.parent.control.isp"]
   },
   {
     "builtin": true,
@@ -38,7 +38,7 @@
     "usage": true,
     "notify": false,
     "luaScript": "@dhcp_info_parcel_one_after",
-    "settings": ["network.host.address", "network.gateway", "network.dns.list", "network.dns", "network.dhcp.server"]
+    "settings": ["network.host.address", "network.gateway", "network.dns.list", "network.dns", "network.dhcp.server", "network.parent.control.isp"]
   },
   {
     "builtin": true,
@@ -56,7 +56,7 @@
     "usage": true,
     "notify": false,
     "luaScript": "@dhcp_info_parcel_one_after",
-    "settings": ["network.host.address", "network.gateway", "network.dns.list", "network.dns", "network.dhcp.server"]
+    "settings": ["network.host.address", "network.gateway", "network.dns.list", "network.dns", "network.dhcp.server", "network.parent.control.isp"]
   },
 
 
@@ -78,7 +78,7 @@
     "usage": true,
     "notify": false,
     "luaScript": "@wifi_info_parcel_one_after",
-    "settings": ["unique.network.bssid", "unique.network.ssid", "unique.network.mac.address", "network.host.address"]
+    "settings": ["unique.network.bssid", "unique.network.ssid", "unique.network.mac.address", "network.host.address", "network.parent.control.isp"]
 
   },
   {
@@ -97,7 +97,7 @@
     "usage": true,
     "notify": false,
     "luaScript": "@wifi_info_parcel_one_after",
-    "settings": ["unique.network.bssid", "unique.network.ssid", "unique.network.mac.address", "network.host.address"]
+    "settings": ["unique.network.bssid", "unique.network.ssid", "unique.network.mac.address", "network.host.address", "network.parent.control.isp"]
   },
   {
     "builtin": true,
@@ -115,7 +115,7 @@
     "usage": true,
     "notify": false,
     "luaScript": "@wifi_info_parcel_one_after",
-    "settings": ["unique.network.bssid", "unique.network.ssid", "unique.network.mac.address", "network.host.address"]
+    "settings": ["unique.network.bssid", "unique.network.ssid", "unique.network.mac.address", "network.host.address", "network.parent.control.isp"]
   },
   {
     "builtin": true,
@@ -135,7 +135,7 @@
     "usage": true,
     "notify": false,
     "luaScript": "@wifi_info_parcel_two_after",
-    "settings": ["unique.network.bssid", "unique.network.ssid", "unique.network.mac.address", "network.host.address"]
+    "settings": ["unique.network.bssid", "unique.network.ssid", "unique.network.mac.address", "network.host.address", "network.parent.control.isp"]
   },
 
   /*{
@@ -194,7 +194,7 @@
     "usage": true,
     "notify": false,
     "luaScript": "@link_properties_parcel_one_after",
-    "settings": ["network.host.address", "network.dns.list", "network.dns", "network.domains", "network.dhcp.server"]
+    "settings": ["network.host.address", "network.dns.list", "network.dns", "network.domains", "network.dhcp.server", "network.parent.control.isp"]
   },
   {
     "builtin": true,
@@ -212,7 +212,7 @@
     "usage": true,
     "notify": false,
     "luaScript": "@link_properties_parcel_one_after",
-    "settings": ["network.host.address", "network.dns.list", "network.dns", "network.domains", "network.dhcp.server"]
+    "settings": ["network.host.address", "network.dns.list", "network.dns", "network.domains", "network.dhcp.server", "network.parent.control.isp"]
   },
   {
     "builtin": true,
@@ -232,7 +232,7 @@
     "usage": true,
     "notify": false,
     "luaScript": "@link_properties_parcel_one_after",
-    "settings": ["network.host.address", "network.dns.list", "network.dns", "network.domains", "network.dhcp.server"]
+    "settings": ["network.host.address", "network.dns.list", "network.dns", "network.domains", "network.dhcp.server", "network.parent.control.isp"]
   },
 
   {
@@ -253,7 +253,7 @@
     "usage": true,
     "notify": false,
     "luaScript": "@link_properties_parcel_two_after",
-    "settings": ["network.host.address", "network.dns.list", "network.dns", "network.domains", "network.dhcp.server"]
+    "settings": ["network.host.address", "network.dns.list", "network.dns", "network.domains", "network.dhcp.server", "network.parent.control.isp"]
   },
 
 
@@ -278,7 +278,7 @@
     "usage": true,
     "notify": false,
     "luaScript": "@os_getifaddrs",
-    "settings": ["network.host.address", "unique.network.mac.address", "network.interfaces.allowed.list"]
+    "settings": ["network.host.address", "unique.network.mac.address", "network.interfaces.allowed.list", "network.parent.control.isp"]
   },
 
 
@@ -300,7 +300,7 @@
     "usage": true,
     "notify": false,
     "luaScript": "@os_getifaddrs",
-    "settings": ["network.host.address", "unique.network.mac.address", "network.interfaces.allowed.list"]
+    "settings": ["network.host.address", "unique.network.mac.address", "network.interfaces.allowed.list", "network.parent.control.isp"]
   },
   {
     "builtin": true,
@@ -320,7 +320,7 @@
     "usage": true,
     "notify": false,
     "luaScript": "@os_getifaddrs",
-    "settings": ["network.host.address", "unique.network.mac.address", "network.interfaces.allowed.list"]
+    "settings": ["network.host.address", "unique.network.mac.address", "network.interfaces.allowed.list", "network.parent.control.isp"]
   },
 
   {
@@ -331,7 +331,7 @@
     "author": "OBC",
     "className": "libcore.io.Linux",
     "methodName": "ioctlInetAddress",
-    "parameterTypes": [ "java.io.FileDescriptor", "int", "java.lang.String" ],
+    "parameterTypes": [ "java.io.FileDescriptor", "int", "java.lang.String" , "network.parent.control.isp"],
     "returnType": "java.net.InetAddress",
     "minSdk": 1,
     "maxSdk": 999,
@@ -351,7 +351,7 @@
     "author": "OBC",
     "className": "libcore.io.BlockGuardOs",
     "methodName": "ioctlInetAddress",
-    "parameterTypes": [ "java.io.FileDescriptor", "int", "java.lang.String" ],
+    "parameterTypes": [ "java.io.FileDescriptor", "int", "java.lang.String" , "network.parent.control.isp"],
     "returnType": "java.net.InetAddress",
     "minSdk": 1,
     "maxSdk": 999,
@@ -371,7 +371,7 @@
     "author": "OBC",
     "className": "libcore.io.ForwardingOs",
     "methodName": "ioctlInetAddress",
-    "parameterTypes": [ "java.io.FileDescriptor", "int", "java.lang.String" ],
+    "parameterTypes": [ "java.io.FileDescriptor", "int", "java.lang.String" , "network.parent.control.isp"],
     "returnType": "java.net.InetAddress",
     "minSdk": 1,
     "maxSdk": 999,
@@ -528,6 +528,6 @@
     "usage": true,
     "notify": false,
     "luaScript": "@file_open_inet6",
-    "settings": ["network.host.address.6.wlan0.local.link.perm", "network.host.address.6.wlan0.global.perm", "network.host.address.6.dummy0.local.link.perm"]
+    "settings": ["network.host.address.6.wlan0.local.link.perm", "network.host.address.6.wlan0.global.perm", "network.host.address.6.dummy0.local.link.perm", "network.parent.control.isp"]
   }
 ]

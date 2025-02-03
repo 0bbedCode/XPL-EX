@@ -41,7 +41,16 @@ public class AssignmentPacket extends PacketBase implements IBundleData, IParcel
     public String oldValue;
     public String newValue;
 
+    public String hookId;
+
     public XLuaHook hookObj;
+
+    public String getHookId() {
+        if(this.hookObj != null)
+            return this.hookObj.getSharedId();
+
+        return Str.isEmpty(hook) ? this.hookId : this.hook;
+    }
 
     public static final String FIELD_USER = UserIdentityIO.FIELD_USER;
     public static final String FIELD_CATEGORY = UserIdentityIO.FIELD_CATEGORY;
@@ -72,7 +81,7 @@ public class AssignmentPacket extends PacketBase implements IBundleData, IParcel
 
 
     @Override
-    public String getId() { return hook; }
+    public String getSharedId() { return hook; }
 
     @Override
     public void setId(String id) {
@@ -96,7 +105,7 @@ public class AssignmentPacket extends PacketBase implements IBundleData, IParcel
     public void setHook(XLuaHook hook) {
         if(hook != null) {
             this.hookObj = hook;
-            this.hook = hook.getId();
+            this.hook = hook.getSharedId();
         }
     }
 
@@ -105,6 +114,7 @@ public class AssignmentPacket extends PacketBase implements IBundleData, IParcel
         if(in != null) {
             setUserIdentity(getUserIdentityFromParcel(in, isLegacy, !isLegacy));
 
+            //this.hook = in.readString();
             setHook(in.readParcelable(XLuaHook.class.getClassLoader()));
 
             this.installed = in.readLong();
@@ -113,12 +123,15 @@ public class AssignmentPacket extends PacketBase implements IBundleData, IParcel
             this.exception = in.readString();
             this.oldValue = in.readString();
             this.newValue = in.readString();
+
+            this.hookId = in.readString();
         }
     }
 
     @Override
     public void writeToParcel(@NonNull Parcel parcel, int flags) {
         writeUserIdentityToParcel(parcel, isLegacy, !isLegacy);
+
 
         parcel.writeParcelable(this.hookObj, flags);
 
@@ -128,6 +141,9 @@ public class AssignmentPacket extends PacketBase implements IBundleData, IParcel
         parcel.writeString(this.exception);
         parcel.writeString(this.oldValue);
         parcel.writeString(this.newValue);
+
+        parcel.writeString(getHookId());
+
     }
 
     @Override
@@ -150,7 +166,6 @@ public class AssignmentPacket extends PacketBase implements IBundleData, IParcel
     public void populateFromContentValues(ContentValues cv) {
         if(cv != null) {
             super.populateFromContentValues(cv);
-
             this.hook = cv.getAsString(FIELD_HOOK);
 
             this.installed = cv.getAsLong(FIELD_INSTALLED);

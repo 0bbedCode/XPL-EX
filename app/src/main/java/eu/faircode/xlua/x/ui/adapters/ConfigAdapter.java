@@ -27,7 +27,9 @@ import eu.faircode.xlua.x.xlua.configs.XPConfig;
 public class ConfigAdapter extends ArrayAdapter<XPConfig> {
     private final Context context;
     private final LayoutInflater inflater;
-    private XPConfig enabledConfig;
+
+    //private XPConfig enabledConfig;
+    private XPConfig checkedConfig;
     private final OnConfigActionListener listener;
 
     private List<XPConfig> originalConfigs;
@@ -45,8 +47,41 @@ public class ConfigAdapter extends ArrayAdapter<XPConfig> {
         this.listener = listener;
     }
 
-    public void setEnabledConfig(XPConfig config) {
-        this.enabledConfig = config;
+    public XPConfig checkedOrEnabled(XPConfig config, boolean followFilter) {
+        List<XPConfig> items = new ArrayList<>();
+        if(followFilter) {
+            for (int i = 0; i < getCount(); i++)
+                items.add(getItem(i));
+        } else {
+            items.addAll(originalConfigs);
+        }
+
+        XPConfig checked = null;
+        if(this.checkedConfig != null) {
+            for(XPConfig c : items) {
+                if(c.name.equalsIgnoreCase(this.checkedConfig.name)) {
+                    checked = c;
+                    break;
+                }
+            }
+        }
+
+        if(checked == null && config != null) {
+            XPConfig copy = config;
+            config = null;
+            for(XPConfig c : items) {
+                if(c.name.equalsIgnoreCase(copy.name)) {
+                    checked = c;
+                    break;
+                }
+            }
+        }
+
+        return checked == null ? config : checked;
+    }
+
+    public void setCheckedConfig(XPConfig config) {
+        this.checkedConfig = config;
         notifyDataSetChanged();
     }
 
@@ -68,8 +103,7 @@ public class ConfigAdapter extends ArrayAdapter<XPConfig> {
             holder.tvConfigName.setText(config.name);
             holder.tvConfigAuthor.setText(config.author);
             holder.tvConfigVersion.setText(config.version);
-            holder.cbConfigEnabled.setChecked(config == enabledConfig);
-
+            holder.cbConfigEnabled.setChecked(config == checkedConfig);
 
             holder.tvSettingsCount.setText(config.settings.isEmpty() ? "---" : String.valueOf(config.settings.size()));
             holder.tvHookCount.setText(config.hooks.isEmpty() ? "---" : String.valueOf(config.hooks.size()));
@@ -113,11 +147,17 @@ public class ConfigAdapter extends ArrayAdapter<XPConfig> {
             holder.cbConfigEnabled.setOnClickListener(v -> {
                 boolean isChecked = holder.cbConfigEnabled.isChecked();
                 if (isChecked) {
-                    if (listener != null) {
+                    //if (listener != null)
+                    //    listener.onConfigChecked(config);
+
+                    //setCheckedConfig(config);
+                    //if(listener.onConfigChecked(config))
+                    this.checkedConfig = config;
+                    if(listener != null)
                         listener.onConfigChecked(config);
-                    }
-                } else if (config == enabledConfig) {
-                    holder.cbConfigEnabled.setChecked(true); // Keep it checked if trying to uncheck current
+
+                } else if (config == checkedConfig) {
+                    holder.cbConfigEnabled.setChecked(true); // Keep it checked if trying to uncheck current ?
                 }
             });
 
@@ -125,6 +165,7 @@ public class ConfigAdapter extends ArrayAdapter<XPConfig> {
             holder.ivConfigDeleteButton.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onConfigDelete(config);
+
                 }
             });
         }

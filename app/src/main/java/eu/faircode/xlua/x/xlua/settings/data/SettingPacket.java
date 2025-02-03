@@ -61,7 +61,7 @@ public class SettingPacket extends PacketBase implements IDatabaseEntry, IBundle
     public static final LinkedHashMap<String, String> COLUMNS = TABLE_INFO.columns;
 
     @Override
-    public String getId() { return name; }
+    public String getSharedId() { return name; }
 
     @Override
     public void setId(String id) {

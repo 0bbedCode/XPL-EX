@@ -5,11 +5,26 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import eu.faircode.xlua.api.hook.XLuaHook;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.interfaces.IJsonType;
 
 public class JSONUtil {
 
-    private static final String TAG = "XLua.JSONUtil";
+    private static final String TAG = LibUtil.generateTag(JSONUtil.class);
+
+    public static String toJsonString(XLuaHook hook) { return toJsonString(hook, null); }
+    public static String toJsonString(XLuaHook hook, String defaultValue) {
+        if(hook == null)
+            return defaultValue;
+
+        try {
+            return hook.toJSONObject().toString();
+        }catch (Exception e) {
+            Log.e(TAG, "Failed to Convert HOOK to JSON String Contents, Error=" + e);
+            return defaultValue;
+        }
+    }
 
 
     //@Override

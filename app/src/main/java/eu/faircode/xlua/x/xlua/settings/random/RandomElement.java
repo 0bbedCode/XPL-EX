@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,12 +29,23 @@ import eu.faircode.xlua.x.xlua.settings.random.interfaces.IRandomizer;
 public abstract class RandomElement implements IRandomizer {
     private static final String TAG = LibUtil.generateTag(RandomElement.class);
 
+    protected boolean isParent = false;
+
     private final List<IRandomizer> options = new ArrayList<>();
 
     private final List<String> settings = new ArrayList<>();
     private final List<String> parents = new ArrayList<>();
 
     public final Map<String, List<String>> links = new HashMap<>();
+
+    public void putRequirements(String... requirements) {
+        if(ArrayUtils.isValid(requirements)) {
+            for(String setting : settings) {
+                List<String> req = Arrays.asList(requirements);
+                links.put(setting, req);
+            }
+        }
+    }
 
     public void putRequirement(String requirement) {
         if(!Str.isEmpty(requirement)) {
@@ -72,7 +84,7 @@ public abstract class RandomElement implements IRandomizer {
 
     @Override
     public boolean isParentControl() {
-        return false;
+        return isParent;
     }
 
     @Override

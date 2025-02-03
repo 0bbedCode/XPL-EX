@@ -22,10 +22,8 @@ package eu.faircode.xlua;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
@@ -41,8 +39,6 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.material.snackbar.Snackbar;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -356,7 +352,7 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
             final ArrayList<String> hookIds = new ArrayList<>();
             for (XLuaHook hook : hooks) {
                 if (hook.isAvailable(pkgName, collection) && (groupName == null || groupName.equals(hook.getGroup()))) {
-                    hookIds.add(hook.getId());
+                    hookIds.add(hook.getSharedId());
                     if(assign)
                         app.addAssignment(AssignmentPacket.create(hook));
                     else
@@ -390,7 +386,7 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
         for (int i = 0; i < this.hooks.size() && !this.dataChanged; i++) {
             XLuaHook hook = this.hooks.get(i);
             XLuaHook other = hooks.get(i);
-            if(hook == null || other == null || hook.getId() == null || other.getId() == null) {
+            if(hook == null || other == null || hook.getSharedId() == null || other.getSharedId() == null) {
                 Log.e(TAG, "Invalid Hook! index=" + i + " set function for adapter ");
                 continue;
             }
@@ -398,7 +394,7 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
             if(BuildConfig.DEBUG)
                 Log.i(TAG, "hook1=" + hook + "   hook2=" + other);
 
-            if (!hook.getGroup().equals(other.getGroup()) || !hook.getId().equals(other.getId()))
+            if (!hook.getGroup().equals(other.getGroup()) || !hook.getSharedId().equals(other.getSharedId()))
                 this.dataChanged = true;
         }
 
@@ -464,12 +460,12 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
                     AssignmentPacket assignment = new AssignmentPacket(hook);
                     if (revert) {
                         if (app.hasAssignment(assignment)) {
-                            hookIds.add(hook.getId());
+                            hookIds.add(hook.getSharedId());
                             app.removeAssignment(assignment);
                         }
                     } else {
                         if (!app.hasAssignment(assignment)) {
-                            hookIds.add(hook.getId());
+                            hookIds.add(hook.getSharedId());
                             app.addAssignment(assignment);
                         }
                     }

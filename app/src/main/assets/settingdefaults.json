@@ -69,6 +69,12 @@
   //{ "name": "android.system.treble.enabled.bool", "description": "Is Treble Enabled on the Device", "defaultValue": "true" },
 
 
+  { "name": "file.time.modify.offset", "description": "Offset of Times to add to the File Modify Time Stamp", "defaultValue": "1DAY" },
+  { "name": "file.time.access.offset", "description": "Offset of Times to add to the File Access Time Stamp", "defaultValue": "1DAY" },
+  { "name": "file.time.created.offset", "description": "Offset of Times to add to the File Created Time Stamp", "defaultValue": "1DAY" },
+
+
+
   { "name": "device.bootloader", "description": "Bootloader name", "defaultValue": "G1HZK00500" },
   { "name": "device.brand", "description": "Device Manufacturer Brand Name", "defaultValue": "OnePlus" },
   { "name": "device.manufacturer", "description": "Device Manufacturer Name", "defaultValue": "OnePlus" },
@@ -233,7 +239,7 @@
   //CELL SIM
   { "name": "cell.sim.type.[1,2]", "description": "Local Sim is usually the Sim Card physical remote is ESim LOCAL_SIM=(0) REMOTE_SIM=(1)", "defaultValue": "0" }, //gsm.sim.type
   { "name": "cell.sim.state.[1,2]", "description": "State of the SIM Card (LOADED) or (ABSENT)", "defaultValue": "READY" }, //gsm.sim.state.number
-  { "name": "cell.sim.state.flag,[1,2]", "description": "State of the SIM Card (SIM_STATE_READY) Number", "defaultValue": "5" },
+  { "name": "cell.sim.state.flag.[1,2]", "description": "State of the SIM Card (SIM_STATE_READY) Number", "defaultValue": "5" },
   //CELL Location
   { "name": "cell.location.lac", "description": "Location Area Code", "defaultValue": "0" },//gsm.cell.location.lac
   { "name": "cell.location.cid", "description": "Cell ID", "defaultValue": "0" }, //gsm.cell.location.cid
@@ -249,6 +255,20 @@
   { "name": "apps.blacklist.mode.bool", "description": "If True then Black list mode is used else it will not be used and only allow application through IF they are on the allow list", "defaultValue": "false" }, //applications.blacklist.mode.bool
   { "name": "apps.blacklist.allow.vital.apps.bool", "description": "Allow a list of apps for Settings, some Google Apps, and WebView", "defaultValue": "true" }, //applications.blacklist.allow.vital.apps.bool
   { "name": "apps.sync.times.bool", "description": "Install and Update Time will be the same", "defaultValue": "false" }, //applications.sync.times.bool
+
+  { "name": "apps.install.time.offset", "description": "Install Time of apps + offset", "defaultValue": "1:DAY" },
+  { "name": "apps.update.time.offset", "description": "Install Time of apps + offset", "defaultValue": "1:DAY" },
+
+  { "name": "apps.current.install.time.offset", "description": "Install Time of Current App + offset", "defaultValue": "1:DAY" },
+  { "name": "apps.current.update.time.offset", "description": "Install Time of Current App + offset", "defaultValue": "1:DAY" },
+
+
+  //public static final String SETTING_APP_CURRENT_INSTALL_TIME_OFFSET = "apps.current.install.time.offset";
+  //public static final String SETTING_APP_CURRENT_UPDATE_TIME_OFFSET = "apps.current.update.time.offset";
+
+  //{ "name": "apps.time.spoof.current", "description": "Only Spoof the Time Stamps for the Current target app", "defaultValue": "false" },
+
+
 
   //DISPLAY
   { "name": "display.height", "description": "Height of Display Pixels", "defaultValue": "3100" }, //display.height

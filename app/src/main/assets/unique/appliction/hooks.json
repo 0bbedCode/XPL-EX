@@ -17,7 +17,8 @@
     "optional": true,
     "usage": true,
     "notify": false,
-    "luaScript": "@id_package_info_before_one"
+    "luaScript": "@id_package_info_before_one",
+    "settings": ["apps.install.time.offset", "apps.update.time.offset", "apps.sync.times.bool", "apps.current.install.time.offset", "apps.current.update.time.offset"]
   },
   {
     "builtin": true,
@@ -34,7 +35,8 @@
     "optional": true,
     "usage": true,
     "notify": false,
-    "luaScript": "@id_package_info_after_one"
+    "luaScript": "@id_package_info_after_one",
+    "settings": ["apps.install.time.offset", "apps.update.time.offset", "apps.sync.times.bool","apps.current.install.time.offset", "apps.current.update.time.offset"]
   },
   {
     "builtin": true,
@@ -53,6 +55,7 @@
     "optional": true,
     "usage": true,
     "notify": false,
-    "luaScript": "@id_package_info_parcel_one"
+    "luaScript": "@id_package_info_parcel_one",
+    "settings": ["apps.install.time.offset", "apps.update.time.offset", "apps.sync.times.bool","apps.current.install.time.offset", "apps.current.update.time.offset"]
   }
 ]

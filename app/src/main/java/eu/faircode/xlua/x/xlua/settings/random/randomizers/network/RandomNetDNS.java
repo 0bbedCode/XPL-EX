@@ -19,7 +19,7 @@ public class RandomNetDNS extends RandomElement {
     @Override
     public void randomize(RandomizerSessionContext context) {
         String name = context.stack.pop();
-        if(!context.values.containsKey(name)) {
+        if(!context.wasRandomized(name)) {
             List<String> req = context.resolveRequirements(getRequirements(name));
             String dnsList = context.getValue(req.get(0));
             List<String> list = Str.splitToList(dnsList);
