@@ -9,9 +9,12 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
+import eu.faircode.xlua.AdapterApp;
+import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.string.StrBuilder;
 import eu.faircode.xlua.x.data.utils.ListUtil;
+import eu.faircode.xlua.x.xlua.LibUtil;
 
 /**
  * ToDo:    [1] Clean Up things like "isValidManager" / "ensureValidTag" Maybe Utils Class ? also integrate IValidator ?
@@ -40,11 +43,17 @@ import eu.faircode.xlua.x.data.utils.ListUtil;
  *                  Log system like old DB manager "logError(int errorCode, String tag, boolean doLog, boolean doThrow)
  */
 public class PrefManager {
+    private static final String TAG = LibUtil.generateTag(PrefManager.class);
+
     public static final String NAMESPACE_DELIMINATOR = "_";
     public static final String DEFAULT_NAMESPACE = "settings";
     public static final String SETTINGS_NAMESPACE = "settings_settings";
 
+    public static final String SETTINGS_MAIN = "settings_main";
+
     public static final String SETTING_SETTINGS_CHECKED = "_checked_settings_1_";
+
+    public static final String SETTING_APPS_SHOW = "appShow";
 
     public static String nameForChecked() { return nameForChecked(true, null); }
     public static String nameForChecked(boolean global) { return nameForChecked(global, null); }
@@ -95,6 +104,49 @@ public class PrefManager {
         }
     }
 
+    public static AdapterApp.enumShow getShow(Context context) {
+        PrefManager manager = PrefManager.create(context, PrefManager.SETTINGS_MAIN);
+        String setting = manager.getString(PrefManager.SETTING_APPS_SHOW, "show_user", true);
+        manager.close();
+
+        switch (setting) {
+            case "show_user":
+                return AdapterApp.enumShow.user;
+            case "show_icon":
+                return AdapterApp.enumShow.icon;
+            case "show_all":
+                return AdapterApp.enumShow.all;
+            case "show_hook":
+                return AdapterApp.enumShow.hook;
+            case "show_system":
+                return AdapterApp.enumShow.system;
+            default:
+                return AdapterApp.enumShow.user;
+        }
+    }
+
+
+    public static AdapterApp.enumShow settingToShow(String value) {
+        if(Str.isEmpty(value))
+            return AdapterApp.enumShow.user;
+
+        switch (value) {
+            case "show_user":
+                return AdapterApp.enumShow.user;
+            case "show_icon":
+                return AdapterApp.enumShow.icon;
+            case "show_all":
+                return AdapterApp.enumShow.all;
+            case "show_hook":
+                return AdapterApp.enumShow.hook;
+            case "show_system":
+                return AdapterApp.enumShow.system;
+            default:
+                return AdapterApp.enumShow.user;
+        }
+    }
+
+
     public void close() {
         //re open options
     }
@@ -119,7 +171,8 @@ public class PrefManager {
             return defaultValue;
 
         if(!preferences.contains(key)) {
-            if(putIfMissing) preferences.edit().putString(key, Str.joinList(defaultValue)).apply();
+            if(putIfMissing)
+                preferences.edit().putString(key, Str.joinList(defaultValue)).apply();
             return defaultValue;
         }
 
@@ -167,7 +220,9 @@ public class PrefManager {
             return defaultValue;
 
         if(!preferences.contains(key)) {
-            if(putIfMissing) preferences.edit().putString(key, defaultValue).apply();
+            if(putIfMissing)
+                preferences.edit().putString(key, defaultValue).apply();
+
             return defaultValue;
         }
 

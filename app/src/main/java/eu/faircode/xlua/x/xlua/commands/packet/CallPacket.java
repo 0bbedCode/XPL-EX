@@ -4,7 +4,11 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.util.List;
+
+import eu.faircode.xlua.utilities.BundleUtil;
 import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.xlua.IBundleData;
 import eu.faircode.xlua.x.xlua.database.sql.SQLDatabase;
 import eu.faircode.xlua.x.xlua.identity.UserIdentity;
@@ -24,6 +28,9 @@ public class CallPacket extends BridgePacket {
 
     public String getExtraString(String key) { return getExtraString(key, null); }
     public String getExtraString(String key, String defaultValue) { return extras == null ? defaultValue : extras.getString(key, defaultValue); }
+
+    public List<String> getExtraStringList(String key) { return BundleUtil.readStringList(extras, key); }
+
 
     public String getCategory() { return getUserIdentification().getCategory(); }
     public int getUid() { return getUserIdentification().getUid(); }

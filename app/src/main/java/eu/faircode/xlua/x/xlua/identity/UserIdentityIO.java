@@ -71,7 +71,7 @@ public class UserIdentityIO {
     public static void populateFromCursor_group_assignment(Cursor c, PacketBase base, boolean isLegacy) {
         if(isLegacy) {
             String cat = CursorUtil.getString(c, UserIdentityIO.FIELD_PACKAGE);
-            int uid = CursorUtil.getInteger(c, UserIdentityIO.FIELD_UID);
+            int uid = CursorUtil.getInteger(c, UserIdentityIO.FIELD_UID, -1);
             base.setUserIdentity(UserIdentity.fromUid(uid, cat));
         }
         else {
@@ -179,8 +179,10 @@ public class UserIdentityIO {
     }
 
     public static void populateFromBundle(Bundle b, UserIdentity userIdentity) {
-        if(b.containsKey(FIELD_STRUCT)) internalPopulateFromBundle(b.getBundle(FIELD_STRUCT), userIdentity);
-        else internalPopulateFromBundle(b, userIdentity);
+        if(b.containsKey(FIELD_STRUCT))
+            internalPopulateFromBundle(b.getBundle(FIELD_STRUCT), userIdentity);
+        else
+            internalPopulateFromBundle(b, userIdentity);
     }
     public static UserIdentity fromBundle(Bundle b) {
         UserIdentity userIdentity = new UserIdentity();

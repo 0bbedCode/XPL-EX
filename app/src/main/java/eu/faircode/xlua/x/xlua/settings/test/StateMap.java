@@ -44,7 +44,7 @@ public class StateMap implements IIdentifiableObject {
     public StateMap(String id) { this.id = id; }
 
     @Override
-    public String getSharedId() { return id; }
+    public String getObjectId() { return id; }
     @Override
     public void setId(String id) { this.id = id; }
 

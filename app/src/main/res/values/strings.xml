@@ -59,7 +59,7 @@
     <string name="menu_whats_new_button" translatable="false">Whats New!</string>
 
     <string name="whats_new" translatable="false">
-        Whats new in 1.5.X Update XPL-EX (ObbedCode) v464564564564
+        Whats new in 1.5.X Update XPL-EX (ObbedCode) v3534534534
 
         <![CDATA[<br><br>]]>This is my Art! Enjoy love all, smile, be happy, enjoy what you do!
         <![CDATA[<br>]]>Free, Open Source, No Analytics, No Servers, offline ...
@@ -77,9 +77,48 @@
         <![CDATA[<br>]]><![CDATA[<a href="https://xdaforums.com/t/app-vdinfos.4097379/">XDA</a>]]>
         <![CDATA[<br>]]><![CDATA[<a href="https://github.com/VD171/VD-Infos">GitHub</a>]]>
 
+        <![CDATA[<br><br>]]> 1.5.1.6 XPL151R
+        <![CDATA[<br>]]>• Improved and Finalized the Database Folder Finder and Mover Api!
+        <![CDATA[<br>]]>• Improved and Finalized the Access Control Code Api
+        <![CDATA[<br>]]>• Improved and Finalized the File Transfer Api (Copy and Move)
+        <![CDATA[<br>]]>• Fixed bugs and Optimized some Code
+        <![CDATA[<br>]]>• Added Re-Implemented build.prop Properties Interception now! (ToDo)
+        <![CDATA[<br>]]>• Added Startup Checks for Database and Command Bridge Service
+        <![CDATA[<br>]]>• Improved and Finalized the Hook Loader
+        <![CDATA[<br>]]>• Added Import and Export (Settings, Hooks, Definitions, etc...) and Drop Old Tables
+        <![CDATA[<br>]]>• Added Huawei Device ID Related Hooks (ToDo)
+        <![CDATA[<br>]]>• Added Hooks for AppSetId (Another Unique ID Introduced into Android 2021) (ToDo)
+        <![CDATA[<br>]]>• Improved the Facebook ID Hooks (ToDo)
+        <![CDATA[<br>]]>• Added DUMP options to some of the Commands (Internal)
+        <![CDATA[<br>]]>• Added more UI Feedback!
+        <![CDATA[<br>]]>• Fixed Some Setting Names, typos and Bugs
+        <![CDATA[<br>]]>• Setting Nice names will now Show with Capitals etc
+        <![CDATA[<br>]]>• Fixed some Major bugs
+        <![CDATA[<br>]]>• Enhanced the Renamer System to ensure Settings have new Names
+        <![CDATA[<br>]]>• Fixed some Randomizers
+
         <![CDATA[<br><br>]]> 1.5.1.5 XPL151R
         <![CDATA[<br>]]>• Improved the Randomization Core (less bugs) more Stable better Code
-        <![CDATA[<br>]]>• ... to do Fix JSON shit
+        <![CDATA[<br>]]>• Fixed Parent Randomizer on Single Click
+        <![CDATA[<br>]]>• Improved the Database Re Mapper
+        <![CDATA[<br>]]>• Improved the Hooks to Settings Mapper
+        <![CDATA[<br>]]>• Improved the Database Table Column Updater (this will fix more bugs)
+        <![CDATA[<br>]]>• Fixed Messed up or Disappearing Assignments
+        <![CDATA[<br>]]>• Finished Logs Dialog
+        <![CDATA[<br>]]>• Fixed Critical bug in Mapping the Primary Keys to Database Table
+        <![CDATA[<br>]]>• Removed Intercept Hooks from UI (user should not trigger them)
+        <![CDATA[<br>]]>• Fixed and Added MORE MORE VPN Hide Hooks Thanks (VDInfo) (VD171)
+        <![CDATA[<br>]]>• Fixed UI Crashing
+        <![CDATA[<br>]]>• Enhanced the JSON File Import support earlier versions of Android
+        <![CDATA[<br>]]>• Fixed ForceStop Check on Main Screen
+        <![CDATA[<br>]]>• Lowered the Count Down for Dialogs
+        <![CDATA[<br>]]>• Fixed Restrict Check on Main Screen
+        <![CDATA[<br>]]>• Fixed App Show Filter Saving
+        <![CDATA[<br>]]>• Added Filter to only Show Hooked Apps and System Apps
+        <![CDATA[<br>]]>• Added Help Dialogs now for Understanding the Hooks (Note most are AI) Gen Descriptions so inform on revisions
+        <![CDATA[<br>]]>• Cleaned up more Logs
+        <![CDATA[<br>]]>• Improved Assignment handling avoid issues with Interceptors / Filters
+        <![CDATA[<br>]]>• Cleaned up some Settings, Hid them from use (for now)
 
         <![CDATA[<br><br>]]> 1.5.1.4 XPL151R
         <![CDATA[<br>]]>• Fixed the 0 Hooks for Setting issue
@@ -182,6 +221,25 @@
     <string name="save_setting_success" translatable="false">Settings were saved! </string>
     <string name="save_setting_error" translatable="false">Failed to save Settings! </string>
 
+
+    <string name="text_backup_name" translatable="false">Backup Name:</string>
+    <string name="text_enter_backup_name" translatable="false">Enter backup name</string>
+    <string name="text_definitions_count" translatable="false">Definitions (%d)</string>
+    <string name="text_all_hooks" translatable="false">All Hooks (%d)</string>
+    <string name="text_settings_count" translatable="false">Settings (%d)</string>
+    <string name="text_assignments_count" translatable="false">Assignments (%d)</string>
+    <string name="text_delete_old_database" translatable="false">Delete the old Database Table Items, for the Checked to replace with the new Items!</string>
+
+    <string name="title_backup" translatable="false">Backup Manager</string>
+
+
+    <string name="msg_error_mismatch_bridge_version" translatable="false">The Service Bridge Version [%s] does not Match the Current App Installed Version [%s]. Make sure you Checked (SettingsStorage) in LSPosed under XPL-EX then Reboot your Device!</string>
+
+
+    <string name="msg_error_service" translatable="false">Failed to Contact the Service for a Database Check!\n\nMake sure if you have (SettingsStorage) Selected in LSPosed under XPL-EX.\n\nIf it Un-Checks in LSPosed (that is fine) Just make sure you at least checked it ONCE, then restarted your Device (does not hurt to try again).\n\nFinally if you updated XPL-EX or Installed it, Make sure again you Re-Check SettingsSecure and Reboot your Phone!!!</string>
+    <string name="msg_error_service_bridge" translatable="false">Command to check the Service Bridge Update can not be contacted!\n\nMake sure you to Select in LSPosed (SettingsStorage) under XPL-EX again in LSPosed.\n\nThen Reboot your Phone! Command Service Bridge with Commands shall be Updated then!\n\nIf errors still occur please Contact the Dev!</string>
+
+
     <string name="msg_error_global_limit" translatable="false">Error this Action can not be completed because its Global Context </string>
     <string name="msg_error_generic" translatable="false">Error executing Action! </string>
     <string name="msg_error_generic_null" translatable="false">Error executing Action! NULL PTR </string>
@@ -198,6 +256,7 @@
     <string name="result_prefix_force_stop" translatable="false">App Force Closed!</string>
     <string name="result_prefix_cleared_app_data" translatable="false">AppData Cleared!</string>
 
+    <string name="search_log_hint" translatable="false">Search Logs...</string>
     <string name="search_config_hint" translatable="false">Search Configs...</string>
     <string name="hint_input_value" translatable="false">Enter Value...</string>
 
@@ -221,6 +280,9 @@
     <string name="msg_hint_randomize_container" translatable="false">Randomize Settings</string>
     <string name="msg_hint_save_container" translatable="false">Save Un Saved Settings</string>
     <string name="msg_hint_delete_container" translatable="false">Delete Settings</string>
+    <string name="msg_hint_warning_save" translatable="false">There are Un Saved Settings!</string>
+    <string name="msg_hint_settings_stat" translatable="false">Settings Saved out of the Total Settings</string>
+
 
     <string name="title_save_file" translatable="false">Save File</string>
 
@@ -261,6 +323,11 @@
     <string name="title_no_groups" translatable="false">Groups Error</string>
     <string name="title_error_generic" translatable="false">Error</string>
 
+
+    <string name="title_error_database_service" translatable="false">Database Service Error!</string>
+    <string name="title_error_service_version" translatable="false">Service Out Dated Error (Reboot)!</string>
+
+
     <string name="title_global" translatable="false">Global</string>
     <string name="title_app" translatable="false">App</string>
 
@@ -272,6 +339,8 @@
     <string name="title_tag_etc" translatable="false">ETC</string>
     <string name="title_tag_custom" translatable="false">Custom</string>
 
+    <string name="title_new_to_old" translatable="false">New to Old</string>
+    <string name="title_show_installed" translatable="false">Show Installed</string>
 
 
     <string name="menu_clean_privacy_ex_hooks" translatable="false">Clean PEX Hooks</string>
@@ -397,6 +466,12 @@
     <string name="msg_delete_app_data" translatable="false">Are you sure you want to clear Application App Data ? This will delete specifically the App Data not the Hook Settings or Assignments.</string>
 
 
+    <string name="msg_backup_exported" translatable="false">XLua Backup has been Exported!</string>
+    <string name="msg_backup_exported_failed" translatable="false">XLua Backup Failed to Export!</string>
+
+    <string name="msg_settings_imported" translatable="false">Settings have been Imported!</string>
+
+
     <string name="menu_config_hint" translatable="false">Options</string>
 
 
@@ -410,7 +485,13 @@
     <string name="option_open" translatable="false">Open</string>
     <string name="option_save" translatable="false">Save</string>
     <string name="option_edit" translatable="false">Edit</string>
+    <string name="option_export" translatable="false">Export</string>
 
+    <string name="menu_import_settings" translatable="false">Import Settings</string>
+    <string name="menu_export_settings" translatable="false">Export Settings</string>
+    <string name="msg_error_reading_backup" translatable="false">Error reading backup file</string>
+    <string name="msg_backup_saved" translatable="false">Backup saved successfully</string>
+    <string name="msg_error_saving_backup" translatable="false">Error saving backup</string>
 
     <string name="option_delete" translatable="false">Delete</string>
     <string name="option_cancel" translatable="false">Cancel</string>
@@ -437,6 +518,13 @@
     <string name="menu_show_user">Show user apps</string>
     <string name="menu_show_icon">Show apps with icon</string>
     <string name="menu_show_all">Show all apps</string>
+
+
+    <string name="menu_show_hook" translatable="false">Show hooked apps</string>
+    <string name="menu_show_system" translatable="false">Show system apps</string>
+
+
+
     <string name="menu_search">Search</string>
     <string name="menu_help">Help</string>
     <string name="menu_notify_new">Notify on new apps</string>
@@ -545,6 +633,12 @@
     <string name="menu_save" translatable="false">Save</string>
     <string name="menu_cpumaps" translatable="false">CPU Maps</string>
     <string name="menu_collections" translatable="false">Collections</string>
+    <string name="menu_info" translatable="false">Info</string>
+
+
+    <string name="message_warning_hooks_title" translatable="false">Warning!</string>
+    <string name="message_warning_hooks_message" translatable="false">Warning! It seems a Setting in this Group and or Container is NOT saved! Ensure you save your modified Changes unless you wish to not save the new values or value!</string>
+
 
 
     <string name="msg_no_service">Module not running or updated</string>
@@ -583,6 +677,190 @@
     <string name="group_use_tracking">Use tracking</string>
 
 
+
+
+
+    <!-- Apps Group -->
+    <string name="description_hook_group_apps_spoof_list" translatable="false">
+    Controls app visibility by intercepting package queries and filtering app lists. When enabled, this hook prevents the target application from seeing other installed apps based on your configured filters. Works best with HMA (Hide My App List) settings enabled.
+</string>
+    <string name="description_hook_group_apps_spoof_timestamps" translatable="false">
+    Manages and modifies application timestamps returned to the target app, including installation time, last update time, and first install time. This helps prevent apps from tracking installation patterns or detecting newly installed applications.
+</string>
+    <string name="description_hook_group_apps_spoof_list_ex" translatable="false">
+    Extended version of app list spoofing with enhanced API coverage. This implementation provides more robust package manager interception and additional filtering capabilities. Use this instead of the basic version for stronger app hiding, especially on newer Android versions.
+</string>
+    <!-- Device ID Groups -->
+    <string name="description_hook_group_device_id_lenovo" translatable="false">
+    Intercepts and spoofs Lenovo-specific device identifiers and API calls. This prevents applications from obtaining unique identifiers or detecting Lenovo-specific device characteristics, helping maintain device anonymity.
+</string>
+    <string name="description_hook_group_device_id_asus" translatable="false">
+    Controls and modifies ASUS device identification methods. This hook prevents applications from accessing ASUS-specific device IDs and system information that could be used for device fingerprinting.
+</string>
+    <string name="description_hook_group_device_id_meizu" translatable="false">
+    Manages Meizu device identification by intercepting Meizu-specific system calls. This helps prevent device fingerprinting through Meizu\'s unique device identifiers and system properties.
+</string>
+    <string name="description_hook_group_device_id_xiaomi" translatable="false">
+    Handles Xiaomi device identification including MIUI-specific identifiers. This hook intercepts attempts to access Xiaomi\'s device IDs, MIUI version information, and other unique identifiers that could be used for tracking.
+</string>
+    <string name="description_hook_group_device_id_vivo" translatable="false">
+    Protects against Vivo device identification by intercepting Vivo-specific system calls and identifiers. This prevents apps from accessing unique Vivo device information and system properties.
+</string>
+    <string name="description_hook_group_device_id_samsung" translatable="false">
+    Controls access to Samsung-specific device identifiers and Knox APIs. This hook prevents applications from obtaining unique Samsung device information and accessing Samsung-specific system properties.
+</string>
+    <!-- Devices Group -->
+    <string name="description_hook_group_devices_hide_driver_files" translatable="false">
+    Hides device driver files and paths from applications attempting to detect specific hardware or system modifications. This helps prevent detection of custom drivers or system modifications through file system queries.
+</string>
+    <string name="description_hook_group_devices_hide_external" translatable="false">
+    Controls visibility of external device connections including Bluetooth, USB, and other peripherals. This hook prevents applications from detecting or enumerating connected devices and their characteristics.
+</string>
+    <string name="description_hook_group_devices_spoof_info" translatable="false">
+    Manages device information spoofing for hardware components like fingerprint sensors, Bluetooth adapters, and other peripherals. This hook modifies device descriptors, names, and characteristics to prevent accurate device fingerprinting.
+</string>
+    <string name="description_hook_group_get_sensors" translatable="false">
+    Controls access to device sensors (accelerometer, gyroscope, etc). This hook prevents applications from reading sensor data, which can be used for device fingerprinting or activity monitoring.
+</string>
+    <string name="description_hook_group_get_call_log" translatable="false">
+    Protects your call history by controlling access to the call log. When enabled, this hook prevents applications from reading your incoming, outgoing, and missed call records.
+</string>
+    <string name="description_hook_group_get_calendars" translatable="false">
+    Manages access to calendar data. This hook prevents applications from reading your calendar events, appointments, and related details, protecting your schedule privacy.
+</string>
+    <string name="description_hook_group_get_contacts" translatable="false">
+    Controls access to your contacts database. This hook prevents applications from reading your contact list, protecting information about your connections and their details.
+</string>
+    <string name="description_hook_group_get_account" translatable="false">
+    Manages access to account information on your device. This hook prevents applications from obtaining details about configured accounts, including email and other service accounts.
+</string>
+    <string name="description_hook_group_get_messages" translatable="false">
+    Protects SMS and MMS messages by controlling access to the messaging database. This hook prevents applications from reading your text messages and message metadata.
+</string>
+    <string name="description_hook_group_get_user" translatable="false">
+    Controls access to user profile information. This hook prevents applications from obtaining user account details and profile data from the system.
+</string>
+    <string name="description_hook_group_get_bluetooth" translatable="false">
+    Manages access to Bluetooth information and operations. This hook controls what Bluetooth-related data applications can access, including paired devices and connection history.
+</string>
+    <string name="description_hook_group_get_activity" translatable="false">
+    Controls access to activity recognition and detection. This hook prevents applications from monitoring your physical activities through device sensors and Google Play Services.
+</string>
+    <string name="description_hook_group_get_clipboard" translatable="false">
+    Protects clipboard data by controlling read access. This hook prevents applications from monitoring or reading text and data that youve copied to the clipboard.
+</string>
+    Hardware Groups:
+    ```xml
+    <string name="description_hook_group_hardware_spoof_cpu_ex" translatable="false">
+    Extended CPU information spoofing. This hook modifies reported CPU characteristics, core counts, and hardware capabilities to prevent device fingerprinting through processor identification.
+</string>
+    <string name="description_hook_group_hardware_spoof_gps_model" translatable="false">
+    Controls GPS hardware information reported to applications. This hook modifies GPS model details and capabilities to prevent device identification through GPS hardware fingerprinting.
+</string>
+    <string name="description_hook_group_hardware_spoof_camera_count" translatable="false">
+    Manages reported camera hardware information. This hook can modify the reported number of cameras and their capabilities to prevent device identification through camera hardware fingerprinting.
+</string>
+    <!-- Hardware Group Continued -->
+    <string name="description_hook_group_hardware_spoof_gpu" translatable="false">
+    Controls and modifies GPU information reported to applications. This hook spoofs graphics hardware details including vendor, renderer, and capabilities to prevent device fingerprinting through GPU identification.
+</string>
+    <string name="description_hook_group_hardware_spoof_cpu" translatable="false">
+    Manages CPU information exposed to applications. This hook modifies processor details, architecture information, and feature flags to prevent device identification through CPU characteristics.
+</string>
+    <string name="description_hook_group_hardware_spoof_memory" translatable="false">
+    Controls memory-related information reported to applications. This hook modifies reported RAM size, memory characteristics, and availability details to prevent device fingerprinting through memory specifications.
+</string>
+    <!-- Hide Group -->
+    <string name="description_hook_group_hide_vpn_state" translatable="false">
+    Conceals VPN connection status from applications. This hook prevents apps from detecting active VPN connections through multiple detection methods, helping maintain privacy when using VPN services.
+</string>
+    <!-- Identification Group -->
+    <string name="description_hook_group_id_build" translatable="false">
+    Controls access to device Build information. This hook modifies system Build properties that could be used to identify your specific device model, manufacturer, and hardware details.
+</string>
+    <string name="description_hook_group_id_boot" translatable="false">
+    Manages boot-related identification information. This hook controls access to boot parameters, bootloader information, and related identifiers that could reveal device characteristics.
+</string>
+    <string name="description_hook_group_id_file_stat" translatable="false">
+    Controls file statistics and metadata information. This hook modifies file system information that could be used to identify system modifications or specific device characteristics.
+</string>
+    <string name="description_hook_group_id_unique" translatable="false">
+    Manages access to unique device identifiers. This hook prevents applications from obtaining various unique IDs including IMEI, serial numbers, and other device-specific identifiers.
+</string>
+    <string name="description_hook_group_id_telephony" translatable="false">
+    Controls access to telephony-related identifiers. This hook prevents applications from obtaining phone-specific IDs, IMEI numbers, and other telephony-related unique identifiers.
+</string>
+    <!-- Network Group -->
+    <string name="description_hook_group_network_spoof_wifi_list" translatable="false">
+    Controls WiFi network list information. This hook modifies the list of visible and saved WiFi networks to prevent location tracking through network identification.
+</string>
+    <string name="description_hook_group_network_information_spoof" translatable="false">
+    Manages general network information reported to applications. This hook controls access to network details, connection types, and other network-related data that could be used for tracking.
+</string>
+    <string name="description_hook_group_network_wifi_information_spoof" translatable="false">
+    Controls detailed WiFi network information. This hook modifies specific WiFi connection details, signal strength, and other WiFi-related data to prevent network-based device tracking.
+</string>
+    <!-- Read Group -->
+    <string name="description_hook_group_read_notifications" translatable="false">
+   Controls access to system and app notifications. This hook prevents applications from reading notification content and metadata, protecting sensitive information that appears in notifications.
+</string>
+    <string name="description_hook_group_read_sync_data" translatable="false">
+   Manages access to sync adapter data and sync operations. This hook controls what sync-related information applications can read, protecting data synchronization privacy.
+</string>
+    <!-- Spoof Group -->
+    <string name="description_hook_group_spoof_battery" translatable="false">
+   Controls battery information reported to applications. This hook modifies battery status, level, and charging information to prevent device fingerprinting through battery characteristics.
+</string>
+    <string name="description_hook_group_spoof_status_cell" translatable="false">
+   Manages cellular network status information. This hook modifies reported cellular connection state, signal strength, and related cellular network data.
+</string>
+    <string name="description_hook_group_spoof_timezone" translatable="false">
+   Controls timezone information exposed to applications. This hook modifies the reported timezone and related time settings to prevent location tracking through timezone detection.
+</string>
+    <string name="description_hook_group_spoof_location" translatable="false">
+   Manages location information reported to applications. This hook can modify or block GPS coordinates and other location data to prevent precise location tracking.
+</string>
+    <string name="description_hook_group_spoof_useragent" translatable="false">
+   Controls browser and network user-agent strings. This hook modifies user-agent information to prevent device fingerprinting through web requests and API calls.
+</string>
+    <string name="description_hook_group_spoof_features" translatable="false">
+   Manages device feature information reported to applications. This hook controls what device capabilities and features are visible to apps, preventing device identification through feature detection.
+</string>
+    <string name="description_hook_group_spoof_location_cell" translatable="false">
+   Controls cellular network location information. This hook modifies cell tower location data and related cellular positioning information to prevent location tracking through cellular networks.
+</string>
+    <string name="description_hook_group_spoof_display" translatable="false">
+   Manages display and screen information. This hook modifies reported screen characteristics including resolution, density, and other display properties to prevent device fingerprinting.
+</string>
+    <string name="description_hook_group_spoof_language" translatable="false">
+   Controls language and locale information. This hook modifies reported system language settings and locale data to prevent device identification through language settings.
+</string>
+    <!-- Storage Group -->
+    <string name="description_hook_group_storage_isolate" translatable="false">
+   Manages application storage isolation. This hook controls how applications access storage, helping prevent unauthorized access to files and directories.
+</string>
+    <string name="description_hook_group_storage_spoof_volume_uuid" translatable="false">
+   Controls storage volume identification. This hook modifies storage volume UUIDs and related identifiers to prevent tracking through storage device fingerprinting.
+</string>
+    <!-- Usage Group -->
+    <string name="description_hook_group_use_camera" translatable="false">
+   Controls camera access and usage by applications. This hook can prevent applications from accessing and using device cameras, protecting against unauthorized photo and video capture.
+</string>
+    <string name="description_hook_group_record_audio" translatable="false">
+   Manages audio recording capabilities. This hook controls application access to microphones and audio recording functions, preventing unauthorized audio capture and monitoring.
+</string>
+    <string name="description_hook_group_record_video" translatable="false">
+   Controls video recording functions. This hook manages application access to video recording capabilities, preventing unauthorized video capture from device cameras.
+</string>
+    <string name="description_hook_group_send_messages" translatable="false">
+   Controls messaging capabilities. This hook manages application attempts to send SMS/MMS messages, preventing unauthorized message sending and protecting against SMS-based charges.
+</string>
+
+
+
+
+
+
     <!-- Help Dialog - Delete -->
     <string name="help_delete_title" translatable="false">Delete Setting</string>
     <string name="help_delete_description" translatable="false">This button will delete the selected Setting(s) from the Database, resetting their values to Empty or Null. This action removes any previously saved values.</string>
@@ -606,6 +884,19 @@
     <!-- Help Dialog - Hook Control -->
     <string name="help_hook_title" translatable="false">Hook Control</string>
     <string name="help_hook_description" translatable="false">Opens a dialog showing all Hooks linked to this Setting. You can directly enable or disable these Hooks rather than searching through Hook Groups. Note: If you\'re unfamiliar with this concept, this app may not be suitable for your needs.</string>
+
+
+    <string name="help_warning_title" translatable="false">Warning!</string>
+    <string name="help_warning_description" translatable="false">This is a Warning sign warning of something, in this case or most times it is used to Warn that a Setting Value has not been saved to its database.\nSo save the Un Saved Setting Value or Ignore this warning sign.</string>
+
+    <string name="help_color_unsaved_title" translatable="false">Unsaved Setting</string>
+    <string name="help_color_unsaved_description" translatable="false">Settings shown in this color have been modified but not yet saved.</string>
+
+    <string name="help_color_saved_title" translatable="false">Active Setting</string>
+    <string name="help_color_saved_description" translatable="false">Settings shown in this color are currently active and have a value assigned.</string>
+
+
+
 
     <string-array name="scopes" translatable="false">
         <item>android</item>

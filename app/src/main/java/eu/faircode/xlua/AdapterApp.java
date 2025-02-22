@@ -58,9 +58,6 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import eu.faircode.xlua.api.XResult;
-import eu.faircode.xlua.api.settings.LuaSettingPacket;
-import eu.faircode.xlua.api.xlua.XLuaCall;
 import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.api.hook.assignment.LuaAssignmentPacket;
 
@@ -68,9 +65,13 @@ import eu.faircode.xlua.logger.XLog;
 import eu.faircode.xlua.ui.GroupHelper;
 import eu.faircode.xlua.ui.interfaces.ILoader;
 import eu.faircode.xlua.utilities.ViewUtil;
+import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.ui.activities.SettingsExActivity;
 import eu.faircode.xlua.x.ui.core.UserClientAppContext;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.commands.call.AssignHooksCommand;
+import eu.faircode.xlua.x.xlua.commands.call.PutSettingExCommand;
+import eu.faircode.xlua.x.xlua.database.A_CODE;
 import eu.faircode.xlua.x.xlua.hook.AssignmentPacket;
 import eu.faircode.xlua.x.xlua.hook.AppXpPacket;
 import eu.faircode.xlua.x.xlua.hook.AssignmentsPacket;
@@ -78,11 +79,11 @@ import eu.faircode.xlua.x.xlua.hook.IAssignListener;
 //import eu.faircode.xlua.GlideApp;
 
 public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> implements Filterable {
-    private static final String TAG = "XLua.App";
+    private static final String TAG = LibUtil.generateTag(AdapterApp.class);
 
     private int iconSize;
 
-    public enum enumShow {none, user, icon, all}
+    public enum enumShow {none, user, icon, all, hook, system }
 
     private ILoader fragmentLoader;
 
@@ -309,38 +310,27 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
                         break;
                     case R.id.cbForceStop:
                         app.forceStop = checked;
-
-                        executor.submit(new Runnable() {
-                            @Override
-                            public void run() {
-                                LuaSettingPacket packet = LuaSettingPacket.create("forcestop", Boolean.toString(app.forceStop));
-                                packet.setCategory(app.packageName);
-                                final XResult ret = XLuaCall.sendSetting(compoundButton.getContext(), packet);
-
-                                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                    @SuppressLint("NotifyDataSetChanged")
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(compoundButton.getContext(), ret.getResultMessage(), Toast.LENGTH_SHORT).show();
-                                        //notifyDataSetChanged();
-                                    }
-                                });
-
-
-                            }
+                        executor.submit(() -> {
+                            final A_CODE result = PutSettingExCommand.putForceStop(compoundButton.getContext(), app.uid, app.packageName, app.forceStop);
+                            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                @SuppressLint("NotifyDataSetChanged")
+                                @Override
+                                public void run() {
+                                    Toast.makeText(compoundButton.getContext(), result.name(), Toast.LENGTH_SHORT).show();
+                                    //notifyDataSetChanged();
+                                }
+                            });
                         });
-
                         break;
                 }
             }catch (Exception e) {
-                XLog.e("Failed to update Check State of Application Hook Group! ", e);
+                Log.e(TAG, "Failed to update Check State of Application Hook Group! Error=" + e);
             }
         }
 
         @Override
         public void setAssigned(Context context, String groupName, boolean assign) {
             Log.i(TAG, "Group changed: " + groupName);
-
             AppXpPacket app = filtered.get(getAdapterPosition());
             updateAssignments(context, app, groupName, assign);
             notifyItemChanged(getAdapterPosition());
@@ -352,7 +342,7 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
             final ArrayList<String> hookIds = new ArrayList<>();
             for (XLuaHook hook : hooks) {
                 if (hook.isAvailable(pkgName, collection) && (groupName == null || groupName.equals(hook.getGroup()))) {
-                    hookIds.add(hook.getSharedId());
+                    hookIds.add(hook.getObjectId());
                     if(assign)
                         app.addAssignment(AssignmentPacket.create(hook));
                     else
@@ -360,7 +350,8 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
                 }
             }
 
-            executor.submit(() -> AssignHooksCommand.call(context, AssignmentsPacket.create(app.uid, app.packageName, hookIds, !assign, app.forceStop)));
+            executor.submit(() ->
+                    AssignHooksCommand.call(context, AssignmentsPacket.create(app.uid, app.packageName, hookIds, !assign, app.forceStop)));
         }
 
         void updateExpand() {
@@ -386,7 +377,7 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
         for (int i = 0; i < this.hooks.size() && !this.dataChanged; i++) {
             XLuaHook hook = this.hooks.get(i);
             XLuaHook other = hooks.get(i);
-            if(hook == null || other == null || hook.getSharedId() == null || other.getSharedId() == null) {
+            if(hook == null || other == null || hook.getObjectId() == null || other.getObjectId() == null) {
                 Log.e(TAG, "Invalid Hook! index=" + i + " set function for adapter ");
                 continue;
             }
@@ -394,7 +385,7 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
             if(BuildConfig.DEBUG)
                 Log.i(TAG, "hook1=" + hook + "   hook2=" + other);
 
-            if (!hook.getGroup().equals(other.getGroup()) || !hook.getSharedId().equals(other.getSharedId()))
+            if (!hook.getGroup().equals(other.getGroup()) || !hook.getObjectId().equals(other.getObjectId()))
                 this.dataChanged = true;
         }
 
@@ -417,8 +408,6 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
     }
 
     void setShow(enumShow value) {
-        //What kind of apps to show (system, only with icon etc ... )
-        //The button at the Top with 3 lines
         if (show != value) {
             show = value;
             getFilter().filter(query);
@@ -460,12 +449,12 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
                     AssignmentPacket assignment = new AssignmentPacket(hook);
                     if (revert) {
                         if (app.hasAssignment(assignment)) {
-                            hookIds.add(hook.getSharedId());
+                            hookIds.add(hook.getObjectId());
                             app.removeAssignment(assignment);
                         }
                     } else {
                         if (!app.hasAssignment(assignment)) {
-                            hookIds.add(hook.getSharedId());
+                            hookIds.add(hook.getObjectId());
                             app.addAssignment(assignment);
                         }
                     }
@@ -473,24 +462,44 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
 
             if (!hookIds.isEmpty()) {
                 Log.i(TAG, "Applying " + group + "=" + hookIds.size() + "=" + revert + " package=" + app.packageName);
-                LuaAssignmentPacket packet = new LuaAssignmentPacket();
+                notifyDataSetChanged();
+                //List<String> ids = ListUtil.forEachTo(hooks, XLuaHookBase::getObjectId);
+                A_CODE result = AssignHooksCommand.call(context, AssignmentsPacket.create(app.uid, app.packageName, hookIds, revert, app.forceStop));
+                if(DebugUtil.isDebug())
+                    Log.d(TAG, "Result of Restriction: " + result.name() + " App=" + app.packageName + " Count=" + ListUtil.size(hookIds));
+
+                /*LuaAssignmentPacket packet = new LuaAssignmentPacket();
                 packet.setHookIds(hookIds);
                 packet.setCategory(app.packageName);
                 packet.setUser(app.uid);
                 packet.setIsDelete(revert);
                 packet.setKill(app.forceStop);
-                actions.add(packet);
+                actions.add(packet);*/
             }
         }
 
-        notifyDataSetChanged();
+
+        /*
+                            List<String> oldHookIds = new ArrayList<>();
+                    List<AssignmentPacket> oldAssignments = GetAssignmentsCommand.get(context, true, uid, packageName);
+                    for(AssignmentPacket assignmentPacket : oldAssignments)
+                        if(!oldHookIds.contains(assignmentPacket.getHookId()))
+                            oldHookIds.add(assignmentPacket.getHookId());
+
+                    AssignHooksCommand.call(context, AssignmentsPacket.create(uid, packageName, hooks, true, false));
+                }
+
+                AssignHooksCommand.call(context, AssignmentsPacket.create(uid, packageName, hooks, false, false));
+         */
+
+        /*notifyDataSetChanged();
         executor.submit(new Runnable() {
             @Override
             public void run() {
                 for (LuaAssignmentPacket packet : actions)
                     XLuaCall.assignHooks(context, packet);
             }
-        });
+        });*/
     }
 
     @Override
@@ -506,10 +515,20 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
                 if (show == enumShow.all || !TextUtils.isEmpty(query))
                     visible.addAll(all);
                 else
-                    for (AppXpPacket app : all)
-                        if (app.uid > Process.FIRST_APPLICATION_UID && app.enabled &&
-                                (show == enumShow.icon ? app.icon > 0 : !app.system))
-                            visible.add(app);
+                    for (AppXpPacket app : all) {
+                        if(show == enumShow.system) {
+                            if(app.system)
+                                visible.add(app);
+                        }
+                        else if(show == enumShow.hook) {
+                            if(ListUtil.size(app.assignments) > 0)
+                                visible.add(app);
+                        } else {
+                            if (app.uid > Process.FIRST_APPLICATION_UID && app.enabled && (show == enumShow.icon ? app.icon > 0 : !app.system)) {
+                                visible.add(app);
+                            }
+                        }
+                    }
 
                 List<AppXpPacket> results = new ArrayList<>();
 
@@ -563,7 +582,6 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
                             continue;
                         if (user && app.system)
                             continue;
-
                         if (app.uid == uid ||
                                 app.packageName.toLowerCase().contains(q) ||
                                 (app.label != null && app.label.toLowerCase().contains(q)))
@@ -597,8 +615,7 @@ public class AdapterApp extends RecyclerView.Adapter<AdapterApp.ViewHolder> impl
                     filtered = apps;
                     notifyDataSetChanged();
                 } else {
-                    DiffUtil.DiffResult diff =
-                            DiffUtil.calculateDiff(new AppDiffCallback(expanded1, filtered, apps));
+                    DiffUtil.DiffResult diff = DiffUtil.calculateDiff(new AppDiffCallback(expanded1, filtered, apps));
                     filtered = apps;
                     diff.dispatchUpdatesTo(AdapterApp.this);
                 }

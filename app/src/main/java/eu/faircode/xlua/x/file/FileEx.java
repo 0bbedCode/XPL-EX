@@ -6,7 +6,6 @@ import android.util.Log;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,10 +16,12 @@ import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.utils.ArrayUtils;
 import eu.faircode.xlua.x.runtime.reflect.DynamicMethod;
+import eu.faircode.xlua.x.xlua.LibUtil;
 
 public class FileEx extends File {
-    private static final String TAG = "XLua.FileEx";
+    private static final String TAG = LibUtil.generateTag(FileEx.class);
 
+    public static FileEx createFromFile(String file) { return new FileEx(file, false, false); }
     public static FileEx createFromDirectory(String directory) { return new FileEx(directory, false, false);  }
 
     //Method cpTo = XReflectUtils.getMethodFor("android.os.FileUtils", "copy", File.class, File.class);
@@ -34,6 +35,8 @@ public class FileEx extends File {
     public FileEx(String file) { super(ensureFormat(file, false, true)); }
     public FileEx(String file, boolean readAsSymbolic, boolean parseIfFileDescriptor) { super(ensureFormat(file, readAsSymbolic, parseIfFileDescriptor));  }
     public FileEx(File file) { super(file.getAbsolutePath()); }
+
+    public FileEx openSub(String name) { return new FileEx(FileApi.buildPath(getAbsolutePath(), name)); }
 
     @Override
     public boolean delete() { return FileApi.deleteFileOrDirectoryForcefully(getAbsolutePath()); }
@@ -64,25 +67,19 @@ public class FileEx extends File {
     public boolean isDirectory() { return FileApi.isDirectory(getAbsolutePath()) || super.isDirectory(); }
 
     @Override
-    public boolean mkdirs() { return super.mkdirs(); }
-
-    public boolean mkdirsEx() {
-        boolean ret = mkdirs();
-
-        if(ret)
-            return true;
-
+    public boolean mkdirs() {
+        if(super.mkdirs()) return true;
         FileApi.mkdirs(getAbsolutePath());
-
         return exists();
     }
-    //public boolean mkdirs() { return exists() || super.mkdirs(); }
 
     public FileEx getDirectory() { return new FileEx(FileApi.getParent(getAbsolutePath())); }
 
     public FileEx getParentEx() { return getParentEx(false); }
     public FileEx getParentEx(boolean isFileOverride) {
-        if(isFileOverride || isFile()) return new FileEx(FileApi.getParent(FileApi.getParent(getAbsolutePath())));
+        if(isFileOverride || isFile())
+            return new FileEx(FileApi.getParent(FileApi.getParent(getAbsolutePath())));
+
         return new FileEx(FileApi.getParent(getAbsolutePath()));
     }
 
@@ -109,112 +106,6 @@ public class FileEx extends File {
         return Pair.create(file, directory);
     }
 
-    public void copyToFile(FileEx to, int mode) {
-        //ToDo
-    }
-
-    public void copyToDirectory(FileEx to, boolean recursive, boolean setPermissions, int mode) {
-        //Make this more advance ...
-        if(!COPY_FILE_METHOD.isValid()) {
-            Log.e(TAG, "FileUtils Copy does not Exist!");
-            return;
-        }
-
-        if(!exists()) {
-            Log.e(TAG, "Error Failed to Copy to Directory, From does not exist as a File or Directory!...");
-            return;
-        }
-
-        if(to.exists() && !to.isDirectory()) {
-            Log.e(TAG, "Error Failed to Copy Files over, ensure it is a directory, Path=" + to.getAbsolutePath());
-            return;
-        }
-
-        if(!to.exists() && !to.mkdirsEx()) {
-            Log.e(TAG, "Failed to make directories, to=" + to.getAbsolutePath());
-            return;
-        }
-
-        if(setPermissions) {
-            to.takeOwnership();
-            to.setPermissions(mode);
-        }
-
-        if(!isFile()) {
-            FileApi.cp_directory_to(getAbsolutePath(), to.getAbsolutePath());
-        } else {
-            FileEx toSub = new FileEx(FileApi.buildPath(to.getAbsolutePath(), getName()));
-            File a = (File) this;
-            File b = (File) toSub;
-            long res = COPY_FILE_METHOD.tryStaticInvoke(a, b);
-            if(res < 1) {
-                Log.e(TAG, "Failed to Copy File: " + a.getAbsolutePath() + " to: " + b.getAbsolutePath() + " Res=" + res);
-            }
-            else {
-                if(setPermissions) {
-                    toSub.takeOwnership();
-                    toSub.setPermissions(mode);
-                }
-            }
-        }
-
-        /*if(isDirectory() && recursive) {
-            FileEx[] subFiles = listFilesEx();
-            if(!ArrayUtils.isValid(subFiles))
-                return;
-
-            for(FileEx sub : subFiles) {
-                FileEx toSub = new FileEx(FileApi.buildPath(to.getAbsolutePath(), sub.getName()));
-                if(sub.isDirectory()) {
-                    if(!toSub.exists() && !toSub.mkdirs()) {
-                        Log.e(TAG, "Failed to make the Sub Directory for the Copy! path=" + toSub.getAbsolutePath());
-                        continue;
-                    }
-
-                    if(!toSub.isDirectory()) {
-                        Log.e(TAG, "Failed to Create Directory, it seems to not be a to Directory, path=" + toSub.getAbsolutePath());
-                        continue;
-                    }
-
-
-                    if(setPermissions) {
-                        toSub.takeOwnership();
-                        toSub.setPermissions(mode);
-                    }
-
-                    sub.copyToDirectory(toSub, true, setPermissions, mode);
-                } else {
-                    File a = (File) sub;
-                    File b = (File) toSub;
-                    long res = COPY_FILE_METHOD.tryStaticInvoke(a, b);
-                    if(res < 1) {
-                        Log.e(TAG, "Failed to Copy File: " + a.getAbsolutePath() + " to: " + b.getAbsolutePath() + " Res=" + res);
-                    }
-                    else {
-                        if(setPermissions) {
-                            toSub.takeOwnership();
-                            toSub.setPermissions(mode);
-                        }
-                    }
-                }
-            }
-        } else if(isFile()) {
-            FileEx toSub = new FileEx(FileApi.buildPath(to.getAbsolutePath(), getName()));
-            File a = (File) this;
-            File b = (File) toSub;
-            long res = COPY_FILE_METHOD.tryStaticInvoke(a, b);
-            if(res < 1) {
-                Log.e(TAG, "Failed to Copy File: " + a.getAbsolutePath() + " to: " + b.getAbsolutePath() + " Res=" + res);
-            }
-            else {
-                if(setPermissions) {
-                    toSub.takeOwnership();
-                    toSub.setPermissions(mode);
-                }
-            }
-        }*/
-    }
-
     public FileEx[] listFilesEx() {
         File[] files = super.listFiles();
         if(!ArrayUtils.isValid(files))
@@ -234,15 +125,27 @@ public class FileEx extends File {
     public void takeOwnership(int userId, int groupId) { takeOwnership(userId, groupId, false); }
     public void takeOwnership(int userId, int groupId, boolean recursive) {  FileApi.chown(getAbsolutePath(), userId, groupId, recursive); }
 
+
+    public void takeFullControl(UnixAccessControl permissions, boolean recursive) {
+        if(permissions != null) {
+            takeOwnership(permissions.getOwnerId(), permissions.getGroupId(), recursive);
+            setPermissions(
+                    permissions.ownerMode,
+                    permissions.groupMode,
+                    permissions.otherMode,
+                    recursive);
+        }
+    }
+
     public void setPermissions(int mode) { setPermissions(mode, false); }
     public void setPermissions(int mode, boolean recursive) { FileApi.chmod(getAbsolutePath(), mode, recursive); }
 
     public void setPermissions(ModePermission ownerPermissions, ModePermission groupPermissions, ModePermission otherPermissions) { setPermissions(ownerPermissions, groupPermissions, otherPermissions, true); }
     public void setPermissions(ModePermission ownerPermissions, ModePermission groupPermissions, ModePermission otherPermissions, boolean recursive) {
-        FileApi.chmod(getAbsolutePath(), ChmodModeBuilder.create()
-                .setOwnerPermissions(ownerPermissions)
-                .setGroupPermissions(groupPermissions)
-                .setOtherPermissions(otherPermissions)
+        FileApi.chmod(getAbsolutePath(), UnixAccessBuilder.create()
+                .setOwnerMode(ownerPermissions)
+                .setGroupMode(groupPermissions)
+                .setOtherMode(otherPermissions)
                 .getMode(), recursive);
     }
 

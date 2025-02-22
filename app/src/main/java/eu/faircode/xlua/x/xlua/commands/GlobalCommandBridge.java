@@ -10,17 +10,24 @@ import eu.faircode.xlua.XLua;
 import eu.faircode.xlua.utilities.BundleUtil;
 import eu.faircode.xlua.x.xlua.commands.call.AssignHooksCommand;
 import eu.faircode.xlua.x.xlua.commands.call.ClearAppDataCommand;
+import eu.faircode.xlua.x.xlua.commands.call.DropTableCommand;
 import eu.faircode.xlua.x.xlua.commands.call.ForceStopAppCommand;
 import eu.faircode.xlua.x.xlua.commands.call.GetAppDirectoriesCommand;
 import eu.faircode.xlua.x.xlua.commands.call.GetAppInfoCommand;
+import eu.faircode.xlua.x.xlua.commands.call.GetBridgeVersionCommand;
 import eu.faircode.xlua.x.xlua.commands.call.GetDatabasePathCommand;
+import eu.faircode.xlua.x.xlua.commands.call.GetDatabaseStatusCommand;
 import eu.faircode.xlua.x.xlua.commands.call.GetGroupsCommand;
+import eu.faircode.xlua.x.xlua.commands.call.GetHookCommand;
 import eu.faircode.xlua.x.xlua.commands.call.GetProfileCommand;
 import eu.faircode.xlua.x.xlua.commands.call.GetProfileListCommand;
 import eu.faircode.xlua.x.xlua.commands.call.GetSettingExCommand;
 import eu.faircode.xlua.x.xlua.commands.call.GetVersionExCommand;
+import eu.faircode.xlua.x.xlua.commands.call.InitAssignments;
 import eu.faircode.xlua.x.xlua.commands.call.PutAppProfileCommand;
+import eu.faircode.xlua.x.xlua.commands.call.PutAssignmentCommand;
 import eu.faircode.xlua.x.xlua.commands.call.PutConfigCommand;
+import eu.faircode.xlua.x.xlua.commands.call.PutHookExCommand;
 import eu.faircode.xlua.x.xlua.commands.call.PutSettingExCommand;
 import eu.faircode.xlua.x.xlua.commands.call.ReportCommand;
 import eu.faircode.xlua.x.xlua.commands.call.SetAppProfileCommand;
@@ -49,8 +56,17 @@ public class GlobalCommandBridge {
                 .registerCall(AssignHooksCommand.class)
                 .registerCall(GetAppInfoCommand.class)
 
+                .registerCall(GetDatabaseStatusCommand.class)
+                .registerCall(GetBridgeVersionCommand.class)
+
                 .registerCall(ReportCommand.class)
 
+                .registerCall(DropTableCommand.class)
+                .registerCall(PutHookExCommand.class)
+                .registerCall(PutAssignmentCommand.class)
+
+                .registerCall(GetHookCommand.class)
+                .registerCall(InitAssignments.class)
 
                 .registerCall(PutConfigCommand.class)
 

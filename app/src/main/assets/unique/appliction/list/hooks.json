@@ -409,7 +409,7 @@
     "usage":true,
     "notify":false,
     "luaScript": "@pm_filter_packagename",
-    "settings":["apps.allow.listt"]
+    "settings":["apps.allow.list"]
   },
   {
     "builtin": true,
@@ -560,7 +560,7 @@
     "usage":true,
     "notify":false,
     "luaScript": "@pm_filter_packagename",
-    "settings":["apps.allow.listt"]
+    "settings":["apps.allow.list"]
   },
 
   {

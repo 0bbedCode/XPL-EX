@@ -70,8 +70,8 @@ public class UserIdentity implements IIdentification {
 
     public UserIdentity(Cursor c) {
         if(c != null) {
-            this.user = CursorUtil.getInteger(c, UserIdentityIO.FIELD_USER);
-            this.category = CursorUtil.getString(c, UserIdentityIO.FIELD_CATEGORY);
+            this.user = CursorUtil.getInteger(c, UserIdentityIO.FIELD_USER, 0);
+            this.category = CursorUtil.getString(c, UserIdentityIO.FIELD_CATEGORY, GLOBAL_NAMESPACE);
         }
     }
 

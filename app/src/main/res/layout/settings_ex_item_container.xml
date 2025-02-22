@@ -13,6 +13,17 @@
         android:layout_height="wrap_content">
 
         <ImageView
+            android:id="@+id/ivActionNeeded"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginEnd="8dp"
+            android:src="@android:drawable/ic_dialog_alert"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/tvSettingContainerNameNice"
+            app:layout_constraintEnd_toStartOf="@+id/cbSettingContainerEnabled"
+            app:layout_constraintTop_toTopOf="@+id/tvSettingContainerNameNice" />
+
+        <ImageView
             android:id="@+id/ivBtWildcard"
             android:layout_width="?android:attr/listPreferredItemHeightSmall"
             android:layout_height="?android:attr/listPreferredItemHeightSmall"
@@ -182,7 +193,7 @@
             android:lines="1"
             android:text="Cool Setting"
             android:textAppearance="@android:style/TextAppearance.Medium"
-            app:layout_constraintEnd_toStartOf="@+id/cbSettingContainerEnabled"
+            app:layout_constraintEnd_toStartOf="@+id/ivActionNeeded"
             app:layout_constraintStart_toEndOf="@+id/ivExpanderSettingContainer"
             app:layout_constraintTop_toTopOf="parent" />
 

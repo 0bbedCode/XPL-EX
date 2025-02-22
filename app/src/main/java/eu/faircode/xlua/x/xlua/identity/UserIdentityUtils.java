@@ -31,6 +31,7 @@ public class UserIdentityUtils {
 
     public static int getUserId(int uid) {
         try {
+            if(uid < 0) return 0;
             // public static final int getUserId(int uid)
             Method method = UserHandle.class.getDeclaredMethod("getUserId", int.class);
             return (int) method.invoke(null, uid);

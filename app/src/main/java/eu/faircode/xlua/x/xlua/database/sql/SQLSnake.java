@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.utilities.CursorUtil;
@@ -61,14 +62,14 @@ public class SQLSnake extends SQLQueryBuilder {
         return this;
     }
 
-    public <T extends IDatabaseEntry> Collection<T> queryAs(Class<T> typeClass, boolean cleanUpAfter, boolean lockRead) {
+    public <T extends IDatabaseEntry> List<T> queryAs(Class<T> typeClass, boolean cleanUpAfter, boolean lockRead) {
         if(!canCompile) return new ArrayList<>();
         canCompile = false;
         if(lockRead)
             db.readLock();
 
         Cursor c = query();
-        Collection<T> items = new ArrayList<>();
+        List<T> items = new ArrayList<>();
         try {
             if(c != null) {
                 if (c.moveToFirst()) {

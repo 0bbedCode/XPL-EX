@@ -1,18 +1,32 @@
 package eu.faircode.xlua.x.xlua.settings;
 
+import android.content.Context;
+import android.os.Process;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
 import eu.faircode.xlua.DebugUtil;
+import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.data.utils.ArrayUtils;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.runtime.RuntimeUtils;
+import eu.faircode.xlua.x.ui.core.UserClientAppContext;
 import eu.faircode.xlua.x.ui.core.view_registry.SharedRegistry;
 import eu.faircode.xlua.x.xlua.LibUtil;
+import eu.faircode.xlua.x.xlua.commands.call.GetSettingExCommand;
+import eu.faircode.xlua.x.xlua.commands.query.GetHooksCommand;
+import eu.faircode.xlua.x.xlua.database.ActionFlag;
+import eu.faircode.xlua.x.xlua.database.ActionPacket;
+import eu.faircode.xlua.x.xlua.database.wrappers.GlobalDatabaseResolver;
+import eu.faircode.xlua.x.xlua.hook.AppXpPacket;
 import eu.faircode.xlua.x.xlua.settings.data.SettingPacket;
 
 public class SettingsFactory {
@@ -40,6 +54,10 @@ public class SettingsFactory {
      */
 
 
+    //Ensure the Main View is being handled properly least for groups
+    //I think some cases it fails "recycle" the group so it has "extra" space
+
+
     //private final SharedRegistry sharedRegistry = new SharedRegistry();
     //private final WeakHashMap<String, SettingsGroup> groups = new WeakHashMap<>();
 
@@ -53,6 +71,136 @@ public class SettingsFactory {
 
     public List<SettingsContainer> getContainers() { return new ArrayList<>(containers.values()); }
 
+
+    //DO NOTE PULLING these can and will Cause issues in the Front end when it tries to simulate Randomization
+    //Hmm we just need to have it known up front , wait this is already front end into app
+    //We can "handle" shit from from here
+    //At least the [1,2] ones... hm ye or cell. "cell."  "[1,2]"
+    public static final List<String> BAD_WILD = Arrays.asList("intercept.", "java.", "qemu.");
+    public static final List<String> BAD_NAMES = Arrays.asList(
+            "account.user.serial" +
+            "account.user.name",
+            "apps.sync.times.bool",
+            "cpu.cpuid",
+            "file.last.modified.offset",
+            "file.time.access.offset",
+            "file.time.created.offset",
+            "file.time.modify.offset",
+            "google.client.id.base",
+            "google.client.id.base.name",
+            "google.gms.version",
+            "hide.emulator.bool",
+            "hide.root.bool",
+            "analytics.firebase.instance.id");
+
+
+    public List<SettingPacket> joinHookDefinedSettings(Context context, List<SettingPacket> original, UserClientAppContext app) {
+        if(context == null || original == null || app == null)
+            return ListUtil.emptyList();
+
+        LinkedHashMap<String, SettingPacket> current = new LinkedHashMap<>();
+        if(ListUtil.isValid(original)) {
+            for(SettingPacket setting : original) {
+                if(setting != null && !Str.isEmpty(setting.name)) {
+                    current.put(setting.name, setting);
+                }
+            }
+        }
+
+        //ToDo: Try to tie this into the core for hooks & settings
+        List<XLuaHook> all = GetHooksCommand.getHooks(context, true, true);
+        List<String> collections = GetSettingExCommand.getCollections(context, Process.myUid());
+        if(DebugUtil.isDebug())
+            Log.d(TAG, Str.fm("Getting Hooks Settings, " + "Database Settings Count=%s Current Settings Count=%s  Hooks Count=%s Collections Count=%s Collections=[%s]",
+                        ListUtil.size(original),
+                        current.size(),
+                        ListUtil.size(all),
+                        ListUtil.size(collections),
+                        Str.joinList(collections)));
+
+        if(ListUtil.isValid(all)) {
+            for(XLuaHook hook : all) {
+                if(isGood(hook, collections, app.appPackageName)) {
+                    String[] hookSettings = hook.getSettings();
+                    for(String setting : hookSettings) {
+                        if(Str.isEmpty(setting))
+                            continue;
+
+                        //Properly resolve the name for the setting hooks
+                        //This is a patch, in reality we need to actually update the hooks etc
+                        //Also need to update system so the containers house all the subjects
+                        //Right now if it has "cell.item" it will contain "cell.item" and "cell.item.2" but "cell.item.1" will be its own "[1]"
+                        String trimmed = GlobalDatabaseResolver.resolveName(context, setting.trim());
+                        if(Str.isEmpty(trimmed))
+                            continue;
+
+                        SettingPacket packet = current.get(trimmed);
+                        if(packet == null) {
+                            packet = SettingPacket.create(trimmed, null, app, ActionPacket.create(ActionFlag.PUSH, false));
+                            current.put(packet.name, packet);
+                            if(DebugUtil.isDebug())
+                                Log.d(TAG, "Found Setting from Hook not Defined in Database or JSON Defaults! Name=" + packet.name);
+                        }
+                    }
+                }
+            }
+        }
+
+        if(DebugUtil.isDebug())
+            Log.d(TAG, Str.fm("Finished Mapping Settings Defined in Hooks!, " +
+                            "Database Settings Count=%s Current Settings Count=%s  Hooks Count=%s Collections Count=%s Collections=[%s]",
+                                ListUtil.size(original),
+                                current.size(),
+                                ListUtil.size(all),
+                                ListUtil.size(collections),
+                                Str.joinList(collections)));
+
+        return ListUtil.copyToArrayList(current.values());
+    }
+
+    //ToDo: Put this somewhere clever nice, utils maybe ?
+    public static boolean isGood(XLuaHook hook, List<String> collections, String pkgName) {
+        if(hook == null)
+            return false;
+
+        String id = hook.getObjectId();
+        if(Str.isEmpty(id))
+            return false;
+
+        if(!hook.isAvailable(pkgName, collections)) {
+            if(DebugUtil.isDebug())
+                Log.d(TAG, "Hook is not Available (1): " + id);
+
+            return false;
+        }
+
+        String group = hook.getGroup();
+        if(Str.isEmpty(group))
+            return false;
+
+        if(group.toLowerCase().startsWith("intercept.")) {
+            return false;
+        }
+
+        return ArrayUtils.isValid(hook.getSettings());
+    }
+
+    public static boolean isGoodSetting(SettingPacket packet) {
+        if(packet  == null || Str.isEmpty(packet.name))
+            return false;
+
+        String lowName = packet.name.toLowerCase().trim();
+        if(BAD_NAMES.contains(lowName))
+            return false;
+
+        for(String w : BAD_WILD) {
+            if(lowName.startsWith(w))
+                return false;
+        }
+
+        return true;
+    }
+
     public void parseSettings(List<SettingPacket> settings) {
         if(!ListUtil.isValid(settings)) {
             Log.e(TAG_PARSE_SETTINGS, "Error Input Settings List is Null or Empty! Count=" + ListUtil.size(settings) + " Stack=" + RuntimeUtils.getStackTraceSafeString(new Throwable()));
@@ -65,6 +213,8 @@ public class SettingsFactory {
         for(SettingPacket setting : settings)
             parseSetting(setting);
 
+        //
+
         if(DebugUtil.isDebug())
             Log.d(TAG_PARSE_SETTINGS, Str.fm("Finished parsing List of Setting Packets! Original Count=[%s] Containers Count [%s] Settings Count [%s] Limbo Count [%s]", settings.size(), containers.size(), this.settings.size(), limboSettings.size()));
     }
@@ -73,6 +223,11 @@ public class SettingsFactory {
     public void parseSetting(SettingPacket setting) {
         if(setting == null || Str.isEmpty(setting.name)) {
             Log.e(TAG_PARSE_SETTING, Str.fm("Critical error, Name or Setting Packet object is Null or Empty! Setting=[%s] Containers Count [%s] Settings Count [%s] Limbo Count [%s]", Str.noNL(Str.toStringOrNull(setting)), containers.size(), settings.size(), limboSettings.size()));
+            return;
+        }
+
+        if(!isGoodSetting(setting)) {
+            Log.w(TAG_PARSE_SETTING, Str.fm("EW BAD YUCK: " + setting.name));
             return;
         }
 

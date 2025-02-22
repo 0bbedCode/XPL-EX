@@ -19,7 +19,6 @@ import eu.faircode.xlua.x.xlua.identity.UserIdentity;
 import eu.faircode.xlua.x.xlua.identity.UserIdentityUtils;
 
 public class GetAppDirectoriesCommand extends CallCommandHandlerEx {
-    private static final String TAG = "XLua.GetAppDirectoriesCommand";
     public GetAppDirectoriesCommand() {
         name = "getAppDirectories";
         requiresPermissionCheck = false;    //ToDO: Flip to true!

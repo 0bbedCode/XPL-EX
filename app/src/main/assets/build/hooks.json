@@ -33,7 +33,7 @@
     "minSdk": 4,
     "maxSdk": 999,
     "version": 1,
-    "description": "",
+    "description": "Upon Device launch the Manufacturer Choice of SoC Hardware has a Config Name, examples: [msmnile,sdm845,kalama]",
     "enabled":true,
     "optional":true,
     "usage":true,
@@ -41,6 +41,30 @@
     "luaScript": "@id_build_board",
     "settings":["soc.board.config.code.name"]
   },
+
+  {
+    "builtin": true,
+    "collection": "PrivacyEx",
+    "group": "ID.Build",
+    "name": "Build.BOARD/Rule",
+    "author": "OBC",
+    "className": "Intercept.Properties",
+    "methodName": "get",
+    "parameterTypes": [ "ro.board.platform", "ro.product.board" ],
+    "minSdk": 4,
+    "maxSdk": 999,
+    "version": 1,
+    "description": "",
+    "enabled":true,
+    "optional":true,
+    "usage":true,
+    "notify":false,
+    "luaScript": "",
+    "settings":["soc.board.config.code.name"]
+  },
+
+
+
   {
     "builtin": true,
     "collection": "PrivacyEx",
@@ -62,6 +86,9 @@
     "luaScript": "@id_build_bootloader",
     "settings":["device.bootloader"]
   },
+
+
+
   {
     "builtin": true,
     "collection": "PrivacyEx",
@@ -318,6 +345,29 @@
     "builtin": true,
     "collection": "PrivacyEx",
     "group": "ID.Build",
+    "name": "Build.MANUFACTURER/Rule",
+    "author": "OBC",
+    "className": "Intercept.Properties",
+    "methodName": "get",
+    "parameterTypes": [ "ro.vendor_dlkm.build.manufacturer", "ro.product.vendor.manufacturer", "ro.product.system_ext.manufacturer", "ro.product.system.manufacturer", "ro.product.odm.manufacturer", "ro.product.manufacturer", "ro.vendor.product.manufacturer" ],
+    "minSdk": 4,
+    "maxSdk": 999,
+    "version": 1,
+    "description": "",
+    "enabled":true,
+    "optional":true,
+    "usage":true,
+    "notify":false,
+    "luaScript": "",
+    "settings":["device.manufacturer"]
+  },
+
+
+
+  {
+    "builtin": true,
+    "collection": "PrivacyEx",
+    "group": "ID.Build",
     "name": "Build.MODEL",
     "author": "OBC",
     "className": "android.os.Build",
@@ -335,6 +385,29 @@
     "luaScript": "@id_build_model",
     "settings":["device.model"]
   },
+  {
+    "builtin": true,
+    "collection": "PrivacyEx",
+    "group": "ID.Build",
+    "name": "Build.MODEL/Rule",
+    "author": "OBC",
+    "className": "Intercept.Properties",
+    "methodName": "get",
+    "parameterTypes": [ "ro.product.model", "ro.vendor_dlkm.build.model", "persist.sys.exif.model", "ro.vendor.product.model", "ro.product.odm.model", "ro.product.system.model","ro.product.system_ext.model","ro.product.vendor.model" ],
+    "minSdk": 4,
+    "maxSdk": 999,
+    "version": 1,
+    "description": "",
+    "enabled":true,
+    "optional":true,
+    "usage":true,
+    "notify":false,
+    "luaScript": "",
+    "settings":["device.model"]
+  },
+
+
+
   {
     "builtin": true,
     "collection": "PrivacyEx",

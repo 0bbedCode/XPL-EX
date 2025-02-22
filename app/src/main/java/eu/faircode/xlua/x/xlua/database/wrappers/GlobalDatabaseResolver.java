@@ -21,6 +21,7 @@ import eu.faircode.xlua.x.data.JsonHelperEx;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.data.utils.ObjectUtils;
 import eu.faircode.xlua.x.runtime.RuntimeUtils;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.hook.AssignmentLegacy;
 import eu.faircode.xlua.x.xlua.hook.AssignmentPacket;
 import eu.faircode.xlua.x.xlua.database.DatabaseHelpEx;
@@ -46,7 +47,7 @@ import eu.faircode.xlua.x.xlua.settings.data.SettingPacket;
             Major Clean this class when time comes around not #1
  */
 public class GlobalDatabaseResolver {
-    private static final String TAG = "XLua.SettingsTransformer";
+    private static final String TAG = LibUtil.generateTag(GlobalDatabaseResolver.class);
 
     public static final String JSON_SETTINGS_REMAP = "remap_settings.json";
     public static final String JSON_SETTINGS_DEFAULT = "settingdefaults.json";
@@ -83,10 +84,12 @@ public class GlobalDatabaseResolver {
         }
     }
 
-    public static String resolveName(String name) { return resolveName(null, name); }
     public static String resolveName(Context context, String name) {
         initReMapCache(context);
         String resolved = RE_MAPPED_CACHE.get(name);
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Resolved Name:" + name + " Resolved=" + resolved + " Total Count=" + RE_MAPPED_CACHE.size());
+
         return resolved == null ? name : resolved;
     }
 
@@ -521,7 +524,7 @@ public class GlobalDatabaseResolver {
 
         LinkedHashMap<String, LinkedHashMap<String, T>> map = new LinkedHashMap<>();
         for(T item : database_values) {
-            if(TextUtils.isEmpty(item.getCategory()) || TextUtils.isEmpty(item.getSharedId()))
+            if(TextUtils.isEmpty(item.getCategory()) || TextUtils.isEmpty(item.getObjectId()))
                 continue;
 
             LinkedHashMap<String, T> category_values = map.get(item.getCategory());
@@ -529,10 +532,10 @@ public class GlobalDatabaseResolver {
                 category_values = new LinkedHashMap<>();
                 map.put(item.getCategory(), category_values);
                 if(DebugUtil.isDebug())
-                    Log.d(TAG, "Created Map for UID Compression, Category=" + item.getCategory() + " Id=" + item.getSharedId());
+                    Log.d(TAG, "Created Map for UID Compression, Category=" + item.getCategory() + " Id=" + item.getObjectId());
             }
 
-            category_values.put(item.getSharedId(), item);
+            category_values.put(item.getObjectId(), item);
         }
 
         if(DebugUtil.isDebug())

@@ -123,7 +123,7 @@ public class SharedViewControl implements IIdentifiableObject {
     public void registerEventListener(String notifyOnChangesFor, IUIViewControl view) {
         if(notifyOnChangesFor != null) {
             synchronized (_lock) {
-                String id = view.getSharedId();
+                String id = view.getObjectId();
                 Map<String, IUIViewControl> notifiers = _eventListeners.get(notifyOnChangesFor);
                 if(notifiers == null) {
                     notifiers = new HashMap<>(1);

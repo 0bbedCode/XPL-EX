@@ -1,5 +1,5 @@
 [
-  {
+ /* {
     "builtin": true,
     "collection": "PrivacyEx",
     "group": "Intercept.Properties",
@@ -82,9 +82,9 @@
     "usage":true,
     "notify":false,
     "luaScript": "@id_build_prop"
-  },
+  },*/
 
-  {
+  /*{
     "builtin": true,
     "collection": "PrivacyEx",
     "group": "Intercept.Properties",
@@ -100,5 +100,5 @@
     "optional":true,
     "usage":true,
     "luaScript": ""
-  }
+  }*/
 ]

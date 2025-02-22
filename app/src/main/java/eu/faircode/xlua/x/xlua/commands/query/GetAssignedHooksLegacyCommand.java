@@ -11,6 +11,7 @@ import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.UberCore888;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.utils.ListUtil;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.hook.AssignmentApi;
 import eu.faircode.xlua.x.xlua.hook.AssignmentPacket;
 import eu.faircode.xlua.x.xlua.commands.QueryCommandHandlerEx;
@@ -19,7 +20,7 @@ import eu.faircode.xlua.x.xlua.database.sql.SQLDatabase;
 import eu.faircode.xlua.x.xlua.settings.data.SettingsApi;
 
 public class GetAssignedHooksLegacyCommand extends QueryCommandHandlerEx {
-    private static final String TAG = "XLua.GetAssignedHooksLegacyCommand";
+    private static final String TAG = LibUtil.generateTag(GetAssignedHooksLegacyCommand.class);
 
     public GetAssignedHooksLegacyCommand() { this.name = "getAssignedHooks"; this.requiresPermissionCheck = true; }
 

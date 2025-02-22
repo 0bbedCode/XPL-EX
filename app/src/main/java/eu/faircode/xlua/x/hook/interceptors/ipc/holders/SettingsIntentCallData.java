@@ -68,7 +68,8 @@ public class SettingsIntentCallData {
                     this.method = param.tryGetArgument(1, null);
                     this.authority = param.tryGetArgument(2, null);
                     this.extras = param.tryGetArgument(3, null);
-                    if(getResult) this.result = param.tryGetResult(null);
+                    if(getResult)
+                        this.result = param.tryGetResult(null);
                 }
             }
         }catch (Exception e) {
@@ -130,6 +131,8 @@ public class SettingsIntentCallData {
 
             param.setOldResult(resValue);
             param.setNewResult(settingValue);
+            param.setSettingResult(settingName);
+
             if(!isStringReturn) {
                 Bundle b = new Bundle();
                 b.putString(BUNDLE_ARG, settingValue);

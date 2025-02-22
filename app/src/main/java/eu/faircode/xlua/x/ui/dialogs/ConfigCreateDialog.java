@@ -91,7 +91,7 @@ public class ConfigCreateDialog extends AppCompatDialogFragment {
     public ConfigCreateDialog consumeFileConfig(XPConfig config) {
         this.config = config;
         for(SettingPacket setting : config.settings)
-            sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId(), true);
+            sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getObjectId(), true);
 
         return this;
     }
@@ -112,7 +112,7 @@ public class ConfigCreateDialog extends AppCompatDialogFragment {
                     if(!Str.isEmpty(selected) && c.name.equals(selected)) {
                         this.config = c;
                         for(SettingPacket setting : config.settings)
-                            sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId(), true);
+                            sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getObjectId(), true);
                     }
                 }
             }
@@ -129,7 +129,7 @@ public class ConfigCreateDialog extends AppCompatDialogFragment {
             config.settings.clear();
             for(SettingPacket packet : settings) {
                 if(packet.value != null) {
-                    sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, packet.getSharedId(), true);
+                    sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, packet.getObjectId(), true);
                     config.settings.add(packet);
                 }
             }
@@ -234,7 +234,7 @@ public class ConfigCreateDialog extends AppCompatDialogFragment {
         cbCheckSettingsBulk.setOnClickListener(v -> {
             boolean bulkChecked = cbCheckSettingsBulk.isChecked();
             for (SettingPacket setting : config.settings)
-                sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId(), bulkChecked);
+                sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getObjectId(), bulkChecked);
 
             settingsAdapter.notifyDataSetChanged();
             updateBulkCheckboxAndLabel(cbCheckSettingsBulk, tvSelectedSettingsLabel, config.settings.size(), SharedRegistry.STATE_TAG_SETTINGS);
@@ -322,7 +322,7 @@ public class ConfigCreateDialog extends AppCompatDialogFragment {
                             cfg.hooks.clear();
 
                             for(SettingPacket setting : config.settings)
-                                if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId()))
+                                if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getObjectId()))
                                     cfg.settings.add(setting);
 
                             for (String hookId : config.hooks)
@@ -471,7 +471,7 @@ public class ConfigCreateDialog extends AppCompatDialogFragment {
 
         if (tag.equals(SharedRegistry.STATE_TAG_SETTINGS))
             for (SettingPacket setting : config.settings) {
-                if (sharedRegistry.isChecked(tag, setting.getSharedId()))
+                if (sharedRegistry.isChecked(tag, setting.getObjectId()))
                     checked++;
         } else {
             for (String hookId : config.hooks)

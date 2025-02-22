@@ -66,7 +66,9 @@ import eu.faircode.xlua.logger.XReport;
 
 import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.utilities.ReflectUtilEx;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.commands.GlobalCommandBridge;
+import eu.faircode.xlua.x.xlua.commands.call.GetBridgeVersionCommand;
 import eu.faircode.xlua.x.xlua.commands.query.GetAssignedHooksExCommand;
 import eu.faircode.xlua.x.xlua.hook.PackageHookContext;
 
@@ -82,7 +84,7 @@ import eu.faircode.xlua.x.xlua.hook.PackageHookContext;
  */
 
 public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
-    private static final String TAG = "XLua.XCoreStartup";
+    private static final String TAG = LibUtil.generateTag(XLua.class);
     public XReporter report = new XReporter();
     public static int version = -1;
 
@@ -108,6 +110,7 @@ public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
     }
 
     private void hookSettings(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
+        GetBridgeVersionCommand.init();
         // https://android.googlesource.com/platform/frameworks/base/+/master/packages/SettingsProvider/src/com/android/providers/settings/SettingsProvider.java
         Class<?> clsSet = Class.forName("com.android.providers.settings.SettingsProvider", false, lpparam.classLoader);
         XposedBridge.hookMethod(
@@ -140,6 +143,7 @@ public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
                 try {
                     XposedBridge.log(TAG + " Preparing system");
                     Context context = getContext(param.thisObject);
+                    GetBridgeVersionCommand.init();
                     hookPackage(lpparam, Process.myUid(), context);
                 } catch (Throwable ex) {
                     Log.e(TAG, Log.getStackTraceString(ex));
@@ -249,12 +253,16 @@ public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
         if(DebugUtil.isDebug())
             Log.d(TAG, "Hook Package got Assigned Hooks, Size=" + ListUtil.size(hooks));
 
+        //String version = GetBridgeVersionCommand.get(context);
+        //if(DebugUtil.isDebug())
+        //    Log.d(TAG, "Command Bridge Version=" + version + " App Version=" + BuildConfig.VERSION_NAME);
+
         Map<LuaScriptHolder, Prototype> scriptPrototype = new HashMap<>();
         PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-        for(final XLuaHook hook : HookRepository.create().doFiltering(context, hooks, app.settings).getHooks()) {
+        for(final XLuaHook hook : HookRepository.create().initializeHooks(context, hooks, app.settings).getHooks()) {
             try {
                 if(!hook.isAvailable(pInfo.versionCode)) {
-                    Log.w(TAG, "Hook is not compatible with Target SDK: " + hook.getSharedId());
+                    Log.w(TAG, "Hook is not compatible with Target SDK: " + hook.getObjectId());
                     continue;
                 }
 
@@ -301,7 +309,7 @@ public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
                             Log.d(TAG, "Hook Member Name=" + member.getName());
 
                         if(target.hasMismatchReturn(member)) {
-                            Log.e(TAG, Str.fm("Hook has an Invalid Return Type, Hook id=%s Return Type=%s", hook.getSharedId(), hook.getReturnType()));
+                            Log.e(TAG, Str.fm("Hook has an Invalid Return Type, Hook id=%s Return Type=%s", hook.getObjectId(), hook.getReturnType()));
                             continue;
                         }
 
@@ -371,7 +379,7 @@ public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
                         });
                     }
                     else
-                        Log.e(TAG, Str.fm("Member is NULL, Hook Name=%s Id=%s", hook.getName(), hook.getSharedId()));
+                        Log.e(TAG, Str.fm("Member is NULL, Hook Name=%s Id=%s", hook.getName(), hook.getObjectId()));
                 }
 
 
@@ -385,7 +393,7 @@ public class XLua implements IXposedHookZygoteInit, IXposedHookLoadPackage {
 
             }catch (Throwable fe) {
                 if (hook.isOptional() && ReflectUtilEx.isReflectError(fe))
-                    XLog.e("Optional Hook=" + hook.getSharedId() + " class=" + fe.getClass().getName(), fe, true);
+                    XLog.e("Optional Hook=" + hook.getObjectId() + " class=" + fe.getClass().getName(), fe, true);
                 else
                     XReport.installException(hook, fe, context);
             }

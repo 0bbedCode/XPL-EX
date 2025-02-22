@@ -186,7 +186,7 @@
     "usage":true,
     "notify":false,
     "luaScript": "@id_telephony_getvoicemailalphatag",
-    "settings":[ "unique.gsm.voicemail.id" ]
+    "settings":[ "unique.gsm.voicemail.id.1", "unique.gsm.voicemail.id.2" ]
   },
   {
     "builtin": false,

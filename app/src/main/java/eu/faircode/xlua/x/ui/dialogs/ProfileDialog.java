@@ -94,7 +94,7 @@ public class ProfileDialog extends AppCompatDialogFragment {
         for(SettingHolder setting : settings) {
             SettingPacket packet = new SettingPacket(setting.getName(), setting.getValue());
             this.settings.add(packet);
-            sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, packet.getSharedId(), true); // Auto-check all settings
+            sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, packet.getObjectId(), true); // Auto-check all settings
         }
 
         if(DebugUtil.isDebug())
@@ -113,7 +113,7 @@ public class ProfileDialog extends AppCompatDialogFragment {
         int checked = 0;
         int total = this.settings.size();
         for(SettingPacket setting : this.settings)
-            if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId()))
+            if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getObjectId()))
                 checked++;
 
         return Pair.create(checked, total);
@@ -180,7 +180,7 @@ public class ProfileDialog extends AppCompatDialogFragment {
         cbCheckSettingsBulk.setOnClickListener(v -> {
             boolean bulkChecked = cbCheckSettingsBulk.isChecked();
             for (SettingPacket setting : settings) {
-                sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId(), bulkChecked);
+                sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getObjectId(), bulkChecked);
             }
             settingsAdapter.notifyDataSetChanged(); // Update UI
             updateBulkCheckboxAndLabel(cbCheckSettingsBulk, tvSelectedSettingsLabel);
@@ -248,7 +248,7 @@ public class ProfileDialog extends AppCompatDialogFragment {
                     ListUtil.addAllIfValid(profile.fileBackups, enabledDirs);
                     List<SettingPacket> enabledSettings = new ArrayList<>();
                     for(SettingPacket setting : settings)
-                        if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId()))
+                        if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getObjectId()))
                             enabledSettings.add(setting);
 
                     XPConfig config = XPConfig.create(profile, null, enabledSettings);
@@ -356,7 +356,7 @@ public class ProfileDialog extends AppCompatDialogFragment {
 
         // Count the number of checked items
         for (SettingPacket setting : settings) {
-            if (sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId())) {
+            if (sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getObjectId())) {
                 checked++;
             }
         }

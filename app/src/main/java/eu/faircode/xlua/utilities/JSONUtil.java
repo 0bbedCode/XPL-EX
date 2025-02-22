@@ -37,6 +37,13 @@ public class JSONUtil {
         return null;
     }
 
+    public static JSONObject toObject(XLuaHook hook) {
+        try {
+            return hook.toJSONObject();
+        }catch (Exception ignore) { }
+        return null;
+    }
+
     public static JSONObject toObject(IJsonType o) {
         try {
             return o.toJSONObject();

@@ -10,11 +10,16 @@ import eu.faircode.xlua.x.xlua.identity.UserIdentity;
 public class ActionPacket {
     public static ActionPacket create(ActionFlag flag, boolean kill) { return new ActionPacket(flag, kill); }
 
-    public static String FILED_ACTION_PACKET = "action_packet";
+    public static final String FILED_ACTION_PACKET = "action_packet";
 
-    public static String FIELD_KILL = "kill";
-    public static String FIELD_FLAGS = "flags";
-    public static String FIELD_EXTRA = "extra_action_flags";
+    public static final String FIELD_KILL = "kill";
+    public static final String FIELD_FLAGS = "flags";
+    public static final String FIELD_EXTRA = "extra_action_flags";
+
+    public static final String FIELD_CODE = "code";
+
+    public static final String ACTION_DUMP = "dump";
+    public static final String ACTION_ALL = "all";
 
     public UserIdentity identity;   //Resolve here ? as actions should be linked to Identities
 

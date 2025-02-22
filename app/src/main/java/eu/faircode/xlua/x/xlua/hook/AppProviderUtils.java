@@ -17,6 +17,7 @@ import eu.faircode.xlua.XUtil;
 import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.utils.ListUtil;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.commands.call.GetSettingExCommand;
 import eu.faircode.xlua.x.xlua.database.sql.SQLDatabase;
 import eu.faircode.xlua.x.xlua.database.sql.SQLSnake;
@@ -25,7 +26,7 @@ import eu.faircode.xlua.x.xlua.settings.data.SettingPacket;
 import eu.faircode.xlua.x.xlua.settings.data.SettingsApi;
 
 public class AppProviderUtils {
-    private static final String TAG = "XLua.AppProviderUtils";
+    private static final String TAG = LibUtil.generateTag(AppProviderUtils.class);
 
 
     public static AppXpPacket assignAppInfoToPacket(ApplicationInfo ai, PackageManager pm,
@@ -104,6 +105,43 @@ public class AppProviderUtils {
         }
     }
 
+    public static List<AssignmentPacket> filterAssignments(List<AssignmentPacket> assignments) { return filterAssignments(assignments, false, false); }
+    public static List<AssignmentPacket> filterAssignments(List<AssignmentPacket> assignments, boolean allowFilters) { return filterAssignments(assignments, allowFilters, false);  }
+    public static List<AssignmentPacket> filterAssignments(List<AssignmentPacket> assignments, boolean allowFilters, boolean allowSpecial) {
+        //We wil double filter, one init drop all Entries with the Filter Hooks
+        //Apps should not be able to be Assigned the "Filters" those get assigned by my system upon determination if the user uses RULES
+        //Double as in, the DB Updater check / some stage along those lines, drop and just block from any Get Assignment Api
+        List<AssignmentPacket> finalList = new ArrayList<>();
+        String pkg = null;
+        if(ListUtil.isValid(assignments)) {
+            for(AssignmentPacket assignment : assignments) {
+                if(Str.isEmpty(pkg))
+                    pkg = assignment.getCategory();
+
+                String hookId = assignment.getHookId();
+                if(Str.isEmpty(hookId))
+                    continue;
+
+                if(!allowFilters && AssignmentUtils.isFilterHook(hookId)) {
+                    if(DebugUtil.isDebug()) Log.w(TAG, "Skipping Assignment as it is an Filter, ID=" + hookId); //We can delete it from here ?
+                    continue;
+                }
+
+                if(!allowSpecial && AssignmentUtils.isSpecialSetting(hookId)) {
+                   if(DebugUtil.isDebug()) Log.w(TAG, "Skipping Assignment as it is an Special Setting, ID=" + hookId);
+                   continue;
+                }
+
+                finalList.add(assignment);
+            }
+        }
+
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Given Assignments Count=" + ListUtil.size(assignments) + " Final Count=" + ListUtil.size(finalList) + " app=" + pkg);
+
+        return finalList;
+    }
+
     public static void initAppsAssignmentSettings(Map<String, AppXpPacket> apps, SQLDatabase database, int userId) {
         int start = XUtil.getUserUid(userId, 0);
         int end = XUtil.getUserUid(userId, Process.LAST_APPLICATION_UID);
@@ -115,33 +153,34 @@ public class AppProviderUtils {
                         database,
                         userId));
 
-
+        //We can check collections
         List<AssignmentPacket> assignments = new ArrayList<>();
         if(apps.size() == 48543)  {
             AppXpPacket app = ListUtil.copyToArrayList(apps.values()).get(0);
             if(DebugUtil.isDebug())
                 Log.d(TAG, "Is Single App for Init Assignments, App Pkg=" + app.packageName + " UserId=" + userId);
 
-            ListUtil.addAllIfValid(assignments, SQLSnake
+            ListUtil.addAllIfValid(assignments, filterAssignments(SQLSnake
                     .create(database, AssignmentPacket.TABLE_NAME)
                     .whereColumn(AssignmentPacket.FIELD_USER, userId)
                     .whereColumn(AssignmentPacket.FIELD_CATEGORY, app.packageName)
                     .asSnake()
-                    .queryAs(AssignmentPacket.class, true, true));
+                    .queryAs(AssignmentPacket.class, true, true)));
         } else {
-            ListUtil.addAllIfValid(assignments, SQLSnake
+            ListUtil.addAllIfValid(assignments, filterAssignments(SQLSnake
                     .create(database, AssignmentPacket.TABLE_NAME)
                     .onlyReturn(AssignmentPacket.FIELD_USER, AssignmentPacket.FIELD_CATEGORY, AssignmentPacket.FIELD_HOOK, AssignmentPacket.FIELD_INSTALLED, AssignmentPacket.FIELD_USED, AssignmentPacket.FIELD_RESTRICTED, AssignmentPacket.FIELD_EXCEPTION)
                     .whereColumn(AssignmentPacket.FIELD_USER, start, ">=")
                     .whereColumn(AssignmentPacket.FIELD_USER, end, "<=")
                     .asSnake()
-                    .queryAs(AssignmentPacket.class, true, true));
+                    .queryAs(AssignmentPacket.class, true, true)));
         }
 
         if(DebugUtil.isDebug())
             Log.d(TAG, Str.fm("Starting Assignment Check Loop, Assignments=%s  User Id=%s  Collections=%s", ListUtil.size(assignments), userId, Str.joinList(collections)));
 
         for(AssignmentPacket assignment : assignments) {
+            //hmmm
             AppXpPacket app = apps.get(assignment.getCategory());
             if(app == null) {
                 if(DebugUtil.isDebug())
@@ -157,16 +196,16 @@ public class AppProviderUtils {
                     Log.w(TAG, Str.fm("Package Name %s is the Same but the UID is not, App:%s Assignment:%s  AppUserId:%s is Not...", assignment.getCategory(), app.uid, assignment.getUserId(true), appUserId));
             }
 
-            XLuaHook hook = UberCore888.getHook(assignment.hook, assignment.getCategory(), collections);
+            XLuaHook hook = UberCore888.getHook(assignment.getHookId(), assignment.getCategory(), collections);
             if(hook == null) {
                 if(DebugUtil.isDebug())
-                    Log.d(TAG, Str.fm("Hook Is NULL for Assignment, Hood=%s  Category=%s  User Id=%s  Collection Size=%s", assignment.hook, assignment.getCategory(), userId, ListUtil.size(collections)));
+                    Log.d(TAG, Str.fm("Hook Is NULL for Assignment, Hook=%s  Category=%s  User Id=%s  Collection Size=%s", assignment.getHookId(), assignment.getCategory(), userId, ListUtil.size(collections)));
 
                 continue;
             }
 
             if(DebugUtil.isDebug())
-                Log.d(TAG, Str.fm("Found the Hook for Assignment, ID=%s  User ID=%s", assignment.hook, userId));
+                Log.d(TAG, Str.fm("Found the Hook for Assignment, ID=%s  User ID=%s", assignment.getHookId(), userId));
 
             assignment.setHook(hook);
             app.addAssignment(assignment);

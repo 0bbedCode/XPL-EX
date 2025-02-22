@@ -11,6 +11,12 @@ public interface IFilterContainer {
     boolean hasSwallowedAsDefinition(XLuaHook hook);
     void initializeDefinitions(List<XLuaHook> hooks, Map<String, String> settings);
 
+
+    List<String> getDependencies();
     List<XLuaHook> getRules();
     List<XLuaHook> getFilterBases();
+
+    boolean hasSettings();
+
+    int appendSettings(Map<String, String> settings);
 }

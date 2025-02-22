@@ -25,6 +25,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.text.Html;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +55,9 @@ import eu.faircode.xlua.ui.HookWarnings;
 import eu.faircode.xlua.ui.dialogs.HookWarningDialog;
 import eu.faircode.xlua.ui.interfaces.ILoader;
 import eu.faircode.xlua.utilities.SettingUtil;
+import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.ui.dialogs.HookInfoDialog;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.hook.AssignmentPacket;
 import eu.faircode.xlua.x.xlua.hook.AppXpPacket;
 
@@ -85,6 +89,7 @@ public class AdapterGroup extends RecyclerView.Adapter<AdapterGroup.ViewHolder> 
         final View itemView;
         final ImageView ivException;
         final ImageView ivInstalled;
+        final ImageView ivInfo;
         final TextView tvUsed;
         final TextView tvGroup;
         final AppCompatCheckBox cbAssigned;
@@ -95,18 +100,21 @@ public class AdapterGroup extends RecyclerView.Adapter<AdapterGroup.ViewHolder> 
             this.itemView = itemView;
             ivException = itemView.findViewById(R.id.ivException);
             ivInstalled = itemView.findViewById(R.id.ivInstalled);
+            ivInfo = itemView.findViewById(R.id.ivInfo);
             tvUsed = itemView.findViewById(R.id.tvUsed);
             tvGroup = itemView.findViewById(R.id.tvGroup);
             cbAssigned = itemView.findViewById(R.id.cbAssigned);
         }
 
         private void wire() {
+            ivInfo.setOnClickListener(this);
             ivException.setOnClickListener(this);
             tvGroup.setOnClickListener(this);
             cbAssigned.setOnCheckedChangeListener(this);
         }
 
         private void unWire() {
+            ivInfo.setOnClickListener(null);
             ivException.setOnClickListener(null);
             tvGroup.setOnClickListener(null);
             cbAssigned.setOnCheckedChangeListener(null);
@@ -117,13 +125,26 @@ public class AdapterGroup extends RecyclerView.Adapter<AdapterGroup.ViewHolder> 
         public void onClick(View view) {
             LuaHooksGroup group = groups.get(getAdapterPosition());
             switch (view.getId()) {
+                case R.id.ivInfo:
+                    String name = group.getCleanTitle();
+                    String msg = HookInfoDialog.getMessage(view.getContext(), name);
+                    if(DebugUtil.isDebug())
+                        Log.d(LibUtil.generateTag(AdapterGroup.class), "INFO CLICK, Name=" + name + " Msg=" + msg);
+
+                    //Trying to call it here
+                    if(!Str.isEmpty(msg))
+                        HookInfoDialog.create()
+                                .setHookGroupName(name)
+                                .setHookGroupMessage(msg)
+                                .show(fragmentLoader.getManager(), "hook_info");
+                    break;
                 case R.id.ivException:
                     StringBuilder sb = new StringBuilder();
                     for (AssignmentPacket assignment : app.getAssignments(group.name))
                         if (assignment.hookObj.getGroup().equals(group.name))
                             if (assignment.exception != null) {
                                 sb.append("<b>");
-                                sb.append(Html.escapeHtml(assignment.hookObj.getSharedId()));
+                                sb.append(Html.escapeHtml(assignment.hookObj.getObjectId()));
                                 sb.append("</b><br><br>");
                                 for (String line : assignment.exception.split("\n")) {
                                     sb.append(Html.escapeHtml(line));
@@ -197,6 +218,9 @@ public class AdapterGroup extends RecyclerView.Adapter<AdapterGroup.ViewHolder> 
                 group.hasWarning = HookWarnings.hasWarning(context, group.name);
             }
 
+            if(DebugUtil.isDebug())
+                Log.d(LibUtil.generateTag(AdapterGroup.class), "Putting Hook ID [" + hook.getObjectId() + "] Group [" + hook.getGroup() + "] Group 2 =" + group + " app=" + app.packageName + " name=" + group.name);
+
             group.hooks.add(hook);
         }
 
@@ -206,6 +230,10 @@ public class AdapterGroup extends RecyclerView.Adapter<AdapterGroup.ViewHolder> 
                     LuaHooksGroup group = map.get(groupId);
                     if(group == null)
                         continue;
+
+                    String id = assignment.getHookId();
+                    if(DebugUtil.isDebug())
+                        Log.d(LibUtil.generateTag(AdapterGroup.class), "Putting ID [" + id + "] For Group [" + groupId + "] app=" + app.packageName + " name=" + group.name);
 
                     if (assignment.exception != null)
                         group.exception = true;
@@ -221,6 +249,14 @@ public class AdapterGroup extends RecyclerView.Adapter<AdapterGroup.ViewHolder> 
         }
 
         this.groups = new ArrayList<>(map.values());
+        if(DebugUtil.isDebug()) {
+            for(LuaHooksGroup g : this.groups) {
+                String name = g.groupId;
+                Log.w(LibUtil.generateTag(AdapterGroup.class), "Found Group [" + name + "] app=" + app.packageName + " Hooks Count=" + g.hooks.size() + " Assignment Count=" + g.assigned);
+                for(XLuaHook h : g.hooks)
+                    Log.d(LibUtil.generateTag(AdapterGroup.class), "Hook: " + h.getObjectId() + " Group=" + g.groupId + " Name=" + g.name + " app=" + app.packageName);
+            }
+        }
 
         final Collator collator = Collator.getInstance(Locale.getDefault());
         collator.setStrength(Collator.SECONDARY); // Case insensitive, process accents etc
@@ -254,9 +290,8 @@ public class AdapterGroup extends RecyclerView.Adapter<AdapterGroup.ViewHolder> 
         holder.tvUsed.setText(DateUtils.formatDateTime(context, group.lastUsed(),
                 DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_ALL));
 
-        String cleanName = SettingUtil.cleanSettingName(group.title);
 
-        holder.tvGroup.setText(cleanName);
+        holder.tvGroup.setText(group.getCleanTitle());
         holder.cbAssigned.setChecked(group.hasAssigned());
         holder.cbAssigned.setButtonTintList(ColorStateList.valueOf(resources.getColor(
                 group.allAssigned() ? R.color.colorAccent : android.R.color.darker_gray, null)));

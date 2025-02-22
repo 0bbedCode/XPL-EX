@@ -55,6 +55,10 @@ public class StatContainer {
 
             result.setIsMalicious(true);
             result.setNewValue(newOutput);
+
+            result.param.setOldResult(output);
+            result.param.setNewResult(newOutput);
+            result.param.setSettingResult("stat >> " + file);
             return true;
         }catch (Exception e) {
             Log.e(TAG, "Failed to Intercept STAT command output, File=" + file + " Output=" + output + " Error=" + e + " Stack=" + Log.getStackTraceString(e));
@@ -76,8 +80,9 @@ public class StatContainer {
                 if(DebugUtil.isDebug())
                     Log.d(TAG, "File.lastModified(" + this.file + ") Original=" + original + " Original MILLIS=" + result + " New=" + newValue + " New MILLIS=" + StatUtils.stringToLastModified(newValue));
 
-                param.setOldResult("File=" + file + "\nDate=" + original);
-                param.setNewResult("File=" + file + "\nDate=" + newValue);
+                param.setOldResult(original);
+                param.setNewResult(newValue);
+                param.setSettingResult("lastModified >> " + file);
 
                 param.setResult(StatUtils.stringToLastModified(newValue));
                 if(DebugUtil.isDebug()) Log.d(TAG, fakeSettings.toString());
@@ -97,11 +102,9 @@ public class StatContainer {
             Object result = param.tryGetResult(null);
             if(result instanceof StructStat) {
                 fakeSettings.cleanStructure(result, param);
-
-
-
                 param.setResult(result);
-                if(DebugUtil.isDebug()) Log.d(TAG, fakeSettings.toString());
+                if(DebugUtil.isDebug())
+                    Log.d(TAG, fakeSettings.toString());
                 return true;
             } else {
                 Log.e(TAG, "Struct STAT is not Type [StructStat] ! Skipping, type=" + (result == null ? "null" : result.getClass().getName()) + " File=" + file);

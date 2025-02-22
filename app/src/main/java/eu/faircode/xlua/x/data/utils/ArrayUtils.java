@@ -3,6 +3,8 @@ package eu.faircode.xlua.x.data.utils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.json.JSONArray;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,6 +76,10 @@ public class ArrayUtils {
     public static <T> T[] copy(@Nullable T[] array) {
         if (array == null) return null;
         return Arrays.copyOf(array, array.length);
+    }
+
+    public static boolean isValid(JSONArray array) {
+        return array != null && array.length() > 0;
     }
 
     /**
@@ -533,6 +539,10 @@ public class ArrayUtils {
 
     public static boolean isValid(@Nullable double[] array) {
         return array != null && array.length > 0;
+    }
+
+    public static int safeLength(JSONArray array) {
+        return array == null ? -1 : array.length();
     }
 
     /**

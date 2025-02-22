@@ -52,7 +52,7 @@ public class HookGroupOrganizer {
                         if(lower_names.contains(lowered)) {
                             hooks.add(hook);
                             if(DebugUtil.isDebug())
-                                Log.d(TAG, Str.fm("Found Possible Hook to Setting by Settings! Setting Count=%s Hook Name=%s Hook ID=%s  UID=%s  Package Name=%s", setting_names.size(), hook.getName(), hook.getSharedId(), "null", "null"));
+                                Log.d(TAG, Str.fm("Found Possible Hook to Setting by Settings! Setting Count=%s Hook Name=%s Hook ID=%s  UID=%s  Package Name=%s", setting_names.size(), hook.getName(), hook.getObjectId(), "null", "null"));
 
                             found = true;
                             break;
@@ -68,7 +68,7 @@ public class HookGroupOrganizer {
                         if(script.contains(format_1) || script.contains(format_2)) {
                             hooks.add(hook);
                             if(DebugUtil.isDebug())
-                                Log.d(TAG, Str.fm("Found Possible Hook to Setting by Lua Script! Setting Name=%s Hook Name=%s Hook ID=%s  UID=%s  Package Name=%s", setting_name, hook.getName(), hook.getSharedId(), "null", "null"));
+                                Log.d(TAG, Str.fm("Found Possible Hook to Setting by Lua Script! Setting Name=%s Hook Name=%s Hook ID=%s  UID=%s  Package Name=%s", setting_name, hook.getName(), hook.getObjectId(), "null", "null"));
 
                             break;
                         }
@@ -100,7 +100,7 @@ public class HookGroupOrganizer {
                 group.hasWarning = HookWarnings.hasWarning(context, group.name);
 
                 if(DebugUtil.isDebug())
-                    Log.d(TAG, Str.fm("Created Group for Hook:%s  Group Name=%s UID=%s Package Name=%s", hook.getSharedId(), hook.getGroup(), "null", "null"));
+                    Log.d(TAG, Str.fm("Created Group for Hook:%s  Group Name=%s UID=%s Package Name=%s", hook.getObjectId(), hook.getGroup(), "null", "null"));
             }
 
             group.hooks.add(hook);
@@ -187,7 +187,7 @@ public class HookGroupOrganizer {
             Log.d(TAG, "Settings List String Count=" + ListUtil.size(allSettings) + " All Hooks Count=" + ListUtil.size(allHooks) + " Filtered Hooks Count=" + ListUtil.size(filteredHooks));
 
         for(XLuaHook hook : filteredHooks) {
-            String id = hook.getSharedId();
+            String id = hook.getObjectId();
             if(!TextUtils.isEmpty(id))
                 continue;
 

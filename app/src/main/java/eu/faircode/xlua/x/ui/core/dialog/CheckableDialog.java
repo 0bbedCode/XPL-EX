@@ -63,8 +63,8 @@ public abstract class CheckableDialog<T extends IIdentifiableObject> extends App
         boolean[] initialCheckedStates = new boolean[items.size()];
         for (int i = 0; i < items.size(); i++) {
             T item = items.get(i);
-            ids[i] = item.getSharedId();
-            initialCheckedStates[i] = viewRegistry.isChecked(TAG_ITEMS, item.getSharedId());
+            ids[i] = item.getObjectId();
+            initialCheckedStates[i] = viewRegistry.isChecked(TAG_ITEMS, item.getObjectId());
         }
 
         builder.setTitle(title)
@@ -77,7 +77,7 @@ public abstract class CheckableDialog<T extends IIdentifiableObject> extends App
                         T item = items.get(i);
                         boolean isChecked = listView.isItemChecked(i);
                         if(useOriginalState) {
-                            boolean originalFlag = viewRegistry.isChecked(TAG_ITEMS, item.getSharedId());
+                            boolean originalFlag = viewRegistry.isChecked(TAG_ITEMS, item.getObjectId());
                             if (isChecked && !originalFlag) {
                                 enabled.add(item);
                             } else if (!isChecked && originalFlag) {

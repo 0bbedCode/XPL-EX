@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -13,15 +14,18 @@ import org.json.JSONObject;
 
 import java.util.LinkedHashMap;
 
+import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.utilities.CursorUtil;
 import eu.faircode.xlua.utilities.ParcelUtil;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.string.StrBuilder;
 import eu.faircode.xlua.x.xlua.IBundleData;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.PacketBase;
 import eu.faircode.xlua.x.xlua.database.TableInfo;
 import eu.faircode.xlua.x.xlua.database.sql.SQLQueryBuilder;
+import eu.faircode.xlua.x.xlua.identity.UserIdentity;
 import eu.faircode.xlua.x.xlua.identity.UserIdentityIO;
 import eu.faircode.xlua.x.xlua.interfaces.IJsonType;
 import eu.faircode.xlua.x.xlua.interfaces.IParcelType;
@@ -46,10 +50,18 @@ public class AssignmentPacket extends PacketBase implements IBundleData, IParcel
     public XLuaHook hookObj;
 
     public String getHookId() {
-        if(this.hookObj != null)
-            return this.hookObj.getSharedId();
+        if(!Str.isEmpty(hookId) && hookId.length() > 3)
+            return hookId;
 
-        return Str.isEmpty(hook) ? this.hookId : this.hook;
+        if(!Str.isEmpty(hook) && hook.length() > 3)
+            return hook;
+
+        if(this.hookObj != null)
+            if(!Str.isEmpty(this.hookObj.getObjectId()) && this.hookObj.getObjectId().length() > 3)
+                return this.hookObj.getObjectId();
+
+        //return "null-no-hook-id";
+        return null;
     }
 
     public static final String FIELD_USER = UserIdentityIO.FIELD_USER;
@@ -81,7 +93,7 @@ public class AssignmentPacket extends PacketBase implements IBundleData, IParcel
 
 
     @Override
-    public String getSharedId() { return hook; }
+    public String getObjectId() { return getHookId(); }
 
     @Override
     public void setId(String id) {
@@ -105,7 +117,8 @@ public class AssignmentPacket extends PacketBase implements IBundleData, IParcel
     public void setHook(XLuaHook hook) {
         if(hook != null) {
             this.hookObj = hook;
-            this.hook = hook.getSharedId();
+            this.hook = hook.getObjectId();
+            this.hookId = hook.getObjectId();
         }
     }
 
@@ -132,7 +145,6 @@ public class AssignmentPacket extends PacketBase implements IBundleData, IParcel
     public void writeToParcel(@NonNull Parcel parcel, int flags) {
         writeUserIdentityToParcel(parcel, isLegacy, !isLegacy);
 
-
         parcel.writeParcelable(this.hookObj, flags);
 
         parcel.writeLong(this.installed);
@@ -143,7 +155,6 @@ public class AssignmentPacket extends PacketBase implements IBundleData, IParcel
         parcel.writeString(this.newValue);
 
         parcel.writeString(getHookId());
-
     }
 
     @Override
@@ -190,7 +201,6 @@ public class AssignmentPacket extends PacketBase implements IBundleData, IParcel
             UserIdentityIO.populateFromCursor_group_assignment(c, this, isLegacy);
 
             this.hook = CursorUtil.getString(c, FIELD_HOOK);
-
             this.installed = CursorUtil.getLong(c, FIELD_INSTALLED, NO_VALUE);
             this.used = CursorUtil.getLong(c, FIELD_USED, NO_VALUE);
             this.restricted = CursorUtil.getBoolean(c, FIELD_RESTRICTED, false);
@@ -245,13 +255,17 @@ public class AssignmentPacket extends PacketBase implements IBundleData, IParcel
     }
 
     @Override
-    public String toJSONString() throws JSONException { return toJSONObject().toString(); }
+    public String toJSONString() throws JSONException { return toJSONObject().toString(2); }
 
     @Override
     public JSONObject toJSONObject() throws JSONException {
         JSONObject obj = new JSONObject();
 
-            obj.put(FIELD_HOOK, this.hook);
+        obj.put(FIELD_USER, this.getUserId(true));
+        obj.put(FIELD_CATEGORY, this.getCategory());
+
+        obj.put(FIELD_HOOK, this.hook);
+
 
         obj.put(FIELD_INSTALLED, this.installed);
         obj.put(FIELD_USED, this.used);
@@ -266,8 +280,12 @@ public class AssignmentPacket extends PacketBase implements IBundleData, IParcel
     @Override
     public void fromJSONObject(JSONObject obj) throws JSONException {
         if(obj != null) {
-            this.hook = obj.optString(FIELD_HOOK);
+            setUserIdentity(new UserIdentity(
+                    obj.optInt(FIELD_USER, 0),
+                    0,
+                    obj.optString(FIELD_CATEGORY, UserIdentity.GLOBAL_NAMESPACE)));
 
+            this.hook = obj.optString(FIELD_HOOK);
             this.installed = obj.optLong(FIELD_INSTALLED);
             this.used = obj.optLong(FIELD_USED);
             this.restricted = obj.optBoolean(FIELD_RESTRICTED);
@@ -282,7 +300,11 @@ public class AssignmentPacket extends PacketBase implements IBundleData, IParcel
     public String toString() {
         return StrBuilder.create()
                 .ensureOneNewLinePer(true)
-                .appendFieldLine("Hook", this.hook)
+                .appendFieldLine("User", getUserId(false))
+                .appendFieldLine("Uid", getUid())
+                .appendFieldLine("Category", getCategory())
+                .appendFieldLine("Hook1", this.hook)
+                .appendFieldLine("Hook2", this.hookId)
                 .appendFieldLine("Installed", this.installed)
                 .appendFieldLine("Used", this.used)
                 .appendFieldLine("Restricted", this.restricted)

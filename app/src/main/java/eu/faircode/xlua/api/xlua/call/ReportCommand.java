@@ -85,7 +85,7 @@ public class ReportCommand extends CallCommandHandler {
         }*/
 
         if(DebugUtil.isDebug())
-            Log.d(TAG, "Report Hook ID=" + (hook == null ? "" : hook.getSharedId()) + " Report ID=" + hookid);
+            Log.d(TAG, "Report Hook ID=" + (hook == null ? "" : hook.getObjectId()) + " Report ID=" + hookid);
 
         // Get notify setting
         Bundle args = new Bundle();

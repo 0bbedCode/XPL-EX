@@ -11,10 +11,12 @@ import java.util.Map;
 
 import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.data.string.PartFilter;
 import eu.faircode.xlua.x.data.string.StrBuilder;
 import eu.faircode.xlua.x.data.string.StringCharBlock;
 import eu.faircode.xlua.x.data.string.StringPartsBuilder;
 import eu.faircode.xlua.x.data.utils.ListUtil;
+import eu.faircode.xlua.x.xlua.LibUtil;
 
 
 /**
@@ -44,7 +46,7 @@ import eu.faircode.xlua.x.data.utils.ListUtil;
  *
  */
 public class NameInformation {
-    private static final String TAG = "XLua.NameInformation";
+    private static final String TAG = LibUtil.generateTag(NameInformation.class);
 
     public static final String GROUP_BUILT_IN = "Built-In";
     public int index = 0;
@@ -135,7 +137,7 @@ public class NameInformation {
 
             //this.containerName = new NameInformation(new StringPartsBuilder().copyNonImportant(parts))
 
-            this.nameNice = parts.trimStartParts(this.group).resolveParts(StringPartsBuilder.NUMBER_RESOLVER_MAP).getString();
+            this.nameNice = parts.trimStartParts(this.group).resolveParts(PartFilter.DEFAULT_NUMERIC_MAPPER).getString();
             this.nameNiceNoNumericEnding = parts.trimEndNumericParts(true).getString();
 
             //  we just set container name to name if its a Single
@@ -202,7 +204,9 @@ public class NameInformation {
     public static List<NameInformation> childrenNames(NameInformation parent, StringPartsBuilder parts) {
         if(parent == null || parts == null || !parts.hasParts()) return null;
         List<String> lastParts = parts.getLastBrokenParts();
-        if(!ListUtil.isValid(lastParts)) return null;
+        if(!ListUtil.isValid(lastParts))
+            return null;
+
         List<NameInformation> childSettings = new ArrayList<>();
         for(String s : lastParts) {                                         //Get only the last possible "numeric" parts, as a string can have many chunks
             char[] chars = s.toCharArray();
@@ -210,8 +214,10 @@ public class NameInformation {
             StringCharBlock block = new StringCharBlock(s.length());        //Ensure space
             for(int i = 0; i < sz && block.getCurrentIndex() < 8; i++) {    //We ony want up to (8) Chars as anything past can be more than a "long" number index
                 char c = chars[i];
-                if(c == '0' && block.getCurrentIndex() > 0) block.appendUnsafe(c);
-                else if(Character.isDigit(c)) block.appendUnsafe(c);
+                if(c == '0' && block.getCurrentIndex() > 0)
+                    block.appendUnsafe(c);
+                else if(Character.isDigit(c))
+                    block.appendUnsafe(c);
             }
 
             if(block.getCurrentIndex() > 0) {

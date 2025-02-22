@@ -29,6 +29,7 @@ import eu.faircode.xlua.x.xlua.LibUtil;
 public class Str {
     private static final String TAG = LibUtil.generateTag(Str.class);
 
+    public static final String DEFAULT_DEFAULT = "DEFAULT";
     public static final String EMPTY = "";
     public static final String ASTERISK = "*";
     public static final String COLLEN = ":";
@@ -38,6 +39,8 @@ public class Str {
     public static final String COMMA = ",";
     public static final String PERIOD = ".";
     public static final String WHITE_SPACE = " ";
+    public static final String FORWARD_SLASH = "/";
+
     private static final Pattern DOUBLE_NEWLINE_PATTERN = Pattern.compile("\n\\s*\n");
 
     public static final int MOBILE_SAFE_LENGTH = 40;
@@ -280,6 +283,27 @@ public class Str {
         return sb.toString();
     }
 
+    /**
+     * Capitalizes the first letter of the input string.
+     *
+     * @param input The string to capitalize
+     * @return The input string with the first letter capitalized, or the original string
+     *         if it's null, empty, or already capitalized
+     */
+    public static String capitalizeFirstLetter(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+
+        // If the string is just one character, uppercase it and return
+        if (input.length() == 1) {
+            return input.toUpperCase();
+        }
+
+        // Otherwise, uppercase the first character and append the rest of the string
+        return Character.toUpperCase(input.charAt(0)) + input.substring(1);
+    }
+
     public static boolean isEmpty(String s) { return s == null || s.isEmpty(); }
     public static boolean isAnyEmpty(String... strings) {
         if(strings != null) {
@@ -330,7 +354,7 @@ public class Str {
         try {
              return hook.toJSON();
         }catch (Exception ignored) { }
-        return "Name=" + hook.getName() + " Id=" + hook.getSharedId() + " Class=" + hook.getClassName();
+        return "Name=" + hook.getName() + " Id=" + hook.getObjectId() + " Class=" + hook.getClassName();
     }
 
     /*public static String repeatChar(char c, int repeatTimes) {
@@ -556,6 +580,10 @@ public class Str {
         return sp.length > 0 ? sp[sp.length - 1] : defaultValue;
     }
 
+    public static String trimOriginal(String s) {
+        return Str.isEmpty(s) ? s : s.trim();
+    }
+
     public static String trim(String s, String trimPrefix, boolean ensureTrimmed, boolean trimWhitespace) {
         //Stop using this version ? use the ex version then rename ex to this ?
         if (s == null || s.isEmpty() || trimPrefix == null || trimPrefix.isEmpty()) {
@@ -696,14 +724,22 @@ public class Str {
 
     public static List<String> splitToList(String str) { return splitToList(str, ","); }
     public static List<String> splitToList(String str, String delimiter) {
-        if(TextUtils.isEmpty(str))
+        if(Str.isEmpty(str))
             return new ArrayList<>();
 
         if(!str.contains(delimiter))
             return ListUtil.toSingleList(str);
 
         String[] split = str.split(Pattern.quote(delimiter));
-        return Arrays.asList(split);
+        if(!ArrayUtils.isValid(split))
+            return ListUtil.toSingleList(str);
+
+        List<String> list = new ArrayList<>();
+        for(String p : split)
+            if(!Str.isEmpty(p) && !list.contains(p))
+                list.add(p);
+
+        return list;
     }
 
     public static String joinArray(String[] arr) { return joinArray(arr, ","); }
@@ -731,11 +767,13 @@ public class Str {
     //public static final List<String> STRING_NUMBERS = Arrays.asList("")
 
     public static boolean isNumeric(String s) {
-        if(TextUtils.isEmpty(s)) return false;
+        if(isEmpty(s))
+            return false;
+
         char[] chars = s.toCharArray();
-        for(char c : chars) {
-            if(!Character.isDigit(c)) return false;
-        }
+        for(char c : chars)
+            if(!Character.isDigit(c))
+                return false;
 
         return true;
     }
@@ -807,9 +845,8 @@ public class Str {
         }
     }
 
-    public static String ensureEndsWith(String s, String ending) {
-        return s == null ? ending : s.endsWith(ending) ? s : s + ending;
-    }
+    public static String ensureStartsWith(String s, String start) { return s == null ? start : s.startsWith(start) ? s : s + start; }
+    public static String ensureEndsWith(String s, String ending) { return s == null ? ending : s.endsWith(ending) ? s : s + ending; }
 
 
     public static Boolean toBoolean(String str) { return toBoolean(str, null); }

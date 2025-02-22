@@ -85,7 +85,7 @@ public class LuaAssignmentEx implements ISerial, IDBSerial, IJsonSerial, Parcela
     public void fromCursor(Cursor cursor) {
         if(cursor != null) {
             this.packageName = CursorUtil.getString(cursor,"package");
-            this.uid = CursorUtil.getInteger(cursor, "uid");
+            this.uid = CursorUtil.getInteger(cursor, "uid", -1);
             this.hookId = CursorUtil.getString(cursor, "hook");
             this.installed = CursorUtil.getLong(cursor, "installed", (long)-1);
             this.used = CursorUtil.getLong(cursor, "used", (long) -1);

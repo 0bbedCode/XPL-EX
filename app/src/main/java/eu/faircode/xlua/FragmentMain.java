@@ -74,16 +74,19 @@ import eu.faircode.xlua.api.app.XLuaApp;
 import eu.faircode.xlua.utilities.PrefUtil;
 import eu.faircode.xlua.utilities.UiUtil;
 import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.data.PrefManager;
 import eu.faircode.xlua.x.data.utils.ListUtil;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.commands.call.GetGroupsCommand;
 import eu.faircode.xlua.x.xlua.commands.call.GetSettingExCommand;
 import eu.faircode.xlua.x.xlua.commands.query.GetAppsCommand;
 import eu.faircode.xlua.x.xlua.commands.query.GetHooksCommand;
 import eu.faircode.xlua.x.xlua.hook.AppXpPacket;
+import me.zhanghai.android.fastscroll.FastScrollerBuilder;
 
 
 public class FragmentMain extends Fragment implements ILoader {
-    private final static String TAG = "XLua.Fragment";
+    private final static String TAG = LibUtil.generateTag(FragmentMain.class);
 
     private ProgressBar pbApplication;
     private Spinner spGroup;
@@ -102,28 +105,16 @@ public class FragmentMain extends Fragment implements ILoader {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View main = inflater.inflate(R.layout.restrictions, container, false);
 
-        //Ensure collections
-        //List<String> collections = XLuaCall.getCollections(getContext());
-        /*if(!collections.isEmpty()) {
-            if(collections.contains("Privacy")) {
-                boolean privacyWarning = PrefUtil.getBoolean(getContext(), "privacyWarn", false, true);
-                if(!privacyWarning) {
-                    PrefUtil.setBoolean(getContext(), "privacyWarn", true);
-                    collections.remove("Privacy");
-                    if(collections.isEmpty()) collections.add("PrivacyEx");
-                    XLuaCall.putSetting(getContext(), "collection", Str.joinList(collections));
-                    new PrivacyGroupWarningDialog()
-                            .show(Objects.requireNonNull(getFragmentManager()), getString(R.string.title_collection_privacy));
-                }
-            }
-        }*/
+        ActivityMain.manager.ensureIsOpen(requireContext(), PrefManager.SETTINGS_MAIN);
+        show = PrefManager.settingToShow(ActivityMain.manager.getString(PrefManager.SETTING_APPS_SHOW, "show_user", true));
+
 
         pbApplication = main.findViewById(R.id.pbApplication);
         btnRestrict = main.findViewById(R.id.btnRestrict);
         tvRestrict = main.findViewById(R.id.tvRestrict);
         grpApplication = main.findViewById(R.id.grpApplication);
 
-        int colorAccent = XUtil.resolveColor(Objects.requireNonNull(getContext()), R.attr.colorAccent);
+        int colorAccent = XUtil.resolveColor(requireContext(), R.attr.colorAccent);
 
         swipeRefresh = main.findViewById(R.id.swipeRefresh);
         swipeRefresh.setColorSchemeColors(colorAccent, colorAccent, colorAccent);
@@ -138,6 +129,8 @@ public class FragmentMain extends Fragment implements ILoader {
 
         // Initialize app list
         RecyclerView rvApplication = main.findViewById(R.id.rvApplication);
+        //new FastScrollerBuilder(rvApplication).useMd2Style().build();
+
         rvApplication.setHasFixedSize(false);
         LinearLayoutManager llm = new LinearLayoutManager(getActivity()) {
             @Override
@@ -150,8 +143,7 @@ public class FragmentMain extends Fragment implements ILoader {
         rvAdapter = new AdapterApp(getActivity(), this);
         rvApplication.setAdapter(rvAdapter);
 
-        //This point i dont use cuz its the menu drop down items
-        spAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
+        spAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item);
         spAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spGroup = main.findViewById(R.id.spGroup);
@@ -180,20 +172,12 @@ public class FragmentMain extends Fragment implements ILoader {
             }
         });
 
-        btnRestrict.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                XUiGroup selected = (XUiGroup) spGroup.getSelectedItem();
-                XUtil.areYouSure(
-                        (ActivityBase) getActivity(),
-                        getString(R.string.msg_restrict_sure, selected.title),
-                        new XUtil.DoubtListener() {
-                            @Override
-                            public void onSure() {
-                                rvAdapter.restrict(getContext());
-                            }
-                        });
-            }
+        btnRestrict.setOnClickListener(view -> {
+            XUiGroup selected = (XUiGroup) spGroup.getSelectedItem();
+            XUtil.areYouSure(
+                    (ActivityBase) getActivity(),
+                    getString(R.string.msg_restrict_sure, selected.title),
+                    () -> rvAdapter.restrict(getContext()));
         });
 
         return main;
@@ -208,6 +192,9 @@ public class FragmentMain extends Fragment implements ILoader {
         ifPackage.addAction(Intent.ACTION_PACKAGE_FULLY_REMOVED);
         ifPackage.addDataScheme("package");
         Objects.requireNonNull(getContext()).registerReceiver(packageChangedReceiver, ifPackage);
+
+        ActivityMain.manager.ensureIsOpen(requireContext(), PrefManager.SETTINGS_MAIN);
+        show = PrefManager.settingToShow(ActivityMain.manager.getString(PrefManager.SETTING_APPS_SHOW, "show_user", true));
         loadData();
     }
 
@@ -223,7 +210,8 @@ public class FragmentMain extends Fragment implements ILoader {
 
     public void setShow(AdapterApp.enumShow value) {
         this.show = value;
-        if (rvAdapter != null)  rvAdapter.setShow(value);
+        if (rvAdapter != null)
+            rvAdapter.setShow(value);
     }
 
     public void filter(String query) {
@@ -241,7 +229,6 @@ public class FragmentMain extends Fragment implements ILoader {
 
     @Override
     public void loadData() {
-        Log.i(TAG, "Starting data loader");
         LoaderManager manager = getActivity().getSupportLoaderManager();
         manager.restartLoader(ActivityMain.LOADER_DATA, new Bundle(), dataLoaderCallbacks).forceLoad();
     }
@@ -262,6 +249,11 @@ public class FragmentMain extends Fragment implements ILoader {
 
                 show = data.show;
                 rvAdapter.setShow(data.show);
+
+                ListUtil.filterCondition(data.hooks,
+                        (o) -> !Str.isEmpty(o.getGroup())
+                                && !o.getGroup().toLowerCase().startsWith("intercept."));
+
                 rvAdapter.set(data.collection, data.hooks, data.apps);
 
                 swipeRefresh.setRefreshing(false);
@@ -316,17 +308,23 @@ public class FragmentMain extends Fragment implements ILoader {
                 }*/
 
                 //Get Show
-                String show = GetSettingExCommand.getShow(getContext(), Process.myUid());
+                //String show = GetSettingExCommand.getShow(getContext(), Process.myUid());
                 List<String> collections = GetSettingExCommand.getCollections(getContext(), Process.myUid());
-                if(DebugUtil.isDebug())
-                    Log.d(TAG, "Data Loader Got Show, Show=" + show + " Collections=" + Str.joinList(collections));
 
-                if (show != null && show.equals("user"))
+                ActivityMain.manager.ensureIsOpen(getContext(), PrefManager.SETTINGS_MAIN);
+                //data.show = PrefManager.getShow(getContext());
+                data.show = PrefManager.settingToShow(ActivityMain.manager.getString(PrefManager.SETTING_APPS_SHOW, "show_user", true));
+
+                if(DebugUtil.isDebug())
+                    Log.d(TAG, "[SHOW_SHOW] Data Loader Got Show, Show=" + data.show.name() + " Collections=" + Str.joinList(collections));
+
+
+                /*if (show != null && show.equals("user"))
                     data.show = AdapterApp.enumShow.user;
                 else if (show != null && show.equals("all"))
                     data.show = AdapterApp.enumShow.all;
                 else
-                    data.show = AdapterApp.enumShow.icon;
+                    data.show = AdapterApp.enumShow.icon;*/
 
                 // Get collection
                 data.collection.addAll(collections);
@@ -340,7 +338,7 @@ public class FragmentMain extends Fragment implements ILoader {
                 if(DebugUtil.isDebug())
                     Log.d(TAG, "Got Groups, Size=" + ListUtil.size(groupsCopy));
 
-                if(CollectionUtil.isValid(groupsCopy)) {
+                if(ListUtil.isValid(groupsCopy)) {
                     for(String name : groupsCopy) {
                         String g = name.toLowerCase().replaceAll("[^a-z]", "_");
                         int id = res.getIdentifier("group_" + g, "string", getContext().getPackageName());
@@ -354,12 +352,7 @@ public class FragmentMain extends Fragment implements ILoader {
 
                 final Collator collator = Collator.getInstance(Locale.getDefault());
                 collator.setStrength(Collator.SECONDARY); // Case insensitive, process accents etc
-                Collections.sort(data.groups, new Comparator<XUiGroup>() {
-                    @Override
-                    public int compare(XUiGroup group1, XUiGroup group2) {
-                        return collator.compare(group1.title, group2.title);
-                    }
-                });
+                Collections.sort(data.groups, (group1, group2) -> collator.compare(group1.title, group2.title));
 
                 XUiGroup all = new XUiGroup();
                 all.name = null;

@@ -19,11 +19,12 @@ import eu.faircode.xlua.logger.XLog;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.runtime.RuntimeUtils;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.interfaces.IJsonType;
 import eu.faircode.xlua.x.xlua.interfaces.IParcelType;
 
 public class CursorUtil {
-    private static final String TAG = "XLua.CursorUtil";
+    private static final String TAG = LibUtil.generateTag(CursorUtil.class);
 
     // Vivo OAID Cursor Structure
     // URI: content://com.vivo.vms.IdProvider/IdentifierId/OAID
@@ -175,10 +176,18 @@ public class CursorUtil {
         return c.getLong(ix);
     }
 
+    /*
+        ToDo: Stop with or Handle these "null" values, hence why we can get crashes
+                Ensure we return actual values not NULL
+     */
     public static Integer getInteger(Cursor c, String columnName) { return getInteger(c, columnName, null); }
     public static Integer getInteger(Cursor c, String columnName, Integer defaultValue) {
+        if(c == null)
+            return defaultValue;
+
         int ix = c.getColumnIndex(columnName);
-        if(ix == -1) return defaultValue;
+        if(ix == -1)
+            return defaultValue;
 
         if(c.getType(ix) == Cursor.FIELD_TYPE_INTEGER)
             return c.getInt(ix);
@@ -188,6 +197,9 @@ public class CursorUtil {
 
     public static String getString(Cursor c, String columnName) { return getString(c, columnName, null); }
     public static String getString(Cursor c, String columnName, String defaultValue) {
+        if(c == null)
+            return defaultValue;
+
         int ix = c.getColumnIndex(columnName);
         if(ix < 0)
             return defaultValue;
@@ -196,6 +208,9 @@ public class CursorUtil {
     }
 
     public static Boolean getBoolean(Cursor c, String columnName, Boolean defaultValue) {
+        if(c == null)
+            return defaultValue;
+
         int ix = c.getColumnIndex(columnName);
         if(ix == -1) return defaultValue;
         String v = c.getString(ix).toLowerCase();
@@ -204,6 +219,9 @@ public class CursorUtil {
     }
 
     public static Boolean getBoolean(Cursor c, String columnName) {
+        if(c == null)
+            return false;
+
         int ix = c.getColumnIndex(columnName);
         if(ix == -1) return null;
         String v = c.getString(ix).toLowerCase();
@@ -286,7 +304,9 @@ public class CursorUtil {
 
         IJsonSerial lastItem = null;
         String logEnd = " collection size=" + items.size() + " marshall=" + marshall + " flags=" + flags;
-        XLog.i("Converting collection into Matrix Cursor... " + logEnd);
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Converting collection into Matrix Cursor... " + logEnd);
+
         int pos = 0;
         try {
             for (IJsonSerial item : items) {
@@ -303,14 +323,16 @@ public class CursorUtil {
                 } pos++;
             }
         }catch (JSONException je) {
-            XLog.e("Failed to write IJsonSerial object as Json Blob using IJsonSerial inherited method [toJSON]. last position=" + pos + " last item=" + lastItem + logEnd, je, true);
+            Log.e(TAG, "Failed to write IJsonSerial object as Json Blob using IJsonSerial inherited method [toJSON]. last position=" + pos + " last item=" + lastItem + logEnd + " Error=" + je + " Stack=" + RuntimeUtils.getStackTraceSafeString(je));
             return result;
         }catch (Exception e) {
-            XLog.e("Failed to write IJsonSerial Collection to Matrix Cursor. last position=" + pos + " last item=" + lastItem + logEnd, e, true);
+            Log.e(TAG,"Failed to write IJsonSerial Collection to Matrix Cursor. last position=" + pos + " last item=" + lastItem + logEnd + " Error=" + e + " Stack=" + RuntimeUtils.getStackTraceSafeString(e));
             return result;
         }
 
-        XLog.i("Finished Writing IJsonSerial Collection to Matrix Cursor. last position=" + pos + logEnd);
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Finished Writing IJsonSerial Collection to Matrix Cursor. last position=" + pos + logEnd);
+
         return result;
     }
 

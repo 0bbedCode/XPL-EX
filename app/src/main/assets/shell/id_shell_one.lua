@@ -30,7 +30,7 @@ function after(hook, param)
     end
 
 	if rt == true then
-        return true, param:getOldResult(), param:getNewResult()
+        return true, param:getOldResult(), param:getNewResult(), param:getSettingResult()
     end
 	return false
 end

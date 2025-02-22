@@ -186,24 +186,24 @@ public class HelpDialog extends AppCompatDialogFragment {
                 getString(R.string.help_hook_description)
         ));
 
+        helpItems.add(new HelpItem(
+                android.R.drawable.ic_dialog_alert,
+                getString(R.string.help_warning_title),
+                getString(R.string.help_warning_description)
+        ));
+
         // Color items
         helpItems.add(HelpItem.createWithColor(
                 R.attr.colorUnsavedSetting,
-                "Unsaved Setting",
-                "Settings shown in this color have been modified but not yet saved."
+                getString(R.string.help_color_unsaved_title),
+                getString(R.string.help_color_unsaved_description)
         ));
 
         helpItems.add(HelpItem.createWithColor(
                 R.attr.colorAccent,
-                "Active Setting",
-                "Settings shown in this color are currently active and have a value assigned."
+                getString(R.string.help_color_saved_title),
+                getString(R.string.help_color_saved_description)
         ));
-
-        /*helpItems.add(HelpItem.createWithColor(
-                R.attr.colorTextOne,
-                "Default Setting",
-                "Settings shown in this color are in their default state with no modifications."
-        ));*/
     }
 
     @Override

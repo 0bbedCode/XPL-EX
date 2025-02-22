@@ -86,7 +86,7 @@ public class XLuaDatabaseHelp {
                             String definition = cursor.getString(colDefinition);
                             XLuaHook hook = new XLuaHook();
                             hook.fromJSONObject(new JSONObject(definition));
-                            tmp.put(hook.getSharedId(), hook);
+                            tmp.put(hook.getObjectId(), hook);
                         }
                     } finally {
                         if (cursor != null)

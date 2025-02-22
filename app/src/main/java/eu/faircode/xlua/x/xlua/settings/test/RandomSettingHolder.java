@@ -2,6 +2,7 @@ package eu.faircode.xlua.x.xlua.settings.test;
 
 import android.content.Context;
 
+import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.ui.core.view_registry.SharedRegistry;
 import eu.faircode.xlua.x.xlua.settings.SettingHolder;
 import eu.faircode.xlua.x.xlua.settings.random.interfaces.IRandomizer;
@@ -47,14 +48,15 @@ public class RandomSettingHolder {
         return this._wasRandomized ? this.randomizeValue : this.holder.getValue();
     }
 
-    public void updateHolder(boolean updateEvenIfNull, boolean ensureUIUpdated, Context context) {
+    public void updateHolder(boolean updateEvenIfNull, boolean ensureUIUpdated, Context context, SharedRegistry sharedRegistry) {
         if(!this._blockUpdate) {
             if(this.holder != null) {
                 if(updateEvenIfNull || this.randomizeValue != null) {
                     this.holder.setNewValue(this.randomizeValue);
                     if(ensureUIUpdated) {
-                        this.holder.ensureUiUpdated(this.randomizeValue == null ? "" : this.randomizeValue);
+                        this.holder.ensureUiUpdated(this.randomizeValue == null ? Str.EMPTY : this.randomizeValue);
                         this.holder.setNameLabelColor(context);
+                        this.holder.notifyUpdate(sharedRegistry);
                     }
                 }
             }
@@ -64,9 +66,9 @@ public class RandomSettingHolder {
     public boolean hasRandomizer() { return randomizer != null; }
     public boolean isParentRandomizer() { return randomizer != null && randomizer.isParentControl(); }
 
-    public String id() { return holder != null ? holder.getSharedId() : null; }
+    public String id() { return holder != null ? holder.getObjectId() : null; }
     public String name() { return holder != null ? holder.getName() : null; }
 
-    public boolean isChecked(SharedRegistry sharedRegistry) { return sharedRegistry != null && sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, holder.getSharedId()); }
-    public boolean isChecked(SharedViewControl sharedViewControl) { return sharedViewControl != null && sharedViewControl.isChecked(SharedViewControl.G_SETTINGS, holder.getSharedId()); }
+    public boolean isChecked(SharedRegistry sharedRegistry) { return sharedRegistry != null && sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, holder.getObjectId()); }
+    public boolean isChecked(SharedViewControl sharedViewControl) { return sharedViewControl != null && sharedViewControl.isChecked(SharedViewControl.G_SETTINGS, holder.getObjectId()); }
 }

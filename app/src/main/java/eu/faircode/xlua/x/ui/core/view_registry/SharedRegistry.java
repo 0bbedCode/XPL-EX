@@ -17,9 +17,11 @@ import java.util.Stack;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
+import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.PrefManager;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.data.utils.ObjectUtils;
+import eu.faircode.xlua.x.ui.core.UINotifier;
 import eu.faircode.xlua.x.xlua.LibUtil;
 
 /**
@@ -69,6 +71,9 @@ public class SharedRegistry implements ISessionObject {
 
     public static final String SHARED_STACK = "stack_frame";
 
+    public static String sharedSettingName(String settingName) { return Str.ensureStartsWith(settingName, "setting:"); }
+
+
     @IntDef({STATE_CHECKED, STATE_EXPANDED})
     @Retention(RetentionPolicy.SOURCE)
     public @interface StateFlag { }
@@ -76,6 +81,10 @@ public class SharedRegistry implements ISessionObject {
     private boolean pinThis = false;
     private final String ID;
     private final Map<String, LongSparseArray<Byte>> stateMap = new HashMap<>(8, LOAD_FACTOR);
+
+
+    public final UINotifier notifier = new UINotifier();
+
     private final GroupRegistryNotifications groupNotifications = GroupRegistryNotifications.create(this);
 
     public final PrefManager preferences = new PrefManager();
@@ -206,7 +215,7 @@ public class SharedRegistry implements ISessionObject {
         if(!ListUtil.isValid(objects)) return;
         for(IIdentifiableObject o : objects) {
             if(o != null) {
-                long hash = RegistryUtils.hashStringToLong_cache(o.getSharedId());
+                long hash = RegistryUtils.hashStringToLong_cache(o.getObjectId());
                 byte currentState = tagStates.get(hash, (byte)0);
                 byte newState = (byte)(checked ? (currentState | STATE_CHECKED) : (currentState & ~STATE_CHECKED));
                 tagStates.put(hash, newState);
@@ -267,7 +276,7 @@ public class SharedRegistry implements ISessionObject {
 
         for(IIdentifiableObject o : objects) {
             if(o != null) {
-                long hash = RegistryUtils.hashStringToLong_cache(o.getSharedId());
+                long hash = RegistryUtils.hashStringToLong_cache(o.getObjectId());
                 if(tagStates.get(hash, (byte)0) != 0)
                     count++;
 

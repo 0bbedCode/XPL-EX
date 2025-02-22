@@ -12,10 +12,11 @@ import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.data.utils.MapUtils;
+import eu.faircode.xlua.x.xlua.LibUtil;
 
 @SuppressWarnings("CopyConstructorMissesField")
 public class StringPartsBuilder {
-    private static final String TAG = "XLua.StringPartsBuilder";
+    private static final String TAG = LibUtil.generateTag(StringPartsBuilder.class);
 
 
 
@@ -27,31 +28,7 @@ public class StringPartsBuilder {
         public String cleanPart(String s) { return TextUtils.isEmpty(s) ? null : s; }
     };
 
-    public static final HashMap<String, String> NUMBER_RESOLVER_MAP = MapUtils.create(
-            MapUtils.entry("1", "One"),
-            MapUtils.entry("2", "Two"),
-            MapUtils.entry("3", "Three"),
-            MapUtils.entry("4", "Four"),
-            MapUtils.entry("5", "Five"),
-            MapUtils.entry("6", "Six"),
-            MapUtils.entry("7", "Seven"),
-            MapUtils.entry("8", "Eight"),
-            MapUtils.entry("9", "Nine"),
-            MapUtils.entry("0", "Zero")
-    );
 
-    public static final HashMap<String, String> NUMBER_RESOLVER_MAP_REVERSE = MapUtils.create(
-            MapUtils.entry("One", "1"),
-            MapUtils.entry("Two", "2"),
-            MapUtils.entry("Three", "3"),
-            MapUtils.entry("Four", "4"),
-            MapUtils.entry("Five", "5"),
-            MapUtils.entry("Six", "6"),
-            MapUtils.entry("Seven", "7"),
-            MapUtils.entry("Eight", "8"),
-            MapUtils.entry("Nine", "9"),
-            MapUtils.entry("Zero", "0")
-    );
 
     private StringCharBlock mBlock;
     private final List<String> mParts = new ArrayList<>();
@@ -146,15 +123,29 @@ public class StringPartsBuilder {
         return trimEvent != null ? trimEvent.trimParts(mParts) : mParts;
     }
 
+    public StringPartsBuilder resolveParts(PartFilter partFilter) {
+        if(partFilter != null && !mParts.isEmpty()) {
+            for (int i = mParts.size() - 1; i >= 0; i--){
+                partFilter.parsePart(mParts, i);
+            }
+        }
+
+        return this;
+    }
+
     public StringPartsBuilder resolveParts() { return resolveParts(mResolverMap); }
     public StringPartsBuilder resolveParts(Map<String, String> resolverMap) {
         if(resolverMap != null && !mParts.isEmpty()) {
             for (int i = mParts.size() - 1; i >= 0; i--){
                 String p = mParts.get(i);
+
+
                 if(resolverMap.containsKey(p)) {
                     String resolved = resolverMap.get(p);
-                    if(TextUtils.isEmpty(resolved)) mParts.remove(i);
-                    else mParts.set(i, resolved);
+                    if(TextUtils.isEmpty(resolved))
+                        mParts.remove(i);
+                    else
+                        mParts.set(i, resolved);
                 }
             }
         }
@@ -218,7 +209,7 @@ public class StringPartsBuilder {
             if(atEnd && totalSz > 0) {
                 int lastIndex = mParts.size() - 1;
                 String last = mParts.get(lastIndex);
-                if(NUMBER_RESOLVER_MAP_REVERSE.containsKey(last) || Str.isNumeric(last)) {
+                if(PartFilter.NUMBER_RESOLVER_MAP_REVERSE.containsKey(last) || Str.isNumeric(last)) {
                     mParts.remove(lastIndex);
                     totalSz--;
                     removedAny = true;
@@ -227,7 +218,7 @@ public class StringPartsBuilder {
 
             if(atStart && totalSz > 0) {
                 String first = mParts.get(0);
-                if(NUMBER_RESOLVER_MAP_REVERSE.containsKey(first) || Str.isNumeric(first)) {
+                if(PartFilter.NUMBER_RESOLVER_MAP_REVERSE.containsKey(first) || Str.isNumeric(first)) {
                     mParts.remove(0);
                     totalSz--;
                     removedAny = true;

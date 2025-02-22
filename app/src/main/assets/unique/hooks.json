@@ -24,7 +24,7 @@
     "collection": "PrivacyEx",
     "group": "ID.Unique",
     "name": "AdvertisingIdClient$Info.getId",
-    "author": "M66B, Fif_,OBC",
+    "author": "M66B,Fif_,OBC",
     "className": "com.google.android.gms.ads.identifier.AdvertisingIdClient$Info",
     "methodName": "getId",
     "parameterTypes": [ ],
@@ -118,6 +118,31 @@
     "luaScript": "",
     "settings":[ "unique.app.anon.id" ]
   },
+
+
+  {
+    "builtin": true,
+    "collection": "Spoof",
+    "group": "Spoof.Dev.Options.State",
+    "name": "ID/Settings/Developer",
+    "author": "OBC",
+    "className": "Intercept.Settings.Call",
+    "methodName": "development_settings_enabled",
+    "parameterTypes": [  ],
+    "minSdk": 4,
+    "maxSdk": 999,
+    "version": 1,
+    "description": "Shows the Developer options as Disabled",
+    "enabled":true,
+    "optional":true,
+    "usage":true,
+    "notify":false,
+    "luaScript": "",
+    "settings":[ "hide.settings.dev.options.bool" ]
+  },
+
+
+
   {
     "builtin": true,
     "collection": "PrivacyEx",

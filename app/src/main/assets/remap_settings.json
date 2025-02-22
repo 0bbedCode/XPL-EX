@@ -122,7 +122,6 @@
   },
 
 
-
   {
     "id": "cell.phone.type.1",
     "oldIds": ["gsm.phone.type"]
@@ -159,7 +158,10 @@
     "oldIds": ["gsm.operator.mnc", "cell.operator.mnc"]
   },
 
-
+  {
+    "id": "apps.allow.list",
+    "oldIds": ["apps.allow.listt"]
+  },
 
   {
     "id": "cell.sim.type.1",
@@ -258,8 +260,6 @@
     "id": "unique.gsm.operator.msin.1",
     "oldIds": ["unique.gsm.operator.msin"]
   },
-
-
 
 
   {

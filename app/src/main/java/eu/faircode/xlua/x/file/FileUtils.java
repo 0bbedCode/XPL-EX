@@ -18,11 +18,79 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.data.utils.ListUtil;
+import eu.faircode.xlua.x.xlua.LibUtil;
 
 public class FileUtils {
-    private static final String TAG = "ObbedCode.XP.FileUtils";
+    private static final String TAG = LibUtil.generateTag(FileUtils.class);
+
+    public static String getAbsolutePath(FileEx file) { return file == null ? "null" : file.getAbsolutePath(); }
+
+    public static List<FileEx> combineTwoLists(List<FileEx> one, List<FileEx> two, boolean organizeFromLastModified) {
+        List<FileEx> items = new ArrayList<>();
+        List<String> added = new ArrayList<>();
+
+        if(ListUtil.isValid(one)) {
+            for(FileEx f : one) {
+                if(f != null && !added.contains(f.getAbsolutePath())) {
+                    added.add(f.getAbsolutePath());
+                    items.add(f);
+                }
+            }
+        }
+
+        if(ListUtil.isValid(two)) {
+            for(FileEx f : two) {
+                if(f != null && !added.contains(f.getAbsolutePath())) {
+                    added.add(f.getAbsolutePath());
+                    items.add(f);
+                }
+            }
+        }
+
+        return organizeFromLastModified ? sortFromLastModified(items) : items;
+    }
+
+    public static List<FileEx> sortFromLastModified(List<FileEx> files) {
+        if(!ListUtil.isValid(files)) return files;
+        Collections.sort(files, (file1, file2) -> Long.compare(file2.lastModified(), file1.lastModified()));
+        return files;
+    }
+
+    public static int getModeValue(UnixAccessControl accessControl) { return accessControl != null ? getModeValue(accessControl.ownerMode, accessControl.groupMode, accessControl.otherMode) : 0; }
+    public static int getModeValue(ModePermission ownerMode, ModePermission groupMode, ModePermission otherMode) { return getModeValue(ownerMode.getValue(), groupMode.getValue(), otherMode.getValue()); }
+    public static int getModeValue(int ownerMode, int groupMode, int otherMode) { return (ownerMode * 100) + (groupMode * 10) + otherMode; }
+
+    /**
+     * Combines two permission modes if they don't overlap.
+     * @param currentMode Current numeric permission value
+     * @param newMode New permission to add
+     * @return Combined permission value if modes don't overlap, otherwise current value
+     */
+    public static int combinePermissionModes(int currentMode, ModePermission newMode) {
+        if ((currentMode & newMode.getValue()) == 0) {
+            return currentMode + newMode.getValue();
+        }
+        return currentMode;
+    }
+
+    /**
+     * Combines two permission modes if they don't overlap.
+     * @param currentMode Current permission
+     * @param newMode New permission to add
+     * @return Combined ModePermission if modes don't overlap, otherwise current permission
+     */
+    public static ModePermission combinePermissionModes(ModePermission currentMode, ModePermission newMode) {
+        if ((currentMode.getValue() & newMode.getValue()) == 0) {
+            return ModePermission.fromValue(currentMode.getValue() + newMode.getValue());
+        }
+        return currentMode;
+    }
 
     /**
      * Reads the target of a symbolic link. This will attempt to try to use the Canonical Method first read below example of when why to use Canonical method.

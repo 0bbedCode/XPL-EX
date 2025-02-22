@@ -1,83 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="8dp">
 
-    <!-- Log Icon -->
     <ImageView
         android:id="@+id/ivLogIcon"
         android:layout_width="35dp"
         android:layout_height="35dp"
-        android:layout_marginEnd="8dp"
         android:src="@mipmap/ic_launcher"
         android:contentDescription="Log Icon"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Log Type -->
     <TextView
-        android:id="@+id/tvLogType"
+        android:id="@+id/tvLogTime"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="8dp"
-        android:text="Log Type"
-
+        android:text="2025-01-01 12:34:56"
         android:textStyle="bold|italic"
-
         android:textAppearance="@android:style/TextAppearance.Small"
-        app:layout_constraintEnd_toStartOf="@id/tvLogTime"
+        app:layout_constraintEnd_toStartOf="@id/tvLogType"
         app:layout_constraintStart_toEndOf="@id/ivLogIcon"
-        app:layout_constraintTop_toTopOf="@id/ivLogIcon" />
+        app:layout_constraintTop_toTopOf="@id/ivLogIcon"
+        app:layout_constraintBottom_toTopOf="@id/tvLogCategory" />
 
-    <!-- Log Time -->
     <TextView
-        android:id="@+id/tvLogTime"
+        android:id="@+id/tvLogType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Log Type"
         android:textAppearance="@android:style/TextAppearance.Small"
-        android:text="2025-01-01 12:34:56"
-        app:layout_constraintTop_toTopOf="@id/tvLogType"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvLogTime"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Log Category -->
     <TextView
         android:id="@+id/tvLogCategory"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textAppearance="@android:style/TextAppearance.Small"
         android:text="Category"
-        app:layout_constraintStart_toStartOf="@id/tvLogType"
-        app:layout_constraintTop_toBottomOf="@id/tvLogType"
+        android:textAppearance="@android:style/TextAppearance.Small"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="@id/tvLogTime"
+        app:layout_constraintTop_toBottomOf="@id/tvLogTime"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Log Message -->
     <TextView
         android:id="@+id/tvLogMessage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textAppearance="@android:style/TextAppearance.Small"
         android:text="This is a log message. It might span multiple lines depending on its length."
-        android:ellipsize="end"
-        android:maxLines="150"
+        android:textAppearance="@android:style/TextAppearance.Small"
+        android:ellipsize="none"
+        android:scrollHorizontally="false"
+        android:layout_marginTop="4dp"
         app:layout_constraintStart_toStartOf="@id/tvLogCategory"
         app:layout_constraintTop_toBottomOf="@id/tvLogCategory"
-        app:layout_constraintEnd_toEndOf="@id/tvLogCategory" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tvLogAfter"/>
 
     <TextView
         android:id="@+id/tvLogAfter"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textAppearance="@android:style/TextAppearance.Small"
         android:text="SomeValuesAfter:"
-        android:ellipsize="end"
-        android:maxLines="3"
-        android:visibility="invisible"
+        android:visibility="gone"
+        android:textAppearance="@android:style/TextAppearance.Small"
         app:layout_constraintStart_toStartOf="@id/tvLogMessage"
         app:layout_constraintTop_toBottomOf="@id/tvLogMessage"
-        app:layout_constraintEnd_toEndOf="@id/tvLogMessage" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

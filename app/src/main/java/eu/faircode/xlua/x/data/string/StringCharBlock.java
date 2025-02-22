@@ -70,7 +70,9 @@ public class StringCharBlock {
                      Map<String, String> resolverMap) {
         int finalSize = mArray == null ? 0 : Math.min(mArray.length, mCurrentPointer);
         if(finalSize > 0) {
-            if(capitalizeFirstLetter) mArray[mFirstLetter] = Character.toUpperCase(mArray[mFirstLetter]);
+            if(capitalizeFirstLetter)
+                mArray[mFirstLetter] = Character.toUpperCase(mArray[mFirstLetter]);
+
             String part = resolve(getPart(finalSize, rules), resolverMap);
             if(TextUtils.isEmpty(part)) {
                finalSize = 0;

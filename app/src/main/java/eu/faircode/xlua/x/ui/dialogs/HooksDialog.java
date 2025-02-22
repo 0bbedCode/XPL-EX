@@ -47,7 +47,7 @@ public class HooksDialog extends CheckableDialog<XLuaHook> {
     public List<XLuaHook> getEnabled() {
         List<XLuaHook> enabled = new ArrayList<>();
         for(XLuaHook hook : items) {
-            if(this.viewRegistry != null && this.viewRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, hook.getSharedId())) {
+            if(this.viewRegistry != null && this.viewRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, hook.getObjectId())) {
                 enabled.add(hook);
             }
         }
@@ -58,7 +58,7 @@ public class HooksDialog extends CheckableDialog<XLuaHook> {
     public static List<String> toHookIds(List<XLuaHook> hooks) {
         List<String> ids = new ArrayList<>(hooks.size());
         for(XLuaHook h : hooks)
-            ids.add(h.getSharedId());
+            ids.add(h.getObjectId());
 
         return ids;
     }
@@ -91,6 +91,11 @@ public class HooksDialog extends CheckableDialog<XLuaHook> {
 
     private void refresh(Context context, List<String> setting_names) {
         this.app = GetAppInfoCommand.get(context, uid, packageName);
+
+        //HooksSettingsGlobal.init(context);
+        //List<String> hookIds = HooksSettingsGlobal.keepCollectionHooks(context, HooksSettingsGlobal.getHookIdsForSettings(context, setting_names));
+        //Map<String, Boolean> assigned =
+
         HookGroupOrganizer groupHolder = new HookGroupOrganizer();
         this.viewRegistry = new SharedRegistry();
 

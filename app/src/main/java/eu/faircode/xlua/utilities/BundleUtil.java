@@ -13,9 +13,20 @@ import eu.faircode.xlua.api.xstandard.interfaces.ISerial;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.xlua.LibUtil;
+import eu.faircode.xlua.x.xlua.identity.UserIdentityIO;
 
 public class BundleUtil {
     private static final String TAG = LibUtil.generateTag(BundleUtil.class);
+
+
+    public static Bundle writeIdentityUid(Bundle b, int uid, String packageName) {
+        if(b != null)  {
+            b.putInt(UserIdentityIO.FIELD_UID, uid);
+            b.putString(UserIdentityIO.FIELD_CATEGORY, packageName);
+        }
+
+        return b;
+    }
 
     public static List<String> getStringArrayList(Bundle b, String key) {
         if(b == null || Str.isEmpty(key) || !b.containsKey(key))

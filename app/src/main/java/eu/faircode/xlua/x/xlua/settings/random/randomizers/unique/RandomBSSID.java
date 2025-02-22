@@ -8,7 +8,7 @@ import eu.faircode.xlua.x.xlua.settings.random.utils.RanUnqUtils;
 public class RandomBSSID extends RandomElement {
     public RandomBSSID() {
         super("Wifi BSSID");
-        putSettings(RandomizersCache.SETTING_UNIQUE_MAC);
+        putSettings(RandomizersCache.SETTING_UNIQUE_NET_BSSID);
     }
 
     @Override

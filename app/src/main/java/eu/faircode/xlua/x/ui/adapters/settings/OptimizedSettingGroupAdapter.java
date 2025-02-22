@@ -1,21 +1,28 @@
 package eu.faircode.xlua.x.ui.adapters.settings;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import eu.faircode.xlua.R;
+import eu.faircode.xlua.XUtil;
 import eu.faircode.xlua.databinding.SettingsExGroupBinding;
+import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.ui.core.UINotifier;
 import eu.faircode.xlua.x.ui.core.UserClientAppContext;
 import eu.faircode.xlua.x.ui.core.view_registry.ChangedStatesPacket;
 import eu.faircode.xlua.x.ui.core.view_registry.CheckBoxState;
@@ -27,6 +34,8 @@ import eu.faircode.xlua.x.ui.core.interfaces.IGenericElementEvent;
 import eu.faircode.xlua.x.ui.core.interfaces.IListAdapter;
 import eu.faircode.xlua.x.ui.core.interfaces.IStateManager;
 import eu.faircode.xlua.x.ui.core.util.CoreUiUtils;
+import eu.faircode.xlua.x.ui.dialogs.MessageDialog;
+import eu.faircode.xlua.x.xlua.settings.GroupStats;
 import eu.faircode.xlua.x.xlua.settings.SettingHolder;
 import eu.faircode.xlua.x.xlua.settings.SettingsContainer;
 import eu.faircode.xlua.x.xlua.settings.SettingsGroup;
@@ -66,12 +75,17 @@ public class OptimizedSettingGroupAdapter
             View.OnLongClickListener,
             CompoundButton.OnCheckedChangeListener,
             IStateChanged,
-            IUIViewControl {
+            UINotifier.IUINotification {
+
+        private ContainersListManager containersListManager;
+
 
         private OptimizedContainerAdapter containerAdapter;
         private final RecyclerView.RecycledViewPool sharedPool;
         private boolean isInitialized = false;
         private UserClientAppContext userContext;
+
+        private final GroupStats groupStats = new GroupStats();
 
         public GroupViewHolder(SettingsExGroupBinding binding,
                                IGenericElementEvent<SettingsGroup, SettingsExGroupBinding> events,
@@ -81,28 +95,19 @@ public class OptimizedSettingGroupAdapter
             super(binding, events, stateManager);
             this.sharedPool = sharedPool;
             this.userContext = userContext;
-            //this.userContext.kill = stateManager.getSharedRegistry().isChecked("pkg_kill", this.userContext.appPackageName);
-            initializeRecyclerView();
+            //initializeRecyclerView();
+            initializeViews();
         }
 
-        private void initializeRecyclerView() {
-            if (isInitialized || containerAdapter != null) return;
+        private void initializeViews() {
+            if (isInitialized) return;
 
-            LinearLayoutManager layoutManager = new LinearLayoutManager(binding.getRoot().getContext());
-            layoutManager.setInitialPrefetchItemCount(PREFETCH_COUNT);
-
-            binding.recyclerView.setLayoutManager(layoutManager);
-            binding.recyclerView.setRecycledViewPool(sharedPool);
-            binding.recyclerView.setItemAnimator(null); // Disable animations for better performance
-            binding.recyclerView.setHasFixedSize(true);
-
-            containerAdapter = new OptimizedContainerAdapter(
+            // Initialize the containers list manager
+            containersListManager = new ContainersListManager(
                     binding.getRoot().getContext(),
-                    null,                           //Set this from "this" to "null"
+                    binding.containersList,
                     manager,
                     userContext);
-
-            binding.recyclerView.setAdapter(containerAdapter);
 
             isInitialized = true;
         }
@@ -111,19 +116,29 @@ public class OptimizedSettingGroupAdapter
         public void bind(SettingsGroup item) {
             currentItem = item;
 
-            //We want to listen to changes on
-            manager.getSharedViewControl()
-                            .registerEventListeners(this, SharedViewControl.G_SETTINGS, SharedViewControl.G_S_CONTAINERS);
-
             binding.tvSettingGroupName.setText(item.getGroupName());
 
             SharedRegistry.ItemState state = sharedRegistry.getItemState(SharedRegistry.STATE_TAG_GROUPS, item.getGroupName());
             onGroupChange(null);
             sharedRegistry.putGroupChangeListener(this, item.getGroupName());
+            ensureEventsSubscribed();
 
-            updateExpandedStateForGroup(state.isExpanded, item);
+            updateExpandedStateForGroup(state.isExpanded);
 
             wireGroupEvents(true);
+        }
+
+        public void ensureEventsSubscribed() {
+            if(sharedRegistry != null) {
+                UINotifier notifications = sharedRegistry.notifier;
+                notifications.subscribeGroup(this);
+                for(SettingsContainer container : currentItem.getContainers()) {
+                    notifications.prepareGroup(getNotifierId(), UINotifier.containerName(container.getContainerName()));
+                    for(SettingHolder setting : container.getSettings()) {
+                        notifications.prepareGroup(getNotifierId(), UINotifier.settingName(setting.getName()));
+                    }
+                }
+            }
         }
 
         @Override
@@ -134,34 +149,37 @@ public class OptimizedSettingGroupAdapter
             }
 
             currentItem = item;
-            Bundle payload = (Bundle) payloads.get(0);
+            /*Bundle payload = (Bundle) payloads.get(0);
             if (payload.containsKey("groupName")) binding.tvSettingGroupName.setText(payload.getString("groupName"));
-            if (payload.containsKey("containersSizeChanged")) containerAdapter.submitList(item.getContainers());
+            if (payload.containsKey("containersSizeChanged")) containerAdapter.submitList(item.getContainers());*/
+            updateStats(true, getContext());
         }
 
-        private void updateExpandedStateForGroup(boolean isExpanded, SettingsGroup item) {
+        private void updateExpandedStateForGroup(boolean isExpanded) {
             CoreUiUtils.setViewsVisibility(
                     binding.ivExpanderSettingGroup,
                     isExpanded,
-                    binding.recyclerView,
-                    binding.spSettingGroupRandomizer);
+                    binding.containersList);
 
-            List<SettingsContainer> containers = item.getContainers();
-            if (isExpanded && containers != null && !containers.isEmpty())
-                containerAdapter.submitList(containers);
+            if (isExpanded && currentItem != null && !currentItem.getContainers().isEmpty()) {
+                containersListManager.submitList(currentItem.getContainers());
+            } else {
+                containersListManager.clear();
+            }
         }
 
         public void handleExpandClickForGroup(SettingsGroup item) {
             boolean expanded = sharedRegistry.toggleExpanded(SharedRegistry.STATE_TAG_GROUPS, item.getGroupName());
-            updateExpandedStateForGroup(expanded, item);
+            updateExpandedStateForGroup(expanded);
         }
 
         @Override
         protected void onViewDetached() {
             wireGroupEvents(false);
-            containerAdapter.submitList(null);
+            containersListManager.clear();
             if(currentItem != null) {
                 sharedRegistry.putGroupChangeListener(null, currentItem.getGroupName());
+                sharedRegistry.notifier.unsubscribeGroup(this);
                 currentItem = null;
             }
         }
@@ -169,19 +187,46 @@ public class OptimizedSettingGroupAdapter
         @SuppressLint("NonConstantResourceId")
         @Override
         public void onClick(View view) {
-            if(currentItem == null) return;
-            int id = view.getId();
+            if(currentItem == null)
+                return;
+
+            final int id = view.getId();
+            final Context context = view.getContext();
             switch (id) {
                 case R.id.tvSettingGroupName:
                 case R.id.ivExpanderSettingGroup:
                 case R.id.cvSettingGroup:
                     handleExpandClickForGroup(currentItem);
                     break;
+                case R.id.ivActionNeeded:
+                    MessageDialog.create()
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setName(context.getString(R.string.message_warning_hooks_title))
+                            .setMessage(context.getString(R.string.message_warning_hooks_message))
+                            .show(manager.getFragmentMan(), context.getString(R.string.menu_info));
+                    break;
             }
         }
 
+        @SuppressLint("NonConstantResourceId")
         @Override
         public boolean onLongClick(View view) {
+            Resources res = view.getResources();
+            if(res != null) {
+                int id = view.getId();
+                int resId = 0;
+                switch (id) {
+                    case R.id.ivActionNeeded:
+                        resId = R.string.msg_hint_warning_save;
+                        break;
+                    case R.id.tvStatsCount:
+                        resId = R.string.msg_hint_settings_stat;
+                        break;
+                }
+
+                if(resId > 0)
+                    Snackbar.make(view, res.getString(resId), Snackbar.LENGTH_LONG).show();
+            }
             return false;
         }
 
@@ -190,14 +235,6 @@ public class OptimizedSettingGroupAdapter
             if(currentItem == null)
                 return;
             int id = compoundButton.getId();
-
-            SharedViewControl sharedViewControl = getSharedViewControl();
-            for(SettingsContainer container : currentItem.getContainers()) {
-                for(SettingHolder holder : container.getSettings()) {
-                    sharedViewControl.setChecked(SharedViewControl.G_SETTINGS, holder.getSharedId(), isChecked);
-                }
-            }
-
 
             if(id == R.id.cbSettingGroupEnabled) {
                 /*Update Our Group in State Cache so child can see the reflected changes*/
@@ -230,6 +267,11 @@ public class OptimizedSettingGroupAdapter
                 binding.cbSettingGroupEnabled.setOnCheckedChangeListener(wire ? this : null);
 
                 binding.tvSettingGroupName.setOnClickListener(wire ? this : null);
+
+                binding.ivActionNeeded.setOnClickListener(wire ? this : null);
+
+                binding.ivActionNeeded.setOnLongClickListener(wire ? this : null);
+                binding.tvStatsCount.setOnLongClickListener(wire ? this : null);
             }
         }
 
@@ -245,78 +287,45 @@ public class OptimizedSettingGroupAdapter
             if(currentItem != null && binding != null) {
                 /* ENSURE our CheckBox is ALWAYS aligned */
                 /* From parent we can pre-init the View States for Saved Settings in local settings .. */
+                updateStats(true, getContext());
                 CheckBoxState
                         .from(getAllSettings(), SharedRegistry.STATE_TAG_SETTINGS, sharedRegistry)
                         .updateCheckBox(binding.cbSettingGroupEnabled, this);
             }
         }
 
-        @Override
-        public SharedViewControl getSharedViewControl() {
-            return null;
-        }
-
-        @Override
-        public void setSharedViewControl(SharedViewControl viewControl) {
-
-        }
-
-        @Override
-        public void onEvent(EventTrigger event) {
-            SharedViewControl sharedViewControl = getSharedViewControl();
-            if(event.isCheckEvent()) {
-                int not = 0;
-                int yes = 0;
-                for(SettingsContainer container : currentItem.getContainers()) {
-                    for(SettingHolder holder : container.getSettings()) {
-                        if(sharedViewControl.isChecked(SharedViewControl.G_SETTINGS, holder.getSharedId()))
-                            yes++;
-                        else
-                            not++;
-                    }
-                }
-                CheckBoxState.create(yes, yes + not).updateCheckBox(binding.cbSettingGroupEnabled, this);
-
-                //We can make it also so object link
-
-                //Ye but we need it to be all checked first ?
-                //Should we let it update the states first ? then init events ?
-                //Maybe look up all checked shit
-                //Lets for now ignore this all
-                //There is no easy way of going about tbh
-                //Plus the last at the end needs some way of knowing the top ?
-                //Fuck this UI shit
-                //hmm
-
-                //Hmm lets try this
-                //Lets make a Check Pair System, Checks can have Children and Parents
-                //Like a link
-                //We can set all flags how ever starting from bottom ?
-
-                //For the UI Coloring Bullshit
-
-                //Apply State Changes First ?
-                //If top is checked then it self & checks all children in state then notify
-
-                //If Bottom is Checked it checks it self, then notifies
+        public void updateStats(boolean forceUpdate, Context context) {
+            if(currentItem != null && binding != null) {
+                groupStats
+                        .update(currentItem, forceUpdate)
+                        .updateLabel(binding.tvStatsCount)
+                        .updateColor(binding.tvSettingGroupName, context)
+                        .updateIv(binding.ivActionNeeded);
             }
         }
 
-        @Override
-        public void onView() {
-            IUIViewControl.super.onView();
+        public Context getContext() {
+            if(binding != null) {
+                try {
+                    LinearLayout v = binding.getRoot();
+                    Context ctx = v.getContext();
+                    if(ctx != null)
+                        return ctx;
+                }catch (Exception ignored) {  }
+            }
+            return itemView.getContext();
         }
 
         @Override
-        public void onClean() {
-            IUIViewControl.super.onClean();
-        }
+        public String getNotifierId() { return currentItem != null ? UINotifier.groupName(currentItem.getGroupName()) : null; }
 
         @Override
-        public boolean isView(String id) {
-            //return currentItem != null && currentItem
-            //return IUIViewControl.super.isView(id);
-            return true;
+        public void notify(int code, String notifier, Object extra) {
+            if(code == UINotifier.CODE_DATA_CHANGED) {
+                if(UINotifier.isSettingPrefix(notifier)) {
+                    updateStats(true, getContext());
+                }
+            }
         }
     }
 }

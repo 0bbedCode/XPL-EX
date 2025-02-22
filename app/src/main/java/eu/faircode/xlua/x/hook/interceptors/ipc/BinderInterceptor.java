@@ -6,9 +6,10 @@ import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.XParam;
 import eu.faircode.xlua.x.hook.interceptors.ipc.bases.IBinderInterceptor;
 import eu.faircode.xlua.x.hook.interceptors.ipc.holders.InterfaceBinderData;
+import eu.faircode.xlua.x.xlua.LibUtil;
 
 public class BinderInterceptor {
-    private static final String TAG = "XLua.BinderInterceptor";
+    private static final String TAG = LibUtil.generateTag(BinderInterceptor.class);
 
     public static boolean intercept(XParam param, boolean getResult) {
         InterfaceBinderData helper = InterfaceBinderData.create(param, getResult);

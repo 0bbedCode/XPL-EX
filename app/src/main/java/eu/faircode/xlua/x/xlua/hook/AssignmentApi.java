@@ -5,13 +5,13 @@ import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.UberCore888;
 import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.database.ActionFlag;
 import eu.faircode.xlua.x.xlua.database.A_CODE;
@@ -127,7 +127,17 @@ public class AssignmentApi {
                 .queryGetFirstAs(SettingPacket.class, true, false);
     }
 
-    public static Collection<AssignmentPacket> getAssignments(SQLDatabase db, int userId, String category) {
+    public static List<AssignmentPacket> dumpAssignments(SQLDatabase db) {
+        if(!DatabaseHelpEx.ensureTableIsReady(AssignmentPacket.TABLE_INFO, db))
+            return ListUtil.emptyList();
+
+        return DatabaseHelpEx.getFromDatabase(
+                db,
+                AssignmentPacket.TABLE_NAME,
+                AssignmentPacket.class, true);
+    }
+
+    public static List<AssignmentPacket> getAssignments(SQLDatabase db, int userId, String category) {
         if(DebugUtil.isDebug())
             Log.d(TAG, "DB=" + Str.toStringOrNull(db) + " User Id=" + userId + " Category=" + category);
 

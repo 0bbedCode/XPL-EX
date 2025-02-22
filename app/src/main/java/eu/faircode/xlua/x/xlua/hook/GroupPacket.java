@@ -104,7 +104,7 @@ public class GroupPacket extends PacketBase implements ICursorType {
     }
 
     @Override
-    public String getSharedId() { return name; }
+    public String getObjectId() { return name; }
 
     @Override
     public void setId(String id) {

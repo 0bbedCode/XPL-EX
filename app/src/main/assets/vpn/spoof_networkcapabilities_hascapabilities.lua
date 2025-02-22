@@ -1,13 +1,14 @@
 function after(hook, param)
-	local ret = param:getResult()
-	if ret == nil then 
-		return false
-	end
+    local ret = param:getResult()
+    if ret == nil then
+        return false
+    end
 
-    if ret == 0x4 then 
-        log("TRANSPORT_VPN Check 0x4")
-        param:setResult(false)
-        return true
+    local int = param:getArgument(0)
+    if int == 0xf then
+        log("NET_CAPABILITY_NOT_VPN Check 0xf")
+        param:setResult(true)
+        return true, 'NET_CAPABILITY_NOT_VPN', 'true'
     end
 
     return false

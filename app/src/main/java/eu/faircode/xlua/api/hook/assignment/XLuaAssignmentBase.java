@@ -27,11 +27,11 @@ public class XLuaAssignmentBase {
         if (!(obj instanceof XLuaAssignmentBase))
             return false;
         XLuaAssignmentBase other = (XLuaAssignmentBase) obj;
-        return this.hook.getSharedId().equals(other.hook.getSharedId());
+        return this.hook.getObjectId().equals(other.hook.getObjectId());
     }
 
     @Override
     public int hashCode() {
-        return this.hook.getSharedId().hashCode();
+        return this.hook.getObjectId().hashCode();
     }
 }

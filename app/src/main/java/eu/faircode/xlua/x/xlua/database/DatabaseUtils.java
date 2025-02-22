@@ -3,8 +3,13 @@ package eu.faircode.xlua.x.xlua.database;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
+import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.data.string.StrBuilder;
+import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.file.FileEx;
 import eu.faircode.xlua.x.runtime.RuntimeUtils;
 import eu.faircode.xlua.x.xlua.database.sql.SQLDatabase;
@@ -46,25 +51,67 @@ public class DatabaseUtils {
         return true;
     }
 
+
+    public static String dynamicColumnQuery(List<String> columns) {
+        if(!ListUtil.isValid(columns))
+            return Str.EMPTY;
+
+        StrBuilder sb = StrBuilder.create().ensureDelimiter(TableInfo.QUERY_DEL);
+        for(String column : columns)
+            if(!Str.isEmpty(column))
+                sb.append(column);
+
+        return sb.toString();
+    }
+
     public static String dynamicCreateQueryEx(Map<String, String> columns, String tableName) {
-        String top = "CREATE TABLE IF NOT EXISTS " + tableName + " (";
-        StringBuilder mid = new StringBuilder();
+        if(Str.isEmpty(tableName) || !ListUtil.isValid(columns))
+            return Str.EMPTY;
 
-        String pValue = columns.remove("PRIMARY");
-        int i = 1;
-        int sz = columns.size();
-        for(Map.Entry<String, String> r : columns.entrySet()) {
-            String l = r.getKey() + " " + r.getValue();
-            mid.append(l);
-            if(i < sz) mid.append(", ");
-            i++;
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("CREATE TABLE IF NOT EXISTS ")
+                .append(tableName)
+                .append(" (");
+
+        // Make a copy of columns to avoid modifying the original
+        Map<String, String> columnsCopy = new LinkedHashMap<>(columns);
+
+        // Extract PRIMARY KEY definition if it exists
+        String primaryKeyDef = columnsCopy.remove("PRIMARY");
+
+        // Build column definitions
+        boolean isFirst = true;
+        for (Map.Entry<String, String> column : columnsCopy.entrySet()) {
+            if (!isFirst) {
+                queryBuilder.append(", ");
+            }
+
+            String columnName = column.getKey();
+            String columnDef = column.getValue();
+            if(Str.isEmpty(columnName) || Str.isEmpty(columnDef))
+                continue;
+
+            queryBuilder.append(columnName)
+                    .append(" ")
+                    .append(columnDef);
+
+            isFirst = false;
         }
 
-        if(pValue != null) {
-            mid.append(", PRIMARY ").append(pValue);
+        // Append PRIMARY KEY constraint if present
+        if (!TextUtils.isEmpty(primaryKeyDef)) {
+            queryBuilder.append(", PRIMARY ")
+                    .append(primaryKeyDef);
         }
 
-        return top + mid + ");";
+        queryBuilder.append(");");
+
+        // Log the final query in debug mode
+        //if (DebugUtil.isDebug()) {
+        //    Log.d(TAG, "Generated CREATE TABLE query for " + tableName + ": " + queryBuilder.toString());
+        //}
+
+        return queryBuilder.toString();
     }
 
     public static void ensureValidFile(FileEx file, boolean throwIsInvalid) throws Exception {

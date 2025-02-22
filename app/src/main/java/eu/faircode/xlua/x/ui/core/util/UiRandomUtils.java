@@ -11,10 +11,10 @@ import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.ui.core.view_registry.SettingSharedRegistry;
 import eu.faircode.xlua.x.ui.core.view_registry.SharedRegistry;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.settings.SettingHolder;
 import eu.faircode.xlua.x.xlua.settings.SettingsContainer;
 import eu.faircode.xlua.x.xlua.settings.random.RandomNullElement;
-import eu.faircode.xlua.x.xlua.settings.random.RandomizerSessionContext;
 import eu.faircode.xlua.x.xlua.settings.random.interfaces.IRandomizer;
 import eu.faircode.xlua.x.xlua.settings.random.RandomOptionNullElement;
 
@@ -22,7 +22,7 @@ import eu.faircode.xlua.x.xlua.settings.random.RandomOptionNullElement;
     ToDo: Make a Randomizer that pops up with a Prompt like to set the longitue lattitude in pro app like that one!
  */
 public class UiRandomUtils {
-    private static final String TAG = "XLua.UiRandomUtils";
+    private static final String TAG = LibUtil.generateTag(UiRandomUtils.class);
 
     //invoke
     public static boolean spinnerSelection(Spinner spSelector, SettingsContainer container, SharedRegistry shared) {
@@ -146,7 +146,7 @@ public class UiRandomUtils {
     public static List<SettingHolder> getSettingHolders(List<SettingHolder> settings, SharedRegistry registry) {
         List<SettingHolder> enabled = new ArrayList<>();
         for(SettingHolder holder : settings) {
-            if(registry != null && registry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, holder.getSharedId())) {
+            if(registry != null && registry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, holder.getObjectId())) {
                 enabled.add(holder);
             }
         }

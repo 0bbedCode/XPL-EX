@@ -13,9 +13,11 @@ import androidx.annotation.NonNull;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -27,6 +29,8 @@ import eu.faircode.xlua.x.data.string.StrBuilder;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.file.FileApi;
 import eu.faircode.xlua.x.file.FileEx;
+import eu.faircode.xlua.x.file.FileUtils;
+import eu.faircode.xlua.x.runtime.RuntimeUtils;
 import eu.faircode.xlua.x.xlua.XposedUtility;
 import eu.faircode.xlua.x.xlua.database.DatabasePathUtil;
 import eu.faircode.xlua.x.xlua.database.DatabaseUtils;
@@ -42,18 +46,11 @@ public class SQLDatabase {
 
     private final ReentrantReadWriteLock dbLock = new ReentrantReadWriteLock(true);
 
-    public static final String PATH = FileApi.buildPath(true,Environment.getDataDirectory().getAbsolutePath(), "misc");
-    public static final String PATH_OLD = FileApi.buildPath(true,Environment.getDataDirectory().getAbsolutePath(), "system");
-
-    public static final String FOLDER_OLD = "xlua";
-    public static final String FOLDER = "xplex";
-
     public static final String DATABASE_X_LUA = "xlua";
     public static final String DATABASE_MOCK = "mock";
 
     public final FileEx file;
     public final String name;
-
 
     private SQLiteDatabase db = null;
 
@@ -61,36 +58,23 @@ public class SQLDatabase {
     public FileEx getFile() { return file; }
 
     public SQLDatabase(String databaseFileName, Context context, boolean open) {
-        FileEx base_dir = DatabasePathUtil.getDatabaseFolderOrCreate(context);
-        DatabaseUtils.ensureValidFile(base_dir);
-
-        String base_path = FileApi.buildPath(Objects.requireNonNull(base_dir).getAbsolutePath());
+        FileEx baseDirectory = DatabasePathUtil.getDatabaseDirectory(context);
+        DatabaseUtils.ensureValidFile(baseDirectory);
         this.name = DatabaseUtils.ensureValidDatabaseFileName(databaseFileName);
-
-        String full_path = FileApi.buildPath(base_path, this.name);
-
-        this.file = new FileEx(full_path);
-
-        DatabasePathUtil.logI(Str.fm("Full path to Database, Path=%s  Name=%s  Base path=%s  File object Path=%s", full_path, this.name, base_path, this.file.getAbsolutePath()));
-
-        if(open)
-            open(true);
+        this.file = FileEx.createFromFile(FileApi.buildPath(FileApi.buildPath(Objects.requireNonNull(baseDirectory).getAbsolutePath()), this.name));
+        boolean isOpen = isOpen(open);
+        DatabasePathUtil.logI(
+                Str.fm("Database Folder=%s Database Name=%s Parent Directory=%s Open Flag=%s Is Open=%s",
+                        file.getAbsolutePath(),
+                        this.name,
+                        baseDirectory.getAbsolutePath(),
+                        String.valueOf(open),
+                        String.valueOf(isOpen)));
     }
-
 
     public boolean isMock() { return isName(DATABASE_MOCK); }
     public boolean isXLua() { return isName(DATABASE_X_LUA); }
-    public boolean isName(String name) {
-        if(this.name == null || name == null)
-            return false;
-
-        String check = Str.ensureEndsWith(Str.getLastStringEx(name, File.separator), ".db");
-        if(DebugUtil.isDebug())
-            XposedUtility.logD_xposed(TAG, "Is Name (" + check + ") name=" + this.name);
-
-
-        return this.name.equalsIgnoreCase(check);
-    }
+    public boolean isName(String name) { return (!Str.isEmpty(this.name) && !Str.isEmpty(name)) && this.name.equalsIgnoreCase(Str.ensureEndsWith(Str.getLastStringEx(name, File.separator), ".db")); }
 
     public String getDirectory() { return file.getDirectory().getAbsolutePath(); }
     public FileEx getDirectoryFile() { return file.getDirectory(); }
@@ -98,10 +82,9 @@ public class SQLDatabase {
     public boolean exists() { return file != null && file.isFile(); }
     public boolean isOpen() { return isOpen(false); }
     public boolean isOpen(boolean openIfNotOpened) {
-        if(db == null || !db.isOpen()) {
+        if(db == null || !db.isOpen())
             if(openIfNotOpened)
                 open(true);
-        }
 
         return db != null && db.isOpen();
     }
@@ -109,12 +92,16 @@ public class SQLDatabase {
     public boolean open() { return open(false); }
     public boolean open(boolean setPermissions) {
         try {
+            if(file == null) {
+                Log.e(TAG, "File object that Points to the Database is null! Stack=" + RuntimeUtils.getStackTraceSafeString(new Exception()));
+                return false;
+            }
+
             if(db == null || !db.isOpen()) {
                 if(setPermissions) {
-                    this.file.takeOwnership();
-                    this.file.setPermissions(FileApi.MODE_SOME_RW__770);
+                    file.takeFullControl(DatabasePathUtil.DEFAULT_ACCESS, true);
                     if(DebugUtil.isDebug())
-                        Log.d(TAG, "Set Database Permissions (0770) (1000) >> " + this.file.getAbsolutePath());
+                        Log.d(TAG, "Set Database Permissions (0770) (1000) >> " + FileUtils.getAbsolutePath(file));
                 }
 
                 if(DebugUtil.isDebug())
@@ -127,7 +114,7 @@ public class SQLDatabase {
 
             return db.isOpen();
         }catch (Exception e) {
-            Log.e(TAG, "Failed to Open Database: " + file.getAbsolutePath());
+            Log.e(TAG, "Failed to Open Database: " + FileUtils.getAbsolutePath(file));
             return false;
         }
     }
@@ -137,12 +124,12 @@ public class SQLDatabase {
             if(db != null) {
                 db.close();
                 if(DebugUtil.isDebug())
-                    Log.d(TAG, "Database Connection was closed, Database=" + file.getAbsolutePath());
+                    Log.d(TAG, "Database Connection was closed, Database=" +  FileUtils.getAbsolutePath(file));
             }
 
             return true;
         }catch (Exception e) {
-            Log.e(TAG, "Failed to Close Database Connection, Database=" + file.getAbsolutePath());
+            Log.e(TAG, "Failed to Close Database Connection, Database=" + FileUtils.getAbsolutePath(file));
             return false;
         }
     }
@@ -159,7 +146,7 @@ public class SQLDatabase {
 
             return true;
         } catch (Exception e) {
-            Log.e(TAG, "Failed to Delete Database Item, Table=" + tableName + " Selection Args=" + selectionArgs + " Error=" + e + " Database=" + file.getAbsolutePath());
+            Log.e(TAG, "Failed to Delete Database Item, Table=" + tableName + " Selection Args=" + selectionArgs + " Error=" + e + " Database=" +  FileUtils.getAbsolutePath(file));
             return false;
         }
     }
@@ -176,7 +163,7 @@ public class SQLDatabase {
 
             return true;
         }catch (Exception e) {
-            Log.e(TAG, "Failed to Update Database Item, Table=" + tableName + " Selection Args=" + selectionArgs + " Content Values=" + Str.toStringOrNull(cv) + " Error=" + e + " Database=" + file.getAbsolutePath());
+            Log.e(TAG, "Failed to Update Database Item, Table=" + tableName + " Selection Args=" + selectionArgs + " Content Values=" + Str.toStringOrNull(cv) + " Error=" + e + " Database=" +  FileUtils.getAbsolutePath(file));
             return false;
         }
     }
@@ -194,30 +181,32 @@ public class SQLDatabase {
         }
     }
 
+    public SQLTable openTable(String tableName) { return SQLUtils.openSQLTable(this, tableName); }
+
     public boolean createTable(TableInfo tableInfo) { return createTable(tableInfo.name, tableInfo.columns); }
     public boolean createTable(String tableName, Map<String, String> columns) {
         if(!isOpen(true))
             return false;
 
         if(Str.isEmpty(tableName)) {
-            Log.e(TAG, "Failed to Create Table, Name is not valid, its null or empty.... Database=" + file.getAbsolutePath());
+            Log.e(TAG, "Failed to Create Table, Name is not valid, its null or empty.... Database=" +  FileUtils.getAbsolutePath(file));
             return false;
         }
 
         if(!ListUtil.isValid(columns)) {
-            Log.e(TAG, "Failed to Create Table=" + tableName + " Columns is Null or Empty.... Database=" + file.getAbsolutePath());
+            Log.e(TAG, "Failed to Create Table=" + tableName + " Columns is Null or Empty.... Database=" +  FileUtils.getAbsolutePath(file));
             return false;
         }
 
         String qry = DatabaseUtils.dynamicCreateQueryEx(columns, tableName);
         if(DebugUtil.isDebug())
-            Log.d(TAG, "Creating Database Table, Name=" + tableName + " Query=" + qry + " Database=" + file.getAbsolutePath());
+            Log.d(TAG, "Creating Database Table, Name=" + tableName + " Query=" + qry + " Database=" +  FileUtils.getAbsolutePath(file));
 
         try {
             db.execSQL(qry);
             return true;
         }catch (Exception e) {
-            Log.e(TAG, "Failed to Create Table, Table=" + tableName + " Database=" + file.getAbsolutePath() +  " Query=" + qry + " Error=" + e);
+            Log.e(TAG, "Failed to Create Table, Table=" + tableName + " Database=" +  FileUtils.getAbsolutePath(file) +  " Query=" + qry + " Error=" + e);
             return false;
         }
     }
@@ -237,7 +226,7 @@ public class SQLDatabase {
 
             cursor.close();
         }catch (Exception e) {
-            Log.e(TAG, "Error Enumerating Table Entries to get Count, Table Name=" + tableName + " Database=" + file.getAbsolutePath() + " Error=" + e);
+            Log.e(TAG, "Error Enumerating Table Entries to get Count, Table Name=" + tableName + " Database=" +  FileUtils.getAbsolutePath(file) + " Error=" + e);
         }
 
         return count;
@@ -311,20 +300,9 @@ public class SQLDatabase {
         return false; // Column not found
     }
 
-    /**
-     * Checks if the column names of a table match the given list of column names.
-     *
-     * @param tableName   The name of the table to query.
-     * @param columnNames The list of expected column names.
-     * @return True if the table's column names match the given list, false otherwise.
-     */
-    public boolean doColumnNamesMatch(String tableName, Collection<String> columnNames) {
+    public String getOldColumn(String tableName, List<String> oldNames) {
         if(!isOpen(true))
-            return false;
-
-        columnNames.remove("PRIMARY");
-        if(columnNames.isEmpty())
-            return true;
+            return null;
 
         Cursor cursor = null;
         try {
@@ -342,29 +320,112 @@ public class SQLDatabase {
             }
 
             if(DebugUtil.isDebug())
-                XposedUtility.logD_xposed(TAG, "Column Names=" + Str.joinList(tableColumnNames) + " Wanted Columns=" + Str.joinList(new ArrayList<>(columnNames)));
-
-            if(columnNames.size() != tableColumnNames.size())
-                return false;
+                XposedUtility.logD_xposed(TAG, Str.fm("Checking for bad Columns, Columns From Database=[%s] Args=[%s]", Str.joinList(tableColumnNames), Str.joinList(oldNames)));
 
             for(String c : tableColumnNames) {
-                if(!columnNames.contains(c)) {
-                    XposedUtility.logE_xposed(TAG, "Column Name is not found=" + c);
-                    return false;
+                for(String bad : oldNames) {
+                    if(c.equalsIgnoreCase(bad)) {
+                        if(DebugUtil.isDebug())
+                            XposedUtility.logD_xposed(TAG, "Found bad Column: " + bad);
+
+                        return bad;
+                    }
                 }
             }
 
             // Compare the two lists
             //return tableColumnNames.equals(columnNames);
-            return true;
+            return null;
         } catch (Exception e) {
-            Log.e(TAG, "Failed to Check if Table Columns align, Table=" + tableName + " db=" + this + " Error=" + e);
+            Log.e(TAG, "Failed to get the Old Column, Table=" + tableName + " db=" + this + " Error=" + e);
         } finally {
             if (cursor != null) {
                 cursor.close();
             }
         }
-        return false; // Return false if an error occurs
+
+        return null;
+    }
+
+    public List<String> getColumnNames(String tableName) {
+        if (!isOpen(true) || !hasTable(tableName))
+            return new ArrayList<>();
+
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery("PRAGMA table_info(" + tableName + ")", null);
+            List<String> columns = new ArrayList<>();
+
+            if (cursor != null) {
+                int nameIndex = cursor.getColumnIndex("name");
+                while (cursor.moveToNext())
+                    columns.add(cursor.getString(nameIndex));
+            }
+
+            if (DebugUtil.isDebug())
+                Log.d(TAG, "Got columns for table [" + tableName + "]: " + Str.joinList(columns));
+
+            return columns;
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get column names for table: " + tableName, e);
+            return new ArrayList<>();
+        } finally {
+            CursorUtil.closeCursor(cursor);
+        }
+    }
+
+    /**
+     * Checks if the column names of a table match the given list of column names.
+     *
+     * @param tableName   The name of the table to query.
+     * @param columnNames The list of expected column names.
+     * @return True if the table's column names match the given list, false otherwise.
+     */
+    public boolean doColumnNamesMatch(String tableName, Collection<String> columnNames) {
+        if (!isOpen(true)) {
+            return false;
+        }
+
+        // Make a copy and remove PRIMARY to avoid modifying the input collection
+        Set<String> expectedColumns = new HashSet<>(columnNames);
+        expectedColumns.remove("PRIMARY");
+        if (expectedColumns.isEmpty())
+            return true;
+
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery("PRAGMA table_info(" + tableName + ")", null);
+            if (cursor == null)
+                return false;
+
+            int nameIndex = cursor.getColumnIndex("name");
+            int columnCount = 0;
+
+            while (cursor.moveToNext()) {
+                String columnName = cursor.getString(nameIndex);
+                columnCount++;
+
+                if (!expectedColumns.contains(columnName)) {
+                    if (DebugUtil.isDebug())
+                        XposedUtility.logE_xposed(TAG, "Column not found: " + columnName);
+
+                    return false;
+                }
+            }
+
+            boolean matches = columnCount == expectedColumns.size();
+            if (DebugUtil.isDebug() && !matches)
+                XposedUtility.logD_xposed(TAG, "Column count mismatch - Expected: " +
+                        expectedColumns.size() + ", Found: " + columnCount);
+
+            return matches;
+
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to check columns for table: " + tableName, e);
+            return false;
+        } finally {
+            CursorUtil.closeCursor(cursor);
+        }
     }
 
     public boolean dropTable(String tableName) {
@@ -376,7 +437,7 @@ public class SQLDatabase {
             db.execSQL(query);
             return true;
         }catch (Exception e) {
-            Log.e(TAG, "Failed to Drop Table From Database, Table=" + tableName + " Database=" + file.getAbsolutePath() + " Error=" + e);
+            Log.e(TAG, "Failed to Drop Table From Database, Table=" + tableName + " Database=" +  FileUtils.getAbsolutePath(file) + " Error=" + e);
             return false;
         }
     }
@@ -395,7 +456,7 @@ public class SQLDatabase {
             int count = cursor.getInt(0);
             return count > 0;
         }catch (Exception e) {
-            Log.e(TAG, "Failed to Get Table/ Check if Table Exists, Table=" + tableName + " Database=" + file.getAbsolutePath() + " Error=" + e);
+            Log.e(TAG, "Failed to Get Table/ Check if Table Exists, Table=" + tableName + " Database=" +  FileUtils.getAbsolutePath(file) + " Error=" + e);
             return false;
         }
         finally {
@@ -437,7 +498,7 @@ public class SQLDatabase {
             return true;
         }catch (Exception e) {
             if(writeLock) writeUnlock();
-            Log.e(TAG, "Failed to begin Transaction, Database=" + file.getAbsolutePath() + " Error=" + e);
+            Log.e(TAG, "Failed to begin Transaction, Database=" +  FileUtils.getAbsolutePath(file) + " Error=" + e);
             return false;
         }
     }
@@ -446,7 +507,7 @@ public class SQLDatabase {
         try {
             db.setTransactionSuccessful();
         }catch (Exception e) {
-            Log.e(TAG, "Failed to set the Transaction as Successful, Database=" + file.getAbsolutePath() + " Error=" + e);
+            Log.e(TAG, "Failed to set the Transaction as Successful, Database=" +  FileUtils.getAbsolutePath(file) + " Error=" + e);
         }
     }
 
@@ -460,7 +521,7 @@ public class SQLDatabase {
             db.endTransaction();
             return true;
         }catch (Exception e) {
-            Log.e(TAG, "Failed to End Transaction, Database=" + file.getAbsolutePath() + " Error=" + e);
+            Log.e(TAG, "Failed to End Transaction, Database=" +  FileUtils.getAbsolutePath(file) + " Error=" + e);
             return false;
         } finally {
             if(writeUnlock) writeUnlock();
@@ -519,7 +580,7 @@ public class SQLDatabase {
     public String toString() {
         return StrBuilder.create()
                 .ensureOneNewLinePer(true)
-                .appendFieldLine("Database", this.file.getAbsolutePath())
+                .appendFieldLine("Database",  FileUtils.getAbsolutePath(file))
                 .appendFieldLine("Is Open", this.isOpen(false))
                 .toString(true);
     }

@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import eu.faircode.xlua.x.data.FilterHooksHolder;
 import eu.faircode.xlua.x.data.string.StrBuilder;
 import eu.faircode.xlua.x.data.TypeMap;
 import eu.faircode.xlua.x.data.utils.ArrayUtils;
+import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.runtime.RuntimeUtils;
 import eu.faircode.xlua.x.xlua.LibUtil;
 
@@ -27,6 +29,7 @@ public class FilterContainerElement implements IFilterContainer {
     protected String groupName;
     protected FilterHooksHolder factory = FilterHooksHolder.create();
     protected HashMap<String, String> createdSettings = new HashMap<>();
+    protected List<String> dependencies = new ArrayList<>();
 
     public FilterContainerElement() { }
     public FilterContainerElement(String groupName, TypeMap definitions) { this.groupName = groupName; this.definitions = definitions; }
@@ -59,7 +62,7 @@ public class FilterContainerElement implements IFilterContainer {
             if(definitions.hasDefinition(hook.getClassName(), hook.getMethodName())) {
                 factory.addBase(hook);
                 if(DebugUtil.isDebug())
-                    Log.d(TAG, Str.fm("Found a Hook Definition [%s] For this Group [%s] added to List of Definitions, Count=[%s]", hook.getSharedId(), groupName, factory.baseCount()));
+                    Log.d(TAG, Str.fm("Found a Hook Definition [%s] For this Group [%s] added to List of Definitions, Count=[%s]", hook.getObjectId(), groupName, factory.baseCount()));
 
                 return true;
             }
@@ -73,7 +76,7 @@ public class FilterContainerElement implements IFilterContainer {
         if(isClassGroup(hook)) {
             factory.addRule(hook);
             if(DebugUtil.isDebug())
-                Log.d(TAG, Str.fm("Found a Rule [%s] for this Hook Group [%s], added Rules Count=[%s]", hook.getSharedId(), groupName, factory.ruleCount()));
+                Log.d(TAG, Str.fm("Found a Rule [%s] for this Hook Group [%s], added Rules Count=[%s]", hook.getObjectId(), groupName, factory.ruleCount()));
 
             String[] params = hook.getParameterTypes();
             if(ArrayUtils.isValid(params)) {
@@ -97,10 +100,36 @@ public class FilterContainerElement implements IFilterContainer {
         return false;
     }
 
+
+    @Override
+    public List<String> getDependencies() { return ListUtil.copyToArrayList(dependencies); }
+
+    @Override
+    public boolean hasSettings() { return !createdSettings.isEmpty(); }
+
+    @Override
+    public int appendSettings(Map<String, String> settings) {
+        int count = 0;
+        if(settings != null) {
+            if(ListUtil.isValid(this.createdSettings)) {
+                for(Map.Entry<String, String> entry : new HashMap<>(this.createdSettings).entrySet()) {
+                    String name = entry.getKey();
+                    String value = entry.getValue();
+                    if(!Str.isEmpty(name) && !Str.isEmpty(value)) {
+                        settings.put(name, value);
+                        count++;
+                    }
+                }
+            }
+        }
+
+        return count;
+    }
+
     @Override
     public void initializeDefinitions(List<XLuaHook> hooks, Map<String, String> settings) {
         if(hooks != null)
-            if(factory.hasRules() && factory.hasBases())
+            if((factory.hasRules() && factory.hasBases()))
                 hooks.addAll(factory.getBaseHooks());
 
         if(settings != null)
@@ -195,7 +224,7 @@ public class FilterContainerElement implements IFilterContainer {
         }
 
         if(auths.isEmpty()) {
-            Log.w(TAG, Str.fm("No Valid Param Types for Hook [%s] under Group [%s], using [*] (wild card) for Authorities!", hook.getSharedId(), groupName));
+            Log.w(TAG, Str.fm("No Valid Param Types for Hook [%s] under Group [%s], using [*] (wild card) for Authorities!", hook.getObjectId(), groupName));
             auths.add("*");
         }
 
@@ -231,7 +260,7 @@ public class FilterContainerElement implements IFilterContainer {
         }
 
         if(filter.isEmpty()) {
-            Log.w(TAG, Str.fm("No Valid Filters for Hook [%s] under Group [%s], using [*] (wild card) for Filters!", hook.getSharedId(), groupName));
+            Log.w(TAG, Str.fm("No Valid Filters for Hook [%s] under Group [%s], using [*] (wild card) for Filters!", hook.getObjectId(), groupName));
             filter.add("*");
         }
 
@@ -240,9 +269,10 @@ public class FilterContainerElement implements IFilterContainer {
 
     // "query:[" + auth + "]:" + pair.name;
 
-    public String createQuerySetting(String auth, String name) { return Str.isEmpty(auth) || Str.isEmpty(name) ? null : Str.combineEx("query:[", auth, "]:", name);  }
-    public String createAuthoritySetting(String rule) { return !Str.isEmpty(rule) ? Str.combine("query:", rule) : rule; }
-    public String createCallSetting(String rule) { return !Str.isEmpty(rule) ? Str.combine("call:", rule) : rule; }
+    public static String createQuerySetting(String auth, String name) { return Str.isEmpty(auth) || Str.isEmpty(name) ? null : Str.combineEx("query:[", auth, "]:", name);  }
+    public static String createAuthoritySetting(String rule) { return !Str.isEmpty(rule) ? Str.combine("query:", rule) : rule; }
+    public static String createCallSetting(String rule) { return !Str.isEmpty(rule) ? Str.combine("call:", rule) : rule; }
+    public static String createPropertySetting(String property) { return !Str.isEmpty(property) ? Str.combine("prop:", property) : property; }
 
     @NonNull
     @Override

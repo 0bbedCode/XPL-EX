@@ -2,6 +2,9 @@ package eu.faircode.xlua.x.runtime;
 import android.util.Log;
 
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,9 +15,10 @@ import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.process.ProcessUtils;
 import eu.faircode.xlua.x.runtime.reflect.DynamicMethod;
 import eu.faircode.xlua.x.runtime.reflect.ReflectUtil;
+import eu.faircode.xlua.x.xlua.LibUtil;
 
 public class RuntimeUtils {
-    private static final String TAG = "ObbedCode.XP.RuntimeUtils";
+    private static final String TAG = LibUtil.generateTag(RuntimeUtils.class);
 
     private static final DynamicMethod nativeFillInStackTrace;
     private static final DynamicMethod nativeGetStackTrace;
@@ -200,4 +204,62 @@ public class RuntimeUtils {
         }
     }
 
+    public static String executeCommand(String command) {
+        try {
+            Process process = Runtime.getRuntime().exec(command);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+            StringBuilder output = new StringBuilder();
+            String line;
+
+            // Read standard output
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+            }
+
+            // Read error output
+            while ((line = errorReader.readLine()) != null) {
+                output.append("Error: ").append(line).append("\n");
+            }
+
+            // Wait for process to complete
+            process.waitFor();
+
+            return output.toString().trim();
+
+        } catch (IOException | InterruptedException e) {
+            return "Error executing command: " + e.getMessage();
+        }
+    }
+
+    public static String executeCommand(String... args) {
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder(args);
+            Process process = processBuilder.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+            StringBuilder output = new StringBuilder();
+            String line;
+
+            // Read standard output
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+            }
+
+            // Read error output
+            while ((line = errorReader.readLine()) != null) {
+                output.append("Error: ").append(line).append("\n");
+            }
+
+            // Wait for process to complete
+            process.waitFor();
+
+            return output.toString().trim();
+
+        } catch (IOException | InterruptedException e) {
+            return "Error executing command: " + e.getMessage();
+        }
+    }
 }

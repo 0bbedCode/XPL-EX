@@ -57,7 +57,11 @@ public class SimpleReport implements IJsonSerial {
     public Bundle toBundle() { return write(Bundler.create()).toBundle(); }
 
     @Override
-    public void fromBundle(Bundle bundle) { read(Bundler.create(bundle)); }
+    public void fromBundle(Bundle bundle) {
+        read(Bundler.create(bundle));
+
+
+    }
 
     @Override
     public void fromParcel(Parcel in) { read(Parceler.create(in)); }

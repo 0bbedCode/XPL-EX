@@ -31,10 +31,17 @@ public class CatBootIDIntercept extends CommandInterceptor implements ICommandIn
             if (maps != null) {
                 //Improve this ? make some storage emulation shit ?
                 //ashmem device etc stat
-                if (!keepGoing(maps, CAT_BOOT_ID_INTERCEPT_SETTING)) return true;
+                if (!keepGoing(maps, CAT_BOOT_ID_INTERCEPT_SETTING))
+                    return true;
                 String setting = maps.getSetting("unique.boot.id");
-                result.setNewValue(setting == null ? UUID.randomUUID().toString() : setting);
+                String newValue = setting == null ? UUID.randomUUID().toString() : setting;
+
+                result.setNewValue(newValue);
                 result.setIsMalicious(true);
+
+                result.param.setOldResult("N/A");
+                result.param.setNewResult(newValue);
+                result.param.setSettingResult("cat boot_id");
                 return true;
             }
         }

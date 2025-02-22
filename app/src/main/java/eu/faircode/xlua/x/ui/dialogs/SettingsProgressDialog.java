@@ -26,6 +26,8 @@ import java.util.concurrent.CountDownLatch;
 import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.R;
 import eu.faircode.xlua.x.data.string.StrBuilder;
+import eu.faircode.xlua.x.ui.core.UINotifier;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.commands.call.PutSettingExCommand;
 import eu.faircode.xlua.x.xlua.database.A_CODE;
 import eu.faircode.xlua.x.xlua.settings.SettingHolder;
@@ -33,7 +35,7 @@ import eu.faircode.xlua.x.xlua.settings.data.SettingPacket;
 
 public class SettingsProgressDialog extends AppCompatDialogFragment {
 
-    private static final String TAG = "XLua.SettingsProgressDialog";
+    private static final String TAG = LibUtil.generateTag(SettingsProgressDialog.class);
 
     private Context context;
     private Context context2;
@@ -42,8 +44,14 @@ public class SettingsProgressDialog extends AppCompatDialogFragment {
 
     private TextView tvProgressData;
     private ProgressBar pbProgress;
+    private UINotifier notifier;
 
     private Map<SettingHolder, SettingPacket> data;
+
+    public SettingsProgressDialog setNotifier(UINotifier notifier) {
+        this.notifier = notifier;
+        return this;
+    }
 
     public SettingsProgressDialog setData(Map<SettingHolder, SettingPacket> data, Context context) {
         this.data = data;
@@ -106,6 +114,7 @@ public class SettingsProgressDialog extends AppCompatDialogFragment {
             if (code == A_CODE.SUCCESS) {
                 holder.setValue(holder.getNewValue(), true);
                 holder.setNameLabelColor(getContext());
+                holder.notifyUpdate(notifier);
                 succeeded.add(holder.getName());
             } else {
                 failed.add(holder.getName());

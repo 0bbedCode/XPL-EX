@@ -33,6 +33,7 @@ import eu.faircode.xlua.x.xlua.commands.PkgInfo;
 import eu.faircode.xlua.x.xlua.commands.call.AssignHooksCommand;
 import eu.faircode.xlua.x.xlua.commands.call.GetSettingExCommand;
 import eu.faircode.xlua.x.xlua.commands.call.PutSettingExCommand;
+import eu.faircode.xlua.x.xlua.commands.query.GetAssignmentsCommand;
 import eu.faircode.xlua.x.xlua.commands.query.GetSettingsExCommand;
 import eu.faircode.xlua.x.xlua.database.A_CODE;
 import eu.faircode.xlua.x.xlua.database.ActionFlag;
@@ -40,6 +41,7 @@ import eu.faircode.xlua.x.xlua.database.ActionPacket;
 import eu.faircode.xlua.x.xlua.database.IDatabaseEntry;
 import eu.faircode.xlua.x.xlua.database.TableInfo;
 import eu.faircode.xlua.x.xlua.database.sql.SQLQueryBuilder;
+import eu.faircode.xlua.x.xlua.hook.AssignmentPacket;
 import eu.faircode.xlua.x.xlua.hook.AssignmentsPacket;
 import eu.faircode.xlua.x.xlua.identity.IIdentification;
 import eu.faircode.xlua.x.xlua.identity.UserIdentity;
@@ -342,7 +344,13 @@ public class XPConfig extends PkgInfo implements IJsonType, IDatabaseEntry, IPar
         if(!Str.isEmpty(packageName) && !UserIdentity.GLOBAL_NAMESPACE.equalsIgnoreCase(packageName)) {
             if(ListUtil.isValid(hooks)) {
                 if(cleanOutOld)  {
-                    //ToDo
+                    List<String> oldHookIds = new ArrayList<>();
+                    List<AssignmentPacket> oldAssignments = GetAssignmentsCommand.get(context, true, uid, packageName);
+                    for(AssignmentPacket assignmentPacket : oldAssignments)
+                        if(!oldHookIds.contains(assignmentPacket.getHookId()))
+                            oldHookIds.add(assignmentPacket.getHookId());
+
+                    AssignHooksCommand.call(context, AssignmentsPacket.create(uid, packageName, hooks, true, false));
                 }
 
                 AssignHooksCommand.call(context, AssignmentsPacket.create(uid, packageName, hooks, false, false));
@@ -417,7 +425,7 @@ public class XPConfig extends PkgInfo implements IJsonType, IDatabaseEntry, IPar
     }
 
     @Override
-    public String getSharedId() {
+    public String getObjectId() {
         return name;
     }
 

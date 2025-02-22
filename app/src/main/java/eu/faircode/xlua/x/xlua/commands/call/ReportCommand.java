@@ -20,6 +20,7 @@ import eu.faircode.xlua.x.xlua.database.DatabaseHelpEx;
 import eu.faircode.xlua.x.xlua.database.sql.SQLDatabase;
 import eu.faircode.xlua.x.xlua.hook.AssignmentApi;
 import eu.faircode.xlua.x.xlua.hook.AssignmentPacket;
+import eu.faircode.xlua.x.xlua.hook.AssignmentUtils;
 import eu.faircode.xlua.x.xlua.identity.UserIdentity;
 import eu.faircode.xlua.x.xlua.identity.UserIdentityUtils;
 import eu.faircode.xlua.x.xlua.settings.data.SettingPacket;
@@ -38,46 +39,29 @@ public class ReportCommand extends CallCommandHandlerEx {
     public Bundle handle(CallPacket commandData) throws Throwable {
         Bundle bundle = commandData.extras;
 
-
-        /*
-
-            public static final String FIELD_USER = UserIdentityIO.FIELD_USER;
-            public static final String FIELD_CATEGORY = UserIdentityIO.FIELD_CATEGORY;
-
-            public static final String FIELD_HOOK = "hook";
-
-            public static final String FIELD_INSTALLED = "installed";
-            public static final String FIELD_USED = "used";
-            public static final String FIELD_RESTRICTED = "restricted";
-            public static final String FIELD_EXCEPTION = "exception";
-            public static final String FIELD_OLD = "old";
-            public static final String FIELD_NEW = "new";
-
-         */
-
-
         SQLDatabase database = commandData.getDatabase();
-        SQLiteDatabase db = database.getDatabase();
-
         int uid = bundle.getInt("uid");
         String pkg = bundle.getString("packageName");
         String hookId = bundle.getString("hook");
-
         long time = bundle.getLong("time");//installed, used
                                                 //restricted = (1 or 0)
+
+        if(Str.isEmpty(hookId) || AssignmentUtils.isFilterHook(hookId)) {
+            if(DebugUtil.isDebug())
+                Log.w(TAG, "Waring found a Filter Hook Report, take this with cation! Hook Id=" + hookId);
+        }
 
         String event = bundle.getString("event");
 
         int userId = UserIdentityUtils.getUserId(uid);
         AssignmentPacket packet = database.executeWithReadLock(() -> AssignmentApi.getAssignment(database, userId, pkg, hookId));
-        if(packet == null) {
+        if(packet == null || Str.isEmpty(packet.getHookId())) {
             packet = new AssignmentPacket();
             packet.hook = hookId;
         }
 
         packet.setUserIdentity(UserIdentity.from(userId, uid, pkg));
         packet.setActionPacket(ActionPacket.create(ActionFlag.PUSH, false));
-
         Bundle sub = bundle.getBundle("data");
         if(event != null && sub != null) {
             packet.restricted = Str.toBool(String.valueOf(sub.getInt("restricted", 0)));
@@ -92,86 +76,9 @@ public class ReportCommand extends CallCommandHandlerEx {
                 packet.exception = sub.getString("exception");
         }
 
-        ContentValues cv = packet.toContentValues();
-        if(DebugUtil.isDebug()) {
-            StringBuilder sb = new StringBuilder();
-            for(String k : cv.keySet()) {
-                if(sb.length()  > 0)
-                    sb.append("\n");
-                sb.append(k).append(" >> ").append(Str.toStringOrNull(cv.get(k)));
-            }
-
-            Log.w(TAG, "Pushing=" + sb.toString());
-        }
-
         A_CODE result = DatabaseHelpEx.execute_one_locked_name(database, packet, AssignmentPacket.TABLE_INFO);
         if(DebugUtil.isDebug())
-            Log.d(TAG, "Result=" + result.name());
-
-        //Log.d(TAG, "Result of Assignment Update=" + result.name());
-
-        /*try {
-            database.beginTransaction(true);
-            long rows = db.update("assignments", cv, "user = ? category = ? AND hook = ?",
-                    new String[]{ String.valueOf(userId), pkg, hookId});
-            if (rows != 1)
-                throw new Exception("Error updating assignment id: " + hookId);
-            database.setTransactionSuccessful();
-        }catch (Exception e) {
-            Log.e(TAG, "Error updating Assignment, Error=" + e);
-        } finally {
-            database.endTransaction(true, false);
-        }*/
-
-
-
-        //use
-        //
-        //  => new
-        //  => old
-        //
-
-        //install
-        //exception
-
-
-        /*if(sub != null) {
-            long duration = sub.getLong("duration");
-            long restricted = sub.getLong("restricted");
-
-            String newValue = sub.getString("new");
-            String oldValue = sub.getString("old");
-
-            String func = sub.getString("function");
-
-            //AssignmentPacket packet = new AssignmentPacket();
-
-        }
-
-
-        StringBuilder sb = new StringBuilder();
-        if(bundle != null) {
-            for(String key : bundle.keySet()) {
-                Object o = bundle.get(key);
-                if(o instanceof Bundle) {
-                    Bundle sub = (Bundle) o;
-                    for(String subKey : sub.keySet()) {
-                        if(sb.length() > 0)
-                            sb.append("\n");
-
-                        sb.append("[>]").append(subKey).append(" >> ").append(Str.toStringOrNull(sub.get(subKey)));
-                    }
-                } else {
-                    if(sb.length() > 0)
-                        sb.append("\n");
-
-                    sb.append(key).append(" >> ").append(Str.toStringOrNull(o));
-                }
-            }
-        }
-
-        if(DebugUtil.isDebug())
-            Log.d(TAG, Str.ensureNoDoubleNewLines(sb.toString()).replaceAll("\n\n", "\n"));*/
+            Log.d(TAG, "Result=" + result.name() + " Hook ID=" + hookId);
 
         return null;
     }

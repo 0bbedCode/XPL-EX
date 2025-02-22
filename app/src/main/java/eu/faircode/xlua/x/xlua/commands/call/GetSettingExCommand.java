@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Process;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import eu.faircode.xlua.DebugUtil;
@@ -37,6 +38,9 @@ public class GetSettingExCommand extends CallCommandHandlerEx {
 
     public static final String SETTING_COLLECTION_DEFAULT = "PrivacyEx";
     public static final String SETTING_THEME_DEFAULT = "dark";
+
+
+    //this.kill = GetSettingExCommand.getBool(context, GetSettingExCommand.SETTING_FORCE_STOP, uid, packageName); }
 
     public GetSettingExCommand() {
         name = "getExSettingEx";
@@ -73,6 +77,7 @@ public class GetSettingExCommand extends CallCommandHandlerEx {
     public static String getShow(Context context, int uid) { return getGlobalValue(context, SETTING_SHOW, uid); }
 
     public static List<String> getCollections(Context context, int uid) { return Str.splitToList(get(context, SETTING_COLLECTION, uid, SettingPacket.GLOBAL_CATEGORY).value); }
+
     public static String getTheme(Context context, int uid) { return SettingsApiUtils.ensureIsTheme(get(context, SETTING_THEME, uid, SettingPacket.GLOBAL_CATEGORY).value); }
 
     public static boolean getBool(Context context, String settingName, int uid, String packageName) { return Str.toBool(get(context, settingName, uid, packageName).value); }

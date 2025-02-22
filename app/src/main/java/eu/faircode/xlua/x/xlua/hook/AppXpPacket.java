@@ -21,6 +21,7 @@ import java.util.List;
 import eu.faircode.xlua.x.data.string.StrBuilder;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.xlua.IBundleData;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.interfaces.IJsonType;
 import eu.faircode.xlua.x.xlua.interfaces.IParcelType;
 
@@ -29,7 +30,7 @@ import eu.faircode.xlua.x.xlua.interfaces.IParcelType;
     But also since assignment isnt following the Legacy Style maybe now, for now ignore this
  */
 public class AppXpPacket implements IParcelType, IJsonType, Parcelable, IAssignListener, IBundleData {
-    private static final String TAG = "XLua.AppXpPacket";
+    private static final String TAG = LibUtil.generateTag(AppXpPacket.class);
 
     public String packageName;
     public int uid;

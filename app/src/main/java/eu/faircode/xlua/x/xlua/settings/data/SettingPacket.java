@@ -61,7 +61,7 @@ public class SettingPacket extends PacketBase implements IDatabaseEntry, IBundle
     public static final LinkedHashMap<String, String> COLUMNS = TABLE_INFO.columns;
 
     @Override
-    public String getSharedId() { return name; }
+    public String getObjectId() { return name; }
 
     @Override
     public void setId(String id) {
@@ -190,7 +190,8 @@ public class SettingPacket extends PacketBase implements IDatabaseEntry, IBundle
 
     public SettingPacket sendCallRequest(Context context, String command) {
         Bundle res = XProxyContent.luaCall(context, command, toBundle());
-        if(res != null) populateFromBundle(res);
+        if(res != null)
+            populateFromBundle(res);
         return this;
     }
 
@@ -236,19 +237,25 @@ public class SettingPacket extends PacketBase implements IDatabaseEntry, IBundle
         public SettingPacket[] newArray(int size) { return new SettingPacket[size]; }
     };
 
-    //ToDO
     @Override
-    public String toJSONString() throws JSONException {
-        return "";
-    }
+    public String toJSONString() throws JSONException { return toJSONObject().toString(2); }
 
     @Override
     public JSONObject toJSONObject() throws JSONException {
-        return null;
+        JSONObject obj = new JSONObject();
+        obj.put(FIELD_USER, getUserId(false));
+        obj.put(FIELD_CATEGORY, getCategory());
+        obj.put(FIELD_NAME, name);
+        obj.put(FIELD_VALUE, value);
+        return obj;
     }
 
     @Override
     public void fromJSONObject(JSONObject obj) throws JSONException {
-
+        if(obj != null) {
+            setUserIdentity(new UserIdentity(obj.optInt(FIELD_USER), 0, obj.optString(FIELD_CATEGORY, Str.EMPTY)));
+            this.name = obj.optString(FIELD_NAME);
+            this.value = obj.optString(FIELD_VALUE);
+        }
     }
 }

@@ -10,10 +10,15 @@ import android.util.Log;
 import eu.faircode.xlua.XSecurity;
 import eu.faircode.xlua.api.xstandard.database.SqlQuerySnake;
 import eu.faircode.xlua.logger.XLog;
+import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.database.sql.SQLSnake;
 
 public class XProxyContent {
-    private static final String TAG = "XLua.XProxyContent";
+    private static final String TAG = LibUtil.generateTag(XProxyContent.class);
+
+
+    public static String commandName(String command, boolean marshall) { return marshall ? Str.combine(command, "2") : command; }
 
     public static Bundle mockCall(Context context, String method) { return mockCall(context, method, new Bundle()); }
     public static Bundle mockCall(Context context, String method, Bundle extras) { return invokeCall(context, "mock", method, extras); }
@@ -34,7 +39,6 @@ public class XProxyContent {
     public static Cursor luaQuery(Context context, String method, String[] args_selection) { return luaQuery(context, method, args_selection, null); }
     public static Cursor luaQuery(Context context, String method, String[] args_selection, String selection) { return invokeQuery(context, "xlua", method, args_selection, selection); }
     public static Cursor luaQuery(Context context, String method, SqlQuerySnake query) { return invokeQuery(context, "xlua", method, query); }
-
 
 
     public static Cursor invokeQuery(Context context, String handler, String method, SqlQuerySnake query) { return invokeQuery(context, handler, method, query.getSelectionCompareValues(), query.getSelectionArgs()); }

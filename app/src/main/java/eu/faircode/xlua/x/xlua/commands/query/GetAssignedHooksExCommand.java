@@ -16,6 +16,7 @@ import eu.faircode.xlua.api.hook.XLuaHookConversions;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.xlua.LibUtil;
+import eu.faircode.xlua.x.xlua.hook.AppProviderUtils;
 import eu.faircode.xlua.x.xlua.hook.AssignmentApi;
 import eu.faircode.xlua.x.xlua.hook.AssignmentPacket;
 import eu.faircode.xlua.x.xlua.commands.QueryCommandHandlerEx;
@@ -37,12 +38,19 @@ public class GetAssignedHooksExCommand extends QueryCommandHandlerEx {
         MatrixCursor result = new MatrixCursor(new String[]{marshall ? "blob" : "json", "used"});
 
         SQLDatabase db = commandData.getDatabase();
-        List<String> collections = db.executeWithWriteLock(() -> SettingsApi.getCollectionsValue(db, commandData.getUserId()));
-        Collection<AssignmentPacket> assignments = db.executeWithReadLock(() -> AssignmentApi.getAssignments(db, commandData.getUserId(), commandData.getCategory()));
+        List<String> collections = db.executeWithWriteLock(() -> SettingsApi.getCollectionsValue(
+                db,
+                commandData.getUserId()));
+
+        List<AssignmentPacket> assignments = db.executeWithReadLock(() -> AssignmentApi.getAssignments(
+                db,
+                commandData.getUserId(),
+                commandData.getCategory()));
+
         if(DebugUtil.isDebug())
             Log.d(TAG, Str.fm("Got Assignments, UserId=%s UID=%s Category=%s Size=%s", commandData.getUserId(), commandData.getUid(), commandData.getCategory(), ListUtil.size(assignments)));
 
-        for(AssignmentPacket assignment : assignments)
+        for(AssignmentPacket assignment : AppProviderUtils.filterAssignments(assignments, false, false))
             UberCore888.writeHookFromCache(
                     result,
                     assignment.hook,

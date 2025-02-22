@@ -23,6 +23,20 @@ import eu.faircode.xlua.x.Str;
 public class ListUtil {
 
 
+
+    public static <T> List<T> arrayToList(T[] array) {
+        List<T> items = new ArrayList<>();
+        if(ArrayUtils.isValid(array)) {
+            for(T item : array) {
+                if(item != null && !items.contains(item))
+                    items.add(item);
+            }
+        }
+
+        return items;
+    }
+
+
     public interface IIndexable<T> {
         boolean isItem(T item, T itemToFind);
     }
@@ -39,6 +53,109 @@ public class ListUtil {
 
     public interface IIterateVoid<T> {
         void onItem(T o, int index);
+    }
+
+    public interface IIteratePairCondition<TFrom, TTo> {
+        boolean isFine(TFrom from);
+        TTo get(TFrom from);
+    }
+
+    public interface IIterateCondition<T> {
+        boolean isFine(T item);
+    }
+
+    public interface IIteratePairTo<TFrom, TTo> {
+        TTo get(TFrom from);
+    }
+
+    public interface IIterateGet<T> {
+         T onItem(T o);
+    }
+
+
+    public static <TFrom, TTo> List<TTo> forEachTo(Collection<TFrom> items, IIteratePairTo<TFrom, TTo> onItem) {
+        List<TTo> list = new ArrayList<>();
+        if(!isValid(items) || onItem == null)
+            return list;
+
+        for(TFrom item : items) {
+            if(item != null) {
+                TTo to = onItem.get(item);
+                if(to instanceof String) {
+                    if(!Str.isEmpty((String)to) && !list.contains(to))
+                        list.add(to);
+                } else {
+                    if(to != null && !list.contains(to)) {
+                        list.add(to);
+                    }
+                }
+            }
+        }
+
+        return list;
+    }
+
+    public static <T> void filterCondition(List<T> items, IIterateCondition<T> onItem) {
+        List<T> list = new ArrayList<>();
+        if(!isValid(items) || onItem == null)
+            return;
+
+        for(T item : items) {
+            if(item != null && onItem.isFine(item)) {
+                list.add(item);
+            }
+        }
+
+        items.clear();
+        items.addAll(list);
+    }
+
+    public static <T> List<T> forEachCondition(Collection<T> items, IIterateCondition<T> onItem) {
+        List<T> list = new ArrayList<>();
+        if(!isValid(items) || onItem == null)
+            return list;
+
+        for(T item : items) {
+            if(item != null && onItem.isFine(item)) {
+                list.add(item);
+            }
+        }
+
+        return list;
+    }
+
+    public static <TFrom, TTo> List<TTo> forEachConditionTo(List<TFrom> items, IIteratePairCondition<TFrom, TTo> onItem) {
+        List<TTo> list = new ArrayList<>();
+        if(!isValid(items) || onItem == null)
+            return list;
+
+        for(TFrom item : items) {
+            if(item != null && onItem.isFine(item)) {
+                TTo to = onItem.get(item);
+                if(to != null && !list.contains(to)) {
+                    list.add(to);
+                }
+            }
+        }
+
+        return list;
+    }
+
+    public static <T> List<T> forEach(List<T> items, IIterateGet<T> event) {
+        List<T> list = new ArrayList<>();
+        if(items == null || items.isEmpty() || event == null)
+            return items;
+
+        for(T item : items) {
+            if(item == null)
+                continue;
+
+            T ret = event.onItem(item);
+            if(!list.contains(ret))
+                list.add(ret);
+        }
+
+        return list;
     }
 
     public static <T> void forEachVoid(List<T> items, IIterateVoid<T> event) {
@@ -60,6 +177,13 @@ public class ListUtil {
         }catch (Exception ignored) {
             //Make read only ?
         }
+    }
+
+    public static <T> T getFirst(List<T> items) {
+        if(items == null || items.isEmpty())
+            return null;
+
+        return items.get(0);
     }
 
     public static void clear(Collection<?> collection) {
@@ -168,6 +292,8 @@ public class ListUtil {
 
         return map;
     }
+
+    public static <T> List<T> nonNull(List<T> items) { return items == null ? emptyList() : items; }
 
     public static <T> void removeAt(List<T> items, int index) {
         if(index > -1 && items != null && items.size() > index) {
@@ -304,6 +430,11 @@ public class ListUtil {
         return list;
     }
 
+    public static <K, V> boolean addAllIfValid(Map<K, V> baseMap, Map<? extends K, ? extends V> newElements)
+    {
+        return addAllIfValid(baseMap, newElements, false);
+    }
+
     /**
      * Adds all elements from the newElements map to the baseMap if the newElements map is valid.
      * Optionally clears the original map before adding.
@@ -332,8 +463,7 @@ public class ListUtil {
         return !newElements.isEmpty(); // Return true if newElements had at least one entry
     }
 
-
-    public static <T> boolean addAllIfValid(List<T> baseList, List<T> newElements, boolean clearOriginal) {
+    public static <T> boolean addAllIfValid(Collection<T> baseList, Collection<T> newElements, boolean clearOriginal) {
         if(baseList == null)
             return false;
 
@@ -346,6 +476,24 @@ public class ListUtil {
         return baseList.addAll(newElements);
     }
 
+    public static <T> boolean addAllIfValid(List<T> baseList, List<T> newElements, boolean clearOriginal) {
+        if(baseList == null)
+            return false;
+
+        if(clearOriginal)
+            baseList.clear();
+
+        if(!isValid(newElements))
+            return false;
+
+        int oldSize = baseList.size();
+        for(T newElement : newElements)
+            if(newElement != null && !baseList.contains(newElement))
+                baseList.add(newElement);
+
+        return oldSize != baseList.size();
+    }
+
     public static <T> boolean addAllIfValid(Collection<T> baseList, Collection<T> newElements) {
         if(baseList == null || !isValid(newElements))
             return false;
@@ -354,11 +502,31 @@ public class ListUtil {
     }
 
 
+    public static <T> boolean addAllIfValidEx(List<T> baseList, List<T> newElements) {
+        if(baseList == null || !isValid(newElements))
+            return false;
+
+        for(T item : newElements) {
+            if(item != null && !baseList.contains(item))
+                baseList.add(item);
+        }
+
+        //return baseList.addAll(newElements);
+        return true;
+    }
+
+
     public static <T> boolean addAllIfValid(List<T> baseList, List<T> newElements) {
         if(baseList == null || !isValid(newElements))
             return false;
 
-        return baseList.addAll(newElements);
+        for(T el : newElements) {
+            if(el != null && !baseList.contains(el)) {
+                baseList.add(el);
+            }
+        }
+
+        return ListUtil.isValid(baseList);
     }
 
     public static <T> Collection<T> combine(Collection<T> a, Collection<T> b) { return combine(a, b, true, true); }

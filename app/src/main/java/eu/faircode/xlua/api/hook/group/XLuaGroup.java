@@ -36,7 +36,7 @@ public class XLuaGroup extends XLuaGroupBase implements IDBSerial {
     @Override
     public void fromCursor(Cursor cursor) {
         this.packageName = CursorUtil.getString(cursor, "package");
-        this.uid = CursorUtil.getInteger(cursor, "uid");
+        this.uid = CursorUtil.getInteger(cursor, "uid", -1);
         this.name = CursorUtil.getString(cursor, "name");
         this.used = CursorUtil.getLong(cursor, "used");
     }

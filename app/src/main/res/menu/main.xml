@@ -43,6 +43,12 @@
                 <item
                     android:id="@+id/menu_show_all"
                     android:title="@string/menu_show_all" />
+                <item
+                    android:id="@+id/menu_show_hook"
+                    android:title="@string/menu_show_hook" />
+                <item
+                    android:id="@+id/menu_show_system"
+                    android:title="@string/menu_show_system" />
             </group>
         </menu>
     </item>

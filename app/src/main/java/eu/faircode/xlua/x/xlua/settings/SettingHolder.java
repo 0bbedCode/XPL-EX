@@ -8,8 +8,10 @@ import androidx.annotation.Nullable;
 
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.string.StrBuilder;
+import eu.faircode.xlua.x.ui.core.UINotifier;
 import eu.faircode.xlua.x.ui.core.interfaces.IDiffFace;
 import eu.faircode.xlua.x.ui.core.view_registry.IIdentifiableObject;
+import eu.faircode.xlua.x.ui.core.view_registry.SharedRegistry;
 import eu.faircode.xlua.x.xlua.settings.interfaces.INameInformation;
 import eu.faircode.xlua.x.xlua.settings.interfaces.IValueDescriptor;
 
@@ -25,7 +27,6 @@ public class SettingHolder extends UiBindingsController implements IValueDescrip
     private String value;
     private String newValue;
     private String description;
-    private String id = null;
 
     @Override
     public String getDescription() { return description; }
@@ -49,18 +50,13 @@ public class SettingHolder extends UiBindingsController implements IValueDescrip
     public boolean isValid() { return hasNameInformation(); }
 
     public boolean isNotSaved() { return !Str.areEqual(this.value, this.newValue, true, true); }    //Fix
-    public boolean hasValue(boolean treatEmptyAsNull) { return treatEmptyAsNull ? TextUtils.isEmpty(value) : value != null; }
+    public boolean hasValue(boolean treatEmptyAsNull) { return treatEmptyAsNull ? !TextUtils.isEmpty(value) : value != null; }
 
     @Override
-    public String getSharedId() {
-        if(TextUtils.isEmpty(id)) id = "setting:" + getName();
-        return id;
-    }
+    public String getObjectId() { return SharedRegistry.sharedSettingName(getName()); }
 
     @Override
-    public void setId(String id) {
-
-    }
+    public void setId(String id) { }
 
     public String getContainerName() { return nameInformation != null ? nameInformation.getContainerName() : ""; }
 
@@ -75,13 +71,21 @@ public class SettingHolder extends UiBindingsController implements IValueDescrip
     }
 
 
-    public void setNameLabelColor(Context context) { setNameLabelColor(context, isNotSaved()); }
-    public void setNameLabelColor(Context context, boolean isNotSaved) { setNameLabelColor(context, isNotSaved, hasValue(false)); }
+    public void notifyUpdate(SharedRegistry sharedRegistry) { if(sharedRegistry != null) notifyUpdate(sharedRegistry.notifier); }
+    public void notifyUpdate(UINotifier notifier) {
+        if(notifier != null && notifier.hasGroups()) {
+            notifier.notifyChange(UINotifier.settingName(getName()), UINotifier.CODE_DATA_CHANGED);
+        }
+    }
 
-    public void reset(Context context) {
+    public void setNameLabelColor(Context context) { setNameLabelColor(context, isNotSaved()); }
+    public void setNameLabelColor(Context context, boolean isNotSaved) { setNameLabelColor(context, isNotSaved, hasValue(true)); }
+
+    public void reset(Context context, UINotifier notifier) {
         this.newValue = value;
         ensureUiUpdated(value);
         setNameLabelColor(context);
+        notifyUpdate(notifier);
     }
 
     @Override

@@ -3,6 +3,7 @@ package eu.faircode.xlua.utilities;
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.zip.ZipFile;
 
@@ -11,6 +12,15 @@ public class StreamUtil {
     public static void close(BufferedReader buf) {
         try {
              buf.close();
+        }catch (Exception ignored) { }
+    }
+
+    public static void close(OutputStream outputStream) {
+        if(outputStream == null)
+            return;
+
+        try{
+            outputStream.close();
         }catch (Exception ignored) { }
     }
 

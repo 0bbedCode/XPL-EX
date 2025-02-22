@@ -27,6 +27,7 @@ import eu.faircode.xlua.databinding.SettingsExGroupBinding;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.PrefManager;
 import eu.faircode.xlua.x.data.utils.ListUtil;
+import eu.faircode.xlua.x.runtime.RuntimeUtils;
 import eu.faircode.xlua.x.ui.activities.SettingsExActivity;
 import eu.faircode.xlua.x.ui.adapters.settings.OptimizedSettingGroupAdapter;
 import eu.faircode.xlua.x.ui.core.RecyclerDynamicSizeAdjuster;
@@ -125,17 +126,33 @@ public class SettingExFragment
         super.createViewModel(SettingsExGroupViewModel.class, true);
         super.onCreate(savedInstanceState);
 
-        sharedRegistry.bindToUserContext(getUserContext());
-        PrefManager prefManager = sharedRegistry.ensurePrefsOpen(getContext(), PrefManager.SETTINGS_NAMESPACE);
-        if(prefManager != null) {
-            List<String> checked = prefManager.getStringList(PrefManager.nameForChecked(true), ListUtil.emptyList(), false);
-            String pkgName = getAppPackageName();
-            if(pkgName != null && !UserIdentity.GLOBAL_NAMESPACE.equalsIgnoreCase(pkgName))
-                ListUtil.addAllIfValid(checked, prefManager.getStringList(PrefManager.nameForChecked(false, pkgName), ListUtil.emptyList(), false));
+        try {
+            sharedRegistry.refreshAssignments(requireContext(), getUserContext());
+            sharedRegistry.bindToUserContext(getUserContext());
+            PrefManager prefManager = sharedRegistry.ensurePrefsOpen(getContext(), PrefManager.SETTINGS_NAMESPACE);
+            if(prefManager != null) {
+                List<String> checked = prefManager.getStringList(
+                        PrefManager.nameForChecked(true),
+                        ListUtil.emptyList(),
+                        false);
 
-            if(ListUtil.isValid(checked))
-                for(String setting : checked)
-                    sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, RandomizerSessionContext.sharedSettingName(setting), true);
+                try {
+                    String pkgName = getAppPackageName();
+                    if(pkgName != null && !UserIdentity.GLOBAL_NAMESPACE.equalsIgnoreCase(pkgName))
+                        ListUtil.addAllIfValid(checked,
+                                prefManager.getStringList(PrefManager.nameForChecked(false, pkgName),
+                                        ListUtil.emptyList(),
+                                        false));    //Error is jere "addAllIfValid"
+                }catch (Exception e) {
+                    Log.e(TAG, Str.fm("Error onCreate, error pushing Final Checked! Error=" + e));
+                }
+
+                if(ListUtil.isValid(checked))
+                    for(String setting : checked)
+                        sharedRegistry.setChecked(SharedRegistry.STATE_TAG_SETTINGS, RandomizerSessionContext.sharedSettingName(setting), true);
+            }
+        }catch (Exception e) {
+            Log.e(TAG, Str.fm("Error onCreate, Error=" + e + " Stack=" + RuntimeUtils.getStackTraceSafeString(e)));
         }
     }
 
@@ -283,6 +300,7 @@ public class SettingExFragment
                         holder.setNewValue(rnd);
                         holder.ensureUiUpdated(rnd);
                         holder.setNameLabelColor(context);
+                        holder.notifyUpdate(sharedRegistry.notifier);
                     }
                 }
                 break;
@@ -291,7 +309,7 @@ public class SettingExFragment
                 ConfirmDialog.create()
                         .setContext(context)
                         .setMessage(Str.combine(getString(R.string.msg_confirm_delete_settings), String.valueOf(holders.size())))
-                        .setDelay(2) // 5 second delay before OK is enabled
+                        .setDelay(0) // 5 second delay before OK is enabled
                         .setImage(R.drawable.ic_warining_one) // Optional warning icon
                         .onConfirm(() -> {
                             for(SettingHolder holder : holders) {
@@ -299,6 +317,7 @@ public class SettingExFragment
                                     holder.setValue(null, true);
                                     holder.ensureUiUpdated(Str.EMPTY);
                                     holder.setNameLabelColor(context);
+                                    holder.notifyUpdate(sharedRegistry.notifier);
                                 }
                             }
                         })
@@ -307,6 +326,7 @@ public class SettingExFragment
                 break;
             case R.id.flSettingsButtonFour:
                 new SettingsProgressDialog()
+                        .setNotifier(sharedRegistry.notifier)
                         .setData(SettingFragmentUtils.getSettingPackets(
                                 getLiveData(),
                                 getSharedRegistry(),
@@ -315,15 +335,6 @@ public class SettingExFragment
                         .show(getFragmentMan(), getString(R.string.title_deploy_settings));
                 break;
             case R.id.flSettingsButtonTwo:
-                /*RandomizerSessionContext ctx = RandomizerSessionContext.create();
-                ctx.setContext(context);
-                ctx.setSharedRegistry(sharedRegistry);
-                //ctx.setSettings(SettingFragmentUtils.filterChecked(SettingFragmentUtils.getSettings(getLiveData()), sharedRegistry));
-                ctx.setRandomizers();
-                //ctx.randomizeAll();
-                List<SettingHolder> all = SettingFragmentUtils.getSettings(getLiveData());
-                ctx.randomize(false, all, SettingFragmentUtils.filterChecked(all, sharedRegistry));*/
-
                 RandomizerSessionContext ctx = new RandomizerSessionContext()
                         .randomize(
                                 this,
@@ -343,7 +354,8 @@ public class SettingExFragment
                 break;
             case R.id.btAppIslandToLogsDialog:
                 LogDialog.create()
-                        .setApp(getAppUid(), getAppPackageName())
+                        .setShowInstalled(false)
+                        .setApp(getUserContext())
                         .refresh(context)
                         .show(getFragmentMan(), getString(R.string.title_logs));
                 break;
@@ -351,7 +363,7 @@ public class SettingExFragment
                 ConfirmDialog.create()
                         .setContext(context)
                         .setMessage(getString(R.string.msg_confirm_force_stop))
-                        .setDelay(1) // 5 second delay before OK is enabled
+                        .setDelay(0) // 5 second delay before OK is enabled
                         .setImage(R.drawable.ic_serv_cold) // Optional warning icon
                         .onConfirm(() -> handleCodeToSnack(ForceStopAppCommand.stop(context, getAppUid(), getAppPackageName()), getString(R.string.result_prefix_force_stop), v))
                         .show(getFragmentMan(), getString(R.string.title_confirm));
@@ -360,7 +372,7 @@ public class SettingExFragment
                 ConfirmDialog.create()
                         .setContext(context)
                         .setMessage(getString(R.string.msg_confirm_clear_data))
-                        .setDelay(5) // 5 second delay before OK is enabled
+                        .setDelay(0) // 5 second delay before OK is enabled
                         .setImage(R.drawable.ic_warining_one) // Optional warning icon
                         .onConfirm(() -> handleCodeToSnack(ClearAppDataCommand.clear(context, getAppPackageName()), getString(R.string.result_prefix_cleared_app_data), v))
                         .show(getFragmentMan(), getString(R.string.title_confirm));
@@ -491,6 +503,7 @@ public class SettingExFragment
                     holder.setValue(value, true);
                     holder.ensureUiUpdated(value == null ? Str.EMPTY : value);
                     holder.setNameLabelColor(getContext());
+                    holder.notifyUpdate(sharedRegistry.notifier);
                 }
             }
         }catch (Exception e) {

@@ -20,6 +20,7 @@ import eu.faircode.xlua.x.data.JsonHelperEx;
 import eu.faircode.xlua.x.data.string.StrBuilder;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.xlua.PacketBase;
+import eu.faircode.xlua.x.xlua.XposedUtility;
 import eu.faircode.xlua.x.xlua.commands.XPacket;
 import eu.faircode.xlua.x.xlua.database.sql.SQLDatabase;
 import eu.faircode.xlua.x.xlua.database.sql.SQLSnake;
@@ -74,6 +75,157 @@ public class DatabaseHelpEx {
         //Do Is Kill ?
         return code;
     }
+
+    public static boolean dropTable_locked(SQLDatabase database, String tableName) {
+        if(database == null) {
+            XposedUtility.logE_xposed(TAG, "[dropTable_locked] Database Object is NULL!");
+            return false;
+        }
+
+        if(!database.isOpen(true)) {
+            XposedUtility.logE_xposed(TAG, "[dropTable_locked] Failed to Open Database: " + Str.noNL(database));
+            return false;
+        }
+
+        if(Str.isEmpty(tableName)) {
+            XposedUtility.logE_xposed(TAG, "[dropTable_locked] Table Name Passed was NULL or Empty!");
+            return false;
+        }
+
+        try {
+            if(!database.beginTransaction(true)) {
+                XposedUtility.logE_xposed(TAG, "[dropTable_locked] Failed to being Transaction, Table=" +tableName + " Db=" + Str.toStringOrNull(database));
+                return false;
+            }
+
+            if(!database.hasTable(tableName)) {
+                XposedUtility.logW_xposed(TAG, "[dropTable_locked] Table is already Dropped! Table=" + tableName);
+                return true;
+            }
+
+            if(!database.dropTable(tableName)) {
+                XposedUtility.logE_xposed(TAG, "[dropTable_locked] Failed to Drop Table, Unknown Reasons, Table=" + tableName);
+                if(!database.hasTable(tableName)) {
+                    database.setTransactionSuccessful();
+                    return true;
+                }
+                else
+                    return false;
+            } else {
+                XposedUtility.logW_xposed(TAG, "[dropTable_locked] Successfully Dropped Table! Table=" + tableName);
+                database.setTransactionSuccessful();
+                return true;
+            }
+        } catch (Exception e) {
+            XposedUtility.logE_xposed(TAG, Str.fm("Failed to Drop Table [%s] from Database [%s] Error=%s",
+                    Str.toStringOrNull(tableName),
+                    Str.toStringOrNull(database),
+                    e));
+            return false;
+        }finally {
+            database.endTransaction(true, false);
+        }
+    }
+
+    public static boolean ensureTableIsReady_locked(TableInfo tableInfo, SQLDatabase database) {
+        if(database == null) {
+            XposedUtility.logE_xposed(TAG, "[ensureTableIsReady_locked] Database Object is NULL!");
+            return false;
+        }
+
+        if(!database.isOpen(true)) {
+            XposedUtility.logE_xposed(TAG, "[ensureTableIsReady_locked] Failed to Open Database: " + Str.noNL(database));
+            return false;
+        }
+
+        if(tableInfo == null || Str.isEmpty(tableInfo.name)) {
+            XposedUtility.logE_xposed(TAG, "[ensureTableIsReady_locked] Table Info Passed was NULL!");
+            return false;
+        }
+
+        try {
+            if(!database.beginTransaction(true)) {
+                XposedUtility.logE_xposed(TAG, "[ensureTableIsReady_locked] Failed to being Transaction, Table=" + Str.toStringOrNull(tableInfo) + " Db=" + Str.toStringOrNull(database));
+                return false;
+            }
+
+            if(!database.hasTable(tableInfo.name)) {
+                XposedUtility.logW_xposed(TAG, Str.fm("[ensureTableIsReady_locked] Table [%s] is Missing from the Database [%s] Creating!",
+                        tableInfo.name,
+                        Str.noNL(database)));
+
+                //Options to lock
+                if(!database.createTable(tableInfo)) {
+                    XposedUtility.logE_xposed(TAG, Str.fm("[ensureTableIsReady_locked] Table [%s] was not created, Failed! Database [%s]...",
+                            tableInfo.name,
+                            Str.noNL(database)));
+
+                    return false;
+                } else {
+                    database.setTransactionSuccessful();
+                    XposedUtility.logI_xposed(TAG, Str.fm("[ensureTableIsReady_locked] Table [%s] was Created! in Database [%s]!",
+                            tableInfo.name,
+                            Str.noNL(database)));
+
+                    return true;
+                }
+            } else {
+                //Do more in depth checks ?
+                return true;
+            }
+        } catch (Exception e) {
+            XposedUtility.logE_xposed(TAG, Str.fm("Error Ensuring Table [%s] is Ready from Database [%s] Error=%s",
+                    Str.toStringOrNull(tableInfo),
+                    Str.toStringOrNull(database),
+                    e));
+            return false;
+        }finally {
+            database.endTransaction(true, false);
+        }
+    }
+
+
+    public static boolean ensureTableIsReady(TableInfo tableInfo, SQLDatabase database) {
+        if(database == null) {
+            XposedUtility.logE_xposed(TAG, "[ensureTableIsReady] Database Object is NULL!");
+            return false;
+        }
+
+        if(!database.isOpen(true)) {
+            XposedUtility.logE_xposed(TAG, "[ensureTableIsReady] Failed to Open Database: " + Str.noNL(database));
+            return false;
+        }
+
+        if(tableInfo == null || Str.isEmpty(tableInfo.name)) {
+            XposedUtility.logE_xposed(TAG, "[ensureTableIsReady] Table Info Passed was NULL!");
+            return false;
+        }
+
+        if(!database.hasTable(tableInfo.name)) {
+            XposedUtility.logW_xposed(TAG, Str.fm("[ensureTableIsReady] Table [%s] is Missing from the Database [%s] Creating!",
+                    tableInfo.name,
+                    Str.noNL(database)));
+
+            //Options to lock
+            if(!database.createTable(tableInfo)) {
+                XposedUtility.logE_xposed(TAG, Str.fm("[ensureTableIsReady] Table [%s] was not created, Failed! Database [%s]...",
+                        tableInfo.name,
+                        Str.noNL(database)));
+
+                return false;
+            } else {
+                XposedUtility.logI_xposed(TAG, Str.fm("[ensureTableIsReady] Table [%s] was Created! in Database [%s]!",
+                        tableInfo.name,
+                        Str.noNL(database)));
+
+                //do rest of checks ?
+            }
+        }
+
+        return true;
+    }
+
+
 
     public static <T extends ICursorType> List<T> getFromDatabase(
             SQLDatabase db,

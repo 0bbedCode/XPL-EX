@@ -8,7 +8,8 @@ import eu.faircode.xlua.x.xlua.settings.random.randomizers.RandomizersCache;
 public class RandomVoicemailId extends RandomElement {
     public RandomVoicemailId() {
         super("Unique Voicemail ID (alpha tag)");
-        putSettings(RandomizersCache.SETTING_UNIQUE_VOICEMAIL_ID);
+        putIndexSettings(RandomizersCache.SETTING_UNIQUE_VOICEMAIL_ID, 1, 2);
+
     }
 
     @Override

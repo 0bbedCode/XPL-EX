@@ -113,6 +113,20 @@ public class SettingsApi {
         return packet;
     }
 
+    public static Collection<SettingPacket> dumpSettings(SQLDatabase db) {
+        if(!DatabaseHelpEx.ensureTableIsReady(SettingPacket.TABLE_INFO, db))
+            return ListUtil.emptyList();
+
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Dumping Settings from Table...");
+
+        return DatabaseHelpEx.getFromDatabase(
+                db,
+                SettingPacket.TABLE_NAME,
+                SettingPacket.class,
+                true);
+    }
+
     public static Collection<SettingPacket> getAllSettings(SQLDatabase db, int userId, String category) {
         return SQLSnake.create(db, SettingPacket.TABLE_NAME)
                 .ensureDatabaseIsReady()
@@ -123,17 +137,17 @@ public class SettingsApi {
 
     public static SettingPacket getSettingOrBuiltInSetting(SQLDatabase db, int userId, String category, String name) {
         String nameLow = name.toLowerCase();
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Getting Setting or Built in, UserId=" + userId + " Category=" + category + " Name=" + name);
+
         switch (nameLow) {
-            case GetSettingExCommand.SETTING_THEME: return getTheme(db, userId);
-            case GetSettingExCommand.SETTING_COLLECTION: return getCollections(db, userId);
+            case GetSettingExCommand.SETTING_THEME:
+                return getTheme(db, userId);
+            case GetSettingExCommand.SETTING_COLLECTION:
+                return getCollections(db, userId);
             case GetSettingExCommand.SETTING_VERBOSE_DEBUG:
                 SettingPacket packet = getVerboseState(db, userId);
-                try {
-                    DebugUtil.setForceDebug(Str.toBool(packet.value));
-                }catch (Exception e) {
-                    Log.e(TAG, "Error Reading Verbose Setting Packet! E=" + e);
-                }
-
+                DebugUtil.setForceDebug(Str.toBool(packet.value));
                 return packet;
             default:
                 return getSetting(db, userId, category, name);
@@ -158,7 +172,7 @@ public class SettingsApi {
             Log.d(TAG, "Mapped Settings Size=" + ListUtil.size(mapped_settings) + " User Saved Settings=" + ListUtil.size(saved_settings) + " user id=" + userId);
 
         for(SettingInfoPacket setting_info : mapped_settings) {
-            if(!Str.isValidNotWhitespaces(setting_info.name) && USE_DEFAULT.equalsIgnoreCase(setting_info.name))
+            if(Str.isEmpty(setting_info.name) && USE_DEFAULT.equalsIgnoreCase(setting_info.name))
                 continue;
 
             SettingPacket packet = new SettingPacket();
@@ -172,7 +186,7 @@ public class SettingsApi {
 
         if(ListUtil.isValid(saved_settings)) {
             for(SettingPacket setting : saved_settings) {
-                if(!Str.isValidNotWhitespaces(setting.name))
+                if(Str.isEmpty(setting.name))
                     continue;
 
                 SettingPacket packet = settings.get(setting.name);

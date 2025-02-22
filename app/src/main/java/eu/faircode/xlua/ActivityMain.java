@@ -19,11 +19,12 @@
 
 package eu.faircode.xlua;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -49,10 +51,13 @@ import android.widget.Toast;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SearchView;
@@ -61,21 +66,39 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import eu.faircode.xlua.api.XResult;
+import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.api.xlua.call.CleanHooksCommand;
 import eu.faircode.xlua.api.xlua.provider.XLuaHookProvider;
 import eu.faircode.xlua.logger.XLog;
 import eu.faircode.xlua.utilities.PrefUtil;
 import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.data.PrefManager;
+import eu.faircode.xlua.x.data.utils.ListUtil;
+import eu.faircode.xlua.x.ui.FileDialogUtils;
 import eu.faircode.xlua.x.ui.activities.SettingsExActivity;
 import eu.faircode.xlua.x.ui.core.UserClientAppContext;
+import eu.faircode.xlua.x.ui.dialogs.BackupDialog;
 import eu.faircode.xlua.x.ui.dialogs.CollectionsDialog;
+import eu.faircode.xlua.x.ui.dialogs.ErrorDialog;
+import eu.faircode.xlua.x.ui.dialogs.utils.BackupDialogUtils;
+import eu.faircode.xlua.x.xlua.LibUtil;
+import eu.faircode.xlua.x.xlua.commands.call.DropTableCommand;
+import eu.faircode.xlua.x.xlua.commands.call.GetBridgeVersionCommand;
+import eu.faircode.xlua.x.xlua.commands.call.GetDatabaseStatusCommand;
 import eu.faircode.xlua.x.xlua.commands.call.GetSettingExCommand;
+import eu.faircode.xlua.x.xlua.commands.call.PutAssignmentCommand;
+import eu.faircode.xlua.x.xlua.commands.call.PutHookExCommand;
 import eu.faircode.xlua.x.xlua.commands.call.PutSettingExCommand;
 import eu.faircode.xlua.x.xlua.database.A_CODE;
-import eu.faircode.xlua.x.xlua.root.RootManager;
+import eu.faircode.xlua.x.xlua.database.ActionFlag;
+import eu.faircode.xlua.x.xlua.database.ActionPacket;
+import eu.faircode.xlua.x.xlua.hook.AssignmentPacket;
+import eu.faircode.xlua.x.xlua.settings.data.SettingPacket;
+import eu.faircode.xlua.x.xlua.settings.data.XBackup;
+import eu.faircode.xlua.x.xlua.settings.data.XScript;
 
 public class ActivityMain extends ActivityBase {
-    private final static String TAG = "XLua.Main";
+    private final static String TAG = LibUtil.generateTag(ActivityMain.class);
 
 
     private FragmentMain fragmentMain = null;
@@ -90,28 +113,31 @@ public class ActivityMain extends ActivityBase {
     public static final int LOADER_DATA = 1;
     public static final String EXTRA_SEARCH_PACKAGE = "package";
 
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
+    public static final PrefManager manager = PrefManager.create(null, PrefManager.SETTINGS_MAIN);
 
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+    private final XBackup backup = new XBackup();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        manager.ensureIsOpen(this, PrefManager.SETTINGS_MAIN);
         // Check if service is running
         if (!XLuaHookProvider.isAvailable(this)) {
             Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), getString(R.string.msg_no_service), Snackbar.LENGTH_INDEFINITE);
             final Intent intent = getPackageManager().getLaunchIntentForPackage("de.robv.android.xposed.installer");
             if (intent != null && intent.resolveActivity(getPackageManager()) != null)
-                snackbar.setAction(R.string.title_fix, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        startActivity(intent);
-                    }
-                });
+                snackbar.setAction(R.string.title_fix, view -> startActivity(intent));
 
             snackbar.show();
             return;
         }
+
+
+        if(!invokeNeedsRebootCheck() || !invokeDatabaseCheck())
+            return;
 
         // Set layout
         setContentView(R.layout.main);
@@ -294,9 +320,85 @@ public class ActivityMain extends ActivityBase {
         }));
 
 
+        // Add after other drawer items
+        drawerArray.add(new DrawerItem(this, R.string.menu_import_settings, new DrawerItem.IListener() {
+            @Override
+            public void onClick(DrawerItem item) {
+                BackupDialogUtils.startBackupFilePicker(ActivityMain.this);
+            }
+        }));
+
+        drawerArray.add(new DrawerItem(this, R.string.menu_export_settings, new DrawerItem.IListener() {
+            @Override
+            public void onClick(DrawerItem item) {
+                final Context context = ActivityMain.this;
+                backup.reset();
+                //ConfUtils.startConfigSavePicker(this, checked.name);
+                BackupDialog.create()
+                        .setBackup(backup, false)  // Not from file
+                        .setDefinitions(context)
+                        .setSettings(context)
+                        .setAssignments(context)
+                        .setAllHooks(context)
+                        .setOnOperationExportedOrApplied((v, wasImported) -> {
+                            if(v != null) {
+                                backup.copyFrom(v);
+                                if(DebugUtil.isDebug())
+                                    Log.d(TAG, "Was Imported: " + wasImported + " Name=" + backup.getName());
+
+                                if(!wasImported)
+                                    BackupDialogUtils.startSavePicker(ActivityMain.this, backup.getName());
+                            }
+                        })
+                        .show(getSupportFragmentManager(), getString(R.string.title_backup));
+            }
+        }));
+
+
         drawerList.setAdapter(drawerArray);
         //whatsNew
         initCore();
+    }
+
+    private boolean invokeNeedsRebootCheck() {
+        String result = GetBridgeVersionCommand.get(ActivityMain.this);
+        if(Str.isEmpty(result) || result.equalsIgnoreCase(GetBridgeVersionCommand.DEFAULT)) {
+            ErrorDialog.create()
+                    .setErrorTitle(getString(R.string.title_error_service_version))
+                    .setErrorMessage(Str.combineEx(
+                            Str.combine("Bridge Version=", Str.toStringOrNull(result)),
+                            Str.NEW_LINE,
+                            Str.combine("Application Version=", BuildConfig.VERSION_NAME),
+                            Str.repeatString(Str.NEW_LINE, 2),
+                            getString(R.string.msg_error_service_bridge)))
+                    .show(getSupportFragmentManager(), getString(R.string.title_error_generic));
+            return false;
+        } else {
+            if(!BuildConfig.VERSION_NAME.equalsIgnoreCase(result)) {
+                ErrorDialog.create()
+                        .setErrorTitle(getString(R.string.title_error_service_version))
+                        .setErrorMessage(Str.fm(getString(R.string.msg_error_mismatch_bridge_version), result, BuildConfig.VERSION_NAME))
+                        .show(getSupportFragmentManager(), getString(R.string.title_error_generic));
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean invokeDatabaseCheck() {
+        Pair<Integer, String> result = GetDatabaseStatusCommand.get(ActivityMain.this);
+        if(result != null) {
+            if(result.first == GetDatabaseStatusCommand.CODE_ERROR) {
+                ErrorDialog.create()
+                        .setErrorTitle(getString(R.string.title_error_database_service))
+                        .setErrorMessage(result.second)
+                        .show(getSupportFragmentManager(), getString(R.string.title_error_generic));
+                return false;
+            }
+        }
+
+        return true;
     }
 
 
@@ -305,6 +407,138 @@ public class ActivityMain extends ActivityBase {
                 A_CODE.isSuccessful(code) ?
                         Str.combine(getString(R.string.msg_task_finished_command), TextUtils.isEmpty(extraIfSucceeded) ? "" :  " >> " + extraIfSucceeded) :
                         Str.combine(getString(R.string.msg_task_failure), " >> " + code.name(), false) , Snackbar.LENGTH_LONG).show();
+    }
+
+    public static String ensureLuaScript(String name, Map<String, String> map) {
+        if(Str.isEmpty(name))
+            return Str.EMPTY;
+
+        String trimmed = Str.trimEx(Str.trimEx(name.trim(), true, false, true, false, "@"),
+                true, false, false, true, ".lua");
+
+        if(map == null)
+            return trimmed;
+
+        if(name.startsWith("@") || name.endsWith(".lua")) {
+            String code = map.get(trimmed);
+            if(Str.isEmpty(code))
+                return Str.EMPTY;
+
+            return code;
+        }
+
+        return trimmed;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (data == null || resultCode != Activity.RESULT_OK)
+            return;
+        Uri uri = data.getData();
+        if (uri == null)
+            return;
+
+        if (requestCode == BackupDialogUtils.REQUEST_OPEN_BACKUP) {
+            XBackup backup = BackupDialogUtils.readBackupFromUri(this, uri);
+            if (backup != null) {
+                BackupDialog.create()
+                        .setBackup(backup, true)  // From file
+                        .setOnOperationExportedOrApplied((v, wasImported) -> {
+                            if (DebugUtil.isDebug())
+                                Log.d(TAG, "Backup import completed");
+
+                            // Refresh UI after import
+                            //if (fragmentMain != null)
+                            //    fragmentMain.loadData();
+                            if(v != null && wasImported) {
+                                if(ListUtil.isValid(v.getSettings())) {
+                                    if(v.dropOld)
+                                        DropTableCommand.drop(this, SettingPacket.TABLE_NAME, "xlua");
+
+                                    for(SettingPacket packet : v.getSettings()) {
+                                        if(packet.value != null) {
+                                            packet.setActionPacket(ActionPacket.create(ActionFlag.PUSH, false));
+                                            PutSettingExCommand.call(this, packet);
+                                        }
+                                    }
+                                }
+
+                                if(ListUtil.isValid(v.getDefinitions())) {
+                                    if(v.dropOld)
+                                        DropTableCommand.drop(this, XLuaHook.TABLE_NAME, "xlua");
+
+                                    Map<String, String> luaScripts = new HashMap<>();
+                                    if(ListUtil.isValid(v.getScripts())) {
+                                        for(XScript script : v.getScripts()) {
+                                            String name = ensureLuaScript(script.getName(), null);
+                                            String code = script.getCode();
+                                            if(Str.isEmpty(code) || Str.isEmpty(name))
+                                                continue;
+
+                                            luaScripts.put(name, code);
+                                        }
+                                    }
+
+                                    if(DebugUtil.isDebug())
+                                        Log.d(TAG, "Lua Scripts Loaded=" + ListUtil.size(luaScripts));
+
+                                    //Resolve the Script
+                                    for(XLuaHook hook : v.getDefinitions()) {
+                                        if(hook != null && !Str.isEmpty(hook.getObjectId())) {
+                                            String luaScript = hook.getLuaScript();
+                                            String resolved = Str.ensureIsNotNullOrDefault(ensureLuaScript(luaScript, luaScripts), Str.EMPTY);
+                                            hook.setScript(resolved);
+                                            PutHookExCommand.put(this, hook);
+                                        }
+                                    }
+                                }
+
+                                if(ListUtil.isValid(v.getAssignments())) {
+                                    if(v.dropOld)
+                                        DropTableCommand.drop(this, AssignmentPacket.TABLE_NAME, "xlua");
+
+                                    for(AssignmentPacket assignmentPacket : v.getAssignments()) {
+                                        if(!Str.isEmpty(assignmentPacket.getCategory()) && !Str.isEmpty(assignmentPacket.getHookId())) {
+                                            assignmentPacket.setActionPacket(ActionPacket.create(ActionFlag.PUSH, false));
+                                            PutAssignmentCommand.put(this, assignmentPacket);
+                                            if(DebugUtil.isDebug())
+                                                Log.d(TAG, "Pushed Assignment=" + Str.ensureNoDoubleNewLines(Str.toStringOrNull(assignmentPacket)));
+                                        }
+                                    }
+                                }
+                            }
+
+                            Snackbar.make(findViewById(android.R.id.content),
+                                    getString(R.string.msg_settings_imported),
+                                    Snackbar.LENGTH_LONG).show();
+                        })
+                        .show(getSupportFragmentManager(), getString(R.string.title_backup));
+            } else {
+                Snackbar.make(findViewById(android.R.id.content),
+                        R.string.msg_error_reading_backup,
+                        Snackbar.LENGTH_LONG).show();
+            }
+        }
+        else if (requestCode == BackupDialogUtils.REQUEST_SAVE_BACKUP) {
+            try {
+                String json = backup.toJSON();
+                if (DebugUtil.isDebug())
+                    Log.d(TAG, "Save backup request received, Name=" + backup.getName() + " Json=" + Str.ensureNoDoubleNewLines(json));
+
+                if(Str.isEmpty(json))
+                    throw new Exception("XLua Backup JSON is null or Empty!");
+
+                FileDialogUtils.takePersistablePermissions(ActivityMain.this, uri);
+                boolean success = FileDialogUtils.writeFileContent(ActivityMain.this, uri, json);
+                Snackbar.make(findViewById(android.R.id.content),
+                        success ? getString(R.string.msg_backup_exported) : getString(R.string.msg_backup_exported_failed),
+                        Snackbar.LENGTH_LONG).show();
+            }catch (Exception e) {
+                Log.e(TAG, "Error Saving XLua Backup! Error=" + e + " Name=" + backup.getName());
+            }
+        }
     }
 
     @Override
@@ -316,10 +550,8 @@ public class ActivityMain extends ActivityBase {
 
     @Override
     protected void onNewIntent(Intent intent) {
-        Log.i(TAG, "New " + intent);
         super.onNewIntent(intent);
         setIntent(intent);
-
         if (this.menu != null)
             updateMenu(this.menu);
     }
@@ -341,77 +573,69 @@ public class ActivityMain extends ActivityBase {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.i(TAG, "Create options");
-
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
         this.menu = menu;
-
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        Log.i(TAG, "Prepare options");
         MenuItem menuSearch = menu.findItem(R.id.menu_search);
         final SearchView searchView = (SearchView) menuSearch.getActionView();
+        if(searchView == null)
+            return false;
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Log.i(TAG, "Search submit=" + query);
                 if (fragmentMain != null) {
                     fragmentMain.filter(query);
-                    searchView.clearFocus(); // close keyboard
+                    searchView.clearFocus();
                 }
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                Log.i(TAG, "Search change=" + newText);
-                if (fragmentMain != null)
-                    fragmentMain.filter(newText);
+                if (fragmentMain != null) fragmentMain.filter(newText);
                 return true;
             }
         });
 
         menuSearch.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
-            public boolean onMenuItemActionExpand(MenuItem menuItem) {
-                Log.i(TAG, "Search expand");
-                return true;
-            }
+            public boolean onMenuItemActionExpand(MenuItem menuItem) { return true; }
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                Log.i(TAG, "Search collapse");
-
                 // Search uid once
                 Intent intent = getIntent();
                 intent.removeExtra(EXTRA_SEARCH_PACKAGE);
                 setIntent(intent);
-
                 return true;
             }
         });
 
         updateMenu(menu);
-
         return super.onPrepareOptionsMenu(menu);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (drawerToggle != null && drawerToggle.onOptionsItemSelected(item))
             return true;
 
-        Log.i(TAG, "Selected option " + item.getTitle());
+        manager.ensureIsOpen(ActivityMain.this, PrefManager.SETTINGS_MAIN);
         switch (item.getItemId()) {
             case R.id.menu_show:
                 AdapterApp.enumShow show = (fragmentMain == null ? AdapterApp.enumShow.none : fragmentMain.getShow());
                 this.menu.findItem(R.id.menu_show_user).setEnabled(show != AdapterApp.enumShow.none);
                 this.menu.findItem(R.id.menu_show_icon).setEnabled(show != AdapterApp.enumShow.none);
                 this.menu.findItem(R.id.menu_show_all).setEnabled(show != AdapterApp.enumShow.none);
+                this.menu.findItem(R.id.menu_show_hook).setEnabled(show != AdapterApp.enumShow.none);
+                this.menu.findItem(R.id.menu_show_system).setEnabled(show != AdapterApp.enumShow.none);
                 switch (show) {
                     case user:
                         this.menu.findItem(R.id.menu_show_user).setChecked(true);
@@ -422,9 +646,16 @@ public class ActivityMain extends ActivityBase {
                     case all:
                         this.menu.findItem(R.id.menu_show_all).setChecked(true);
                         break;
+                    case hook:
+                        this.menu.findItem(R.id.menu_show_hook).setChecked(true);
+                        break;
+                    case system:
+                        this.menu.findItem(R.id.menu_show_system).setChecked(true);
+                        break;
                 }
                 return true;
-
+            case R.id.menu_show_system:
+            case R.id.menu_show_hook:
             case R.id.menu_show_user:
             case R.id.menu_show_icon:
             case R.id.menu_show_all:
@@ -433,23 +664,28 @@ public class ActivityMain extends ActivityBase {
                 switch (item.getItemId()) {
                     case R.id.menu_show_user:
                         set = AdapterApp.enumShow.user;
+                        manager.putString(PrefManager.SETTING_APPS_SHOW, "show_user");
                         break;
                     case R.id.menu_show_all:
                         set = AdapterApp.enumShow.all;
+                        manager.putString(PrefManager.SETTING_APPS_SHOW, "show_all");
+                        break;
+                    case R.id.menu_show_hook:
+                        set = AdapterApp.enumShow.hook;
+                        manager.putString(PrefManager.SETTING_APPS_SHOW, "show_hook");
+                        break;
+                    case R.id.menu_show_system:
+                        set = AdapterApp.enumShow.system;
+                        manager.putString(PrefManager.SETTING_APPS_SHOW, "show_system");
                         break;
                     default:
                         set = AdapterApp.enumShow.icon;
+                        manager.putString(PrefManager.SETTING_APPS_SHOW, "show_icon");
                         break;
                 }
-                fragmentMain.setShow(set);
-                executor.submit(new Runnable() {
-                    @Override
-                    public void run() {
-                        //XLuaCall.putSetting(ActivityMain.this, "show", set.name());
-                    }
-                });
-                return true;
 
+                fragmentMain.setShow(set);
+                return true;
             case R.id.menu_help:
                 menuHelp();
                 return true;
@@ -478,13 +714,11 @@ public class ActivityMain extends ActivityBase {
 
 
     public void updateMenu(Menu menu) {
-        // Search
         MenuItem menuSearch = menu.findItem(R.id.menu_search);
         final SearchView searchView = (SearchView) menuSearch.getActionView();
         if (searchView != null) {
             String pkg = getIntent().getStringExtra(EXTRA_SEARCH_PACKAGE);
             if (pkg != null) {
-                Log.i(TAG, "Search pkg=" + pkg);
                 menuSearch.expandActionView();
                 searchView.setQuery(pkg, true);
             }

@@ -242,8 +242,10 @@ public class ConfigDialog extends AppCompatDialogFragment implements ConfigAdapt
 
         btnToFile.setOnClickListener(v -> {
             XPConfig checked = getChecked();
-            if (checked != null) ConfUtils.startConfigSavePicker(this, checked.name);
-             else Snackbar.make(v, R.string.msg_no_config_selected, Snackbar.LENGTH_SHORT).show();
+            if (checked != null)
+                ConfUtils.startConfigSavePicker(this, checked.name);
+             else
+                 Snackbar.make(v, R.string.msg_no_config_selected, Snackbar.LENGTH_SHORT).show();
         });
 
         etSearch.addTextChangedListener(new TextWatcher() {
@@ -346,7 +348,7 @@ public class ConfigDialog extends AppCompatDialogFragment implements ConfigAdapt
         ConfirmDialog.create()
                 .setContext(context)
                 .setImage(R.drawable.ic_warining_one)
-                .setDelay(1)
+                .setDelay(0)
                 .setMessage(Str.combineEx(getString(R.string.msg_confirm_delete_config), Str.NEW_LINE, config.name))
                 .onConfirm(() -> {
                     A_CODE res = XPacket.delete(uid, config).callRes(context, PutConfigCommand.COMMAND_NAME);

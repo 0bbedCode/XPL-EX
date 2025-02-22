@@ -61,10 +61,26 @@ public class ConfUtils {
                                 PICK_FILE_REQUEST_CODE);
      */
 
+
+
+
+    public static Intent createOpenFileIntent(String extension) {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType(extension); // Use "image/*" for images, "application/pdf" for PDF, etc.
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        return intent;
+    }
+
+
+	//We use this now supports android 9+ and 6+
+    public static Intent createOpenConfigIntent() {
+        return createOpenFileIntent("*/*");
+    }
+
     /**
      * Creates an intent for opening JSON files
      */
-    public static Intent createOpenConfigIntent() {
+    public static Intent createOpenConfigIntentOldd() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
 

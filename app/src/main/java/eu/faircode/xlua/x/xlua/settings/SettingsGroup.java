@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.ui.core.interfaces.IDiffFace;
 
@@ -19,6 +20,10 @@ public class SettingsGroup implements IDiffFace {
 
     private final String groupName;
     private final List<SettingsContainer> containers = new ArrayList<>();
+
+    public final GroupStats groupStats = new GroupStats();
+
+
 
     public String getGroupName() { return this.groupName; }
     public List<SettingsContainer> getContainers() { return this.containers; }

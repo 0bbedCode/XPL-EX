@@ -36,6 +36,7 @@ public class StrBuilder {
     private boolean ensureNoMoreThanOneNewLine = false;
     private String mDivider;
     private boolean mDoAppend = true;
+    private String mDelimiter;
 
     public StrBuilder() { mSb = new StringBuilder(); }
     public StrBuilder(int capacity) { mSb = new StringBuilder(capacity); }
@@ -43,6 +44,15 @@ public class StrBuilder {
     public StrBuilder(String str, boolean newLine) {
         mSb = new StringBuilder(str);
         if(newLine) mSb.append(STR_NEW_LINE);
+    }
+
+    public StrBuilder reset() {
+        this.mSb = new StringBuilder();
+        return this;
+    }
+
+    public boolean isEmpty() {
+        return mSb == null || mSb.length() < 1;
     }
 
     public StringBuilder getInternalBuilder() { return mSb; }
@@ -61,6 +71,19 @@ public class StrBuilder {
                 }
             }
         }
+    }
+
+    private void ensureDel() {
+        if(mDelimiter != null) {
+            if(this.mSb.length() > 0) {
+                mSb.append(mDelimiter);
+            }
+        }
+    }
+
+    public StrBuilder ensureDelimiter(String delimiter) {
+        this.mDelimiter = delimiter;
+        return this;
     }
 
     public boolean endsWithCommand() {
@@ -107,31 +130,37 @@ public class StrBuilder {
     }
 
     public StrBuilder newLine() {
+        ensureDel();
         if(mDoAppend) mSb.append(STR_NEW_LINE);
         return this;
     }
 
     public StrBuilder space() {
+        ensureDel();
         if(mDoAppend) mSb.append(STR_SPACE);
         return this;
     }
 
     public StrBuilder tab() {
+        ensureDel();
         if(mDoAppend) mSb.append(STR_TAB);
         return this;
     }
 
     public StrBuilder collen() {
+        ensureDel();
         if(mDoAppend) mSb.append(STR_COLLEN);
         return this;
     }
 
     public StrBuilder comma() {
+        ensureDel();
         if(mDoAppend) mSb.append(STR_COMMA);
         return this;
     }
 
     public StrBuilder appendLine(StrBuilder sb) {
+        ensureDel();
         if(mDoAppend) {
             mSb.append(sb.toString());
             mSb.append(STR_NEW_LINE);
@@ -140,12 +169,16 @@ public class StrBuilder {
     }
 
     public StrBuilder append(StrBuilder sb) {
-        if(mDoAppend) mSb.append(sb.toString());
+        if(mDoAppend) {
+            ensureDel();
+            mSb.append(sb.toString());
+        }
         return this;
     }
 
     public StrBuilder appendLine(StringBuilder sb) {
         if(mDoAppend) {
+            ensureDel();
             ensureNoDoubleNewLine();
             mSb.append(sb.toString());
             mSb.append(STR_NEW_LINE);
@@ -154,12 +187,16 @@ public class StrBuilder {
     }
 
     public StrBuilder append(StringBuilder sb) {
-        if(mDoAppend) mSb.append(sb.toString());
+        if(mDoAppend) {
+            ensureDel();
+            mSb.append(sb.toString());
+        }
         return this;
     }
 
     public StrBuilder appendLine(String s) {
         if(mDoAppend) {
+            ensureDel();
             ensureNoDoubleNewLine();
             mSb.append(s);
             mSb.append(STR_NEW_LINE);
@@ -168,12 +205,16 @@ public class StrBuilder {
     }
 
     public StrBuilder append(String s) {
-        if(mDoAppend) mSb.append(s);
+        if(mDoAppend) {
+            ensureDel();
+            mSb.append(s);
+        }
         return this;
     }
 
     public StrBuilder appendLine(Character c) {
         if(mDoAppend) {
+            ensureDel();
             ensureNoDoubleNewLine();
             mSb.append(c);
             mSb.append(STR_NEW_LINE);
@@ -182,12 +223,16 @@ public class StrBuilder {
     }
 
     public StrBuilder append(Character c) {
-        if(mDoAppend) mSb.append(c);
+        if(mDoAppend) {
+            ensureDel();
+            mSb.append(c);
+        }
         return this;
     }
 
     public StrBuilder appendLine(Boolean b) {
         if(mDoAppend) {
+            ensureDel();
             ensureNoDoubleNewLine();
             mSb.append(b);
             mSb.append(STR_NEW_LINE);
@@ -196,12 +241,16 @@ public class StrBuilder {
     }
 
     public StrBuilder append(Boolean b) {
-        if(mDoAppend) mSb.append(String.valueOf(b));
+        if(mDoAppend) {
+            ensureDel();
+            mSb.append(String.valueOf(b));
+        }
         return this;
     }
 
     public StrBuilder appendLine(Integer i) {
         if(mDoAppend) {
+            ensureDel();
             ensureNoDoubleNewLine();
             mSb.append(i);
             mSb.append(STR_NEW_LINE);
@@ -210,12 +259,16 @@ public class StrBuilder {
     }
 
     public StrBuilder append(Integer i) {
-        if(mDoAppend) mSb.append(i);
+        if(mDoAppend) {
+            ensureDel();
+            mSb.append(i);
+        }
         return this;
     }
 
     public StrBuilder appendLine(Object o) {
         if(mDoAppend) {
+            ensureDel();
             ensureNoDoubleNewLine();
             mSb.append(o);
             mSb.append(STR_NEW_LINE);
@@ -225,6 +278,7 @@ public class StrBuilder {
 
     public StrBuilder append(Object o) {
         if(mDoAppend) {
+            ensureDel();
             mSb.append(o);
         }
         return this;
@@ -234,6 +288,7 @@ public class StrBuilder {
     public StrBuilder appendLine(String[] arr) { return appendLine(arr, STR_SPACE); }
     public StrBuilder appendLine(String[] arr, String delimiter) {
         if(mDoAppend) {
+            ensureDel();
             ensureNoDoubleNewLine();
             mSb.append(Str.joinArray(arr, delimiter));
             mSb.append(STR_NEW_LINE);
@@ -243,7 +298,10 @@ public class StrBuilder {
 
     public StrBuilder append(String[] arr) { return append(arr, STR_SPACE); }
     public StrBuilder append(String[] arr, String delimiter) {
-        if(mDoAppend) mSb.append(Str.joinArray(arr, delimiter));
+        if(mDoAppend) {
+            ensureDel();
+            mSb.append(Str.joinArray(arr, delimiter));
+        }
         return this;
     }
 
@@ -251,6 +309,7 @@ public class StrBuilder {
     public StrBuilder appendLine(List<String> lst) { return appendLine(lst, STR_SPACE); }
     public StrBuilder appendLine(List<String> lst, String delimiter) {
         if(mDoAppend) {
+            ensureDel();
             ensureNoDoubleNewLine();
             mSb.append(Str.joinList(lst, delimiter));
             mSb.append(STR_NEW_LINE);
@@ -260,12 +319,16 @@ public class StrBuilder {
 
     public StrBuilder append(List<String> lst) { return append(lst, STR_SPACE); }
     public StrBuilder append(List<String> lst, String delimiter) {
-        if(mDoAppend) mSb.append(Str.joinList(lst, delimiter));
+        if(mDoAppend) {
+            ensureDel();
+            mSb.append(Str.joinList(lst, delimiter));
+        }
         return this;
     }
 
     public StrBuilder appendErrorLine(Throwable t, boolean stackTrace) {
         if(mDoAppend) {
+            ensureDel();
             ensureNoDoubleNewLine();
             mSb.append("Exception: ")
                     .append(t.getMessage());
@@ -282,6 +345,7 @@ public class StrBuilder {
 
     public StrBuilder appendError(Throwable t, boolean stackTrace) {
         if(mDoAppend) {
+            ensureDel();
             mSb.append("Exception: ")
                     .append(t.getMessage());
             if(stackTrace)
@@ -296,6 +360,7 @@ public class StrBuilder {
 
     public StrBuilder appendFieldLine(String fieldName, Map<?,?> map) {
         if(mDoAppend) {
+            ensureDel();
             ensureNoDoubleNewLine();
             StringBuilder sb = new StringBuilder();
 
@@ -324,6 +389,7 @@ public class StrBuilder {
 
     public StrBuilder appendFieldLine(String fieldName, Object value) {
         if(mDoAppend) {
+            ensureDel();
             ensureNoDoubleNewLine();
             mSb.append(fieldName)
                     .append(STR_COLLEN)
@@ -336,6 +402,7 @@ public class StrBuilder {
 
     public StrBuilder appendField(String fieldName, Object value) {
         if(mDoAppend) {
+            ensureDel();
             mSb.append(fieldName)
                     .append(STR_COLLEN)
                     .append(STR_SPACE)
@@ -347,6 +414,7 @@ public class StrBuilder {
 
     public StrBuilder appendFieldLine(String fieldName, String value) {
         if(mDoAppend) {
+            ensureDel();
             ensureNoDoubleNewLine();
             if(value != null && value.endsWith("\n")) value = value.substring(0, value.length() - 1);
             mSb.append(fieldName)
@@ -360,6 +428,7 @@ public class StrBuilder {
 
     public StrBuilder appendField(String fieldName, String value) {
         if(mDoAppend) {
+            ensureDel();
             mSb.append(fieldName)
                     .append(STR_COLLEN)
                     .append(STR_SPACE)
@@ -370,6 +439,7 @@ public class StrBuilder {
 
     public StrBuilder appendStrBytesLine(byte[] bs) {
         if(mDoAppend) {
+            ensureDel();
             ensureNoDoubleNewLine();
             if(bs == null) return this;
             mSb.append(new String(bs));
@@ -380,12 +450,16 @@ public class StrBuilder {
 
     public StrBuilder appendStrBytes(byte[] bs) {
         if(bs == null) return this;
-        if(mDoAppend) mSb.append(new String(bs));
+        if(mDoAppend) {
+            ensureDel();
+            mSb.append(new String(bs));
+        }
         return this;
     }
 
     public StrBuilder appendStrBytesLine(byte[] bs, Charset charSet) {
         if(mDoAppend) {
+            ensureDel();
             ensureNoDoubleNewLine();
             if(bs == null) return this;
             mSb.append(new String(bs, charSet));
@@ -396,12 +470,16 @@ public class StrBuilder {
 
     public StrBuilder appendStrBytes(byte[] bs, Charset charSet) {
         if(bs == null) return this;
-        if(mDoAppend) mSb.append(new String(bs, charSet));
+        if(mDoAppend) {
+            ensureDel();
+            mSb.append(new String(bs, charSet));
+        }
         return this;
     }
 
     public StrBuilder appendStrBytesASCIILine(byte[] bs) {
         if(mDoAppend) {
+            ensureDel();
             ensureNoDoubleNewLine();
             if(bs == null) return this;
             mSb.append(new String(bs, StandardCharsets.US_ASCII));
@@ -412,12 +490,16 @@ public class StrBuilder {
 
     public StrBuilder appendStrBytesASCII(byte[] bs) {
         if(bs == null) return this;
-        if(mDoAppend) mSb.append(new String(bs, StandardCharsets.US_ASCII));
+        if(mDoAppend) {
+            ensureDel();
+            mSb.append(new String(bs, StandardCharsets.US_ASCII));
+        }
         return this;
     }
 
     public StrBuilder appendStrBytesUTF16Line(byte[] bs) {
         if(mDoAppend) {
+            ensureDel();
             ensureNoDoubleNewLine();
             if(bs == null) return this;
             mSb.append(new String(bs, StandardCharsets.UTF_16));
@@ -428,12 +510,16 @@ public class StrBuilder {
 
     public StrBuilder appendStrBytesUTF16(byte[] bs) {
         if(bs == null) return this;
-        if(mDoAppend) mSb.append(new String(bs, StandardCharsets.UTF_16));
+        if(mDoAppend) {
+            ensureDel();
+            mSb.append(new String(bs, StandardCharsets.UTF_16));
+        }
         return this;
     }
 
     public StrBuilder appendStrBytesUTF8Line(byte[] bs) {
         if(mDoAppend) {
+            ensureDel();
             ensureNoDoubleNewLine();
             if(bs == null) return this;
             mSb.append(new String(bs, StandardCharsets.UTF_8));
@@ -444,12 +530,16 @@ public class StrBuilder {
 
     public StrBuilder appendStrBytesUTF8(byte[] bs) {
         if(bs == null) return this;
-        if(mDoAppend) mSb.append(new String(bs, StandardCharsets.UTF_8));
+        if(mDoAppend) {
+            ensureDel();
+            mSb.append(new String(bs, StandardCharsets.UTF_8));
+        }
         return this;
     }
 
     public StrBuilder appendLine(byte[] bs) {
         if(mDoAppend) {
+            ensureDel();
             ensureNoDoubleNewLine();
             if(bs == null) return this;
             mSb.append(Str.bytesToHex(bs));
@@ -460,18 +550,25 @@ public class StrBuilder {
 
     public StrBuilder append(byte[] bs) {
         if(bs == null) return this;
-        if(mDoAppend) mSb.append(Str.bytesToHex(bs));
+        if(mDoAppend) {
+            ensureDel();
+            mSb.append(Str.bytesToHex(bs));
+        }
         return this;
     }
 
     public StrBuilder appendSpace() {
-        if(mDoAppend) mSb.append(STR_SPACE);
+        if(mDoAppend) {
+            ensureDel();
+            mSb.append(STR_SPACE);
+        }
         return this;
     }
 
     public <T> StrBuilder appendCollectionLine(Collection<T> collection) {
         if(collection == null || collection.isEmpty()) return this;
         if(mDoAppend) {
+            ensureDel();
             int index = 0;
             for(T item : collection) {
                 try {

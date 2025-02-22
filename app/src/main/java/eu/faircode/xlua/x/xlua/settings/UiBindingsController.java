@@ -60,7 +60,6 @@ import eu.faircode.xlua.x.xlua.settings.interfaces.NameInformationTypeBase;
  *  hmm I see "abstract = no need to implement all the functions in interface the caller has too, interesting..."
  */
 public abstract class UiBindingsController extends NameInformationTypeBase implements IValueDescriptor {
-    private static final String TAG = "XLua.UiBindingsController";
 
     protected boolean isChecked = false;
 
@@ -77,32 +76,13 @@ public abstract class UiBindingsController extends NameInformationTypeBase imple
     public boolean labelMatchesIdentification() { return labelMatchesIdentification(getIdentification()); }
     public boolean labelMatchesIdentification(String objectIdentification) { return SettingsHelper.matchesLabel(objectIdentification, getIdentifyingLabel()); }
 
-    //public void ensureInputUpdated() { setInputTextSafe(getNewValue(), getIdentification()); }
 
     public boolean isEnabled() { return isChecked; }
 
-    /*public void setInputTextSafe(String inputText) { setInputTextSafe(inputText, getIdentification()); }
-    public void setInputTextSafe(String inputText, String objectIdentifier) {
-        if(labelMatchesIdentification(objectIdentifier)) {
-            if(this.editText != null) {
-                if(!Str.areEqual(CoreUiUtils.getInputTextText(this.editText, null, false))) {
 
-                }
-                CoreUiUtils.getInputTextText()
-            }else {
-                if(!Str.areEqual(SettingsHelperOld.getInputTextText(this.inputEditText), inputText, true, true)) {
-                    SettingsHelper.setInputTextText(this.inputEditText, this.textWatcher, inputText);
-                }
-            }
-        }
-    }*/
 
     public void ensureUiUpdated(String inputText) {
-        if(this.editText != null) {
-            CoreUiUtils.setEditTextText(this.editText, this.textWatcher, inputText, false);
-        } else {
-            CoreUiUtils.setInputTextText(this.inputEditText, this.textWatcher, inputText, false);
-        }
+        CoreUiUtils.setEditTextText(this.editText, this.textWatcher, inputText, false);
     }
 
     public void setNameLabelColor(Context context, boolean isNotSaved, boolean hasValue) {
@@ -118,29 +98,4 @@ public abstract class UiBindingsController extends NameInformationTypeBase imple
         this.editText = inputEditText;
         this.textWatcher = textWatcher;
     }
-
-    public void setBindings(TextView compareLabel, TextInputEditText inputEditText, TextWatcher textWatcher) {
-        this.nameLabel = compareLabel;
-        this.inputEditText = inputEditText;
-        this.textWatcher = textWatcher;
-    }
-
-    /*public void bindUserInterfaceElements(TextView nameLabel, TextView niceNameLabel, TextInputEditText inputEditText, TextWatcher textWatcher) {
-        if(nameLabel != null) {
-            this.nameLabel = nameLabel;
-            SettingsHelper.setLabelText(this.nameLabel, getName());
-        }
-
-        if(niceNameLabel != null) {
-            this.niceNameLabel = niceNameLabel;
-            SettingsHelper.setLabelText(this.niceNameLabel, getNameNice());
-        }
-
-        if(inputEditText != null) {
-            this.inputEditText = inputEditText;
-            this.textWatcher = textWatcher;
-            String val = getNewValue();
-            if(val != null) SettingsHelper.setInputTextText(this.inputEditText, this.textWatcher, val);
-        }
-    }*/
 }

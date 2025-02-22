@@ -116,13 +116,12 @@ public class PackageHookContext {
                 if(DebugUtil.isDebug())
                     Log.d(TAG, Str.fm("Finished Parsing Settings for Pre Randomization, Settings Count=[%s] To Randomize Count=[%s] Now Randomizing the need!", holders.size(), needToRandomize.size()));
 
-                //RandomizerSessionContext ctx = RandomizerSessionContext.create();
-                //ctx.setContext(context);
-                //ctx.setSharedRegistry(sharedRegistry);
-                //ctx.setSettings(holders);
-                //ctx.setRandomizers();
-                //ctx.randomizeAll();
-
+                RandomizerSessionContext.create()
+                        .randomize(
+                                holders,
+                                needToRandomize,
+                                context,
+                                sharedRegistry);
                 if(DebugUtil.isDebug())
                     Log.d(TAG, Str.fm("Finished Pre Randomizing [%s] Settings, Total Settings [%s] Now pushing!", needToRandomize.size(), holders.size()));
 

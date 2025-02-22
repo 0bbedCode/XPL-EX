@@ -5,6 +5,8 @@ import android.util.Log;
 
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.utils.ArrayUtils;
+import eu.faircode.xlua.x.xlua.LibUtil;
+import eu.faircode.xlua.x.xlua.database.ActionPacket;
 import eu.faircode.xlua.x.xlua.database.sql.SQLDatabase;
 import eu.faircode.xlua.x.xlua.identity.UserIdentity;
 
@@ -16,7 +18,7 @@ import eu.faircode.xlua.x.xlua.identity.UserIdentity;
  */
 
 public class QueryPacket extends BridgePacket {
-    private static final String TAG = "XLua.QueryPacket";
+    private static final String TAG = LibUtil.generateTag(QueryPacket.class);
 
     protected final String[] selection;
     private UserIdentity userIdentity;
@@ -27,6 +29,9 @@ public class QueryPacket extends BridgePacket {
     public String getSelectionAt(int index, String defaultValue) { return ArrayUtils.getElementAtIndexOrDefault(selection, index, defaultValue); }
     public String[] getSelection() { return selection; }
 
+    public int getIntSelectionAt(int index) { return getIntSelectionAt(index, -1); }
+    public int getIntSelectionAt(int index, int defaultValue) { return Str.tryParseInt(getSelectionAt(index, String.valueOf(defaultValue)), defaultValue); }
+
     public String getCategory() { return getCategory(false); }
     public String getCategory(boolean isCategoryFirst) { return getUserIdentification(isCategoryFirst).getCategory(); }
 
@@ -35,6 +40,11 @@ public class QueryPacket extends BridgePacket {
 
     public int getUserId() { return getUserId(false); }
     public int getUserId(boolean isCategoryFirst) { return getUserIdentification(isCategoryFirst).getUserId(true); }
+
+    public String getLastSelection() { return selection != null ? selection[selection.length - 1] : null; }
+
+    public boolean isDump() { return selection != null && ActionPacket.ACTION_DUMP.equalsIgnoreCase(getLastSelection()); }
+    public boolean isAll() { return selection != null && ActionPacket.ACTION_ALL.equalsIgnoreCase(getLastSelection()); }
 
     public UserIdentity getUserIdentification() { return getUserIdentification(false); }
     public UserIdentity getUserIdentification(boolean isCategoryFirst) {

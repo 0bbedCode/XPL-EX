@@ -52,7 +52,7 @@ public class XHookUtil {
         // base, bit32, coroutine, io, math, os, package, string, table, luajava
         if (BuildConfig.DEBUG) globals.load(new DebugLib());
         //This will create the logger and hook instance
-        globals.set("log", new LuaLog(context.getPackageName(), context.getApplicationInfo().uid, hook.getSharedId()));
+        globals.set("log", new LuaLog(context.getPackageName(), context.getApplicationInfo().uid, hook.getObjectId()));
         globals.set("hook", new LuaHook(context, settings, propSettings, propMaps, key, useDefault, packageName));
         return new LuaLocals(globals);
     }
@@ -110,7 +110,7 @@ public class XHookUtil {
                 return compiledScript;
             }
         }catch (Exception e) {
-            XLog.e("Error Compiling Hook Script. Hook=" + hook.getSharedId(), e, true);
+            XLog.e("Error Compiling Hook Script. Hook=" + hook.getObjectId(), e, true);
             return null;
         } finally {
             StreamUtil.close(is);
@@ -190,7 +190,7 @@ public class XHookUtil {
 
                     String luaContents = getLuaScriptEx(apk, hookAsset.getLuaScript().substring(1) + ".lua");
                     if(luaContents == null) {
-                        XLog.e("Failed to Init Hook: " + hookAsset.getSharedId() + " Entry=" + entry, new Throwable(), true);
+                        XLog.e("Failed to Init Hook: " + hookAsset.getObjectId() + " Entry=" + entry, new Throwable(), true);
                         continue;
                     }
 

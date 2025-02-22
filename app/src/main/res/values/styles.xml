@@ -41,8 +41,7 @@
     <attr name="newWindowIcon" format="reference" />
     <attr name="diceIcon" format="reference" />
     <attr name="addIcon" format="reference" />
-
-
+    <attr name="fingerPrintIcon" format="reference" />
 
 
     <style name="RoundedButtonWithIcon" parent="Widget.AppCompat.Button">
@@ -95,6 +94,7 @@
         <item name="newWindowIcon">@drawable/ic_new_window_black24</item>
         <item name="diceIcon">@drawable/ic_dice1_black24</item>
         <item name="addIcon">@drawable/ic_add_black24</item>
+        <item name="fingerPrintIcon">@drawable/ic_finger_black24</item>
 
 
         <item name="colorSettingSaved">@color/lightColorSettingSaved</item>
@@ -147,6 +147,7 @@
         <item name="newWindowIcon">@drawable/ic_new_window_white24</item>
         <item name="diceIcon">@drawable/ic_dice1_white24</item>
         <item name="addIcon">@drawable/ic_add_white24</item>
+        <item name="fingerPrintIcon">@drawable/ic_finger_white24</item>
 
 
         <item name="wildcardButton">@drawable/ic_wildcard_one_white24</item>

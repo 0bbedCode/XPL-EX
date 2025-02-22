@@ -44,7 +44,7 @@ public class IPCCallFilterContainer extends FilterContainerElement implements IF
                 List<String> filter = parseMethodAsFilter(hook, true);
                 String[] settings = hook.getSettings();
                 if(DebugUtil.isDebug())
-                    Log.d(TAG, Str.fm("Hook Call [%s] Rule for Group [%s] was parsed, Filter=[%s] Settings=[%s]", hook.getSharedId(), groupName, Str.joinList(filter), Str.joinArray(settings)));
+                    Log.d(TAG, Str.fm("Hook Call [%s] Rule for Group [%s] was parsed, Filter=[%s] Settings=[%s]", hook.getObjectId(), groupName, Str.joinList(filter), Str.joinArray(settings)));
 
                 for(int i = 0; i < filter.size(); i++) {
                     String item = filter.get(i);

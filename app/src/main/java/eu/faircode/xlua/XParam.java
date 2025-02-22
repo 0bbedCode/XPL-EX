@@ -56,6 +56,8 @@ import eu.faircode.xlua.interceptors.ShellIntercept;
 import eu.faircode.xlua.logger.XLog;
 import eu.faircode.xlua.x.data.string.StrBuilder;
 import eu.faircode.xlua.x.data.utils.random.RandomGenerator;
+import eu.faircode.xlua.x.hook.filter.FilterContainerElement;
+import eu.faircode.xlua.x.hook.filter.kinds.FileFilterContainer;
 import eu.faircode.xlua.x.hook.interceptors.devices.InputDeviceInterceptor;
 import eu.faircode.xlua.x.hook.interceptors.file.FileInterceptor;
 import eu.faircode.xlua.x.hook.interceptors.file.StatInterceptor;
@@ -108,16 +110,19 @@ public class XParam {
 
     private String oldResult = "";
     private String newResult = "";
+    private String settingResult = "";
 
     public void setOldResult(String oldResult) { this.oldResult = oldResult; }
-
     @SuppressWarnings("unused")
     public String getOldResult() { return this.oldResult; }
 
     public void setNewResult(String newResult) { this.newResult = newResult; }
-
     @SuppressWarnings("unused")
     public String getNewResult() { return this.newResult; }
+
+    public void setSettingResult(String settingResult) { this.settingResult = settingResult; }
+
+    public String getSettingResult() { return "Setting:" + this.settingResult; }
 
     // Field param
     public XParam(
@@ -188,6 +193,50 @@ public class XParam {
 
     @SuppressWarnings("unused")
     public boolean isDriverFiles(String pathOrFile) { return FileUtil.isDeviceDriver(pathOrFile); }
+
+    /*
+        ToDO: Rename "setSettingResult" & "setOldResult" & "setNewResult"
+                Update to ensure working with Index Settings, and Control Prop
+     */
+    @SuppressWarnings("unused")
+    public boolean ensurePropertyIsSafe() {
+        try {
+            String propName = Str.trimOriginal(tryGetArgument(0, Str.EMPTY));
+            if(Str.isEmpty(propName) ||  MockUtils.isPropVxpOrLua(propName))
+                return false;
+
+            if(DebugUtil.isDebug())
+                Log.d(TAG, "Property Get=" + propName);
+
+            String retValue = tryGetResult(Str.EMPTY);
+            String mappedSetting = getSetting(FilterContainerElement.createPropertySetting(propName));
+            if(Str.isEmpty(mappedSetting))
+                return false;
+
+            String newValue = getSetting(mappedSetting);
+            if(newValue == null)
+                return false;
+
+            //Handle pair based [1,2]
+            //So MAYBE ? in the Rule Filter we parse both ".1" and ".2" ? I don't know ... lets find out
+            setSettingResult(propName);
+            setOldResult(retValue);
+            setNewResult(newValue);
+            if(DebugUtil.isDebug())
+                Log.d(TAG, Str.fm("Intercepted Property [%s] with the Mapped Setting [%s] value [%s] replacing [%s] value",
+                        propName,
+                        mappedSetting,
+                        Str.ensureNoDoubleNewLines(newValue),
+                        Str.ensureNoDoubleNewLines(retValue)));
+
+            setResult(newValue);
+            return true;
+        }catch (Throwable e) {
+            Log.e(TAG, "Error ensuring Build.Prop Property is Safe! Error=" + e);
+            return false;
+        }
+    }
+
 
     @SuppressWarnings("unused")
     public String filterBuildProperty(String property) {
@@ -355,7 +404,7 @@ public class XParam {
                         .appendFieldLine("Class", hookBase.getClassName())
                         .appendFieldLine("Method", hookBase.getMethodName())
                         .appendFieldLine("Group", hookBase.getGroup())
-                        .appendFieldLine("ID", hookBase.getSharedId())
+                        .appendFieldLine("ID", hookBase.getObjectId())
                         .appendFieldLine("Collection", hookBase.getCollection())
                         .appendFieldLine("Author", hookBase.getAuthor());
             } else {

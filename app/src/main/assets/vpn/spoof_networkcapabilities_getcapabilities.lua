@@ -1,27 +1,33 @@
 function after(hook, param)
-	local ret = param:getResult()
-	if ret == nil then 
-		return false
-	end
+    local ret = param:getResult()
+    if ret == nil then
+        return false
+    end
 
-	local arrayClass = luajava.bindClass("java.lang.reflect.Array")
-	local intClass = luajava.bindClass("java.lang.Integer")
-	local intType = intClass.TYPE
+    local arrayClass = luajava.bindClass("java.lang.reflect.Array")
+    local intClass = luajava.bindClass("java.lang.Integer")
+    local intType = intClass.TYPE
 
-	local lst = luajava.newInstance("java.util.ArrayList")
-	for index = ret["length"], 1, -1 do
-	    local itm = ret[index]
-	    if itm ~= 0x4 then
-	        lst:add(itm)
-	    end
-	end
+    local lst = {}
+    local has_net_capability_not_vpn = false
 
-	--our version of 2array
-	local arr = arrayClass:newInstance(intType, lst:size())
-    for i = 1, lst:size() - 1 do
-        arr[i] = lst:get(i)
+    for index = ret["length"], 1, -1 do
+        local itm = ret[index]
+        table.insert(lst, itm)
+        if itm == 0xf then
+            has_net_capability_not_vpn = true
+        end
+    end
+
+    if has_net_capability_not_vpn == false then
+        table.insert(lst, 15)
+    end
+
+    local arr = arrayClass:newInstance(intType, #lst)
+    for i = 1, #lst do
+        arr[i] = lst[i]
     end
 
     param:setResult(arr)
-    return true
+    return true, "NET_CAPABILITY_NOT_VPN"
 end

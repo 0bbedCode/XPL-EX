@@ -32,34 +32,43 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/tvSettingGroupName" />
 
-            <Spinner
-                android:id="@+id/spSettingGroupRandomizer"
+            <ImageView
+                android:id="@+id/ivActionNeeded"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginEnd="8dp"
+                android:src="@android:drawable/ic_dialog_alert"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/tvSettingGroupName"
+                app:layout_constraintEnd_toStartOf="@+id/cbSettingGroupEnabled"
+                app:layout_constraintTop_toTopOf="@+id/tvSettingGroupName" />
+
+
+            <TextView
+                android:id="@+id/tvStatsCount"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"
-                app:layout_constrainedWidth="true"
-                app:layout_constraintTop_toBottomOf="@+id/tvSettingGroupName"
-                tools:layout_editor_absoluteX="10dp" />
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="000/000"
+                android:textStyle="bold|italic"
+                android:textAppearance="@android:style/TextAppearance.Small"
+                app:layout_constraintBottom_toBottomOf="@+id/tvSettingGroupName"
+                app:layout_constraintEnd_toStartOf="@+id/ivActionNeeded"
+                app:layout_constraintTop_toTopOf="@+id/tvSettingGroupName" />
 
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
+            <LinearLayout
+                android:id="@+id/containersList"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
-                android:clipToPadding="false"
-                android:nestedScrollingEnabled="true"
-                android:overScrollMode="never"
-                android:paddingBottom="16dp"
-                android:scrollbarStyle="outsideOverlay"
-                android:scrollbars="vertical"
+                android:orientation="vertical"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="@+id/tvSettingGroupName"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/spSettingGroupRandomizer" />
-
-
+                app:layout_constraintTop_toBottomOf="@+id/tvSettingGroupName" />
 
             <TextView
                 android:id="@+id/tvSettingGroupName"
@@ -73,7 +82,7 @@
                 android:lines="1"
                 android:text="Setting Group"
                 android:textAppearance="@android:style/TextAppearance.Medium"
-                app:layout_constraintEnd_toStartOf="@+id/cbSettingGroupEnabled"
+                app:layout_constraintEnd_toStartOf="@+id/tvStatsCount"
                 app:layout_constraintStart_toEndOf="@+id/ivExpanderSettingGroup"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -88,7 +97,6 @@
                 app:layout_constraintBottom_toBottomOf="@+id/tvSettingGroupName"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/tvSettingGroupName" />
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

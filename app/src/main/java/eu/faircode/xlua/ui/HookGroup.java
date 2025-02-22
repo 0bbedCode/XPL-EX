@@ -77,7 +77,7 @@ public class HookGroup {
 
     public boolean containsAssignedHook(String hookId) { return hasAssigned() && assignments.containsKey(hookId); }
 
-    public void removeAssignment(LuaAssignment assignment) { removeAssignment(assignment.getHook().getSharedId()); }
+    public void removeAssignment(LuaAssignment assignment) { removeAssignment(assignment.getHook().getObjectId()); }
     public void removeAssignment(String hookId) {
         synchronized (lock) {
             assignments.remove(hookId);
@@ -96,7 +96,7 @@ public class HookGroup {
 
     public void putAssignment(LuaAssignment assignment) {
         synchronized (lock) {
-            String hId = assignment.getHook().getSharedId();
+            String hId = assignment.getHook().getObjectId();
             if(!assignments.containsKey(hId)) {
                 if (assignment.getException() != null) exception = true;
                 if (assignment.getInstalled() >= 0) installed++;
@@ -104,7 +104,7 @@ public class HookGroup {
                 if (assignment.getRestricted()) used = Math.max(used, assignment.getUsed());
             }
 
-            assignments.put(assignment.getHook().getSharedId(), assignment);
+            assignments.put(assignment.getHook().getObjectId(), assignment);
         }
     }
 
@@ -116,7 +116,7 @@ public class HookGroup {
             final IHookTransactionEx iCallback) {
 
         final List<String> hookIds = new ArrayList<>();
-        hookIds.add(hook.getSharedId());
+        hookIds.add(hook.getObjectId());
         final LuaAssignmentPacket packet = LuaAssignmentPacket.create(
                 application.getUid(),
                 application.getPackageName(),
@@ -125,13 +125,13 @@ public class HookGroup {
                 !application.isGlobal() && application.getForceStop());
 
         if(DebugUtil.isDebug())
-            Log.d(TAG, Str.ensureNoDoubleNewLines("Packet=" + packet + " assign=" + assign + " pos=" + adapterPosition + " hook id=" + hook.getSharedId()));
+            Log.d(TAG, Str.ensureNoDoubleNewLines("Packet=" + packet + " assign=" + assign + " pos=" + adapterPosition + " hook id=" + hook.getObjectId()));
 
         //XLog.i("Packet=" + packet + " assign=" + assign + " pos=" + adapterPosition + " hood id=" + hook.getId());
 
         final HookTransactionResult result = new HookTransactionResult();
         result.context = context;
-        result.id = hook.getSharedId().hashCode();
+        result.id = hook.getObjectId().hashCode();
         result.hooks.add(hook);
         result.adapterPosition = adapterPosition;
         result.code = packet.getCode();
@@ -158,7 +158,7 @@ public class HookGroup {
                 }
             });
         }catch (Exception e) {
-            XLog.e("Failed to Add Assignment: hook=" + hook.getSharedId(), e, true);
+            XLog.e("Failed to Add Assignment: hook=" + hook.getObjectId(), e, true);
             result.result = XResult.create().setFailed("Failed to send assignments error!");
             result.failed.add(hook);
             try { if(iCallback != null) iCallback.onHookUpdate(result);
@@ -172,7 +172,7 @@ public class HookGroup {
         for (XLuaHook hook : hooks.values())
             if (hook.isAvailable(application.isGlobal() ? null : application.getPackageName(), collection) &&
                     (name == null || name.equalsIgnoreCase(hook.getGroup()))) {
-                hookIds.add(hook.getSharedId());
+                hookIds.add(hook.getObjectId());
                 assignments.add(new LuaAssignment(hook));
             }
 
@@ -221,7 +221,7 @@ public class HookGroup {
 
     public HookGroup putHook(XLuaHook hook) {
         if(hook.getGroup().equalsIgnoreCase(this.name))
-            hooks.put(hook.getSharedId(), hook);
+            hooks.put(hook.getObjectId(), hook);
 
         return this;
     }
@@ -235,7 +235,7 @@ public class HookGroup {
                     if (assignment.getInstalled() >= 0) installed++;
                     if (assignment.getHook().isOptional()) optional++;
                     if (assignment.getRestricted()) used = Math.max(used, assignment.getUsed());
-                    assignments.put(assignment.getHook().getSharedId(), assignment);
+                    assignments.put(assignment.getHook().getObjectId(), assignment);
                 }
 
             return this;

@@ -37,6 +37,7 @@ public class BinderInterceptorBase implements IBinderInterceptor {
 
                     param.setOldResult(oldId);
                     param.setNewResult(newId);
+                    param.setSettingResult(helper.interfaceName);
                     return true;
                 }
             }

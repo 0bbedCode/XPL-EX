@@ -15,7 +15,7 @@ import eu.faircode.xlua.x.xlua.identity.UserIdentity;
 import eu.faircode.xlua.x.xlua.identity.UserIdentityIO;
 
 public abstract class PacketBase implements IActionObject, IDatabaseEntry, IBundleData, IUidCompress {
-    private static final String TAG = "XLua.PacketBase";
+    private static final String TAG = LibUtil.generateTag(PacketBase.class);
 
     private UserIdentity userIdentity;
     private ActionPacket actionPacket;

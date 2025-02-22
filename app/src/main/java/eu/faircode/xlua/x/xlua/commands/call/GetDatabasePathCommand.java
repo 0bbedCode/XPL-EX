@@ -10,13 +10,14 @@ import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.UberCore888;
 import eu.faircode.xlua.api.XProxyContent;
 import eu.faircode.xlua.utilities.BundleUtil;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.commands.CallCommandHandlerEx;
 import eu.faircode.xlua.x.xlua.commands.packet.CallPacket;
 
 public class GetDatabasePathCommand extends CallCommandHandlerEx {
     public static final String FIELD_GROUP = "path";
 
-    private static final String TAG = "XLua.GetDatabasePathCommand";
+    private static final String TAG = LibUtil.generateTag(GetDatabasePathCommand.class);
 
     public GetDatabasePathCommand() {
         name = "getDatabasePath";

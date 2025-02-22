@@ -17,6 +17,7 @@ import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.string.StrBuilder;
 import eu.faircode.xlua.x.ui.core.interfaces.IDiffFace;
 import eu.faircode.xlua.x.ui.core.view_registry.IIdentifiableObject;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.hook.data.AssignmentData;
 import eu.faircode.xlua.x.xlua.settings.data.SettingPacket;
 import eu.faircode.xlua.x.xlua.settings.interfaces.NameInformationTypeBase;
@@ -41,7 +42,7 @@ import eu.faircode.xlua.x.xlua.settings.interfaces.NameInformationTypeBase;
  *
  */
 public class SettingsContainer extends NameInformationTypeBase implements IDiffFace, IIdentifiableObject {
-    private static final String TAG = "XLua.SettingsContainer";
+    private static final String TAG = LibUtil.generateTag(SettingsContainer.class);
 
     public static boolean isContainerSetting(String settingName) { return SettingsGlobals.endsWithArrayPattern(settingName); }
     public static SettingsContainer create(String settingName) { return new SettingsContainer(settingName);  }
@@ -66,7 +67,7 @@ public class SettingsContainer extends NameInformationTypeBase implements IDiffF
     public boolean hasSettings() { return !settings.isEmpty(); }
 
     @Override
-    public String getSharedId() { return "con::" + nameInformation.name; }
+    public String getObjectId() { return "con::" + nameInformation.name; }
 
     @Override
     public void setId(String id) {
@@ -87,10 +88,6 @@ public class SettingsContainer extends NameInformationTypeBase implements IDiffF
                 }
             }
         }
-
-        if(DebugUtil.isDebug())
-            Log.d(TAG, Str.fm("Setting Name Count for Container:%s  Name Count=%s", containerName, names.size()));
-
         return names;
     }
 
@@ -121,11 +118,7 @@ public class SettingsContainer extends NameInformationTypeBase implements IDiffF
     public void consumeSingleSetting(SettingHolder holder) {
         if(holder != null) {
             super.bindNameInformation(holder.getNameInformation());
-            String newContainer = getNameNice();
-            if(newContainer.equalsIgnoreCase(this.containerName))
-                Log.w(TAG, "Container Names are Different! Old=" + this.containerName + " New=" + newContainer);
-
-            this.containerName = newContainer;
+            this.containerName = getNameNice();
             this.settings.clear();
             this.settings.put(0, holder);
             this.description = holder.getDescription();
@@ -139,18 +132,9 @@ public class SettingsContainer extends NameInformationTypeBase implements IDiffF
                 int index = en.getKey();
                 SettingHolder holder = en.getValue();
                 if(holder == null) {
-                    if(DebugUtil.isDebug())
-                        Log.d(TAG, "Setting Holder is Still null, Index=" + index + " This=" + Str.toStringOrNull(this));
-
                     for(NameInformation nameInfo : childNames) {
                         if(nameInfo.index == index) {
-                            if(DebugUtil.isDebug())
-                                Log.d(TAG, Str.ensureNoDoubleNewLines("Setting Holder is Null, but found the Name Information for the expected Holder, Index=" + index + " Name Info=" + Str.toStringOrNull(nameInfo) + " This=" + Str.toStringOrNull(this)));
-
                             holder = new SettingHolder(nameInformation, null, "");
-                            if(DebugUtil.isDebug())
-                                Log.d(TAG, "Setting Holder at Index=" + index + " was Null, now is: " + Str.toStringOrNull(holder));
-
                             settings.put(nameInfo.index, holder);   //Is this fine ?
                             break;
                         }
@@ -162,9 +146,6 @@ public class SettingsContainer extends NameInformationTypeBase implements IDiffF
 
     public void updateChild(SettingHolder child, SettingPacket setting) {
         if(child != null) {
-            if(DebugUtil.isDebug())
-                Log.d(TAG, "Updating Child Setting, child=" + Str.toStringOrNull(child));
-
             if(setting != null) {
                 child.setValue(setting.value);
                 if(Str.isEmpty(child.getDescription()) && !Str.isEmpty(setting.description))
@@ -172,9 +153,7 @@ public class SettingsContainer extends NameInformationTypeBase implements IDiffF
             }
 
             NameInformation childNameInformation = child.getNameInformation();
-            if(childNameInformation == null)
-                Log.e(TAG, "Critical Error Child is missing Name information! Child=[" + Str.noNL(Str.toStringOrNull(child)) + "] Setting=[" + Str.noNL(Str.toStringOrNull(setting)) + "] Parent=[" + Str.noNL(Str.toStringOrNull(nameInformation)));
-            else
+            if(childNameInformation != null)
                 childNameInformation.parentNameInformation = nameInformation;
 
             settings.put(child.getIndex(), child);
@@ -183,10 +162,6 @@ public class SettingsContainer extends NameInformationTypeBase implements IDiffF
 
     public void ensureHasChild(SettingHolder child) {
         if(child != null) {
-            if(DebugUtil.isDebug())
-                Log.d(TAG, "[ensureHasChild] Checking for Child=" + Str.toStringOrNull(child));
-
-            //Couldn't we make this more simple by just overrriting
             ensureDescription(child.getDescription());
             SettingHolder cache = settings.get(child.getIndex());
             if(cache != null)

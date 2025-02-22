@@ -25,10 +25,12 @@ import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.api.xstandard.database.SqlQuerySnake;
 import eu.faircode.xlua.api.xlua.provider.XLuaHookProvider;
 import eu.faircode.xlua.utilities.DatabasePathUtil;
+import eu.faircode.xlua.utilities.JSONUtil;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.xlua.database.DatabaseUtils;
 import eu.faircode.xlua.x.xlua.database.sql.SQLDatabase;
+import eu.faircode.xlua.x.xlua.hook.AssignmentUtils;
 import eu.faircode.xlua.x.xlua.identity.UserIdentityUtils;
 import eu.faircode.xlua.x.xlua.settings.data.SettingsApi;
 
@@ -116,8 +118,8 @@ public class UberCore888 {
         ApplicationInfo ai = pm.getApplicationInfo(BuildConfig.APPLICATION_ID, 0);
         for (XLuaHook builtin : XLuaHook.readHooks(context, ai.publicSourceDir)) {
             builtin.resolveClassName(context);
-            builtIn.put(builtin.getSharedId(), builtin);
-            hooks.put(builtin.getSharedId(), builtin);
+            builtIn.put(builtin.getObjectId(), builtin);
+            hooks.put(builtin.getObjectId(), builtin);
         }
 
         /*database.executeWithReadLock(() -> {
@@ -194,8 +196,8 @@ public class UberCore888 {
         ApplicationInfo ai = pm.getApplicationInfo(BuildConfig.APPLICATION_ID, 0);
         for (XLuaHook builtin : XLuaHook.readHooks(context, ai.publicSourceDir)) {
             builtin.resolveClassName(context);
-            builtIn.put(builtin.getSharedId(), builtin);
-            hooks.put(builtin.getSharedId(), builtin);
+            builtIn.put(builtin.getObjectId(), builtin);
+            hooks.put(builtin.getObjectId(), builtin);
         }
 
         DatabasePathUtil.log("loaded hook size=" + hooks.size(), false);
@@ -212,7 +214,7 @@ public class UberCore888 {
                 hook.fromJSONObject(new JSONObject(definition));
                 hook.resolveClassName(context);
                 //Log.i(TAG, " loading hook=" + hook.getId());
-                hooks.put(hook.getSharedId(), hook);
+                hooks.put(hook.getObjectId(), hook);
             }
         }catch (Exception e) {
             DatabasePathUtil.log("Failed to init hooks, e=" + e + "\n" + Log.getStackTraceString(e), true);
@@ -230,6 +232,27 @@ public class UberCore888 {
         }
     }
 
+    public static XLuaHook getHookEx(String hookId) {
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Grabbing Hook [" + hookId + "]");
+
+        if(Str.isEmpty(hookId))
+            return null;
+
+        synchronized (hookLock) {
+            for (XLuaHook hook : hooks.values()) {
+                if(hook.getObjectId().equalsIgnoreCase(hookId)) {
+                    if(DebugUtil.isDebug())
+                        Log.d(TAG, Str.fm("Found Hook [%s] Hook=", hookId, Str.ensureNoDoubleNewLines(JSONUtil.objectToString(JSONUtil.toObject(hook)))));
+
+                    return hook;
+                }
+            }
+        }
+
+        return null;
+    }
+
     public static Collection<XLuaHook> getHooksEx(SQLDatabase database, boolean all) {
         List<String> collections = database.executeWithWriteLock(() ->
                 SettingsApi.getCollectionsValue(database, UserIdentityUtils.getUserId(Binder.getCallingUid())));
@@ -243,7 +266,7 @@ public class UberCore888 {
                     hv.add(hook);
         }
 
-        Collections.sort(hv, (h1, h2) -> h1.getSharedId().compareTo(h2.getSharedId()));
+        Collections.sort(hv, (h1, h2) -> h1.getObjectId().compareTo(h2.getObjectId()));
         if(DebugUtil.isDebug())
             Log.d(TAG, Str.fm("Grabbing Hooks! Collection Size=%s  All=%s  Database=%s  Hook Count=%s Collections=[%s]", ListUtil.size(collections), all, Str.noNL(database), ListUtil.size(hv), Str.joinList(collections)));
 
@@ -268,7 +291,7 @@ public class UberCore888 {
         Collections.sort(hv, new Comparator<XLuaHook>() {
             @Override
             public int compare(XLuaHook h1, XLuaHook h2) {
-                return h1.getSharedId().compareTo(h2.getSharedId());
+                return h1.getObjectId().compareTo(h2.getObjectId());
             }
         });
 
@@ -370,7 +393,7 @@ public class UberCore888 {
         synchronized (hookLock) {
             for (XLuaHook hook : hooks.values())
                 if (hook.isAvailable(pkg, collections))
-                    hook_ids.add(hook.getSharedId());
+                    hook_ids.add(hook.getObjectId());
         }
 
         return hook_ids;

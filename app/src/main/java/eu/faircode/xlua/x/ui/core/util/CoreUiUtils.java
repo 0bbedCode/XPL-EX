@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.FutureTask;
 
+import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.utils.ArrayUtils;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.data.utils.NumericUtils;
@@ -74,10 +75,40 @@ public class CoreUiUtils {
         return Math.round(dp * density);
     }
 
+    public static String getText(TextView tv) { return getText(tv, Str.EMPTY, false); }
+    public static String getText(TextView tv, String defaultText) { return getText(tv, defaultText, false); }
+    public static String getText(TextView tv, String defaultText, boolean checkWindowTokenAttached) {
+        if (tv == null)
+            return defaultText;
+        try {
+            if (Looper.myLooper() != Looper.getMainLooper()) {
+                // Use a FutureTask to retrieve the result synchronously
+                FutureTask<String> futureTask = new FutureTask<>(() -> {
+                    if (!checkWindowTokenAttached || tv.getWindowToken() != null) { // Check if view is still attached
+                        return tv.getText().toString();
+                    } else {
+                        throw new Exception("Window Token did not check out, TextView(1)");
+                    }
+                });
+                new Handler(Looper.getMainLooper()).post(futureTask);
+                return futureTask.get(); // Wait for the result
+            } else {
+                if (!checkWindowTokenAttached || tv.getWindowToken() != null) { // Check if view is still attached
+                    return tv.getText().toString();
+                } else {
+                    throw new Exception("Window Token did not check out, TextView(2)");
+                }
+            }
+        } catch (Exception ignored) {
+            return defaultText;
+        }
+    }
+
     public static String getInputTextText(EditText editText) { return getInputTextText(editText, null, false); }
     public static String getInputTextText(EditText editText, String defaultText) { return getInputTextText(editText, defaultText, false); }
     public static String getInputTextText(EditText editText, String defaultText, boolean checkWindowTokenAttached) {
-        if (editText == null) return defaultText;
+        if (editText == null)
+            return defaultText;
         try {
             if (Looper.myLooper() != Looper.getMainLooper()) {
                 // Use a FutureTask to retrieve the result synchronously
@@ -315,13 +346,13 @@ public class CoreUiUtils {
             @Override
             public void onGroupChange(ChangedStatesPacket packet) {
                 if(packet.isFrom(changedGroup)) {
-                    boolean isChecked = stateRegistry.isChecked(groupNeedOfChange, item.getSharedId());
+                    boolean isChecked = stateRegistry.isChecked(groupNeedOfChange, item.getObjectId());
                     checkBox.setOnCheckedChangeListener(null);
                     checkBox.setChecked(isChecked);
                     checkBox.setOnCheckedChangeListener(onCheckedChangeListener);
                 }
             }
-        }, item.getSharedId());
+        }, item.getObjectId());
     }
 
     public static boolean logIsNotMainUIThread() {

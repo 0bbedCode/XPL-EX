@@ -64,6 +64,8 @@ public class LogPacket implements IBundleData, ICursorType, IDatabaseEntry, IPar
             .putInteger(FIELD_REGISTER_L2)
             .putPrimaryKey(true, FIELD_ID);
 
+    public int icon;
+
     public int userId;
     public String category;
 
@@ -164,9 +166,9 @@ public class LogPacket implements IBundleData, ICursorType, IDatabaseEntry, IPar
     @Override
     public void fromCursor(Cursor c) {
         if(c != null) {
-            this.userId = CursorUtil.getInteger(c, FIELD_USER);
+            this.userId = CursorUtil.getInteger(c, FIELD_USER, 0);
             this.category = CursorUtil.getString(c, FIELD_CATEGORY);
-            this.uid = CursorUtil.getInteger(c, FIELD_UID);
+            this.uid = CursorUtil.getInteger(c, FIELD_UID, -1);
             this.id = CursorUtil.getString(c, FIELD_ID);
             this.type = CursorUtil.getLong(c, FIELD_TYPE);
             this.time = CursorUtil.getLong(c, FIELD_TIME);

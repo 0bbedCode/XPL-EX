@@ -18,6 +18,7 @@ import eu.faircode.xlua.x.ui.core.view_registry.IIdentifiableObject;
 import eu.faircode.xlua.x.xlua.database.IDatabaseEntry;
 import eu.faircode.xlua.x.xlua.database.TableInfo;
 import eu.faircode.xlua.x.xlua.database.sql.SQLQueryBuilder;
+import eu.faircode.xlua.x.xlua.database.sql.SQLSnake;
 import eu.faircode.xlua.x.xlua.identity.UserIdentityIO;
 import eu.faircode.xlua.x.xlua.interfaces.ICursorType;
 import eu.faircode.xlua.x.xlua.interfaces.IJsonType;
@@ -32,6 +33,7 @@ public class SettingInfoPacket implements IDatabaseEntry, IJsonType, INameResolv
     public static final String TABLE_NAME = "default_settings";
 
     public static final String JSON = "settingdefaults.json";
+    public static final String REMAP_JSON = "remap_settings_default.json";
 
     public static final TableInfo TABLE_INFO = TableInfo.create(TABLE_NAME)
             .putInteger(FIELD_USER)
@@ -62,6 +64,14 @@ public class SettingInfoPacket implements IDatabaseEntry, IJsonType, INameResolv
             cv.put(FIELD_DEFAULT_VALUE, this.defaultValue);
             cv.put(FIELD_DESCRIPTION, this.description);
         }
+    }
+
+    @Override
+    public SQLSnake createSnake() {
+        return SQLSnake.create()
+                .whereColumn(FIELD_USER, userId)
+                .whereColumn(FIELD_NAME, name)
+                .asSnake();
     }
 
     @Override
@@ -141,7 +151,7 @@ public class SettingInfoPacket implements IDatabaseEntry, IJsonType, INameResolv
 
 
     @Override
-    public String getSharedId() {
+    public String getObjectId() {
         return name;
     }
 
@@ -155,7 +165,7 @@ public class SettingInfoPacket implements IDatabaseEntry, IJsonType, INameResolv
         boolean wasConsumed = false;
         if(o instanceof SettingInfoPacket) {
             SettingInfoPacket other = (SettingInfoPacket) o;
-            if(other.getSharedId().equalsIgnoreCase(this.getSharedId()) && !Str.areEqualIgnoreCase(this.description, other.description)) {
+            if(other.getObjectId().equalsIgnoreCase(this.getObjectId()) && !Str.areEqualIgnoreCase(this.description, other.description)) {
                 this.description = other.description;
                 wasConsumed = true;
             }

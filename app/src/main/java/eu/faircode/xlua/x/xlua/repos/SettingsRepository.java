@@ -14,13 +14,14 @@ import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.data.utils.ObjectUtils;
 import eu.faircode.xlua.x.ui.core.FilterRequest;
 import eu.faircode.xlua.x.ui.core.UserClientAppContext;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.settings.SettingsContainer;
 import eu.faircode.xlua.x.xlua.settings.SettingsFactory;
 import eu.faircode.xlua.x.xlua.commands.query.GetSettingsExCommand;
 import eu.faircode.xlua.x.xlua.settings.data.SettingPacket;
 
 public class SettingsRepository implements IXLuaRepo<SettingsContainer> {
-    private static final String TAG = "XLua.SettingsRepository";
+    private static final String TAG = LibUtil.generateTag(SettingsRepository.class);
 
     public static final IXLuaRepo<SettingsContainer> INSTANCE = new SettingsRepository();
 
@@ -48,12 +49,30 @@ public class SettingsRepository implements IXLuaRepo<SettingsContainer> {
         if(DebugUtil.isDebug())
             Log.d(TAG, "Settings Count from Command=" + ListUtil.size(settings));
 
+        if(!ListUtil.isValid(settings))
+            return ListUtil.emptyList();
+
+        //ToDO: Build settings factory to do as it says
+        //          So in theory, most of this bullshit at least (GetSettingsExCommand) should be done in the Factory!
+        //          Goal is also to make these portable but usable any where Service or Client
+        //          So Perhaps we can use "factory" MAYBE as a repo
+        //          Hmm
+        //          Perhaps it can handle a lot like keeping things up to date in containers etc
+        //          Make a nice one way in linear control system so in theory I can add more it will handle duplicates etc
+
         SettingsFactory factory = new SettingsFactory();
-        factory.parseSettings(settings);
+        List<SettingPacket> all = factory.joinHookDefinedSettings(context, settings, userContext);
+        if(!ListUtil.isValid(all))
+            all = new ArrayList<>(settings);
+
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Settings Count from Joining from Command and Hooks=" + ListUtil.size(all) + " Original Count: " + ListUtil.size(settings));
+
+        factory.parseSettings(all);
         factory.finish();
         List<SettingsContainer> containers = factory.getContainers();
         if(DebugUtil.isDebug())
-            Log.d(TAG, "Got all Setting Containers from repo, Settings Original Count=" + ListUtil.size(settings) + " Container Count=" + ListUtil.size(containers));
+            Log.d(TAG, "Got all Setting Containers from repo, Settings Original Count=" + ListUtil.size(settings) + " All Settings Count=" + ListUtil.size(all) + " Container Count=" + ListUtil.size(containers));
 
         return containers;
     }
@@ -68,6 +87,7 @@ public class SettingsRepository implements IXLuaRepo<SettingsContainer> {
         for(SettingsContainer container : items)
             if(isMatchingCriteria(container, request))
                 containers.add(container);
+
         Collections.sort(containers, comparator);
         if(DebugUtil.isDebug())
             Log.d(TAG, "Filtered and Sorted through Settings, Original Size=" + ListUtil.size(items) + " New Size=" + ListUtil.size(containers) + " Request=" + Str.toStringOrNull(request));

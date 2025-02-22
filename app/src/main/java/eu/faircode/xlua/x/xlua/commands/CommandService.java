@@ -20,13 +20,14 @@ import eu.faircode.xlua.api.xstandard.command.CallPacket_old;
 import eu.faircode.xlua.api.xstandard.command.QueryPacket_old;
 import eu.faircode.xlua.utilities.DatabasePathUtil;
 import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.commands.packet.CallPacket;
 import eu.faircode.xlua.x.xlua.commands.packet.IBridgePacketCtx;
 import eu.faircode.xlua.x.xlua.commands.packet.QueryPacket;
 import eu.faircode.xlua.x.xlua.database.IDatabaseManager;
 
 public class CommandService {
-    private static final String TAG = "XLua.CommandService";
+    private static final String TAG = LibUtil.generateTag(CommandService.class);
 
     public final String name;
     public final String commandPrefix;

@@ -193,7 +193,6 @@ public class XPacket<T> {
                 }
             }
 
-
             Bundle bExtra = b.getBundle(FIELD_EXTRA);
             if(bExtra != null) {
                 if(clazz != null && DynamicType.classImplementInterface(clazz, IBundleData.class)) {

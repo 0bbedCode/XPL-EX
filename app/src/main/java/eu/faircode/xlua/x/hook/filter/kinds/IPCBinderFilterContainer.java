@@ -22,7 +22,7 @@ public class IPCBinderFilterContainer extends FilterContainerElement implements 
     public boolean hasSwallowedAsRule(XLuaHook hook) {
         boolean isRule = super.hasSwallowedAsRule(hook);
         if(isRule) {
-            String method = hook.getMethodName();
+            String method = hook.getMethodName().trim();
             for(IBinderInterceptor interceptor : InterfacesGlobal.INTERCEPTORS) {
                 if(interceptor.getInterfaceName().equalsIgnoreCase(method)) {
                     createdSettings.put(interceptor.getSettingName(), "true");

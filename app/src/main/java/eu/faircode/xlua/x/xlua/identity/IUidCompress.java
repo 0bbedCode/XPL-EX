@@ -4,7 +4,7 @@ import eu.faircode.xlua.x.ui.core.view_registry.IIdentifiableObject;
 import eu.faircode.xlua.x.xlua.interfaces.ICursorType;
 
 public interface IUidCompress extends ICursorType, IIdentifiableObject {
-    String getSharedId();     //Move this
+    String getObjectId();     //Move this
     String getCategory();
     int getUid();
 }

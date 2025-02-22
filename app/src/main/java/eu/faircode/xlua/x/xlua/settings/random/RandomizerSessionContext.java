@@ -1,7 +1,6 @@
 package eu.faircode.xlua.x.xlua.settings.random;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -12,13 +11,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.UUID;
 
 import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.string.StrBuilder;
 import eu.faircode.xlua.x.data.utils.ListUtil;
-import eu.faircode.xlua.x.ui.core.interfaces.IFragmentController;
 import eu.faircode.xlua.x.ui.core.view_registry.SharedRegistry;
 import eu.faircode.xlua.x.ui.fragments.SettingExFragment;
 import eu.faircode.xlua.x.ui.fragments.SettingFragmentUtils;
@@ -26,9 +23,7 @@ import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.settings.SettingHolder;
 import eu.faircode.xlua.x.xlua.settings.random.interfaces.IRandomizer;
 import eu.faircode.xlua.x.xlua.settings.random.randomizers.RandomizersCache;
-import eu.faircode.xlua.x.xlua.settings.random.randomizers.network.RandomNetParentControl;
 import eu.faircode.xlua.x.xlua.settings.test.RandomSettingHolder;
-import eu.faircode.xlua.x.xlua.settings.test.RandomizerFactory;
 
 /*
     ToDO: Add Helper Function ? "updateSettings(settings_list_holders, stateRegistry)
@@ -36,6 +31,8 @@ import eu.faircode.xlua.x.xlua.settings.test.RandomizerFactory;
  */
 public class RandomizerSessionContext {
     private static final String TAG = LibUtil.generateTag(RandomizerSessionContext.class);
+
+    public static RandomizerSessionContext create() { return  new RandomizerSessionContext(); }
 
     public static String sharedSettingName(String settingName) { return settingName != null && settingName.startsWith("setting:") ? settingName : Str.combine("setting:", settingName); }
 
@@ -65,6 +62,48 @@ public class RandomizerSessionContext {
             Log.e(TAG, "Failed to Get all Settings, Error=" + e);
             return new ArrayList<>();
         }
+    }
+
+    public RandomizerSessionContext updateToOption(
+            Fragment fragment,
+            List<SettingHolder> checked,
+            IRandomizer randomizer,
+            Context context,
+            SharedRegistry sharedRegistry) {
+        if(fragment == null)
+            return this;
+
+        return updateToOption(getAllSettings(fragment), checked, randomizer, context, sharedRegistry);
+    }
+
+    public RandomizerSessionContext updateToOption(
+            List<SettingHolder> settings,
+            List<SettingHolder> checked,
+            IRandomizer randomizer,
+            Context context,
+            SharedRegistry sharedRegistry) {
+
+        for(SettingHolder setting : settings) {
+            RandomSettingHolder randomHolder = new RandomSettingHolder();
+            randomHolder.holder = setting;
+            randomHolder.randomizer = getRandomizer(setting.getName(), sharedRegistry);
+            this.settings.put(randomHolder.name(), randomHolder);
+        }
+
+        if(randomizer != null) {
+            if(randomizer.isOption()) {
+                for(SettingHolder holder : checked) {
+                    stack.push(holder.getName());
+                    randomizer.randomize(this);
+                    RandomSettingHolder randomHolder = this.settings.get(holder.getName());
+                    if(randomHolder != null) {
+                        randomHolder.updateHolder(true, true, context, sharedRegistry);
+                    }
+                }
+            }
+        }
+
+        return this;
     }
 
     public RandomizerSessionContext randomize(
@@ -112,7 +151,7 @@ public class RandomizerSessionContext {
                 return this;
 
             for(SettingHolder setting : settings) {
-                if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId())) {
+                if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getObjectId())) {
                     RandomSettingHolder holder = this.settings.get(setting.getName());
                     if(holder != null && holder.hasRandomizer()) {
                         String name = holder.name();
@@ -166,7 +205,7 @@ public class RandomizerSessionContext {
                             Str.toStringOrNull(holder.getValue(false)),
                             String.valueOf(updated.size())));
 
-                holder.updateHolder(true, true, context);
+                holder.updateHolder(true, true, context, sharedRegistry);
             }
         }
 

@@ -53,6 +53,20 @@ public class PutSettingExCommand extends CallCommandHandlerEx {
     public static A_CODE putRestrictNewApps(Context context, boolean restrict) { return putGen(context, GetSettingExCommand.SETTING_RESTRICT_NEW_APPS, String.valueOf(restrict)); }
     public static A_CODE putNotifyNewApps(Context context, boolean notify) { return putGen(context, GetSettingExCommand.SETTING_NOTIFY_NEW_APPS, String.valueOf(notify)); }
 
+
+    public static A_CODE putForceStop(Context context, int uid, String packageName, boolean forceStop) {
+        if(!Str.isEmpty(packageName) && !UserIdentity.GLOBAL_NAMESPACE.equalsIgnoreCase(packageName)) {
+            SettingPacket packet = new SettingPacket(GetSettingExCommand.SETTING_FORCE_STOP, String.valueOf(forceStop));
+            packet.setUserIdentity(UserIdentity.fromUid(uid, packageName));
+            packet.setActionPacket(ActionPacket.create(ActionFlag.PUSH, false));
+            return call(context, packet);
+        }
+
+        return A_CODE.FAILED;
+    }
+
+
+
     public static A_CODE putGen(Context context, String settingName, String value) {
         SettingPacket packet = new SettingPacket(settingName, value);
         packet.setUserIdentity(UserIdentity.fromUid(Process.myUid(), UserIdentity.GLOBAL_NAMESPACE));

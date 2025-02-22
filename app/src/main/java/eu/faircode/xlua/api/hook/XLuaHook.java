@@ -22,9 +22,14 @@ import eu.faircode.xlua.api.xstandard.interfaces.IJsonSerial;
 import eu.faircode.xlua.utilities.CursorUtil;
 import eu.faircode.xlua.utilities.StringUtil;
 import eu.faircode.xlua.x.ui.core.view_registry.IIdentifiableObject;
+import eu.faircode.xlua.x.xlua.LibUtil;
+import eu.faircode.xlua.x.xlua.database.IDatabaseEntry;
+import eu.faircode.xlua.x.xlua.database.TableInfo;
+import eu.faircode.xlua.x.xlua.database.sql.SQLQueryBuilder;
+import eu.faircode.xlua.x.xlua.interfaces.ICursorType;
 
-public class XLuaHook extends XLuaHookBase implements IJsonSerial, Parcelable, IIdentifiableObject {
-    private static final String TAG = "XLua.Hook";
+public class XLuaHook extends XLuaHookBase implements IJsonSerial, Parcelable, IIdentifiableObject, ICursorType, IDatabaseEntry {
+    private static final String TAG = LibUtil.generateTag(XLuaHook.class);
 
     private final List<LuaSettingExtended> managed_settings = new ArrayList<>();
 
@@ -32,15 +37,17 @@ public class XLuaHook extends XLuaHookBase implements IJsonSerial, Parcelable, I
     public XLuaHook(Parcel in) { fromParcel(in); }
     public XLuaHook(HookDatabaseEntry hookDb) { fromBundle(hookDb.toBundle()); }
 
-    public HookDatabaseEntry toHookDatabase() {
-        try {
-            LuaHookPacket packet = new LuaHookPacket(getSharedId(), toJSON());
-            return packet;
-        }catch (Exception e) {
-            Log.e(TAG, "Error converting xHook to Hook Packet! e=" + e + "\n" + Log.getStackTraceString(e));
-            return null;
-        }
-    }
+
+    public static final String FIELD_ID = "id";
+    public static final String FIELD_DEFINITION = "definition";
+
+    public static final String TABLE_NAME = "hook";
+
+    public static final TableInfo TABLE_INFO = TableInfo.create(TABLE_NAME)
+            .putText(FIELD_ID)
+            .putText(FIELD_DEFINITION)
+            .putPrimaryKey(false, FIELD_ID, FIELD_DEFINITION);
+
 
     public List<LuaSettingExtended> getManagedSettings() { return this.managed_settings; }
     public void initSettings(Map<String, LuaSettingExtended> settings) {
@@ -50,11 +57,17 @@ public class XLuaHook extends XLuaHookBase implements IJsonSerial, Parcelable, I
                 if(!StringUtil.isValidAndNotWhitespaces(s)) continue;
                 if(settings.containsKey(s)) {
                     LuaSettingExtended luaSetting = settings.get(s);
-                    if(luaSetting == null) continue;
+                    if(luaSetting == null)
+                        continue;
+
                     managed_settings.add(luaSetting);
                 }
             }
         }
+    }
+
+    public void setScript(String code) {
+        this.luaScript = code;
     }
 
     @Override
@@ -64,7 +77,7 @@ public class XLuaHook extends XLuaHookBase implements IJsonSerial, Parcelable, I
     public void writeToParcel(Parcel dest, int flags) {
         if(flags == FLAG_WITH_DB) {
             //dest.writeString(this.name);
-            dest.writeString(this.getSharedId());
+            dest.writeString(this.getObjectId());
             try {
                 dest.writeString(toJSON());
             }catch (JSONException e) {
@@ -101,14 +114,7 @@ public class XLuaHook extends XLuaHookBase implements IJsonSerial, Parcelable, I
     @Override
     public ContentValues createContentValues() {
         ContentValues cv = new ContentValues();
-        cv.put("id", this.getSharedId());
-
-        try {
-            cv.put("definition", toJSON());
-        }catch (JSONException e) {
-            Log.e(TAG, "JsonException for Hook:\n" + e + "\n" + Log.getStackTraceString(e));
-        }
-
+        populateContentValues(cv);
         return cv;
     }
 
@@ -119,21 +125,14 @@ public class XLuaHook extends XLuaHookBase implements IJsonSerial, Parcelable, I
     public void fromContentValuesList(List<ContentValues> contentValues) { }
 
     @Override
-    public void fromContentValues(ContentValues contentValue) {
-        try {
-            fromJSONObject(new JSONObject(contentValue.getAsString("definition")));
-        }catch (JSONException ex) {
-            Log.e(TAG, "[fromContentValues] failed to convert to JSON the DEFINITION in ContentValues Database Entry: " + ex);
-        }
-    }
+    public void fromContentValues(ContentValues contentValue) { populateFromContentValues(contentValue); }
 
     @Override
-    public void fromCursor(Cursor cursor) {
-        //this.getId() = CursorUtil.getString(cursor, "id");
-        String json = CursorUtil.getString(cursor, "definition");
-        if(json != null) {
+    public void populateContentValues(ContentValues cv) {
+        if(cv != null) {
             try {
-                fromJSONObject(new JSONObject(json));
+                cv.put("id", this.getObjectId());
+                cv.put("definition", toJSON());
             }catch (JSONException e) {
                 Log.e(TAG, "JsonException for Hook:\n" + e + "\n" + Log.getStackTraceString(e));
             }
@@ -141,9 +140,39 @@ public class XLuaHook extends XLuaHookBase implements IJsonSerial, Parcelable, I
     }
 
     @Override
-    public String toJSON() throws JSONException {
-        return toJSONObject().toString(2);
+    public void populateFromContentValues(ContentValues cv) {
+        if(cv != null) {
+            try {
+                fromJSONObject(new JSONObject(cv.getAsString("definition")));
+            }catch (JSONException ex) {
+                Log.e(TAG, "[populateFromContentValues] failed to convert to JSON the DEFINITION in ContentValues Database Entry: " + ex);
+            }
+        }
     }
+
+    @Override
+    public ContentValues toContentValues() {
+        ContentValues cv = new ContentValues();
+        populateContentValues(cv);
+        return cv;
+    }
+
+    @Override
+    public void fromCursor(Cursor cursor) {
+        try {
+            fromJSONObject(new JSONObject(CursorUtil.getString(cursor, "definition")));
+        }catch (JSONException e) {
+            Log.e(TAG, "JsonException for Hook:\n" + e + "\n" + Log.getStackTraceString(e));
+        }
+    }
+
+    @Override
+    public void populateSnake(SQLQueryBuilder snake) {
+
+    }
+
+    @Override
+    public String toJSON() throws JSONException { return toJSONObject().toString(2); }
 
     @Override
     public JSONObject toJSONObject() throws JSONException {
@@ -247,7 +276,7 @@ public class XLuaHook extends XLuaHookBase implements IJsonSerial, Parcelable, I
     @Override
     public Bundle toBundle() {
         Bundle b = new Bundle();
-        b.putString("id", this.getSharedId());
+        b.putString("id", this.getObjectId());
         try {
             b.putString("definition", toJSON());
         }catch (JSONException e) {

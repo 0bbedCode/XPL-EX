@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Objects;
 
 import eu.faircode.xlua.R;
+import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.ui.core.UINotifier;
 import eu.faircode.xlua.x.ui.core.UserClientAppContext;
 import eu.faircode.xlua.x.ui.core.dialog.IDialogEventFail;
 import eu.faircode.xlua.x.ui.core.dialog.IDialogEventFinish;
@@ -34,9 +36,15 @@ public class SettingDeleteDialog extends AppCompatDialogFragment  {
     private final List<SettingHolder> settings = new ArrayList<>();
     private SettingsContainer container = null;
     private UserClientAppContext app;
+    private UINotifier notifier;
 
     protected IDialogEventFinish dialogEventFinish;
     protected IDialogEventFail dialogEventFail;
+
+    public SettingDeleteDialog setNotifier(UINotifier notifier) {
+        this.notifier = notifier;
+        return this;
+    }
 
     public SettingDeleteDialog setDialogEventFinish(IDialogEventFinish onDialogEvent) {
         this.dialogEventFinish = onDialogEvent;
@@ -106,8 +114,9 @@ public class SettingDeleteDialog extends AppCompatDialogFragment  {
                                     A_CODE code = PutSettingExCommand.call(context, setting, app, forceKill, true);
                                     if(A_CODE.isSuccessful(code)) {
                                         setting.setValue(null, true);
-                                        setting.ensureUiUpdated("");
+                                        setting.ensureUiUpdated(Str.EMPTY);
                                         setting.setNameLabelColor(context);
+                                        setting.notifyUpdate(notifier);
                                         finished++;
                                     }
                                 }

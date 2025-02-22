@@ -17,15 +17,17 @@ import eu.faircode.xlua.x.ui.core.UserClientAppContext;
 import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.commands.call.GetAppInfoCommand;
 import eu.faircode.xlua.x.xlua.commands.query.GetHooksCommand;
+import eu.faircode.xlua.x.xlua.hook.AppAssignmentInfo;
+import eu.faircode.xlua.x.xlua.hook.AppAssignmentsMap;
 import eu.faircode.xlua.x.xlua.hook.AppXpPacket;
 import eu.faircode.xlua.x.xlua.hook.AssignmentPacket;
 import eu.faircode.xlua.x.xlua.hook.HookGroupOrganizer;
+import eu.faircode.xlua.x.xlua.hook.HooksSettingsGlobal;
 import eu.faircode.xlua.x.xlua.hook.data.AssignmentData;
 import eu.faircode.xlua.x.xlua.hook.data.AssignmentState;
 import eu.faircode.xlua.x.xlua.identity.UserIdentity;
 import eu.faircode.xlua.x.xlua.settings.SettingHolder;
 import eu.faircode.xlua.x.xlua.settings.SettingsContainer;
-import eu.faircode.xlua.x.xlua.settings.random.RandomizerSessionContext;
 import eu.faircode.xlua.x.xlua.settings.random.interfaces.IRandomizer;
 import eu.faircode.xlua.x.xlua.settings.random.randomizers.RandomizersCache;
 
@@ -40,6 +42,35 @@ public class SettingSharedRegistry extends SharedRegistry {
     private final Map<String, IRandomizer> randomizers = new WeakHashMap<>();
     private final Map<String, XLuaHook> hooks = new WeakHashMap<>();
 
+    private AppAssignmentsMap assignmentsMap;
+
+    public void refreshAssignments(Context context, UserClientAppContext app) {
+        if(app != null && context != null) {
+            if(assignmentsMap == null) assignmentsMap = AppAssignmentsMap.create(app);
+            HooksSettingsGlobal.init(context);
+            assignmentsMap.refresh(context);
+        }
+    }
+
+    public void setAssignment(String hookId, boolean isAssigned) {
+        if(!Str.isEmpty(hookId) && assignmentsMap != null) {
+            assignmentsMap.setAssigned(hookId, isAssigned);
+        }
+    }
+
+    public AppAssignmentInfo getAssignmentInfo(SettingsContainer container, boolean refresh, Context context) {
+        if(container == null || assignmentsMap == null)
+            return AppAssignmentInfo.DEFAULT;
+
+        AppAssignmentInfo info = assignmentsMap.get(container);
+        if(info == null)
+            return AppAssignmentInfo.DEFAULT;
+
+        if(refresh && context != null)
+            info.refreshSettingAssignmentsFromMap(context, HooksSettingsGlobal.settingHoldersToNames(container));
+
+        return info;
+    }
 
     //ToDo:
     //private final Map<String, SettingsContainer> settings = new WeakHashMap<>();
@@ -126,7 +157,7 @@ public class SettingSharedRegistry extends SharedRegistry {
 
         List<SettingHolder> enabled = new ArrayList<>();
         for(SettingHolder setting : settings)
-            if(!ensureIsChecked || isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId()))
+            if(!ensureIsChecked || isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getObjectId()))
                 enabled.add(setting);
 
         if(DebugUtil.isDebug())
@@ -170,7 +201,7 @@ public class SettingSharedRegistry extends SharedRegistry {
                 for(XLuaHook hook : hooksList) {
                     AssignmentState state = new AssignmentState();
                     state.hook = hook;
-                    state.enabled = isChecked(tagIdHooks, hook.getSharedId());
+                    state.enabled = isChecked(tagIdHooks, hook.getObjectId());
                     assignmentData.addAssignment(state);
                 }
             }
@@ -195,7 +226,7 @@ public class SettingSharedRegistry extends SharedRegistry {
             hooks.clear();
             List<XLuaHook> hookList = GetHooksCommand.getHooks(context, true, false);
             for(XLuaHook hook : hookList)
-                hooks.put(hook.getSharedId(), hook);
+                hooks.put(hook.getObjectId(), hook);
 
             groups = new HookGroupOrganizer();
             groups.initGroups(hookList, context);

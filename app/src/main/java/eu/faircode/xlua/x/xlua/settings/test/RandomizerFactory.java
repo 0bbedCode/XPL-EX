@@ -15,7 +15,6 @@ import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.ui.core.interfaces.IFragmentController;
-import eu.faircode.xlua.x.ui.core.util.ListFragmentUtils;
 import eu.faircode.xlua.x.ui.core.view_registry.SharedRegistry;
 import eu.faircode.xlua.x.ui.fragments.SettingExFragment;
 import eu.faircode.xlua.x.ui.fragments.SettingFragmentUtils;
@@ -100,7 +99,7 @@ public class RandomizerFactory {
                 return this;
 
             for(SettingHolder setting : settings) {
-                if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getSharedId())) {
+                if(sharedRegistry.isChecked(SharedRegistry.STATE_TAG_SETTINGS, setting.getObjectId())) {
                     RandomSettingHolder holder = this.settings.get(setting.getName());
                     if(holder != null && holder.hasRandomizer()) {
                         String name = holder.name();
@@ -154,7 +153,7 @@ public class RandomizerFactory {
                             holder.getValue(false),
                             count));
 
-                holder.updateHolder(true, true, context);
+                holder.updateHolder(true, true, context, sharedRegistry);
             }
         }
 

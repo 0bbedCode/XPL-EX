@@ -68,7 +68,7 @@ public class XLuaHookBase {
     public final static int FLAG_WITH_DB = 5;
     public final static int FLAG_WITH_LUA = 2; // =PARCELABLE_ELIDE_DUPLICATES
 
-    public String getSharedId() { return this.collection + "." + this.name; }
+    public String getObjectId() { return this.collection + "." + this.name; }
 
     public XLuaHookBase setCollection(String collection) { this.collection = collection; return this; }
     public XLuaHookBase setName(String name) { this.name = name; return this; }
@@ -119,7 +119,7 @@ public class XLuaHookBase {
             return false;
         if(this.name != null && this.name.toLowerCase().contains(query))
             return true;
-        if(this.getSharedId() != null && this.getSharedId().toLowerCase().contains(query))
+        if(this.getObjectId() != null && this.getObjectId().toLowerCase().contains(query))
             return true;
         if(checkMethod && this.methodName != null && this.methodName.toLowerCase().contains(query))
             return true;
@@ -194,12 +194,12 @@ public class XLuaHookBase {
         if (parameterTypes == null)
             throw new IllegalArgumentException("parameter types missing");
         if (TextUtils.isEmpty(this.luaScript))
-            throw new IllegalArgumentException("Lua script missing " + this.methodName + " " + this.className + " " + getSharedId());
+            throw new IllegalArgumentException("Lua script missing " + this.methodName + " " + this.className + " " + getObjectId());
     }
 
     @Override
     public int hashCode() {
-        return this.getSharedId().hashCode();
+        return this.getObjectId().hashCode();
     }
 
     @Override
@@ -207,12 +207,12 @@ public class XLuaHookBase {
         if (!(obj instanceof XLuaHookBase))
             return false;
         XLuaHookBase other = (XLuaHookBase) obj;
-        return this.getSharedId().equals(other.getSharedId());
+        return this.getObjectId().equals(other.getObjectId());
     }
 
     @NonNull
     @Override
     public String toString() {
-         return this.getSharedId() + "@" + this.className + ":" + this.methodName;
+         return this.getObjectId() + "@" + this.className + ":" + this.methodName;
     }
 }

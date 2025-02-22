@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -26,72 +27,103 @@ import eu.faircode.xlua.x.data.string.StrBuilder;
 import eu.faircode.xlua.x.data.utils.ArrayUtils;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.runtime.RuntimeUtils;
+import eu.faircode.xlua.x.xlua.LibUtil;
 
 
 public class FileApi {
-    private static final String TAG = "XLua.FileApi";
+    private static final String TAG = LibUtil.generateTag(FileApi.class);
 
-    public static ChmodModeBuilder customChmodMode() { return ChmodModeBuilder.create(); }
+    public static UnixAccessBuilder customChmodMode() { return UnixAccessBuilder.create(); }
 
     //0770 is mode from default XPL-EX (7 + 7 + 0) (RWX[Owner], RWX[Owner], None[Other])
     //Issue is if a ROOT File manager create dir it CAN cause permissions issues given ROOT > SYSTEM
     public static final int MODE_ALL_RWX__777 = customChmodMode()
-            .setOwnerPermissions(ModePermission.READ_WRITE_EXECUTE) //7
-            .setGroupPermissions(ModePermission.READ_WRITE_EXECUTE) //7
-            .setOtherPermissions(ModePermission.READ_WRITE_EXECUTE) //7
+            .setOwnerMode(ModePermission.READ_WRITE_EXECUTE) //7
+            .setGroupMode(ModePermission.READ_WRITE_EXECUTE) //7
+            .setOtherMode(ModePermission.READ_WRITE_EXECUTE) //7
             .getMode();                                             //777
 
     public static final int MODE_ALL_RW__666 = customChmodMode()
-            .setOwnerPermissions(ModePermission.READ_WRITE)         //6
-            .setGroupPermissions(ModePermission.READ_WRITE)         //6
-            .setOtherPermissions(ModePermission.READ_WRITE)         //6
+            .setOwnerMode(ModePermission.READ_WRITE)         //6
+            .setGroupMode(ModePermission.READ_WRITE)         //6
+            .setOtherMode(ModePermission.READ_WRITE)         //6
             .getMode();                                             //666
 
     public static final int MODE_ALL_R_444 = customChmodMode()
-            .setOwnerPermissions(ModePermission.READ)               //4
-            .setGroupPermissions(ModePermission.READ)               //4
-            .setOtherPermissions(ModePermission.READ)               //4
+            .setOwnerMode(ModePermission.READ)               //4
+            .setGroupMode(ModePermission.READ)               //4
+            .setOtherMode(ModePermission.READ)               //4
             .getMode();                                             //444
 
     public static final int MODE_SOME_RW__770 = customChmodMode()
-            .setOwnerPermissions(ModePermission.READ_WRITE_EXECUTE)
-            .setGroupPermissions(ModePermission.READ_WRITE_EXECUTE)
-            .setOtherPermissions(ModePermission.NONE)
+            .setOwnerMode(ModePermission.READ_WRITE_EXECUTE)
+            .setGroupMode(ModePermission.READ_WRITE_EXECUTE)
+            .setOtherMode(ModePermission.NONE)
+            .setOwnerUid(Process.SYSTEM_UID)
+            .setGroupUid(Process.SYSTEM_UID)
             .getMode();
             
     public static void chmod(String fileOrDirectory, int mode, boolean recursive) {
         executeCommand("chmod " + (recursive ? "-R " : "") + mode + " " + fileOrDirectory);
     }
 
-
+    // In FileApi.java - Replace the existing cp_directory_to method
     /**
-     * Copies all files and subdirectories from one directory to another using a shell command.
-     *
-     * @param fromDirectory The source directory to copy from.
-     * @param toDirectory   The destination directory to copy to.
+     * Safely copies all files and subdirectories from one directory to another.
+     * Includes validation and safety checks to prevent infinite recursion.
      */
-    public static void cp_directory_to(String fromDirectory, String toDirectory) {
+    public static boolean cp_directory_to(String fromDirectory, String toDirectory) {
         if (fromDirectory == null || fromDirectory.trim().isEmpty() ||
                 toDirectory == null || toDirectory.trim().isEmpty()) {
             Log.e(TAG, "Source or destination directory is null or empty.");
-            return;
+            return false;
         }
 
-        if(DebugUtil.isDebug())
-            Log.d(TAG, "CP -R FROM:[" + fromDirectory + "] TO:[" + toDirectory + "]");
+        // Normalize paths to prevent path traversal issues
+        File sourceDir = new File(fromDirectory).getAbsoluteFile();
+        File destDir = new File(toDirectory).getAbsoluteFile();
 
+        // Validate source exists and is a directory
+        if (!sourceDir.exists() || !sourceDir.isDirectory()) {
+            Log.e(TAG, "Source directory does not exist or is not a directory: " + sourceDir);
+            return false;
+        }
+
+        // Check directory depth
+        if (!isDirectoryDepthAcceptable(sourceDir, MAX_DIRECTORY_DEPTH) ||
+                !isDirectoryDepthAcceptable(destDir, MAX_DIRECTORY_DEPTH)) {
+            Log.e(TAG, "Directory depth exceeds maximum allowed depth");
+            return false;
+        }
+
+        // Prevent copying into itself or its subdirectories
+        String sourcePath = sourceDir.getAbsolutePath();
+        String destPath = destDir.getAbsolutePath();
+        if (destPath.startsWith(sourcePath + File.separator)) {
+            Log.e(TAG, "Cannot copy a directory into itself or its subdirectories");
+            return false;
+        }
+
+        // Create destination if it doesn't exist
+        if (!destDir.exists() && !destDir.mkdirs()) {
+            Log.e(TAG, "Failed to create destination directory: " + destDir);
+            return false;
+        }
+
+        boolean success = true;
         java.lang.Process process = null;
         BufferedReader reader = null;
-        BufferedReader errorReader = null;
 
         try {
-            // Use an array to pass the command and arguments
-            String[] command = {"cp", "-r", fromDirectory, toDirectory};
+            // Use ProcessBuilder for better argument handling
+            ProcessBuilder pb = new ProcessBuilder("cp", "-r",
+                    sourceDir.getAbsolutePath(),
+                    destDir.getParentFile().getAbsolutePath());
 
-            // Execute the command
-            process = Runtime.getRuntime().exec(command);
+            pb.redirectErrorStream(true);
+            process = pb.start();
 
-            // Capture the standard output
+            // Read output
             reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             StringBuilder output = new StringBuilder();
             String line;
@@ -99,45 +131,46 @@ public class FileApi {
                 output.append(line).append("\n");
             }
 
-            // Capture the standard error
-            errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-            StringBuilder errorOutput = new StringBuilder();
-            while ((line = errorReader.readLine()) != null) {
-                errorOutput.append(line).append("\n");
-            }
-
-            // Wait for the process to finish
+            // Wait for completion
             int exitCode = process.waitFor();
-            if (exitCode == 0) {
-                Log.d(TAG, "cp command executed successfully.");
-                if (output.length() > 0) {
-                    Log.d(TAG, "Output: " + output.toString().trim());
+            success = exitCode == 0;
+
+            if (success) {
+                if (DebugUtil.isDebug()) {
+                    Log.d(TAG, "Directory copied successfully from " + sourcePath + " to " + destPath);
                 }
             } else {
-                Log.e(TAG, "cp command failed with exit code: " + exitCode);
-                if (errorOutput.length() > 0) {
-                    Log.e(TAG, "Error: " + errorOutput.toString().trim());
-                }
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Exception while executing cp command: " + e.getMessage(), e);
-        } finally {
-            // Close readers to avoid resource leaks
-            try {
-                if (reader != null) reader.close();
-                if (errorReader != null) errorReader.close();
-            } catch (Exception e) {
-                Log.e(TAG, "Exception while closing readers: " + e.getMessage(), e);
+                Log.e(TAG, "Failed to copy directory. Exit code: " + exitCode + "\nOutput: " + output);
             }
 
-            // Destroy the process
+        } catch (Exception e) {
+            Log.e(TAG, "Exception while copying directory: " + e.getMessage(), e);
+            success = false;
+        } finally {
+            try {
+                if (reader != null) reader.close();
+            } catch (IOException e) {
+                Log.e(TAG, "Error closing reader: " + e.getMessage());
+            }
             if (process != null) {
                 process.destroy();
             }
         }
+
+        return success;
     }
 
+    // Add these methods to FileApi.java
+    public static final int MAX_DIRECTORY_DEPTH = 10;
 
+    public static int getDirectoryDepth(File directory) {
+        String path = directory.getAbsolutePath();
+        return path.split(Pattern.quote(File.separator)).length;
+    }
+
+    public static boolean isDirectoryDepthAcceptable(File directory, int maxDepth) {
+        return getDirectoryDepth(directory) <= maxDepth;
+    }
 
     /**
      * Executes the `mkdir -p <directory>` command using the shell and logs the output.
@@ -215,7 +248,7 @@ public class FileApi {
      * @param fileOrDirectory The file or directory path.
      * @return A ChmodModeBuilder containing permissions, owner, and UID information, or null if an error occurs.
      */
-    public static ChmodModeBuilder getPermissionsOfFileOrDirectory(String fileOrDirectory) {
+    public static UnixAccessBuilder getPermissionsOfFileOrDirectory(String fileOrDirectory) {
         if (fileOrDirectory == null || fileOrDirectory.trim().isEmpty()) {
             Log.e(TAG, "Path is null or empty.");
             return null;
@@ -266,16 +299,16 @@ public class FileApi {
             int guid = resolveUid(group);
 
             // Create and populate a ChmodModeBuilder object
-            ChmodModeBuilder builder = ChmodModeBuilder.create()
-                    .setOwnerPermissions(ModePermission.fromValue(ownerPermissions))
-                    .setGroupPermissions(ModePermission.fromValue(groupPermissions))
-                    .setOtherPermissions(ModePermission.fromValue(otherPermissions))
-                    .setOwner(owner)
-                    .setUid(uid)
-                    .setGroup(group)
-                    .setGuid(guid);
+            UnixAccessBuilder builder = UnixAccessBuilder.create()
+                    .setOwnerMode(ModePermission.fromValue(ownerPermissions))
+                    .setGroupMode(ModePermission.fromValue(groupPermissions))
+                    .setOtherMode(ModePermission.fromValue(otherPermissions))
+                    .setOwnerName(owner)
+                    .setOwnerUid(uid)
+                    .setGroupName(group)
+                    .setGroupUid(guid);
 
-            Log.d(TAG, "Retrieved permissions: " + builder.getMode() + ", owner: " + builder.getOwner() + ", UID: " + builder.getUid());
+            Log.d(TAG, "Retrieved permissions: " + builder.getMode() + ", owner: " + builder.getOwnerName() + ", UID: " + builder.getOwnerUid());
             return builder;
 
         } catch (Exception e) {
@@ -398,8 +431,10 @@ public class FileApi {
             else {
                 rmDirectoryForcefully(fileOrDirectory);
                 rmDirectoryForcefully(fileOrDirectory);
-            } return exists(fileOrDirectory);
-        } return true;
+            }
+            return exists(fileOrDirectory);
+        }
+        return true;
     }
 
     public static boolean exists(String fileOrDirectory) {
@@ -487,24 +522,20 @@ public class FileApi {
     public static String buildPath(String... paths) { return buildPath(false, paths); }
     public static String buildPath(boolean endInSeparator, String... paths) {
         if (paths != null && paths.length > 0) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < paths.length; i++) {
-                String p = paths[i];
-                if (!TextUtils.isEmpty(p)) {
-                    if (sb.length() > 0 && !sb.toString().endsWith(File.separator))
-                        sb.append(File.separator);
+            StrBuilder sb = StrBuilder.create().ensureDelimiter(File.separator);
+            for (String p : paths) {
+                if (Str.isEmpty(p))
+                    continue;
 
-                    sb.append(p.startsWith(File.separator) ? p.substring(1) : p);
-                }
+                String trimmed = Str.trimEx(p.trim(), true, false, true, true, File.separator);
+                if(Str.isEmpty(trimmed))
+                    continue;
+
+                sb.append(trimmed);
             }
 
-            if (endInSeparator && sb.length() > 0 && sb.charAt(sb.length() - 1) != File.separatorChar)
-                sb.append(File.separator);
-
-            if(sb.length() > 0 && sb.charAt(0) != File.separatorChar)
-                return StrBuilder.create(sb.length() + 1).append(File.separator).append(sb).toString();
-
-            return sb.toString();
+            String result = Str.ensureStartsWith(sb.toString(false), File.separator);
+            return endInSeparator ? Str.ensureEndsWith(result, File.separator) : result;
         }
         return null;
     }

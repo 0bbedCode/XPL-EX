@@ -17,6 +17,7 @@ import eu.faircode.xlua.XUtil;
 import eu.faircode.xlua.x.LogX;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.x.data.JsonHelperEx;
+import eu.faircode.xlua.x.data.string.StrBuilder;
 import eu.faircode.xlua.x.data.utils.ListUtil;
 import eu.faircode.xlua.x.data.utils.ObjectUtils;
 import eu.faircode.xlua.x.ui.core.view_registry.IIdentifiableObject;
@@ -51,7 +52,10 @@ public class UpdateUtils {
                 true,
                 UpdateMapEntry.class);
 
+        StrBuilder sb = StrBuilder.create().ensureOneNewLinePer(true);
+        HashMap<String, String> map = new HashMap<>();
         String prefix = Str.fm("Items Count=%s JsonFile=%s Json Items Count=%s", items.size(), jsonFile, jsonEntries.size());
+
         try {
             if(!ListUtil.isValid(jsonEntries))
                 throw new Exception("Invalid JSON Entries Count! Count=" + jsonEntries.size());
@@ -64,17 +68,33 @@ public class UpdateUtils {
             //
             //
 
-            HashMap<String, String> map = new HashMap<>(jsonEntries.size());
+            //To Support Multi User
+            //Just have it so its a LIST under that SPECIFIC ID
+
             for(UpdateMapEntry updateEntry : jsonEntries)
                 for(String oldId : updateEntry.oldIds)
                     map.put(oldId, updateEntry.id);
 
-            for(T item : items)
-                result.put(item, map.get(item.getSharedId()));
+            for(T item : items) {
+                String newId = map.get(item.getObjectId());
+                result.put(item, newId);
+                if(newId != null) {
+                    sb.appendLine(Str.combineEx("Map Old=", item.getObjectId(), " New Id=", newId));
+                }
+            }
 
         }catch (Exception e) {
             XposedUtility.logE_xposed(TAG_R_ITEMS, Str.fm("Error Re Mapping Items to new Mappings! Error=%s %s", e, prefix));
         } finally {
+
+            if(DebugUtil.isDebug())
+                XposedUtility.logD_xposed(TAG_R_ITEMS, Str.fm("JSON Entries Count=%s Over all Map Count=%s JSON=%s Input Count=%s Output=%s",
+                        jsonEntries.size(),
+                        map.size(),
+                        jsonFile,
+                        items.size(),
+                        sb.toString(true)));
+
             if(DebugUtil.isDebug())
                 XposedUtility.logD_xposed(TAG_R_ITEMS, Str.fm("Returning from mapping items, Map Size=%s %s", result.size(), prefix));
         }
@@ -106,7 +126,7 @@ public class UpdateUtils {
                 LinkedHashMap<String, LinkedHashMap<String, T>> organized = new LinkedHashMap<>();
                 for(T item : databaseEntries) {
                     String category = item.getCategory();
-                    String id = item.getSharedId();
+                    String id = item.getObjectId();
 
                     if(TextUtils.isEmpty(category) || TextUtils.isEmpty(id))
                         continue;
@@ -119,7 +139,7 @@ public class UpdateUtils {
                             Log.d(TAG_COMPRESS, Str.fm("Created Category Value Map, TableName=%s, Category=%s Id=%s", tableName, category, id));
                     }
 
-                    categoryValues.put(item.getSharedId(), item);
+                    categoryValues.put(item.getObjectId(), item);
                 }
 
                 if(DebugUtil.isDebug())

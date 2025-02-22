@@ -40,14 +40,14 @@ public class IPCQueryFilterContainer extends FilterContainerElement implements I
                 List<String> authorities = parseArgsAsAuthorities(hook);
                 String[] settings = hook.getSettings();
                 if(DebugUtil.isDebug())
-                    Log.d(TAG, Str.fm("Hook Query [%s] Rule for Group [%s] is being parsed, Filter=[%s] Settings=[%s] Authorities=[%s]", hook.getSharedId(), groupName, compressedFilter, Str.joinArray(settings), Str.joinList(authorities)));
+                    Log.d(TAG, Str.fm("Hook Query [%s] Rule for Group [%s] is being parsed, Filter=[%s] Settings=[%s] Authorities=[%s]", hook.getObjectId(), groupName, compressedFilter, Str.joinArray(settings), Str.joinList(authorities)));
 
                 //First Create the target authority settings
                 for(String auth : authorities) {
                     String name = createAuthoritySetting(auth);
                     putSettingPair(name, compressedFilter);
                     if(DebugUtil.isDebug())
-                        Log.d(TAG, Str.fm("Pushing Query Authority [%s] as a Setting for Hook Id [%s] Group Name [%s] with Value=[%s]", name, hook.getSharedId(), groupName, compressedFilter));
+                        Log.d(TAG, Str.fm("Pushing Query Authority [%s] as a Setting for Hook Id [%s] Group Name [%s] with Value=[%s]", name, hook.getObjectId(), groupName, compressedFilter));
                 }
 
                 for(int i = 0; i < filter.size(); i++) {

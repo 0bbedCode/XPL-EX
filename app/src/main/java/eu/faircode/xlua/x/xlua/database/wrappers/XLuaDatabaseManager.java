@@ -6,6 +6,7 @@ import android.util.Log;
 import de.robv.android.xposed.XposedBridge;
 import eu.faircode.xlua.UberCore888;
 import eu.faircode.xlua.x.Str;
+import eu.faircode.xlua.x.xlua.LibUtil;
 import eu.faircode.xlua.x.xlua.database.DatabaseUtils;
 import eu.faircode.xlua.x.xlua.database.IDatabaseManager;
 import eu.faircode.xlua.x.xlua.database.sql.SQLDatabase;
@@ -15,7 +16,7 @@ import eu.faircode.xlua.x.xlua.settings.SettingReMappedItem;
 public class XLuaDatabaseManager implements IDatabaseManager {
     public static XLuaDatabaseManager create() { return new XLuaDatabaseManager(); }
 
-    private static final String TAG = "XLua.XLuaDatabaseWrapper";
+    private static final String TAG = LibUtil.generateTag(XLuaDatabaseManager.class);
 
     private final Object lock = new Object();
     private SQLDatabase db;

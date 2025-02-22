@@ -38,7 +38,9 @@ public class StatIntercept extends CommandInterceptor implements ICommandInterce
         if(result != null && result.isValid) {
             UserContextMaps maps = result.getUserMaps();
             if(maps != null) {
-                if(!keepGoing(maps, STAT_INTERCEPT_SETTING)) return true;
+                if(!keepGoing(maps, STAT_INTERCEPT_SETTING))
+                    return true;
+
                 final String output = result.getCommandOutput();
                 if(TextUtils.isEmpty(output)) {
                     Log.e(TAG, "STAT Will not be intercepted, Output is Empty! Args=" + result.getCommandLine());

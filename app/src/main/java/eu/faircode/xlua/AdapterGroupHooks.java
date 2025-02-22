@@ -191,7 +191,7 @@ public class AdapterGroupHooks extends RecyclerView.Adapter<AdapterGroupHooks.Vi
                                 List<XLuaHook> hooks = new ArrayList<>();
                                 if(filterSubHooks) {
                                     for(XLuaHook h : group.getHooks()) {
-                                        if(h.getSharedId().toLowerCase().contains(q))
+                                        if(h.getObjectId().toLowerCase().contains(q))
                                             hooks.add(h);
                                         else {
                                             for(LuaSettingExtended s : h.getManagedSettings()) {

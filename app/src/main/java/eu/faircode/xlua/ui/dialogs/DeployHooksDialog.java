@@ -103,11 +103,11 @@ public class DeployHooksDialog extends AppCompatDialogFragment {
         final ArrayList<String> hookIds = new ArrayList<>();
         for (final XLuaHook hook : hooks) {
             if (hook.isAvailable(pkgName, collection) && (groupName == null || groupName.equals(hook.getGroup()))) {
-                hookIds.add(hook.getSharedId());
+                hookIds.add(hook.getObjectId());
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        tvHookStuff.setText(hook.getSharedId());
+                        tvHookStuff.setText(hook.getObjectId());
                     }
                 });
 

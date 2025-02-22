@@ -118,6 +118,7 @@ public class IntentQueryData {
                     param.setResult(newResult);
                     param.setOldResult(oldChanges.toString());
                     param.setNewResult(newChanges.toString());
+                    param.setSettingResult(authority);
                     return true;
                 }
             }

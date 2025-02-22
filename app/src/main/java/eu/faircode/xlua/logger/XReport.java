@@ -20,13 +20,18 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import de.robv.android.xposed.XC_MethodHook;
+import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.x.Str;
 import eu.faircode.xlua.api.XProxyContent;
 import eu.faircode.xlua.api.hook.XLuaHook;
 import eu.faircode.xlua.builders.SimpleReport;
 import eu.faircode.xlua.builders.SimpleReportData;
+import eu.faircode.xlua.x.runtime.RuntimeUtils;
+import eu.faircode.xlua.x.xlua.LibUtil;
 
 public class XReport {
+    private static final String TAG = LibUtil.generateTag(XReport.class);
+
     public static final String EVENT_USE = "use";
     public static final String EVENT_INSTALL = "install";
     public static final String FUNCTION_AFTER = "after";
@@ -63,7 +68,12 @@ public class XReport {
     }
 
     public static void usage(XLuaHook hook, Varargs result, long startTime, String function, Context context) {
-        if (!(result.arg1().checkboolean() && hook.doUsage())) return;
+        if(DebugUtil.isDebug())
+            Log.d(TAG, "Reporting the Usage of Hook Id=" + hook.getObjectId() + " Do Usage=" + String.valueOf(hook.doUsage()));
+
+        if (!(result.arg1().checkboolean() && hook.doUsage()))
+            return;
+
         SimpleReportData data = new SimpleReportData();
         data.function = function;
         data.restricted = 1;
@@ -71,7 +81,17 @@ public class XReport {
         if (result.narg() > 1) {
             data.old = result.isnil(2) ? null : result.checkjstring(2);
             data.nNew = result.isnil(3) ? null : result.checkjstring(3);
-        } push(hook, EVENT_USE, data, context);
+            String settingName = result.isnil(4) ? null : result.checkjstring(4);
+            if(!Str.isEmpty(settingName)) {
+                if(DebugUtil.isDebug())
+                    Log.d(TAG, "Found a Special Usage Hook, Setting is the Name:" + settingName);
+
+                push(settingName, EVENT_USE, data, context);
+                return;
+            }
+        }
+
+        push(hook, EVENT_USE, data, context);
     }
 
     public static void installException(XLuaHook hook, Throwable exception, Context context) { installException(hook, exception, context, true); }
@@ -92,19 +112,46 @@ public class XReport {
         push(hook, EVENT_INSTALL, data, context);
     }
 
+    public static void push(String hook, String event, SimpleReportData data, Context context) {
+        SimpleReport report = new SimpleReport();
+        if(Str.isEmpty(hook)) {
+            if(DebugUtil.isDebug())
+                Log.w(TAG, "Hook ID Is Missing from Report... Event=" + event + " Stack=" + RuntimeUtils.getStackTraceSafeString(new Throwable()));
+
+        } else {
+            report.hook = hook;
+            report.packageName = context.getPackageName();
+            report.uid = context.getApplicationInfo().uid;
+            report.event = event;
+            report.time = new Date().getTime();
+            report.data = data;
+            push(report, event, context);
+        }
+    }
+
     public static void push(XLuaHook hook, String event, SimpleReportData data, Context context) {
         SimpleReport report = new SimpleReport();
-        report.hook = hook.getSharedId();
-        report.packageName = context.getPackageName();
-        report.uid = context.getApplicationInfo().uid;
-        report.event = event;
-        report.time = new Date().getTime();
-        report.data = data;
-        push(report, event, context);
+        String hookId = hook.getObjectId();
+        if(Str.isEmpty(hookId)) {
+            if(DebugUtil.isDebug())
+                Log.w(TAG, "Hook ID Is Missing from Report... Event=" + event + " Stack=" + RuntimeUtils.getStackTraceSafeString(new Throwable()));
+
+        } else {
+            report.hook = hookId;
+            report.packageName = context.getPackageName();
+            report.uid = context.getApplicationInfo().uid;
+            report.event = event;
+            report.time = new Date().getTime();
+            report.data = data;
+            push(report, event, context);
+        }
     }
 
     public static void push(SimpleReport report, String event, final Context context) {
         try {
+            if(DebugUtil.isDebug())
+                Log.d(TAG, "Pushing Report Hook ID=" + report.hook + " Event=" + event);
+
             synchronized (queue) {
                 String key = (report.data.function == null ? Str.ASTERISK : report.data.function) + Str.COLLEN + event;
                 if (!queue.containsKey(key))
