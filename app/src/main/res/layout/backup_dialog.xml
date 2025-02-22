@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Backup Name -->
+    <TextView
+        android:id="@+id/tvBackupNameLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text_backup_name"
+        android:textAppearance="@android:style/TextAppearance.Small" />
+
+    <EditText
+        android:id="@+id/tiBackupName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/text_enter_backup_name"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Checkboxes -->
+    <CheckBox
+        android:id="@+id/cbDefinitions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text_definitions_count"
+        android:layout_marginBottom="8dp" />
+
+    <CheckBox
+        android:id="@+id/cbAllHooks"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text_all_hooks"
+        android:layout_marginBottom="8dp" />
+
+    <CheckBox
+        android:id="@+id/cbSettings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text_settings_count"
+        android:layout_marginBottom="8dp" />
+
+    <CheckBox
+        android:id="@+id/cbAssignments"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text_assignments_count"
+        android:layout_marginBottom="8dp" />
+
+    <CheckBox
+        android:id="@+id/cbDeleteOld"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:text="@string/text_delete_old_database"
+        android:layout_marginBottom="8dp" />
+
+</LinearLayout>

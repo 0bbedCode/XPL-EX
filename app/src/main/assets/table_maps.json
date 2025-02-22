@@ -1,0 +1,7 @@
+[
+  {
+    "tableName": "assignments",
+    "columnName": "category",
+    "oldColumns": ["package"]
+  }
+]

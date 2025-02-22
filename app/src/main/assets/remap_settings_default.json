@@ -1,0 +1,256 @@
+[
+  {
+    "id": "soc.board.model",
+    "oldIds": ["cpu.soc.model"]
+  },
+  {
+    "id": "soc.board.config.code.name",
+    "oldIds": ["cpu.platform.name"]
+  },
+  {
+    "id": "soc.board.manufacturer",
+    "oldIds": ["cpu.soc.manufacturer"]
+  },
+  {
+    "id": "soc.board.manufacturer.id",
+    "oldIds": ["cpu.hardware.name"]
+  },
+  {
+    "id": "soc.cpu.processor.count",
+    "oldIds": ["cpu.processor.count"]
+  },
+  {
+    "id": "soc.cpu.architecture",
+    "oldIds": ["cpu.arch"]
+  },
+  {
+    "id": "soc.cpu.instruction.set.32",
+    "oldIds": ["cpu.dalvik.vm.variant"]
+  },
+  {
+    "id": "soc.cpu.abi",
+    "oldIds": ["cpu.abi"]
+  },
+  {
+    "id": "soc.cpu.abi.list",
+    "oldIds": ["cpu.abilist"]
+  },
+  {
+    "id": "soc.cpu.abi.list.32",
+    "oldIds": ["cpu.abilist32"]
+  },
+
+  {
+    "id": "soc.cpu.abi.list.64",
+    "oldIds": ["cpu.abilist64"]
+  },
+  {
+    "id": "soc.gpu.egl.implementor",
+    "oldIds": ["gpu.egl.code.name"]
+  },
+  {
+    "id": "soc.gpu.open.gles.version.encoded",
+    "oldIds": ["gpu.opengls.version"]
+  },
+  {
+    "id": "soc.gpu.open.gles.vendor",
+    "oldIds": ["gpu.gl.vendor"]
+  },
+  {
+    "id": "soc.gpu.open.gles.renderer",
+    "oldIds": ["gpu.gl.renderer"]
+  },
+  {
+    "id": "soc.gpu.open.gles.version",
+    "oldIds": ["gpu.gl.version"]
+  },
+  {
+    "id": "soc.baseband.board.config.name",
+    "oldIds": ["cpu.base.band"]
+  },
+  {
+    "id": "soc.bluetooth.board.config.name",
+    "oldIds": ["bluetooth.soc"]
+  },
+  {
+    "id": "hardware.memory.total",
+    "oldIds": ["memory.total"]
+  },
+  {
+    "id": "hardware.memory.available",
+    "oldIds": ["memory.available"]
+  },
+  {
+    "id": "region.parent.control.tz",
+    "oldIds": ["zone.parent.control.tz"]
+  },
+  {
+    "id": "region.country",
+    "oldIds": ["zone.country"]
+  },
+  {
+    "id": "region.country.iso",
+    "oldIds": ["zone.country.iso"]
+  },
+  {
+    "id": "region.country.code",
+    "oldIds": ["zone.region"]
+  },
+  {
+    "id": "region.language",
+    "oldIds": ["zone.language"]
+  },
+  {
+    "id": "region.language.iso",
+    "oldIds": ["zone.language.iso"]
+  },
+  {
+    "id": "region.language.tag",
+    "oldIds": ["zone.language.tag"]
+  },
+  {
+    "id": "region.timezone",
+    "oldIds": ["zone.timezone"]
+  },
+  {
+    "id": "region.timezone.id",
+    "oldIds": ["zone.timezone.id"]
+  },
+  {
+    "id": "region.timezone.display.label",
+    "oldIds": ["zone.timezone.display.name"]
+  },
+
+
+  {
+    "id": "cell.phone.type.[1,2]",
+    "oldIds": ["gsm.phone.type", "cell.phone.type.1", "cell.phone.type.2"]
+  },
+  {
+    "id": "cell.phone.sim.card.count",
+    "oldIds": ["gsm.sim.count", "cell.phone.sim.card.count.[1,2]", "cell.phone.sim.card.count.1", "cell.phone.sim.card.count.2"]
+  },
+  {
+    "id": "cell.operator.id.[1,2]",
+    "oldIds": ["gsm.operator.id", "cell.operator.id.1", "cell.operator.id.2"]
+  },
+  {
+    "id": "cell.operator.name.[1,2]",
+    "oldIds": ["gsm.network.carrier", "cell.operator.name.1", "cell.operator.name.2"]
+  },
+  {
+    "id": "cell.operator.numeric.id.[1,2]",
+    "oldIds": ["gsm.operator.id", "cell.operator.numeric.id.1", "cell.operator.numeric.id.2"]
+  },
+  {
+    "id": "cell.operator.display.name.[1,2]",
+    "oldIds": ["gsm.setting.display.name", "cell.operator.display.name.1", "cell.operator.display.name.2"]
+  },
+  {
+    "id": "cell.operator.mcc.[1,2]",
+    "oldIds": ["gsm.operator.mcc", "cell.operator.mcc", "cell.operator.mcc.1", "cell.operator.mcc.2"]
+  },
+  {
+    "id": "cell.operator.mnc.[1,2]",
+    "oldIds": ["gsm.operator.mnc", "cell.operator.mnc", "cell.operator.mnc.1", "cell.operator.mnc.2"]
+  },
+  {
+    "id": "unique.gsm.phone.number.[1,2]",
+    "oldIds": ["unique.gsm.phone.number", "unique.gsm.phone.number.1", "unique.gsm.phone.number.2"]
+  },
+  {
+    "id": "unique.gsm.subscription.id.[1,2]",
+    "oldIds": ["unique.gsm.subscription.id", "unique.gsm.subscription.id.1", "unique.gsm.subscription.id.2"]
+  },
+  {
+    "id": "unique.gsm.imei.[1,2]",
+    "oldIds": ["unique.gsm.imei", "unique.gsm.imei.1", "unique.gsm.imei.2"]
+  },
+  {
+    "id": "unique.gsm.meid.[1,2]",
+    "oldIds": ["unique.gsm.meid", "unique.gsm.meid.1", "unique.gsm.meid.2"]
+  },
+  {
+    "id": "unique.gsm.icc.id.[1,2]",
+    "oldIds": ["unique.gsm.icc.id", "unique.gsm.icc.id.1", "unique.gsm.icc.id.2"]
+  },
+  {
+    "id": "unique.gsm.phone.number.[1,2]",
+    "oldIds": ["unique.gsm.phone.number", "unique.gsm.phone.number.1", "unique.gsm.phone.number.2"]
+  },
+  {
+    "id": "unique.gsm.sim.serial.[1,2]",
+    "oldIds": ["unique.gsm.sim.serial", "unique.gsm.sim.serial.1", "unique.gsm.sim.serial.2"]
+  },
+  {
+    "id": "unique.gsm.voicemail.id.[1,2]",
+    "oldIds": ["unique.gsm.voicemail.id", "unique.gsm.voicemail.id.1", "unique.gsm.voicemail.id.2"]
+  },
+  {
+    "id": "unique.gsm.operator.msin.[1,2]",
+    "oldIds": ["unique.gsm.operator.msin", "unique.gsm.operator.msin.1", "unique.gsm.operator.msin.2"]
+  },
+  {
+    "id": "cell.sim.type.[1,2]",
+    "oldIds": ["cell.sim.type.1", "cell.sim.type.2"]
+  },
+  {
+    "id": "cell.sim.state.flag.[1,2]",
+    "oldIds": ["cell.sim.state.flag,[1,2]"]
+  },
+  {
+    "id": "cell.sim.state.[1,2]",
+    "oldIds": ["cell.sim.state.1", "cell.sim.state.2"]
+  },
+  {
+    "id": "cell.location.lac",
+    "oldIds": ["gsm.cell.location.lac"]
+  },
+  {
+    "id": "cell.location.cid",
+    "oldIds": ["gsm.cell.location.cid"]
+  },
+
+
+
+  {
+    "id": "apps.allow.list",
+    "oldIds": ["applications.allow.list"]
+  },
+  {
+    "id": "apps.block.list",
+    "oldIds": ["applications.block.list"]
+  },
+  {
+    "id": "apps.blacklist.mode.bool",
+    "oldIds": ["applications.blacklist.mode.bool"]
+  },
+  {
+    "id": "apps.blacklist.allow.vital.apps.bool",
+    "oldIds": ["applications.blacklist.allow.vital.apps.bool"]
+  },
+  {
+    "id": "apps.sync.times.bool",
+    "oldIds": ["applications.sync.times.bool"]
+  },
+  {
+    "id": "display.height",
+    "oldIds": ["display.height"]
+  },
+  {
+    "id": "display.width",
+    "oldIds": ["display.width"]
+  },
+  {
+    "id": "android.etc.build.rom.base.os",
+    "oldIds": ["android.build.user"]
+  },
+  {
+    "id": "android.etc.build.rom.user",
+    "oldIds": ["android.build.dev.codename"]
+  },
+  {
+    "id": "android.etc.build.rom.version.codename",
+    "oldIds": ["android.build.type"]
+  }
+]
