@@ -1,59 +1,830 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="title_accept">同意する</string>
+    <string name="app_name">XPL-EX</string>
+    <string name="channel_privacy">XPrivacyLua</string>
+    <string name="title_license">        This app is meant to be used to protect your privacy. Modified and Extended from ObbedCode much love.
+        <![CDATA[<br><br>]]>This is not the POWER OF YOUR CREATION!!
+        <![CDATA[<br><br>]]>Copyright 2017-%1$d Marcel Bokhorst. All rights reserved.
+        <![CDATA[<br><br>]]>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+        <![CDATA[<br><br>]]>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the <![CDATA[<a href="http://www.gnu.org/licenses/gpl.txt">GNU General Public License</a>]]> for more details.
+        <![CDATA[<br><br><strong>LuaJ</strong><br>]]>Copyright 2007-2013 LuaJ. All rights reserved. See the <![CDATA[<a href="http://luaj.sourceforge.net/license.txt">license</a>]]>.
+        <![CDATA[<br><br><b>Glide</b><br>]]>Copyright 2014 Google, Inc. All rights reserved. See the <![CDATA[<a href="https://raw.githubusercontent.com/bumptech/glide/master/LICENSE">license</a>]]>.
+        <![CDATA[<br><br><b>Android Support Library</b><br>]]>Copyright 2011 The Android Open Source Project. See the <![CDATA[<a href="https://android.googlesource.com/platform/frameworks/support/+/master/LICENSE.txt">license</a>]]>.
+    </string>
+    <string name="title_accept">同意</string>
     <string name="title_deny">同意しない</string>
     <string name="title_fix">修正</string>
     <string name="title_all">全て</string>
     <string name="title_restrict">制限</string>
-    <string name="title_bootloop">制限するとブートループが発生する可能性が有ります</string>
-    <string name="title_force_stop">自動強制停止</string>
-    <string name="title_help_instructions">アプリのアイコン又は名前をタップし制限をチェックして適用します。
-         可能な場合アプリは自動的に停止して制限をすぐに適用(又は削除)しますが、
-         但し一部のアプリに制限を適用するにはデバイスを再起動する必要があります(下のアイコンを参照)
-         <![CDATA[<br><br>]]>アプリ名又はアイコンを長押しアプリを起動します
-         <![CDATA[<br><br>]<a href="https://github.com/M66B/XPrivacyLua/blob/master/README.md">ドキュメントを参照してください</a>]]>         及び<![CDATA[<a href="https://github.com/M66B/XPrivacyLua/blob/master/FAQ.md">よくある質問</a>]]>で詳細を確認して下さい</string>
-    <string name="title_help_installed">インストール制限</string>
-    <string name="title_help_system">制限を適用すると問題が発生する可能性が有ります</string>
-    <string name="title_help_settings">アプリ制限設定</string>
-    <string name="title_help_persistent">制限を適用するにはデバイスの再起動が必要</string>
-    <string name="title_help_exception">制限の適用に失敗しました(アイコンをタップして理由を確認して下さい)</string>
-    <string name="menu_show">表示</string>
-    <string name="menu_show_user">ユーザアプリを表示</string>
-    <string name="menu_show_icon">アイコンでアプリを表示</string>
-    <string name="menu_show_all">全てのアプリを表示</string>
-    <string name="menu_search">検索</string>
-    <string name="menu_help">ヘルプ</string>
-    <string name="menu_notify_new">新しいアプリ追加で通知</string>
-    <string name="menu_restrict_new">新しいアプリを制限</string>
-    <string name="menu_companion">プロ機能</string>
-    <string name="menu_readme">ドキュメンテーション</string>
+    <string name="title_bootloop">制限するとブートループが発生する可能性があります</string>
+    <string name="title_force_stop">自動的に強制停止</string>
+    <string name="title_use_default">Nullの場合はデフォルトを使用</string>
+    <string name="button_reset_settings">設定をリセット</string>
+    <string name="title_hooks_assign">フックを割り当て</string>
+    <string name="title_delete_action">削除</string>
+    <string name="button_terminate">停止</string>
+    <string name="button_properties">プロパティ</string>
+    <string name="button_configs">設定</string>
+    <string name="button_profiles">プロファイル</string>
+    <string name="button_create_config">設定ファイルを生成</string>
+    <string name="button_create_profile">プロファイルを作成</string>
+    <string name="button_logs">ログ</string>
+    <string name="button_force_stop">強制停止</string>
+    <string name="button_clear_app_data">アプリのデータを消去</string>
+    <string name="title_help_instructions">        Tap on an app icon or name and tick restrictions to apply them.
+        If possible, apps are automatically stopped to apply (or remove) restrictions immediately,
+        but applying restrictions to some apps requires a device restart (see icons below).
+        <![CDATA[<br><br>]]>Long press on an app name or icon to start the app.
+        <![CDATA[<br><br>]]>See <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/master/README.md">the documentation</a>]]>
+        and <![CDATA[<a href="https://github.com/0bbedCode/XPL-EX/blob/master/FAQ.md">the frequently asked questions</a>]]> for more information.
+    </string>
+    <string name="thank_you">        Hello this is ObbedCode, thanks for all the Love i will keep this project going til I DIE!.
+        <![CDATA[<br><br>]]> Privacy will never be lost I wont stop til each app is FULLY black boxed.
+        <![CDATA[<br><br>]]>This is my Art, Quality over Quantity so be patience pls and thanks to all who are patient!.
+   </string>
+    <string name="menu_whats_new_button">Whats New!</string>
+    <string name="whats_new">        Whats new in 1.5.X Update XPL-EX (ObbedCode) v2
+
+        <![CDATA[<br><br>]]>This is my Art! Enjoy love all, smile, be happy, enjoy what you do!
+        <![CDATA[<br>]]>Free, Open Source, No Analytics, No Servers, offline ...
+        <![CDATA[<br><br>]]> Shout out to Hubert (always keeps me informed updated!) (want to hide root ? this is your man!)
+        <![CDATA[<br>]]>Telegram: <![CDATA[<a href="https://t.me/HubertHub">HubertHub</a>]]>
+
+        <![CDATA[<br><br><a href="https://t.me/xpl_ex">XPL-EX Announcements</a>]]>
+        <![CDATA[<br><a href="https://t.me/XPL_EX_CHAT">XPL-EX Chat</a>]]>
+        <![CDATA[<br><a href="https://github.com/0bbedCode/XPL-EX">GitHub</a>]]>
+        <![CDATA[<br><a href="https://xdaforums.com/t/xpl-ex-xprivacylua-ex-android-privacy-manager-hooking-manager-extended.4652573/">XDA</a>]]>
+        <![CDATA[<br><a href="https://www.instagram.com/obbedcode">Instagram (ObbedCode)</a>]]>
+        <![CDATA[<br><a href="https://www.nulled.to/user/1216641-obbedcode">Nulled</a>]]>
+
+        <![CDATA[<br><br>]]> VDInfos. Grabbing your own Device info cool dev
+        <![CDATA[<br><a href="https://xdaforums.com/t/app-vdinfos.4097379/">XDA</a>]]>
+        <![CDATA[<br><a href="https://github.com/VD171/VD-Infos">GitHub</a>]]>
+
+        <![CDATA[<br><br>]]> 1.5.5 XPL155R
+        <![CDATA[<br>]]>• Started Implementation of the CELL/GSM Hooks! Enable Collection (Telephony) to view Them (No Cell Towers yet)
+        <![CDATA[<br>]]>• Updated Hooks Internal Repo Class
+        <![CDATA[<br>]]>• Improved the Database Updater (JSON) Better Detection on Outdated JSON Entries
+        <![CDATA[<br>]]>• Revised and Improved the WHOLE Settings Repo Class and its Logic (Worked on Fist Try!)
+        <![CDATA[<br>]]>• Added (pay_session_id) Settings Identifier
+        <![CDATA[<br>]]>• Added Visual Indicators Next to the Setting to Flag if it is a Unique Related Setting
+        <![CDATA[<br>]]>• Updated (op_security_uuid) to be Part of the OnePlus Device IDs
+        <![CDATA[<br>]]>• Updated List of Settings, Removed a lot of the Non Working Ones or Dead Ones
+        <![CDATA[<br>]]>• Added Filters for the Settings UI (All, Unique, Android) and Improved the Settings UI by a lot!
+        <![CDATA[<br>]]>• Added Control to Set the Subtract Mode on AppTime Offsets, by Default it is not Subtract (true)
+        <![CDATA[<br>]]>• Added (5x) Baidu IDs to Settings Hooks. Spoof Baidu Device IDs 5 Types
+        <![CDATA[<br>]]>• Added (5x) vbmeta hash Properties to Intercept (Not recommended, might cause mismatch with report from Key Attestation).
+        <![CDATA[<br>]]>• Added Serial number Property (persist.sys.oneplus.serialno)
+        <![CDATA[<br>]]>• Added (5x) Serial Related Properties to Property Interceptor
+        <![CDATA[<br>]]>• Added Spoofing for Device Name and BlueTooth Name
+        <![CDATA[<br>]]>• Improved the Import Export on Main UI (Should be better Handling Crashes)
+        <![CDATA[<br>]]>• Notify on Hook Usage is working with Non Rule Hooks. So it is still under in need of Completing
+        <![CDATA[<br>]]>• Removed Restrict new apps (No easy and Good way of Implementing this without it being messy let alone with Scoped LSPosed)
+        <![CDATA[<br>]]>• Fixed Notify on New Apps
+        <![CDATA[<br>]]>• Added Default Export Backup Name for Dialog (Still needs Some Adjustment but works)
+        <![CDATA[<br>]]>• Improved the Main UI Assignments Group Behaviour (Still needs more Improvement)
+        <![CDATA[<br>]]>• Enhanced Hook loading by Hiding Deprecated API Hooks, Avoid Errors with old APIs (If you cant find your Hook, Update it!)
+        <![CDATA[<br>]]>• Fixed First Time Start Bug (Format Exception for Whats new Dialog)
+        <![CDATA[<br>]]>• Fixed TimeStamp Time Exceeding Current day, now by Default Offsets will not be Added but Subtracted. You can control this behaviour in the all Settings
+        <![CDATA[<br>]]>• Added Warning Dialog for First Time Bulk Hook Checking
+        <![CDATA[<br>]]>• Updated some Icons
+        <![CDATA[<br>]]>• Improved Cursor Util at Reading and Writing to and From Service. Fix Missing Apps Bugs and more...
+        <![CDATA[<br>]]>• Improved and Updated Time Interception (Files, Apps) Sync, Subtract, Offset Control
+        <![CDATA[<br>]]>• Fixed Some hooks, Re Linked Api Functions for XHook for LUA Scripts to use
+        <![CDATA[<br>]]>• Fixed Global Settings not being used in App Context when App Context Settings were not Specified.
+        <![CDATA[<br>]]>• Added Range Randomization for Numeric Settings. Example Amount of Cameras (10-999) Random Value between (10) and (999)
+        <![CDATA[<br>]]>• Fixed Check Box not Unchecking Bug in main UI (Restrict All Check)
+        <![CDATA[<br>]]>• Updated Mappings for Settings, to new Names etc...
+
+
+        <![CDATA[<br><br>]]> 1.5.4 XPL154R
+        <![CDATA[<br>]]>• Cleaned up some of the Internal Cat Logs Logging
+        <![CDATA[<br>]]>• Fixed Query Interception Rules Race Condition (Last Rules overridden the current one)
+        <![CDATA[<br>]]>• Improved the Hooks UI to have more Prompts and overall Feedback to make Feel less Unknown
+        <![CDATA[<br>]]>• Updated the README
+
+        <![CDATA[<br><br>]]> 1.5.3 XPL153R
+        <![CDATA[<br>]]>• Fixed AppSetId Hook Definitions Setting Names
+        <![CDATA[<br>]]>• Fixed Some Internal Bugs
+        <![CDATA[<br>]]>• Improved and STAT File TimeStamp Interception (Detection, and Logic)
+        <![CDATA[<br>]]>• Added NIO Java File Attributes Time Stamp Hooks
+        <![CDATA[<br>]]>• Fixed Binder Interceptor Setting Linking
+        <![CDATA[<br>]]>• Added AppSetId IPC Binder Hook
+        <![CDATA[<br>]]>• Fixed Force Stop Check not working on Save Settings
+        <![CDATA[<br>]]>• Synced and Improve App Time Stamp ID Spoofing (for now you will need to Enable ID File State for the best results)
+        <![CDATA[<br>]]>• Improved IPC Spoofing (IPC Binder, Query, Call)
+        <![CDATA[<br>]]>• Added Wildcard Hooking for Method and Bypass Hidden Api Restrictions
+        <![CDATA[<br>]]>• Redesigned the Hooking Core and Type Resolver
+        <![CDATA[<br>]]>• Fixed AD ID Constructor Hook (Int to Boolean for Second Argument)
+        <![CDATA[<br>]]>• Improved Type Resolving for Hook Definitions
+        <![CDATA[<br>]]>• Added Ability to Target Multiple Classes with a Hook Definition Delimiting each Target Class with \'|\'
+        <![CDATA[<br>]]>• Removed Storage UUID Hooks (Storage Volume UUIDs are not Unique)
+        <![CDATA[<br>]]>• Added Storage Available Size Hooks (x3) (No you cant Control the Value it is fine let XPL-EX Handle it)
+        <![CDATA[<br>]]>• Added Android User Account Creation Date Hooks
+        <![CDATA[<br>]]>• Added Setting to Control a List of Force to Show Settings versus using Defaults if Returned
+        <![CDATA[<br>]]>• Added Popup Dialog for Long Setting Descriptions
+        <![CDATA[<br>]]>• Fixed Some Bugs in Scripts, Typos Etc
+        <![CDATA[<br>]]>• Added and Improved Xiaomi Hooks
+        <![CDATA[<br>]]>• Added more Java LUA Api Functions
+        <![CDATA[<br>]]>• Improved the String to Long Parsing
+        <![CDATA[<br>]]>• Added more KeyguardManager Hooks (Seems it MAY be for Coosea Devices) (obtainOaid, obtainVaid, obtainOaid)
+        <![CDATA[<br>]]>• Fixed Google Maps API not loading in Apps when STAT Hooks are Enabled
+        <![CDATA[<br>]]>• Improved the File STAT Time Randomization and Setting
+        <![CDATA[<br>]]>• Improved the Call/Settings,Query,File, Prop Filters
+        <![CDATA[<br>]]>• Updated and Improved most of the LUA Scripts to make More Safe when Returning Log Arguments
+        <![CDATA[<br>]]>• Updated and Improved and Cleaned up the XParam API splitting it with XPramExtra, added more API Functions etc (This is API that is exposed to LUA Script from param)
+        <![CDATA[<br>]]>• Improved or Added Query Hooks (Android ID, GSF ID, ...)
+        <![CDATA[<br>]]>• Updated GSF ID Randomizer, align more with Format (Needs 3 More Char Points)
+        <![CDATA[<br>]]>• Fixed bugs and or Improved WifiInfo / Network Info Hooks
+        <![CDATA[<br>]]>• Fixed many of the Hooks not Syncing with their Settings
+        <![CDATA[<br>]]>• Deprecated VM Runtime Memory Hooks (No point in these no benefit)
+        <![CDATA[<br>]]>• Improved the Memory Info Hooks
+        <![CDATA[<br>]]>• Added the Facebook Hooks (ensured they are working)
+        <![CDATA[<br>]]>• Fixed \"Contacts\" Hook (Always will Return a Empty Cursor) and will Target any and All Queries ensuring NO LEAKS
+        <![CDATA[<br>]]>• Added Email Randomizer for (Accounts) Hook
+        <![CDATA[<br>]]>• Added Region Randomizers (v1)
+        <![CDATA[<br>]]>• Added Battery Information Randomizers
+        <![CDATA[<br>]]>• Improved and Optimized the Battery Hooks
+        <![CDATA[<br>]]>• Added (boot_count) Settings Hook
+        <![CDATA[<br>]]>• Added Hooks to Spoof many System Settings from (SECURE,GLOBAL,SYSTEM) the Collection is (Settings) ENABLE this Collection to use the Hooks!
+        <![CDATA[<br>]]>• Cleaning up Directories /sdcard/Android/data and /sdcard/Android/obb
+        <![CDATA[<br>]]>• Revised the Core System for Hooks, and XHook Class. Major Clean up and Internal Enhancements, and Database Hooks Should Load!
+        <![CDATA[<br>]]>• Added Hooks UI just like the Pro App, EDIT, ADD, DELETE YOU NAME IT !
+
+
+        <![CDATA[<br>]]>• LUAJ Library Fixes! (Yea I guess Im also a DEV for LUAJ)
+        <![CDATA[<br>]]>--&gt; Fixed Byte Array Handling (Was Converting Byte Arrays to Strings) Example DRM Hook using \"setResult\" Now Fixed!
+        <![CDATA[<br>]]>--&gt; Added Anti Invoking Protections for Certain Java Functions
+        <![CDATA[<br>]]>--&gt; Added Support for Long Values (BigInt) (Finally!!) (May have some bugs but we will fix along the way)
+
+
+        <![CDATA[<br><br>]]> 1.5.2.1 XPL151R
+        <![CDATA[<br>]]>• Improved the ANDROID_ID Cache Hooks
+        <![CDATA[<br>]]>• Improved the VPN Hide (getNetworkInfo) Hook pass RuRu
+        <![CDATA[<br>]]>• Added Charging Cycles Hook (x2)
+        <![CDATA[<br>]]>• Finished \"network.allowed.list\" Hooks and Settings
+
+        <![CDATA[<br><br>]]> 1.5.2.0 XPL151R
+        <![CDATA[<br>]]>• Added System UpTime Hooks (x2)
+        <![CDATA[<br>]]>• Fixed Serial NO Randomizer
+        <![CDATA[<br>]]>• Fixed SOME Randomizer Crash Bugs
+        <![CDATA[<br>]]>• Fixed Fixed Database Path
+        <![CDATA[<br>]]>• Configs can be now applied on Globals
+        <![CDATA[<br>]]>• Fixed some other Internal Bugs
+        <![CDATA[<br>]]>• Do not click \"network.allowed.list\" input not ready !
+
+
+        <![CDATA[<br><br>]]> 1.5.1.9 XPL151R
+        <![CDATA[<br>]]>• Improved AppSetId Hook
+        <![CDATA[<br>]]>• Improved Google Advertising ID Hook
+        <![CDATA[<br>]]>• Added new Android ID Hook (cache)
+        <![CDATA[<br>]]>• Improved Android ID Content Resolver Hook
+        <![CDATA[<br>]]>• Fixed the Direct Content Resolver Hook
+        <![CDATA[<br>]]>• Fixed Collection Filtering for Hooks Dialog Number
+        <![CDATA[<br>]]>• Fixed Global Check Bug
+        <![CDATA[<br>]]>• Fixed Check Box Not Saving Bug
+        <![CDATA[<br>]]>• Fixed View Expander Bugs (Issues were mostly caused by Saved Results Dialog)
+        <![CDATA[<br>]]>• Fixed Drop Down Randomizer Selection Bug
+        <![CDATA[<br>]]>• Fixed Setting Color Bugs
+        <![CDATA[<br>]]>• Fixed Some other Internal Bugs
+        <![CDATA[<br>]]>• Randomizer for OAID uses Xiaomi Format now
+
+        <![CDATA[<br><br>]]> 1.5.1.8 XPL151R (Skipped a couple Versions...)
+        <![CDATA[<br>]]>• Improved and Finalized the Database Folder Finder and Mover Api!
+        <![CDATA[<br>]]>• Improved and Finalized the Access Control Code Api
+        <![CDATA[<br>]]>• Improved and Finalized the File Transfer Api (Copy and Move)
+        <![CDATA[<br>]]>• Fixed bugs and Optimized some Code
+        <![CDATA[<br>]]>• Added Re-Implemented build.prop Properties Interception now!
+        <![CDATA[<br>]]>• Added Startup Checks for Database and Command Bridge Service
+        <![CDATA[<br>]]>• Improved and Finalized the Hook Loader
+        <![CDATA[<br>]]>• Added Import and Export (Settings, Hooks, Definitions, etc...) and Drop Old Tables
+        <![CDATA[<br>]]>• Added Hooks for AppSetId (Another Unique ID Introduced into Android 2021) (Will make them even stronger in the future)
+        <![CDATA[<br>]]>• -&gt; Check out the Demo App that shows you your AppSetId Via Telegram Announcement Channel!
+        <![CDATA[<br>]]>• Added DUMP options to some of the Commands (Internal)
+        <![CDATA[<br>]]>• Added more UI Feedback!
+        <![CDATA[<br>]]>• Fixed Some Setting Names, typos and Bugs
+        <![CDATA[<br>]]>• Setting Nice names will now Show with Capitals etc
+        <![CDATA[<br>]]>• Fixed some Major bugs
+        <![CDATA[<br>]]>• Enhanced the Renamer System to ensure Settings have new Names
+        <![CDATA[<br>]]>• Fixed some Randomizers
+
+        <![CDATA[<br><br>]]> 1.5.1.5 XPL151R
+        <![CDATA[<br>]]>• Improved the Randomization Core (less bugs) more Stable better Code
+        <![CDATA[<br>]]>• Fixed Parent Randomizer on Single Click
+        <![CDATA[<br>]]>• Improved the Database Re Mapper
+        <![CDATA[<br>]]>• Improved the Hooks to Settings Mapper
+        <![CDATA[<br>]]>• Improved the Database Table Column Updater (this will fix more bugs)
+        <![CDATA[<br>]]>• Fixed Messed up or Disappearing Assignments
+        <![CDATA[<br>]]>• Finished Logs Dialog
+        <![CDATA[<br>]]>• Fixed Critical bug in Mapping the Primary Keys to Database Table
+        <![CDATA[<br>]]>• Removed Intercept Hooks from UI (user should not trigger them)
+        <![CDATA[<br>]]>• Fixed and Added MORE MORE VPN Hide Hooks Thanks (VDInfo) (VD171)
+        <![CDATA[<br>]]>• Fixed UI Crashing
+        <![CDATA[<br>]]>• Enhanced the JSON File Import support earlier versions of Android
+        <![CDATA[<br>]]>• Fixed ForceStop Check on Main Screen
+        <![CDATA[<br>]]>• Lowered the Count Down for Dialogs
+        <![CDATA[<br>]]>• Fixed Restrict Check on Main Screen
+        <![CDATA[<br>]]>• Fixed App Show Filter Saving
+        <![CDATA[<br>]]>• Added Filter to only Show Hooked Apps and System Apps
+        <![CDATA[<br>]]>• Added Help Dialogs now for Understanding the Hooks (Note most are AI) Gen Descriptions so inform on revisions
+        <![CDATA[<br>]]>• Cleaned up more Logs
+        <![CDATA[<br>]]>• Improved Assignment handling avoid issues with Interceptors / Filters
+        <![CDATA[<br>]]>• Cleaned up some Settings, Hid them from use (for now)
+
+        <![CDATA[<br><br>]]> 1.5.1.4 XPL151R
+        <![CDATA[<br>]]>• Fixed the 0 Hooks for Setting issue
+
+        <![CDATA[<br><br>]]> 1.5.1.3 XPL151R
+        <![CDATA[<br>]]>• Fixed the Device Randomizers
+        <![CDATA[<br>]]>• Improved and Fixed Long Int Casting with App TimeStamps
+        <![CDATA[<br>]]>• Added Log Identifiers for Hooks, still adding in Logs Dialog
+        <![CDATA[<br>]]>• Fixed Null Pointer in list for Settings UI
+
+        <![CDATA[<br><br>]]> 1.5.1.2 XPL151R
+        <![CDATA[<br>]]>• Fixed Randomizer mass Save
+        <![CDATA[<br>]]>• Fixed the Facebook Randomizer
+        <![CDATA[<br>]]>• Improved the JSON Import and Export for earlier versions of Android
+        <![CDATA[<br>]]>• Fixed App Time Stamp custom Offset
+
+        <![CDATA[<br><br>]]> 1.5.1 XPL151R
+        <![CDATA[<br>]]>• Fixed all the Filter Hooks (now most hooks will work!)
+        <![CDATA[<br>]]>• Added Support for Pre Randomization (random easter egg)
+        <![CDATA[<br>]]>• Added Custom Settings Control Dialogs (list settings etc)
+        <![CDATA[<br>]]>• Added More Control for App Time Stamps
+        <![CDATA[<br>]]>• Updated more UI Icons
+        <![CDATA[<br>]]>• Fixed UI Binding Bugs
+        <![CDATA[<br>]]>• Fixed Internal bugs
+        <![CDATA[<br>]]>• Added more Settings to the Re Map JSON
+        <![CDATA[<br>]]>• Organized Settings in Groups properly (parents first)
+        <![CDATA[<br>]]>• Fixed Child Setting not Binding to its Container
+        <![CDATA[<br>]]>• Added Network and Unique Randomizers
+        <![CDATA[<br>]]>• Linked the Randomizer Drop Down spinner UI Element
+        <![CDATA[<br>]]>• Improved Check box Syncing with Setting and Container
+        <![CDATA[<br>]]>• Linked Network Settings to Hooks
+        <![CDATA[<br>]]>• Finished Save Checked Option in Settings UI
+        <![CDATA[<br>]]>• Added more UI Feedback
+        <![CDATA[<br>]]>• Fixed Name Information Parser on Child Settings
+        <![CDATA[<br>]]>• Fixed Get Groups Command (String Array and List Error)
+        <![CDATA[<br>]]>• Created the new Improved Configs UI Dialog!
+        <![CDATA[<br>]]>•-&gt; Supports Importing legacy Configs
+        <![CDATA[<br>]]>•-&gt; Added Author and Version Fields to Configs
+        <![CDATA[<br>]]>•-&gt; Added Tags help further Detail Config purpose
+        <![CDATA[<br>]]>•-&gt; Added Option to Specify Hook IDs into Config
+
+        <![CDATA[<br><br><br>]]> 1.5.0 RED Edition XPL150R
+        <![CDATA[<br>]]>• Final Revision of the Core
+        <![CDATA[<br>]]>• Many bug Fixed (forceStop, randomizers, Hide VPN)
+        <![CDATA[<br>]]>• Optimized Startup
+        <![CDATA[<br>]]>• Now Storing settings under UserID instead of PKG UID
+        <![CDATA[<br>]]>• Major Clean up of Schizo Messages and Code
+        <![CDATA[<br>]]>• Tour Guide
+        <![CDATA[<br>]]>• Fixed and Deprecated Many Hooks
+        <![CDATA[<br>]]>• Dual Settings Control (Multiple SIM + Network Control)
+        <![CDATA[<br>]]>• Added Parent Settings to Control a group of Settings at once
+        <![CDATA[<br>]]>• Cleaned out MANY useless Settings
+        <![CDATA[<br>]]>• Attempt to Make things more Organized and Clear
+        <![CDATA[<br>]]>• Fixed ICON Colors and better ICONs
+        <![CDATA[<br>]]>• Added Collection Control in Main UI instead of Pro APP
+        <![CDATA[<br>]]>• Force Stop Control in Settings UI for Modifying Settings
+        <![CDATA[<br>]]>• Fixed Database File Utils
+        <![CDATA[<br>]]>• Moved Database Files from [/data/system/] to [/data/misc/] More Stealthy
+        <![CDATA[<br>]]>• Enhanced Hook methods by Hooking the base Objects (less leaks)
+        <![CDATA[<br>]]>• Enhanced Detection Filters for Properties, Settings, Queries, IPC etc...
+        <![CDATA[<br>]]>• Enhanced Data Generation to look more Realistic
+        <![CDATA[<br>]]>• Force Stop Control in Settings UI for Modifying Settings
+        <![CDATA[<br>]]>• Increased Security between Service Communication and Fixed possible Query leaks
+        <![CDATA[<br>]]>• Improved Randomization Core, ensure Seed Generation is Strong
+        <![CDATA[<br>]]>• For Open Anonymous ID Generation, added Switch between MIUI Devices and Regular Generator to match formats
+        <![CDATA[<br>]]>• Added [Os.lstat] Hook for the File STAT Hooks Group
+        <![CDATA[<br>]]>• (Xiaomi) Added Hooks for VAID/AAID/OAID/UDID
+        <![CDATA[<br>]]>• Upgraded to Java 8, Gradle 7.1 and Libraries
+        <![CDATA[<br>]]>• Updated Process (exec) Interceptor to Properly intercept the Process Object Return Value
+        <![CDATA[<br>]]>• Improved the STAT Output Spoofer
+        <![CDATA[<br>]]>• Added Cache for Values that are not Controlled by User Randomization to ensure Consistency
+        <![CDATA[<br>]]>• Enhanced Shell Interceptor, Supports latest Fingerprint Pro
+        <![CDATA[<br>]]>• Group Control in Settings Now
+        <![CDATA[<br>]]>• Improved SQL Snake Builder
+        <![CDATA[<br>]]>• Created Custom Buttons ditched using the Generic App Compact Themed Buttons
+        <![CDATA[<br>]]>• Changes colors from Blue to Red, Red ICON, Red Theme new Red Edition
+        <![CDATA[<br>]]>• Added more Feedback and Dialogs, Feels alive
+        <![CDATA[<br>]]>• Finished Verbose Logs button, will enforce many logs in log cat for debugging
+
+
+   </string>
+    <string name="warning_bulk_check">Selecting this will Enable Every Hook Possible (Super Highly NOT recommended). Why ? Why use a BOMB causing Chaos, when you should Enable what you think is best Needed for your situation.\n\nRemember, in Settings \"unique\" Filter is everything that can be used to Identify you, the rest does not matter. \n\nIf you Continue, you are NOT to ask for Help if Target App Crashes or acts abnormally, you accept such behaviour due to a lack of patience. (Do NOT ask for Help if App Crashes when you Select all at once) \n\nSelect what is NEEDED by Testing, Trying, or FAQ. \n\n\nOnce you click (ok) this Dialog will never Appear again hence the Long Timeout (READ THIS DAMN MESSAGE!!!)</string>
+    <string name="warning_bulk_check_title">Select all Hooks ?</string>
+    <string name="warning_hook_ad_analytics">This will attempt to disable the analytics libraries from being loaded into the application. This does not support all (80+) right now, so be patient until I get around to all of them. If analytics are still being loaded in or ads are still appearing, it means they are not supported for now. This can also cause applications to crash if they heavily depend on the analytics/ad library. IF Application Crashes go into the New HOOK UI and disable some of the Ad Analytics Hooks test app rinse and repeat until you find the Hook that is crashing it. I WILL not help with this as Disabling ads and analytics can crash some apps so figure out your self what is causing it disable it!</string>
+    <string name="warning_hook_ad_analytics_spoof">This will not disable the analytics/ad libraries from being loaded in but will spoof unique/critical IDs and/or keys within the library to make analytics more difficult.</string>
+    <string name="warning_hook_embed_paypal">This will attempt to spoof the environment to help trick PayPal payment gateways within apps into thinking the phone is not rooted or an emulator. This is an attempt, not bulletproof.</string>
+    <string name="warning_hook_get_app">This will prevent the action of getting single application data. It will not filter the list of applications but will intercept the functions that can get single pieces of data on the target application, thus revealing that the app exists. HMA (Hide My App List) will block and filter the lists. This will cover everything else that is not listing apps but getting something from an app. You can have whitelist mode or blacklist mode, controlled in settings.</string>
+    <string name="warning_hook_get_apps_ex">Using this will most likely block all applications to be seen except usually the current app being hooked. That being said I was too behind to sit here and implement all these APIs to the new system from M66Bs so as an option you can select this instead of the Get.Apps Hooks I have made. No need to use both as this one will most likely override the other and display nothing versus the other one using a filter. Do not ask about this Hook or that I should update it , as I am aware and working on it so be patient or use Get.Apps Combined with HMA (Hide my applist) thanks!.</string>
+    <string name="warning_hook_get_location">Get Location will allow control over the target application if it is allowed to get the location versus spoofing it. Spoof Location will imply that you allow it to get the location, but you want to spoof it.</string>
+    <string name="warning_hook_gsm_status">These hooks will only spoof the state of data, showing it as enabled despite being disabled.</string>
+    <string name="warning_hook_hide_environment">This hook will attempt to hide if the system is an emulator and/or is rooted. By no means is this bulletproof or even super effective, especially if the target app uses native detection methods. Do not complain if it does not hide for some apps. To ensure it works the best, select the (Intercept Shell, Intercept Properties, and Get Apps) hooks. Combine Get Apps with HMA (Hide My App List). The Get Apps hook, if whitelist mode is enabled, will automatically block my hardcoded list of root packages. To ensure strength, add your own list in settings. Finally, in settings, enable (hide.root) and (hide.emulator).</string>
+    <string name="warning_hook_id_user">Enabling this will spoof the user via Activity Manager but not using the command `whoami`. To ensure this works, enable the `whoami` command intercept in settings, then select the Intercept Shell hook group. The Activity Manager method will also only be useful for applications that have higher-level privileges, either via system or root.</string>
+    <string name="warning_hook_intercept_shell">You can control the commands it will intercept (hardcoded) in the settings UI containing shell. If the app uses native shell, this hook will not work.</string>
+    <string name="warning_hook_language">This may not always work and can be unstable at times, as it targets many APIs that can be used for legitimate reasons. If you notice odd behavior in the application, disable this hook.</string>
+    <string name="warning_hook_properties">To control the interception filter, use the Properties UI. This hook currently does not support native build proper properties interception. If the property is still being intercepted despite your filter configuration, assume they are using native methods.</string>
+    <string name="warning_hook_soc_ex">This hook can cause applications to crash on certain versions of Android and/or devices. Disable this if you experience issues with the application crashing. Enable only this hook, open the app, and see if it causes the application to crash.</string>
+    <string name="warning_hook_spoof_features">Enabling this hook can cause odd behavior in the application, such as possible connection issues. This filter removes all device features for now. When applications use this function to check if you have a camera or Wi-Fi chip, it will appear as if you do not, since those are considered features.</string>
+    <string name="warning_hook_user_agent">If you have installed a custom WebView on the device, such as BroMite, this hook may not work as expected. It will still work on applications that use OkHttp3, HttpUrlConnection, and GeckoWebView from Firefox. These hooks will not work on Chromium-based browsers, such as Chrome and Brave, since they use native code to build their user agents. Lastly, using this on apps like DoorDash is unwise, as DoorDash uses its own type of user agent. If you do not spoof it correctly, it can make DoorDash flag you.</string>
+    <string name="warning_hook_vpn_state">This will hide the fact that you have a VPN enabled and connected. However, if the target application uses server-side methods to detect the VPN, it cannot be bypassed via hooks. This hook is a local detection bypass using four methods.</string>
+    <string name="save_setting_success">Settings were saved! </string>
+    <string name="save_setting_error">Failed to save Settings! </string>
+    <string name="msg_export_hook_error">Failed Export Hook to File! </string>
+    <string name="msg_export_hook_success">Successfully Exported Hook to File! </string>
+    <string name="msg_create_hook_error">Failed to Create the Hook! </string>
+    <string name="msg_create_hook_success">Successfully Created the Hook! </string>
+    <string name="msg_error_processing">An error occurred while processing settings. Please try again.</string>
+    <string name="msg_error_no_description">No Description for this Setting  Container (%s)</string>
+    <string name="text_backup_name">Backup Name:</string>
+    <string name="text_enter_backup_name">Enter backup name</string>
+    <string name="text_definitions_count">Definitions (%d)</string>
+    <string name="text_all_hooks">All Hooks (%d)</string>
+    <string name="text_settings_count">Settings (%d)</string>
+    <string name="text_assignments_count">Assignments (%d)</string>
+    <string name="text_delete_old_database">Delete the old Database Table Items, for the Checked to replace with the new Items!</string>
+    <string name="title_backup">Backup Manager</string>
+    <string name="title_settings_search">Settings Search</string>
+    <string name="task_status_dropping_tables">Dropping old tables...</string>
+    <string name="task_status_applying_settings">Applying %1$d settings</string>
+    <string name="task_status_progress">Progress: %1$d of %2$d</string>
+    <string name="task_status_settings_completed">Completed %1$d of %2$d settings</string>
+    <string name="task_status_processing_scripts">Processing scripts</string>
+    <string name="task_status_applying_hooks">Applying %1$d hooks</string>
+    <string name="task_status_hooks_completed">Completed %1$d of %2$d hooks</string>
+    <string name="task_status_applying_assignments">Applying %1$d assignments</string>
+    <string name="task_status_assignments_completed">Completed %1$d of %2$d assignments</string>
+    <string name="cancelling">Cancelling...</string>
+    <string name="task_cancelled">Cancelled</string>
+    <string name="title_applying_backup">Applying Backup</string>
+    <string name="task_applying_settings">Applying Settings</string>
+    <string name="task_applying_definitions">Applying Definitions</string>
+    <string name="task_applying_assignments">Applying Assignments</string>
+    <string name="task_complete">Complete</string>
+    <string name="task_progress_format">Progress: %1$d of %2$d</string>
+    <string name="task_detail_dropping_settings">Dropping Old Settings</string>
+    <string name="task_detail_dropping_settings_table">Dropping old settings table...</string>
+    <string name="task_detail_dropping_hooks">Dropping Old Hooks</string>
+    <string name="task_detail_dropping_hooks_table">Dropping old hooks table...</string>
+    <string name="task_detail_dropping_assignments">Dropping Old Assignments</string>
+    <string name="task_detail_dropping_assignments_table">Dropping old assignments table...</string>
+    <string name="task_detail_processing_scripts_status">Processing Scripts</string>
+    <string name="task_detail_processing_scripts">Preparing Lua scripts for hook definitions...</string>
+    <string name="task_detail_applying_setting">Setting: %1$s</string>
+    <string name="task_detail_applying_hook">Hook: %1$s</string>
+    <string name="task_detail_applying_assignment">Hook: %1$s to Package: %2$s</string>
+    <string name="task_detail_settings_complete">Completed %1$d of %2$d settings</string>
+    <string name="task_detail_definitions_complete">Completed %1$d of %2$d definitions</string>
+    <string name="task_detail_assignments_complete">Completed %1$d of %2$d assignments</string>
+    <string name="title_hook_edit">Edit Hook</string>
+    <string name="title_hook_target">Target Packages</string>
+    <string name="title_wifi_networks">Wi-Fi Networks</string>
+    <string name="title_edit_wifi_network">Edit Wi-Fi Network</string>
+    <string name="btn_create_network">Create New Network</string>
+    <string name="msg_error_mismatch_bridge_version">The Service Bridge Version [%s] does not Match the Current App Installed Version [%s]. Make sure you Checked (SettingsStorage) in LSPosed under XPL-EX then Reboot your Device!</string>
+    <string name="msg_error_service">Failed to Contact the Service for a Database Check!\n\nMake sure if you have (SettingsStorage) Selected in LSPosed under XPL-EX.\n\nIf it Un-Checks in LSPosed (that is fine) Just make sure you at least checked it ONCE, then restarted your Device (does not hurt to try again).\n\nFinally if you updated XPL-EX or Installed it, Make sure again you Re-Check SettingsSecure and Reboot your Phone!!!</string>
+    <string name="msg_error_service_bridge">Command to check the Service Bridge Update can not be contacted!\n\nMake sure you to Select in LSPosed (SettingsStorage) under XPL-EX again in LSPosed.\n\nThen Reboot your Phone! Command Service Bridge with Commands shall be Updated then!\n\nIf errors still occur please Contact the Dev!</string>
+    <string name="msg_error_generic_global">Sorry this Action is not Allowed on Global! </string>
+    <string name="msg_error_global_limit">Error this Action can not be completed because its Global Context </string>
+    <string name="msg_error_generic">Error executing Action! </string>
+    <string name="msg_error_generic_null">Error executing Action! NULL PTR </string>
+    <string name="msg_error_no_hooks">Error No Hooks for this Action!</string>
+    <string name="msg_error_no_hooks_global">Error No Hooks for this Action! Hooks are Disabled in Global! </string>
+    <string name="msg_finished_applying_config">Finished Applying Config! </string>
+    <string name="msg_task_finished_command">Command was executed Successfully!</string>
+    <string name="msg_task_failure">Command Failed to execute!</string>
+    <string name="result_prefix_notify">Notify</string>
+    <string name="result_prefix_restrict">Restrict</string>
+    <string name="result_prefix_theme">Theme</string>
+    <string name="result_prefix_debug">Debug</string>
+    <string name="result_prefix_force_stop">App Force Closed!</string>
+    <string name="result_prefix_cleared_app_data">AppData Cleared!</string>
+    <string name="result_settings_update">Updated %s Settings! Failed Count %s</string>
+    <string name="result_settings_update_empty">No Settings were saved! Nothing needs to be Saved!</string>
+    <string name="search_settings_hint">Search Settings...</string>
+    <string name="search_log_hint">Search Logs...</string>
+    <string name="search_config_hint">Search Configs...</string>
+    <string name="hint_input_value">Enter Value...</string>
+    <string name="hook_button_edit">Edit</string>
+    <string name="hook_button_delete">Delete</string>
+    <string name="hook_button_export">Export</string>
+    <string name="hook_label_name">Name:</string>
+    <string name="hook_label_author">Author:</string>
+    <string name="hook_label_class">Class:</string>
+    <string name="hook_label_method">Method:</string>
+    <string name="hook_label_sdk">SDK:</string>
+    <string name="hook_label_version">Version:</string>
+    <string name="hook_label_description">Description:</string>
+    <string name="hook_label_optional">Optional</string>
+    <string name="hook_label_usage">Usage</string>
+    <string name="hook_label_notify">Notify</string>
+    <string name="hook_delete_error">Failed to Delete Hook! Error=%s</string>
+    <string name="hook_delete_success">Successfully Deleted Hook! %s</string>
+    <string name="hook_update_error">Failed to Update Hook! Error=%s</string>
+    <string name="hook_update_success">Successfully Updated Hook! %s</string>
+    <string name="msg_hint_create_profile">Create a Profile for the Targeted Application!</string>
+    <string name="msg_hint_clear_app">Clear target Application Data!</string>
+    <string name="msg_hint_logs">Target app Logs!</string>
+    <string name="msg_hint_force_stop">Force Stop target Application!</string>
+    <string name="msg_hint_reset_settings">Reset XPL-EX Settings back to Default aka Nothing!</string>
+    <string name="msg_hint_create_configs">Create a Config what more to say ?</string>
+    <string name="msg_hint_manage_configs">Edit and Manager your Configs</string>
+    <string name="msg_hint_save_checked">Save the Checked Options for a Pre Check on UI Open</string>
+    <string name="msg_shared_prefs_saved">Shared preferences were saved!</string>
+    <string name="msg_hint_wild_card">Randomize when app event, easter egg randomizer</string>
+    <string name="msg_hint_reset_container">Reset Values to last saved Values</string>
+    <string name="msg_hint_randomize_container">Randomize Settings</string>
+    <string name="msg_hint_save_container">Save Un Saved Settings</string>
+    <string name="msg_hint_delete_container">Delete Settings</string>
+    <string name="msg_hint_warning_save">There are Un Saved Settings!</string>
+    <string name="msg_hint_settings_stat">Settings Saved out of the Total Settings</string>
+    <string name="title_save_file">Save File</string>
+    <string name="msg_no_config_selected">Please select a config first</string>
+    <string name="title_time_pairs">Time Pairs</string>
+    <string name="title_time_input">Time Input</string>
+    <string name="text_time_value">Value</string>
+    <string name="text_time_unit">Time Unit</string>
+    <string name="text_enter_time_value">Enter numeric value</string>
+    <string name="msg_hint_setting_description">The Description for the Specified Setting Container.</string>
+    <string name="msg_hint_hook_control">Hooks Control, Enabled=%s Total=%s</string>
+    <string name="msg_result_randomized">Settings were Randomized! Ensure to save the new values!</string>
+    <string name="msg_error_randomizer_none">No Randomizers</string>
+    <string name="msg_result_deleted">Delete action was Successful</string>
+    <string name="msg_error_result_generic">Action failed, Reason:</string>
+    <string name="msg_error_nothing_deleted">Nothing Deleted</string>
+    <string name="msg_error_bad_app">Invalid App</string>
+    <string name="msg_error_bad_options">No options Selected for applying...</string>
+    <string name="title_hook_warning">Hook Group Warning!</string>
+    <string name="title_help_installed">Restriction installed</string>
+    <string name="title_help_system">Applying restrictions can result in problems</string>
+    <string name="title_help_settings">App restriction settings</string>
+    <string name="title_help_persistent">Applying restrictions requires a device restart</string>
+    <string name="title_help_exception">Applying restriction failed (tap icon to see why)</string>
+    <string name="title_delete_property">Property Delete</string>
+    <string name="title_delete_setting">Setting Delete</string>
+    <string name="title_add_property">Property Add</string>
+    <string name="title_delete_config">Config Delete</string>
+    <string name="title_no_groups">Groups Error</string>
+    <string name="title_error_generic">Error</string>
+    <string name="title_error_database_service">Database Service Error!</string>
+    <string name="title_error_service_version">Service Out Dated Error (Reboot)!</string>
+    <string name="title_global">Global</string>
+    <string name="title_app">App</string>
+    <string name="title_tag_cell">Cell</string>
+    <string name="title_tag_hardware">Hardware</string>
+    <string name="title_tag_unique">Unique</string>
+    <string name="title_tag_rom">ROM</string>
+    <string name="title_tag_device">Device</string>
+    <string name="title_tag_etc">ETC</string>
+    <string name="title_tag_custom">Custom</string>
+    <string name="title_new_to_old">New to Old</string>
+    <string name="title_show_installed">Show Installed</string>
+    <string name="menu_clean_privacy_ex_hooks">Clean PEX Hooks</string>
+    <string name="title_select_file">Select File</string>
+    <string name="title_no_random">Setting Missing Random</string>
+    <string name="title_collection_privacy">For my mental health</string>
+    <string name="title_check_all">Check All</string>
+    <string name="title_uncheck_all">Uncheck All</string>
+    <string name="title_select_tags">Select Tags</string>
+    <string name="msg_config_push">Pushed Config! Result = </string>
+    <string name="msg_delete_config">Are you sure you really want to Delete this Config ? (whole config) </string>
+    <string name="msg_na_randomizer">This setting does not have a Randomizer and or you set the Randomizer to N/A. Reason most likely is due to the Fact that there are SOO many settings to make Randomizers for all is asking North Korea to free its people. That being said as each Update comes more Randomizers will come, in the mean Time Use Google to find out what you think best fits this setting and use Description for help and maybe a Possible Format. Thank you! </string>
+    <string name="msg_delete_property">Are you sure you want to delete the property? This will Delete the MAP (object that links the Property Name to a Setting) and the Actual Property Setting Value (not the linked setting but the setting that specifies control on the property)</string>
+    <string name="msg_no_groups">Error it appears that 0 Groups have been returned. Make sure you have Restarted your phone when and if you first installed the APK, and Either you have no (collections) selected / enabled and or You have interfering (Collections) Enabled. Having the (old) (Privacy) collection and the (new) (PrivacyEx) collection enabled can cause this. Disable one of them (Recommend to disable Privacy) then try again. You can control this within the Pro Application that is provided in the Pins in the XPL-EX Channel. Opening the Pro Companion app on the first screen will show you the Collections, having (Privacy) and (PrivacyEx) Collections both enabled can cause issues. </string>
+    <string name="msg_old_group">HEY I noticed you have original M66Bs Collection enabled (Privacy) I WILL be disabling this without your choice as this is to prevent people from getting confused and or complaining about issues solved years ago. That being said IF you go out and enable it again I will NOT help you if you have issues as I do no longer support or maintain that collection. Any issues relating to the fact you have a old outdated collection will be 100% ignored!</string>
+    <string name="msg_confirm_save_options_config">       This will save all your currently checked options as a preset configuration.\n\n
+        This has NOTHING to do with Saving the actual value of the settings to the database\n
+       You can choose to have these checks automatically applied:\n
+       • Only when opening this screen for this specific app\n
+       • Or when opening this screen for any app\n\n
+       Your current selection will be saved as the default configuration.\n\n
+        Settings Checked:
+    </string>
+    <string name="msg_confirm_force_stop">        Are you sure you want to Force Stop the Target application?\n\n
+        This should not cause any issues but will force your target application
+        to stop running, so save any tasks if not saved in the app you\'re stopping!
+    </string>
+    <string name="msg_confirm_clear_data">        Are you sure you want to clear this target\'s application data?\n\n
+        You will not be able to recover it unless you have made a backup.
+        You will be signed out of all accounts, and will lose all data on that application.
+    </string>
+    <string name="msg_confirm_delete_all_settings">        Are you sure you want to Delete (all) this target\'s application Saved Settings ?
+    </string>
+    <string name="msg_confirm_delete_config">        Are you sure you want to delete this Config? Name:
+    </string>
+    <string name="msg_confirm_delete_settings">        Are you sure you want to Delete the Settings, Count:
+    </string>
+    <string name="result_update_setting_success">Setting Updated Successfully</string>
+    <string name="result_delete_setting_success">Setting Deleted Successfully</string>
+    <string name="result_delete_setting_failed">Failed to Delete Setting</string>
+    <string name="result_delete_setting_null">Parameters are NULL or not filled, make sure something is checked or input!</string>
+    <string name="result_property_added_success">Property Map was added Successfully!</string>
+    <string name="result_property_added_failed">Failed to add Property Map!</string>
+    <string name="result_open_directory_failed">Failed to open Access to the Target Directory</string>
+    <string name="result_open_file_failed">Failed to open Access to the Target File</string>
+    <string name="result_config_read_failed">Failed to read and or parse the Target Config File</string>
+    <string name="result_config_read_success">Config Read:</string>
+    <string name="result_config_parse_failed">Failed to parse Config, ensure its proper format and extension / type</string>
+    <string name="result_file_save_success">File Saved Successfully!</string>
+    <string name="result_file_save_failed">Failed to Save File!</string>
+    <string name="result_config_failed_delete_settings">Failed to Delete Settings / Config, make sure the Config is Saved First!</string>
+    <string name="result_config_finish_applying">Finished Applying Config Values to settings!</string>
+    <string name="menu_setting_delete_hint">Delete Setting, either Value and or Map.</string>
+    <string name="menu_setting_save_hint">Save the Modified Setting Value to the Database</string>
+    <string name="menu_setting_reset_hint">Reset the Setting Value in the UI back to the original value of the last Save.</string>
+    <string name="menu_setting_random_hint">Randomize Setting Value. (Will not save unless you select save)</string>
+    <string name="menu_setting_add_prop_hint">Add Build Property to Setting Group. Link the Property to a setting.</string>
+    <string name="menu_setting_selecting_all_hint">Either Selecting and or De-Selecting all Settings in the targeted group</string>
+    <string name="menu_property_setting_delete_hint">Delete the Build Property from the Setting Group.</string>
+    <string name="menu_property_add_hint">Add a Build Property to a Group or the Group</string>
+    <string name="menu_config_import_hint">Import a Config from Files</string>
+    <string name="menu_config_export_hint">Export a Config to Files</string>
+    <string name="menu_config_delete_settings_hint">Delete the Config Selected Settings</string>
+    <string name="menu_config_save_hint">Save the Modified Config to the Database (not settings!!)</string>
+    <string name="menu_config_apply_hint">Apply the Modified Config to the Settings</string>
+    <string name="menu_config_delete_hint">Delete the Config</string>
+    <string name="menu_settings_use_default_hint">When enabled Default Setting Values provided from the Developer will be used IF the setting for the Hook is not set by You as the user. Else return NULL if not set</string>
+    <string name="menu_settings_randomize_hint">Randomize selected Setting Values</string>
+    <string name="menu_settings_add_hint">Add new setting</string>
+    <string name="menu_settings_save_hint">Saved the Un-Saved settings to the Database</string>
+    <string name="menu_settings_delete_hint">Delete the selected Settings</string>
+    <string name="menu_settings_hint">Options</string>
+    <string name="menu_settings_reset_hint">Reset all settings back to Empty Values</string>
+    <string name="msg_settings_reset">Are you sure you want to reset all the settings ? it will just revert the values back to being Empty or Null will not Delete any Maps.</string>
+    <string name="title_settings_reset">Reset all Settings</string>
+    <string name="title_config_rename_config">Rename Config</string>
+    <string name="text_config_name">Config Name</string>
+    <string name="text_enter_config_name">Enter config name</string>
+    <string name="text_config_author">Author Name</string>
+    <string name="text_enter_config_author">Enter author name</string>
+    <string name="text_config_version">Version</string>
+    <string name="text_enter_config_version">Enter version string</string>
+    <string name="text_label_settings">Settings:</string>
+    <string name="text_label_hooks">Hooks:</string>
+    <string name="text_bulk_select">Bulk Select</string>
+    <string name="msg_delete_app_data">Are you sure you want to clear Application App Data ? This will delete specifically the App Data not the Hook Settings or Assignments.</string>
+    <string name="msg_backup_exported">XLua Backup has been Exported!</string>
+    <string name="msg_backup_exported_failed">XLua Backup Failed to Export!</string>
+    <string name="msg_settings_imported">Settings have been Imported!</string>
+    <string name="menu_config_hint">Options</string>
+    <string name="menu_add_property_name">Property Name</string>
+    <string name="menu_add_property_setting_name">Setting Name</string>
+    <string name="option_close">Close</string>
+    <string name="option_apply">Apply</string>
+    <string name="option_update">Update</string>
+    <string name="option_create">Create</string>
+    <string name="option_open">Open</string>
+    <string name="option_save">Save</string>
+    <string name="option_edit">Edit</string>
+    <string name="option_export">Export</string>
+    <string name="menu_import_settings">Import Settings</string>
+    <string name="menu_export_settings">Export Settings</string>
+    <string name="msg_error_reading_backup">Error reading backup file</string>
+    <string name="msg_backup_saved">Backup saved successfully</string>
+    <string name="msg_error_saving_backup">Error saving backup</string>
+    <string name="option_delete">Delete</string>
+    <string name="option_cancel">Cancel</string>
+    <string name="option_add">Add</string>
+    <string name="option_not_ask">Do not ask Again</string>
+    <string name="option_thanks">OK THANKS</string>
+    <string name="option_ok">Ok</string>
+    <string name="option_rename">Rename</string>
+    <string name="option_clear">Clear</string>
+    <string name="title_help">Help Guide</string>
+    <string name="title_groups">Groups</string>
+    <string name="title_delete_appdata">Clear App Data</string>
+    <string name="menu_filter">Search Filter</string>
+    <string name="menu_filter_settings">Settings</string>
+    <string name="menu_filter_groups">Groups</string>
+    <string name="menu_filter_hooks">Hooks</string>
+    <string name="menu_filter_all">All</string>
+    <string name="menu_force_english">Force English</string>
+    <string name="menu_show">Show</string>
+    <string name="menu_show_user">Show user apps</string>
+    <string name="menu_show_icon">Show apps with icon</string>
+    <string name="menu_show_all">Show all apps</string>
+    <string name="menu_show_settings_all">All</string>
+    <string name="menu_show_settings_unique">Unique</string>
+    <string name="menu_show_settings_android">Android</string>
+    <string name="menu_show_hook">Show hooked apps</string>
+    <string name="menu_show_system">Show system apps</string>
+    <string name="menu_search">Search</string>
+    <string name="menu_help">Help</string>
+    <string name="menu_notify_new">Notify on new apps</string>
+    <string name="menu_restrict_new">Restrict new apps</string>
+    <string name="menu_companion">Pro features</string>
+    <string name="menu_readme">Documentation</string>
     <string name="menu_faq">FAQ</string>
-    <string name="menu_donate">寄付</string>
-    <string name="msg_no_service">モジュールが実行又は更新されていません</string>
-    <string name="msg_review_settings">プライバシー設定を確認</string>
-    <string name="msg_usage">\'%1$s\' を制限しました</string>
-    <string name="msg_exception" comment="msg_exception&#10;Error in &lt;hook name&gt;">%1$s のエラー</string>
-    <string name="msg_restrict_sure">全てのアプリを \'%1$s\' に切り替えても宜しいですか？</string>
-    <string name="msg_no_browser">リンクを開く為のブラウザが有りません</string>
-    <string name="group_determine_activity">アクティビティを決定</string>
-    <string name="group_get_applications">アプリを取得</string>
-    <string name="group_get_calendars">カレンダーを取得</string>
-    <string name="group_get_call_log">通話履歴を取得</string>
-    <string name="group_get_contacts">連絡先を取得</string>
-    <string name="group_get_location">位置情報を取得</string>
-    <string name="group_get_messages">メッセージを取得</string>
-    <string name="group_get_sensors">センサー類を取得</string>
-    <string name="group_read_account">アカウント名を読込</string>
-    <string name="group_read_clipboard">クリップボードを読込</string>
-    <string name="group_read_identifiers">識別子を読込</string>
-    <string name="group_read_network">ネットワークデータを読込</string>
-    <string name="group_read_notifications">通知を読込</string>
-    <string name="group_read_sync">同期データを読込</string>
-    <string name="group_read_telephony">通話記録を読込</string>
-    <string name="group_record_audio">音声を録音</string>
-    <string name="group_record_video">ビデオを録画</string>
-    <string name="group_send_messages">メッセージ送信</string>
-    <string name="group_use_analytics">解析ツールを使用</string>
-    <string name="group_use_camera">カメラを使用</string>
-    <string name="group_use_tracking">追跡を使用</string>
+    <string name="menu_donate">Donate</string>
+    <string name="menu_show_priv">Privacy</string>
+    <string name="menu_show_rev">Reverse Engineering</string>
+    <string name="menu_show_byp">Bypass/Hide</string>
+    <string name="button_config_from_file">From File</string>
+    <string name="button_config_to_file">To File</string>
+    <string name="button_config_create">Create Config</string>
+    <string name="button_select_config">Select or Create Config</string>
+    <string name="button_hooks_group_hint">Application Hook Group view to see all assigned Hooks and Groups with their Settings</string>
+    <string name="button_configs_hint">Configs Menu, modify application settings via Configs</string>
+    <string name="button_settings_ex_hint">Advance Settings UI not from the Pro App</string>
+    <string name="button_props_hint">Properties UI to control Properties Interceptor</string>
+    <string name="button_reset_settings_hint">Reset the Setting Values back to Null or Nothing</string>
+    <string name="button_settings_reset_data_hint">Reset the Application Data, not Hooks or settings but the actual Data</string>
+    <string name="button_settings_reset_data">Clear Data</string>
+    <string name="button_settings_save_checked_hint">Save what is Checked so next time you open the UI it will have those selections checked.</string>
+    <string name="button_settings_save_checked">Save Checked</string>
+    <string name="button_settings_export_to_config_hint">Export the Selected Settings to a Config to be used in the Configs UI or for other out</string>
+    <string name="button_settings_export_to_config">Export to Config</string>
+    <string name="msg_settings_to_config_exporting">Exporting Settings to a Config</string>
+    <string name="msg_imported_hooks_success">Successfully Imported [%s] Hooks!</string>
+    <string name="check_prop_hide_hint">Hide Specific Property from Build Props</string>
+    <string name="check_prop_skip_hint">Skip/Ignore Specific Property from Build Props</string>
+    <string name="check_prop_force_hint">Force to push Build Property even if it does not exist.</string>
+    <string name="text_hide">Hide</string>
+    <string name="text_skip">Skip</string>
+    <string name="text_force">Force</string>
+    <string name="title_add_dialog_setting_builder">Setting Builder</string>
+    <string name="error_add_dialog_bad_name">Setting Name was invalid please use periods instead of spaces avoid using white spaced</string>
+    <string name="error_add_dialog_bad_input">Invalid Input for the setting Name</string>
+    <string name="error_add_dialog_no_checks">Error no options were selected either setting map and or setting value</string>
+    <string name="text_add_dialog_setting_name">Setting Name</string>
+    <string name="text_add_dialog_setting_value">Setting Value</string>
+    <string name="text_add_dialog_setting_description">Setting Default Description</string>
+    <string name="text_add_dialog_setting_help">A Setting Map is considered a Default setting. Adding a Map and or Default Map will add the Setting to the default settings allowing you to delete the Setting Value yet still have it show up as a setting to modify. It will also allow you to see the setting in different app setting contexts. Not adding a map will make it so when the setting value is Deleted it will disappear. Note setting names and maps should always use periods instead of whitespaces!</string>
+    <string name="error_no_activity">Application has no Start Activity...</string>
+    <string name="error_no_description_hook">Hook does not have a Description sorry...</string>
+    <string name="error_no_description_setting">Setting does not have a Description sorry...</string>
+    <string name="error_no_settings_hook">Hook does not have any settings...</string>
+    <string name="error_no_input_property">Property Builder is either Missing Property Name or Setting Name make sure they are filled in...</string>
+    <string name="title_hook_script">Lua script</string>
+    <string name="title_hook_collection">Collection</string>
+    <string name="title_hook_group">Group</string>
+    <string name="title_hook_name">Name</string>
+    <string name="title_hook_author">Author</string>
+    <string name="title_hook_version">Version</string>
+    <string name="title_hook_description">Description</string>
+    <string name="title_hook_enabled">Enabled</string>
+    <string name="title_hook_optional">Optional</string>
+    <string name="title_hook_usage">Usage</string>
+    <string name="title_hook_notify">Notify</string>
+    <string name="title_hook_class">Class</string>
+    <string name="title_hook_method">Method</string>
+    <string name="title_hook_params">Parameter types</string>
+    <string name="title_hook_return">Return type</string>
+    <string name="title_hook_minsdk">Min. SDK</string>
+    <string name="title_hook_maxsdk">Max. SDK</string>
+    <string name="title_hook_minapk">Min. APK</string>
+    <string name="title_hook_maxapk">Max. APK</string>
+    <string name="title_hook_exclude">Exclude packages</string>
+    <string name="title_hook_settings">Settings</string>
+    <string name="title_deploy_hooks">Updating Hook Assignments...</string>
+    <string name="title_deploy_settings">Updating Setting...</string>
+    <string name="title_profile_manager">Profile Manager</string>
+    <string name="title_config_modify">Modify Config</string>
+    <string name="title_logs">Logs</string>
+    <string name="title_confirm">Confirm</string>
+    <string name="title_save_options">Save Checked Settings</string>
+    <string name="title_config_manager">Config Manager</string>
+    <string name="menu_hooks">Hooks</string>
+    <string name="menu_props">Prop Values</string>
+    <string name="menu_settings">Setting Values</string>
+    <string name="menu_configs">Config Editor</string>
+    <string name="menu_dark">Dark Mode</string>
+    <string name="menu_debug_logs">Debug Logs</string>
+    <string name="menu_database">Database</string>
+    <string name="menu_save">Save</string>
+    <string name="menu_cpumaps">CPU Maps</string>
+    <string name="menu_collections">Collections</string>
+    <string name="menu_info">Info</string>
+    <string name="message_warning_hooks_title">Warning!</string>
+    <string name="message_warning_hooks_message">Warning! It seems a Setting in this Group and or Container is NOT saved! Ensure you save your modified Changes unless you wish to not save the new values or value!</string>
+    <string name="message_unique_title">Unique</string>
+    <string name="message_unique_message">This Setting is a Unique Setting meaning it is and or Can be used in part of trying to Identify as a User. Unlike the Other Settings like your F*cking Model Name, these are what actually used to ID you as a Person. These you should focus on Spoofing</string>
+    <string name="msg_no_service">Module not running or updated</string>
+    <string name="msg_review_settings">Review privacy settings</string>
+    <string name="msg_usage">Restricted \'%1$s\'</string>
+    <string name="msg_exception">Error in %1$s</string>
+    <string name="msg_restrict_sure">すべてのアプリを「%1$s」に切り替えてもよろしいですか？</string>
+    <string name="msg_no_browser">リンクを開くためのブラウザがありません</string>
+    <string name="msg_deploy_succeeded">フックの割り当てを更新しました！</string>
+    <string name="msg_succeeded_count">成功:</string>
+    <string name="msg_failed_count">失敗:</string>
+    <string name="group_determine_activity">アクティビティの決定</string>
+    <string name="group_get_applications">アプリの取得</string>
+    <string name="group_get_calendars">カレンダーの取得</string>
+    <string name="group_get_call_log">通話履歴の取得</string>
+    <string name="group_get_contacts">連絡先の取得</string>
+    <string name="group_get_location">位置情報の取得</string>
+    <string name="group_get_messages">メッセージの取得</string>
+    <string name="group_get_sensors">センサー類の取得</string>
+    <string name="group_read_account">アカウント名の読み取り</string>
+    <string name="group_read_clipboard">クリップボードの読み取り</string>
+    <string name="group_read_identifiers">識別子の読み取り</string>
+    <string name="group_read_network">ネットワークデータの読み取り</string>
+    <string name="group_read_notifications">通知の読み取り</string>
+    <string name="group_read_sync">同期データの読み取り</string>
+    <string name="group_read_telephony">通信データの読み取り</string>
+    <string name="group_record_audio">音声の録音</string>
+    <string name="group_record_video">動画の録画</string>
+    <string name="group_send_messages">メッセージの送信</string>
+    <string name="group_use_analytics">解析ツールの使用</string>
+    <string name="group_use_camera">カメラの使用</string>
+    <string name="group_use_tracking">追跡の使用</string>
+    <!-- Apps Group -->
+    <string name="description_hook_group_apps_spoof_list">    Controls app visibility by intercepting package queries and filtering app lists. When enabled, this hook prevents the target application from seeing other installed apps based on your configured filters. Works best with HMA (Hide My App List) settings enabled.</string>
+    <string name="description_hook_group_apps_spoof_timestamps">    Manages and modifies application timestamps returned to the target app, including installation time, last update time, and first install time. This helps prevent apps from tracking installation patterns or detecting newly installed applications.</string>
+    <string name="description_hook_group_apps_spoof_list_ex">    Extended version of app list spoofing with enhanced API coverage. This implementation provides more robust package manager interception and additional filtering capabilities. Use this instead of the basic version for stronger app hiding, especially on newer Android versions.</string>
+    <!-- Device ID Groups -->
+    <string name="description_hook_group_device_id_lenovo">    Intercepts and spoofs Lenovo-specific device identifiers and API calls. This prevents applications from obtaining unique identifiers or detecting Lenovo-specific device characteristics, helping maintain device anonymity.</string>
+    <string name="description_hook_group_device_id_asus">    Controls and modifies ASUS device identification methods. This hook prevents applications from accessing ASUS-specific device IDs and system information that could be used for device fingerprinting.</string>
+    <string name="description_hook_group_device_id_meizu">    Manages Meizu device identification by intercepting Meizu-specific system calls. This helps prevent device fingerprinting through Meizu\'s unique device identifiers and system properties.</string>
+    <string name="description_hook_group_device_id_xiaomi">    Handles Xiaomi device identification including MIUI-specific identifiers. This hook intercepts attempts to access Xiaomi\'s device IDs, MIUI version information, and other unique identifiers that could be used for tracking.</string>
+    <string name="description_hook_group_device_id_vivo">    Protects against Vivo device identification by intercepting Vivo-specific system calls and identifiers. This prevents apps from accessing unique Vivo device information and system properties.</string>
+    <string name="description_hook_group_device_id_samsung">    Controls access to Samsung-specific device identifiers and Knox APIs. This hook prevents applications from obtaining unique Samsung device information and accessing Samsung-specific system properties.</string>
+    <!-- Devices Group -->
+    <string name="description_hook_group_devices_hide_driver_files">    Hides device driver files and paths from applications attempting to detect specific hardware or system modifications. This helps prevent detection of custom drivers or system modifications through file system queries.</string>
+    <string name="description_hook_group_devices_hide_external">    Controls visibility of external device connections including Bluetooth, USB, and other peripherals. This hook prevents applications from detecting or enumerating connected devices and their characteristics.</string>
+    <string name="description_hook_group_devices_spoof_info">    Manages device information spoofing for hardware components like fingerprint sensors, Bluetooth adapters, and other peripherals. This hook modifies device descriptors, names, and characteristics to prevent accurate device fingerprinting.</string>
+    <string name="description_hook_group_get_sensors">    Controls access to device sensors (accelerometer, gyroscope, etc). This hook prevents applications from reading sensor data, which can be used for device fingerprinting or activity monitoring.</string>
+    <string name="description_hook_group_get_call_log">    Protects your call history by controlling access to the call log. When enabled, this hook prevents applications from reading your incoming, outgoing, and missed call records.</string>
+    <string name="description_hook_group_get_calendars">    Manages access to calendar data. This hook prevents applications from reading your calendar events, appointments, and related details, protecting your schedule privacy.</string>
+    <string name="description_hook_group_get_contacts">    Controls access to your contacts database. This hook prevents applications from reading your contact list, protecting information about your connections and their details.</string>
+    <string name="description_hook_group_get_account">    Manages access to account information on your device. This hook prevents applications from obtaining details about configured accounts, including email and other service accounts.</string>
+    <string name="description_hook_group_get_messages">    Protects SMS and MMS messages by controlling access to the messaging database. This hook prevents applications from reading your text messages and message metadata.</string>
+    <string name="description_hook_group_get_user">    Controls access to user profile information. This hook prevents applications from obtaining user account details and profile data from the system.</string>
+    <string name="description_hook_group_get_bluetooth">    Manages access to Bluetooth information and operations. This hook controls what Bluetooth-related data applications can access, including paired devices and connection history.</string>
+    <string name="description_hook_group_get_activity">    Controls access to activity recognition and detection. This hook prevents applications from monitoring your physical activities through device sensors and Google Play Services.</string>
+    <string name="description_hook_group_get_clipboard">    Protects clipboard data by controlling read access. This hook prevents applications from monitoring or reading text and data that youve copied to the clipboard.</string>
+    <string name="description_hook_group_hardware_spoof_cpu_ex">    Extended CPU information spoofing. This hook modifies reported CPU characteristics, core counts, and hardware capabilities to prevent device fingerprinting through processor identification.</string>
+    <string name="description_hook_group_hardware_spoof_gps_model">    Controls GPS hardware information reported to applications. This hook modifies GPS model details and capabilities to prevent device identification through GPS hardware fingerprinting.</string>
+    <string name="description_hook_group_hardware_spoof_camera_count">    Manages reported camera hardware information. This hook can modify the reported number of cameras and their capabilities to prevent device identification through camera hardware fingerprinting.</string>
+    <!-- Hardware Group Continued -->
+    <string name="description_hook_group_hardware_spoof_gpu">    Controls and modifies GPU information reported to applications. This hook spoofs graphics hardware details including vendor, renderer, and capabilities to prevent device fingerprinting through GPU identification.</string>
+    <string name="description_hook_group_hardware_spoof_cpu">アプリに公開されるCPU情報を管理します。このフックは、プロセッサの詳細、アーキテクチャ情報、機能フラグを変更し、CPUの特性によるデバイス識別を防止します。</string>
+    <string name="description_hook_group_hardware_spoof_memory">アプリに報告されるメモリ関連情報を制御します。このフックは、報告されるRAM容量、メモリ特性、および可用性の詳細を変更し、メモリの仕様によるデバイスのフィンガープリントの追跡を防止します。</string>
+    <!-- Hide Group -->
+    <string name="description_hook_group_hide_vpn_state">VPN接続ステータスをアプリから隠蔽します。このフックは、複数の検出方法を通じてアプリがアクティブなVPN接続を検出するのを防ぎ、VPNサービス利用時のプライバシー保護に役立ちます。</string>
+    <!-- Identification Group -->
+    <string name="description_hook_group_id_build">デバイスのビルド情報へのアクセスを制御します。このフックは、特定のデバイスモデル、メーカー、ハードウェアの詳細を識別するために使用できるシステムビルドプロパティを変更します。</string>
+    <string name="description_hook_group_id_boot">ブート関連の識別情報を管理します。このフックは、ブートパラメータ、ブートローダ情報、およびデバイス特性を明らかにする可能性のある関連識別子へのアクセスを制御します。</string>
+    <string name="description_hook_group_id_file_stat">ファイルの統計情報とメタデータ情報を制御します。このフックは、システムの変更や特定のデバイス特性を識別するために使用できるファイルシステム情報を変更します。</string>
+    <string name="description_hook_group_id_unique">固有のデバイス識別子へのアクセスを管理します。このフックは、IMEI、シリアル番号、その他のデバイス固有の識別子など、さまざまな固有IDをアプリケーションが取得するのを防ぎます。</string>
+    <string name="description_hook_group_id_telephony">通話可能なデバイス関連の識別子へのアクセスを制御します。このフックは、アプリが通話可能なデバイス固有のID、IMEI番号、その他の通話可能なデバイス関連の固有識別子を取得することを防ぎます。</string>
+    <!-- Network Group -->
+    <string name="description_hook_group_network_spoof_wifi_list">Wi-Fiネットワークリスト情報を制御します。このフックは、表示可能および保存済みのWi-Fiネットワークのリストを変更し、ネットワーク識別による位置情報の追跡を防止します。</string>
+    <string name="description_hook_group_network_information_spoof">アプリに報告される一般的なネットワーク情報を管理します。このフックは、ネットワークの詳細、接続の種類、および追跡に使用できるその他のネットワーク関連データへのアクセスを制御します。</string>
+    <string name="description_hook_group_network_wifi_information_spoof">詳細なWi-Fiネットワーク情報を制御します。このフックは、特定のWi-Fi接続の詳細、信号強度、その他のWi-Fi関連データを変更し、ネットワークベースのデバイス追跡を防止します。</string>
+    <!-- Read Group -->
+    <string name="description_hook_group_read_notifications">システムとアプリの通知へのアクセスを制御します。このフックは、アプリによる通知コンテンツとメタデータの読み取りを防ぎ、通知に表示される機密情報を保護します。</string>
+    <string name="description_hook_group_read_sync_data">同期アダプタのデータと同期操作へのアクセスを管理します。このフックは、同期関連情報アプリケーションが読み取ることができる情報を制御し、データ同期のプライバシーを保護します。</string>
+    <!-- Spoof Group -->
+    <string name="description_hook_group_spoof_battery">アプリに報告されるバッテリー情報を制御します。このフックは、バッテリーの状態、レベル、充電情報を変更し、バッテリー特性によるデバイスフィンガープリントの追跡を防止します。</string>
+    <string name="description_hook_group_spoof_status_cell">セルラーネットワークのステータス情報を管理します。このフックは、報告されたセルラー接続状態、信号強度、および関連するセルラーネットワークデータを変更します。</string>
+    <string name="description_hook_group_spoof_timezone">アプリに公開されるタイムゾーン情報を制御します。このフックは、報告されたタイムゾーンと関連する時間設定を変更し、タイムゾーン検出による位置情報の追跡を防止します。</string>
+    <string name="description_hook_group_spoof_location">アプリに報告される位置情報を管理します。このフックは、GPS座標やその他の位置情報データを変更またはブロックすることで、正確な位置情報の追跡を防止できます。</string>
+    <string name="description_hook_group_spoof_useragent">ブラウザとネットワークのユーザーエージェント文字列を制御します。このフックは、ユーザーエージェント情報を変更し、WebリクエストやAPI呼び出しによるデバイスフィンガープリントの追跡を防止します。</string>
+    <string name="description_hook_group_spoof_features">アプリに報告されるデバイス機能情報を管理します。このフックは、アプリに表示されるデバイスの機能と特性を制御し、特性検出によるデバイス識別を防止します。</string>
+    <string name="description_hook_group_spoof_location_cell">モバイル通信の位置情報を制御します。このフックは、基地局の位置情報と関連するデバイスの位置情報を変更し、モバイル通信を介した位置情報の追跡を防止します。</string>
+    <string name="description_hook_group_spoof_display">ディスプレイと画面情報を管理します。このフックは、解像度、密度、その他のディスプレイ情報など、報告された画面特性を変更し、デバイスのフィンガープリントによる追跡を防止します。</string>
+    <string name="description_hook_group_spoof_language">言語とロケール情報を制御します。このフックは、報告されたシステム言語設定とロケールデータを変更し、言語設定によるデバイス識別を防止します。</string>
+    <!-- Storage Group -->
+    <string name="description_hook_group_storage_isolate">アプリストレージの分離を管理します。このフックは、アプリがストレージにアクセスする方法を制御し、ファイルやディレクトリへの不正アクセスを防ぎます。</string>
+    <string name="description_hook_group_storage_spoof_volume_uuid">ストレージボリュームの識別を制御します。このフックは、ストレージボリュームのUUIDと関連識別子を変更し、ストレージデバイスのフィンガープリントによる追跡を防止します。</string>
+    <!-- Usage Group -->
+    <string name="description_hook_group_use_camera">アプリによるカメラへのアクセスと使用を制御します。このフックは、アプリによるデバイスのカメラへのアクセスと使用を防止し、不正な写真や動画の撮影を防ぎます。</string>
+    <string name="description_hook_group_record_audio">録音機能を管理します。このフックは、アプリケーションによるマイクと音声録音機能へのアクセスを制御し、不正な音声の録音や監視を防止します。</string>
+    <string name="description_hook_group_record_video">動画録画機能を制御します。このフックは、アプリによる録画機能へのアクセスを管理し、デバイスのカメラからの不正なビデオキャプチャを防止します。</string>
+    <string name="description_hook_group_send_messages">メッセージ機能を制御します。このフックは、アプリによるSMS/MMSメッセージの送信を管理し、不正なメッセージ送信を防止し、SMSの不正な送受信による追加料金から保護します。</string>
+    <!-- Help Dialog - Delete -->
+    <string name="help_delete_title">Delete Setting</string>
+    <string name="help_delete_description">This button will delete the selected Setting(s) from the Database, resetting their values to Empty or Null. This action removes any previously saved values.</string>
+    <!-- Help Dialog - Save -->
+    <string name="help_save_title">Save Setting</string>
+    <string name="help_save_description">This will save the selected Setting(s) to the Database. Any new values, whether from Randomizer or manual input, will be permanently stored until changed again.</string>
+    <!-- Help Dialog - Reset -->
+    <string name="help_reset_title">Reset Setting</string>
+    <string name="help_reset_description">This will reset the selected Setting(s) to their last saved Database values. If you\'ve modified but haven\'t saved new values, this will revert them to their previous state, which may be Null or Empty if no value was saved.</string>
+    <!-- Help Dialog - Randomize -->
+    <string name="help_randomize_title">Randomize Setting Value</string>
+    <string name="help_randomize_description">For any selected Setting(s) with configured Randomizers, this will generate new random values according to their Randomizer formats. The new values won\'t be saved to the Database automatically, allowing you to reset unwanted results before saving.</string>
+    <!-- Help Dialog - Super Random -->
+    <string name="help_super_random_title">Super Random</string>
+    <string name="help_super_random_description">This sets the selected Setting(s) to use \"%random%\" binding flags. When XPL-EX loads settings for the Target Application at runtime, it will generate fresh random values for that app instance. These runtime values clear when the app stops, generating new randoms on next launch.</string>
+    <!-- Help Dialog - Hook Control -->
+    <string name="help_hook_title">Hook Control</string>
+    <string name="help_hook_description">Opens a dialog showing all Hooks linked to this Setting. You can directly enable or disable these Hooks rather than searching through Hook Groups. Note: If you\'re unfamiliar with this concept, this app may not be suitable for your needs.</string>
+    <string name="help_warning_title">Warning!</string>
+    <string name="help_warning_description">This is a Warning sign warning of something, in this case or most times it is used to Warn that a Setting Value has not been saved to its database.\nSo save the Un Saved Setting Value or Ignore this warning sign.</string>
+    <string name="help_color_unsaved_title">Unsaved Setting</string>
+    <string name="help_color_unsaved_description">Settings shown in this color have been modified but not yet saved.</string>
+    <string name="help_color_saved_title">Active Setting</string>
+    <string name="help_color_saved_description">Settings shown in this color are currently active and have a value assigned.</string>
+    <string name="help_color_hook_db_title">Non Built In (Database Saved) Hooks</string>
+    <string name="help_color_hook_db_description"> Saved Hooks in the Database versus Hooks from the Service Cache. Hooks from the Service Cache are Considered to be built in (Hooks defined and made by me) and once your Edit any of them, it will show with this Color (no need to Save unless you are in the Editing menu click OK. These typically are your Hooks, You Edited or Imported or from your Database.</string>
+    <string-array name="scopes">
+        <item>android</item>
+        <item>com.android.providers.settings</item>
+        <item>eu.faircode.xlua</item>
+    </string-array>
+    <string name="pro_fingerprint">1062ae961d78854f6c9cd872c4388232849c799</string>
 </resources>
