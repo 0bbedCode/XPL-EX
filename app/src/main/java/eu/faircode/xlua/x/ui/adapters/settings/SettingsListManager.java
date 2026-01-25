@@ -20,6 +20,15 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
+import android.location.Address;
+import android.location.Geocoder;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.text.TextUtils;
+import android.widget.Toast;
+import android.view.LayoutInflater;
 
 import eu.faircode.xlua.DebugUtil;
 import eu.faircode.xlua.R;
@@ -195,6 +204,21 @@ public class SettingsListManager extends ListViewManager<SettingHolder, Settings
                             setting.notifyUpdate(stateRegistry.notifier);
                         }).show(stateManager.getFragmentMan(), view.getContext().getString(R.string.title_time_pairs));
             });
+        } else if (setting.getName().startsWith("location.")) {
+            setting.setBindings(tvName, textInput, null);
+            setting.setNameLabelColor(context);
+
+            textInput.setFocusable(false);
+            textInput.setFocusableInTouchMode(false);
+            textInput.setClickable(true);
+            textInput.setCursorVisible(false);
+            textInput.setInputType(InputType.TYPE_NULL);
+
+            // Using search icon if available, or fallback to arrow
+            Drawable searchDrawable = ContextCompat.getDrawable(textInput.getContext(), R.drawable.ic_search);
+            textInput.setCompoundDrawablesWithIntrinsicBounds(null, null, searchDrawable, null);
+
+            textInput.setOnClickListener(view -> showLocationSearch(view.getContext(), setting));
         } else {
             TextWatcher watcher = new TextWatcher() {
                 @Override
@@ -260,5 +284,128 @@ public class SettingsListManager extends ListViewManager<SettingHolder, Settings
         binding.tiSettingExSettingValue.addTextChangedListener(null);
         binding.cbSettingExEnabled.setOnCheckedChangeListener(null);
         stateRegistry.putGroupChangeListener(null, SharedRegistry.sharedSettingName(CoreUiUtils.getText(binding.tvSettingExNameNice)));
+    }
+
+    private void showLocationSearch(Context context, SettingHolder currentSetting) {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(context);
+        builder.setTitle("Search Location");
+
+        View dialogView = LayoutInflater.from(context).inflate(android.R.layout.simple_list_item_1, null);
+        // We need a custom layout with edit text and list view, let's create it programmatically to be safe or simple
+
+        android.widget.LinearLayout layout = new android.widget.LinearLayout(context);
+        layout.setOrientation(android.widget.LinearLayout.VERTICAL);
+        layout.setPadding(30, 30, 30, 30);
+
+        final android.widget.EditText input = new android.widget.EditText(context);
+        input.setHint("Enter address, city, or place...");
+        layout.addView(input);
+
+        final android.widget.Button searchBtn = new android.widget.Button(context);
+        searchBtn.setText("Search");
+        layout.addView(searchBtn);
+
+        final android.widget.ListView listView = new android.widget.ListView(context);
+        listView.setLayoutParams(new android.widget.LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        layout.addView(listView);
+
+        builder.setView(layout);
+        builder.setNegativeButton("Cancel", null);
+
+        final android.app.AlertDialog dialog = builder.create();
+
+        searchBtn.setOnClickListener(v -> {
+            String query = input.getText().toString();
+            if (TextUtils.isEmpty(query)) return;
+
+            new Thread(() -> {
+                try {
+                    Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+                    List<Address> addresses = geocoder.getFromLocationName(query, 10);
+
+                    v.post(() -> {
+                        if (addresses == null || addresses.isEmpty()) {
+                            Toast.makeText(context, "No results found", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1);
+                        final List<Address> addressList = new ArrayList<>(addresses);
+
+                        for (Address addr : addresses) {
+                            StringBuilder sb = new StringBuilder();
+                            for (int i = 0; i <= addr.getMaxAddressLineIndex(); i++) {
+                                sb.append(addr.getAddressLine(i)).append(" ");
+                            }
+                            adapter.add(sb.toString());
+                        }
+
+                        listView.setAdapter(adapter);
+                        listView.setOnItemClickListener((parent, view1, position, id) -> {
+                            Address selected = addressList.get(position);
+                            double lat = selected.getLatitude();
+                            double lon = selected.getLongitude();
+
+                            updateLocationSettings(context, lat, lon);
+                            dialog.dismiss();
+                        });
+                    });
+                } catch (Exception e) {
+                    v.post(() -> Toast.makeText(context, "Search failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                }
+            }).start();
+        });
+
+        dialog.show();
+    }
+
+    private void updateLocationSettings(Context context, double lat, double lon) {
+        // We need to update both latitude and longitude settings.
+        // We can access all settings via the shared registry or state manager if possible.
+        // Or access the container settings if we know the container.
+
+        SettingSharedRegistry settingShared = stateRegistry.getSharedRegistry().asSettingShared();
+        // Assuming location settings are in a container named "location" or similar, or we can iterate all loaded settings.
+        // We don't easily have the container instance here, but we can look up settings by name if we iterate.
+
+        // Iterate over all settings managed by the shared registry for the current view context
+        // This might be expensive if many settings, but usually it's fine for a click action.
+
+        // Setting names are "location.latitude" and "location.longitude"
+
+        // We can use the registry to find them if they are loaded.
+        // But settingShared usually stores things by container.
+
+        // Let's try to find them in the current list managed by this adapter/manager if possible,
+        // but ListViewManager manages a specific list of items passed to it.
+        // SettingsListManager extends ListViewManager<SettingHolder, ...>
+
+        // We can try to iterate the settings in the current container if we had a reference to it.
+        // But SettingsListManager is initialized with a container view, not the SettingsContainer object directly.
+
+        // However, we can access the fragment's settings via SettingFragmentUtils if available.
+        List<SettingHolder> allSettings = SettingFragmentUtils.getAllSettingsFromFragment(this.stateManager.getAsFragment());
+
+        if (ListUtil.isValid(allSettings)) {
+            for (SettingHolder s : allSettings) {
+                if ("location.latitude".equals(s.getName())) {
+                    String val = String.valueOf(lat);
+                    s.setNewValue(val);
+                    s.ensureUiUpdated(val);
+                    s.notifyUpdate(stateRegistry.notifier);
+                } else if ("location.longitude".equals(s.getName())) {
+                    String val = String.valueOf(lon);
+                    s.setNewValue(val);
+                    s.ensureUiUpdated(val);
+                    s.notifyUpdate(stateRegistry.notifier);
+                }
+            }
+            Toast.makeText(context, "Location updated: " + lat + ", " + lon, Toast.LENGTH_SHORT).show();
+        } else {
+             Toast.makeText(context, "Could not find location settings to update", Toast.LENGTH_SHORT).show();
+        }
     }
 }

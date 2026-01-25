@@ -40,7 +40,7 @@ public class SettingsFactory {
 
     public List<SettingsContainer> getContainers() { return new ArrayList<>(containers.values()); }
 
-    public static final List<String> BAD_PREFIX_NAMES = Arrays.asList("intercept.", "java.", "qemu.", "hide.", "location.");
+    public static final List<String> BAD_PREFIX_NAMES = Arrays.asList("intercept.", "java.", "qemu.", "hide.");
     public static final List<String> BAD_NAMES = Arrays.asList(
             "account.user.serial",
             "account.user.name",
