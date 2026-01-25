@@ -61,6 +61,7 @@ jobs:
 
 
       - name: Send commit info to Telegram
+        continue-on-error: true
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_CHANNEL_ID}}
@@ -72,6 +73,7 @@ jobs:
             Changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
 
       - name: Upload Release APK to Telegram
+        continue-on-error: true
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_CHANNEL_ID }}
@@ -80,6 +82,7 @@ jobs:
           document: ${{ steps.find-release-apk.outputs.release_apk_path }}
 
       - name: Upload Debug APK to Telegram
+        continue-on-error: true
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_CHANNEL_ID }}
