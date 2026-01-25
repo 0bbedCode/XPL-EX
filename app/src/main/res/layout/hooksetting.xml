@@ -53,6 +53,19 @@
         app:layout_constraintTop_toTopOf="@+id/ivBtHookSettingReset" />
 
     <ImageView
+        android:id="@+id/ivBtHookSettingLocation"
+        android:layout_width="?android:attr/listPreferredItemHeightSmall"
+        android:layout_height="?android:attr/listPreferredItemHeightSmall"
+        android:alpha="0.5"
+        android:clickable="false"
+        android:focusable="false"
+        android:src="@drawable/ic_search"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/ivBtHookSettingRandomize"
+        app:layout_constraintStart_toEndOf="@+id/ivBtHookSettingRandomize"
+        app:layout_constraintTop_toTopOf="@+id/ivBtHookSettingRandomize" />
+
+    <ImageView
         android:id="@+id/ivBtHookSettingReset"
         android:layout_width="?android:attr/listPreferredItemHeightSmall"
         android:layout_height="?android:attr/listPreferredItemHeightSmall"

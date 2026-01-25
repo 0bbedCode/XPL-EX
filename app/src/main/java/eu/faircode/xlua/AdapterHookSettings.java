@@ -40,6 +40,10 @@ import eu.faircode.xlua.utilities.SettingUtil;
 import eu.faircode.xlua.utilities.UiUtil;
 import eu.faircode.xlua.utilities.ViewUtil;
 
+import android.location.Address;
+import android.location.Geocoder;
+import java.util.Locale;
+
 public class AdapterHookSettings extends RecyclerView.Adapter<AdapterHookSettings.ViewHolder> {
     private final List<IRandomizerOld> randomizers = GlobalRandoms.getRandomizers();
     private final List<LuaSettingExtended> settings = new ArrayList<>();
@@ -60,7 +64,7 @@ public class AdapterHookSettings extends RecyclerView.Adapter<AdapterHookSetting
         final View view;
         final TextView tvSettingName, tvSettingNameFull, tvSettingDescription;
         final TextInputEditText tiSettingValue;
-        final ImageView btRandomize, btReset, btSave, btDelete, ivExpander;
+        final ImageView btRandomize, btReset, btSave, btDelete, ivExpander, btLocation;
         final Spinner spRandomSelector;
         final ArrayAdapter<IRandomizerOld> adapterRandomizer;
 
@@ -78,6 +82,7 @@ public class AdapterHookSettings extends RecyclerView.Adapter<AdapterHookSetting
             this.btReset = view.findViewById(R.id.ivBtHookSettingReset);
 
             this.btRandomize = view.findViewById(R.id.ivBtHookSettingRandomize);
+            this.btLocation = view.findViewById(R.id.ivBtHookSettingLocation);
             this.spRandomSelector = view.findViewById(R.id.spHookSettingRandomizer);
 
             this.adapterRandomizer = new ArrayAdapter<>(itemView.getContext(), android.R.layout.simple_spinner_item);
@@ -96,6 +101,7 @@ public class AdapterHookSettings extends RecyclerView.Adapter<AdapterHookSetting
             this.btReset.setOnLongClickListener(null);
             this.btRandomize.setOnClickListener(null);
             this.btRandomize.setOnLongClickListener(null);
+            this.btLocation.setOnClickListener(null);
             this.btDelete.setOnClickListener(null);
             this.btDelete.setOnLongClickListener(null);
             this.ivExpander.setOnClickListener(null);
@@ -114,6 +120,7 @@ public class AdapterHookSettings extends RecyclerView.Adapter<AdapterHookSetting
             this.btReset.setOnLongClickListener(this);
             this.btRandomize.setOnClickListener(this);
             this.btRandomize.setOnLongClickListener(this);
+            this.btLocation.setOnClickListener(this);
             this.btDelete.setOnClickListener(this);
             this.btDelete.setOnLongClickListener(this);
             this.ivExpander.setOnClickListener(this);
@@ -166,8 +173,98 @@ public class AdapterHookSettings extends RecyclerView.Adapter<AdapterHookSetting
                                             view.getResources().getString(R.string.title_no_random));
                         else setting.randomizeValue(view.getContext());
                         break;
+                    case R.id.ivBtHookSettingLocation:
+                        showLocationSearch(view.getContext(), setting);
+                        break;
                 }
             }catch (Exception e) { XLog.e("onClick Failed: code=" + code, e, true); }
+        }
+
+        private void showLocationSearch(Context context, LuaSettingExtended currentSetting) {
+            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(context);
+            builder.setTitle("Search Location");
+
+            View dialogView = LayoutInflater.from(context).inflate(android.R.layout.simple_list_item_1, null); 
+            // We need a custom layout with edit text and list view, let's create it programmatically to be safe or simple
+            
+            android.widget.LinearLayout layout = new android.widget.LinearLayout(context);
+            layout.setOrientation(android.widget.LinearLayout.VERTICAL);
+            layout.setPadding(30, 30, 30, 30);
+
+            final android.widget.EditText input = new android.widget.EditText(context);
+            input.setHint("Enter address, city, or place...");
+            layout.addView(input);
+
+            final android.widget.Button searchBtn = new android.widget.Button(context);
+            searchBtn.setText("Search");
+            layout.addView(searchBtn);
+
+            final android.widget.ListView listView = new android.widget.ListView(context);
+            layout.addView(listView);
+
+            builder.setView(layout);
+            builder.setNegativeButton("Cancel", null);
+
+            final android.app.AlertDialog dialog = builder.create();
+            
+            searchBtn.setOnClickListener(v -> {
+                String query = input.getText().toString();
+                if (TextUtils.isEmpty(query)) return;
+
+                new Thread(() -> {
+                    try {
+                        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+                        List<Address> addresses = geocoder.getFromLocationName(query, 10);
+                        
+                        view.post(() -> {
+                            if (addresses == null || addresses.isEmpty()) {
+                                Toast.makeText(context, "No results found", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            
+                            ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1);
+                            final List<Address> addressList = new ArrayList<>(addresses);
+                            
+                            for (Address addr : addresses) {
+                                StringBuilder sb = new StringBuilder();
+                                for (int i = 0; i <= addr.getMaxAddressLineIndex(); i++) {
+                                    sb.append(addr.getAddressLine(i)).append(" ");
+                                }
+                                adapter.add(sb.toString());
+                            }
+                            
+                            listView.setAdapter(adapter);
+                            listView.setOnItemClickListener((parent, view1, position, id) -> {
+                                Address selected = addressList.get(position);
+                                double lat = selected.getLatitude();
+                                double lon = selected.getLongitude();
+                                
+                                updateLocationSettings(lat, lon);
+                                dialog.dismiss();
+                            });
+                        });
+                    } catch (Exception e) {
+                        view.post(() -> Toast.makeText(context, "Search failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                    }
+                }).start();
+            });
+
+            dialog.show();
+        }
+
+        private void updateLocationSettings(double lat, double lon) {
+            // Update current item (which triggered this) + its sibling
+            for (int i = 0; i < settings.size(); i++) {
+                LuaSettingExtended s = settings.get(i);
+                if ("location.latitude".equals(s.getName())) {
+                    s.setModifiedValue(String.valueOf(lat));
+                    notifyItemChanged(i);
+                } else if ("location.longitude".equals(s.getName())) {
+                    s.setModifiedValue(String.valueOf(lon));
+                    notifyItemChanged(i);
+                }
+            }
+            Toast.makeText(view.getContext(), "Location updated: " + lat + ", " + lon, Toast.LENGTH_SHORT).show();
         }
 
         @SuppressLint({"NonConstantResourceId", "NotifyDataSetChanged"})
@@ -181,6 +278,9 @@ public class AdapterHookSettings extends RecyclerView.Adapter<AdapterHookSetting
             int rotation = isExpanded ? 87 : 0;
             ivExpander.setRotation(rotation);
             ViewUtil.setViewsVisibility(null, isExpanded, tiSettingValue, btDelete, btRandomize, btReset, btSave, spRandomSelector, tvSettingDescription);
+            
+            boolean isLoc = "location.latitude".equals(name) || "location.longitude".equals(name);
+            btLocation.setVisibility(isExpanded && isLoc ? View.VISIBLE : View.GONE);
         }
 
         @SuppressLint("NonConstantResourceId")
