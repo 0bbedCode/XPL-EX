@@ -95,12 +95,6 @@ public class LuaSettingExtended extends LuaSettingDefault implements IJsonSerial
 
     public Boolean isEnabled() { return this.enabled; }
     public LuaSettingExtended setIsEnabled(Boolean enabled) {  this.enabled = enabled; return this; }
-    
-    @Override
-    public boolean isBuiltIn() {
-        return super.isBuiltIn() || "location.latitude".equals(name) || "location.longitude".equals(name);
-    }
-    
     public boolean isBuiltIntSetting() { return SettingUtil.isBuiltInSetting(this.getName()); }
 
     public String getGroupId() {
