@@ -65,6 +65,7 @@ public class AdapterHookSettings extends RecyclerView.Adapter<AdapterHookSetting
         final View view;
         final TextView tvSettingName, tvSettingNameFull, tvSettingDescription;
         final TextInputEditText tiSettingValue;
+// Location search button
         final ImageView btRandomize, btReset, btSave, btDelete, ivExpander, btLocation;
         final Spinner spRandomSelector;
         final ArrayAdapter<IRandomizerOld> adapterRandomizer;
