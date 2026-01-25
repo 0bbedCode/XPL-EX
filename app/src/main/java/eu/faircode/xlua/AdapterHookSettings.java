@@ -1,6 +1,7 @@
 package eu.faircode.xlua;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
