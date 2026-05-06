@@ -6,14 +6,14 @@ Hooking + Privacy Framework For Android 6.0 +<br>
 
 XPL-EX
 ------------
-XPL-EX (XPrivacy Lua EX) based on original (XPrivacy Lua) by M66B will prevent most if not all Installed Applications on your Device from tracking and or Identifying you. You have the ability to Define your hook Hook Definitions onto Applications and utilizing LUA Scripts to define the behaviour of the Hook allowing you to have Full Control over your Applications. Powwered by the Community it will forever remain Full Open Source (FOSS), Never bundled with Trackers, Analytics, or Advertisements lastly never ever needing to connect or to communicate to any Server.<br><br>
+XPL-EX (XPrivacy Lua EX) based on original (XPrivacy Lua) by M66B will prevent most if not all Installed Applications on your Device from tracking and or Identifying you. You have the ability to Define your hook Hook Definitions onto Applications and utilizing LUA Scripts to define the behaviour of the Hook allowing you to have Full Control over your Applications. Powered by the Community it will forever remain Full Open Source (FOSS), Never bundled with Trackers, Analytics, or Advertisements lastly never ever needing to connect or to communicate to any Server.<br><br>
 
 When Comparing with GrapheneOS like Projects, XPL-EX will give you more Anti Tracking Abilities. Say bye bye to Data Brokers, buying and Selling of useful user Data in their activities.
 > Running such Tracking Applications Such as  [Fingerprint Pro](https://play.google.com/store/apps/details?id=com.fingerprintjs.android.fpjs_pro_demo&hl=en_US) will have a very high success Rate at tracking users on GOS and compared to other Solutions as well. XPL-EX was the first too achieve a Visitor Never Found result from FingerprintPro ensuring you are not to be tracked.
 
 <br>
 
-> * *Supports Android 6+ (Android Marshmellow+, SDK 23+)*, *Virtual / ThaiChi Supported (Rootless Solution Not Stable)*,  *Requires NO Internet Connection, No Logins*
+> * *Supports Android 6+ (Android Marshmallow+, SDK 23+)*, *Virtual / ThaiChi Supported (Rootless Solution Not Stable)*,  *Requires NO Internet Connection, No Logins*
 
 <br>
 
@@ -123,7 +123,7 @@ To Check Information on your Apps including Tracking SDK and Libraries use [LibC
 Chromium based Browser [Cromite](https://github.com/uazo/cromite)<br>
 Favorite Wallet (No KYC and has Swaps) [Cake Wallet](https://github.com/cake-tech/cake_wallet)<br>
 For the best Secure Chatting App (Signal Fork) [Molly](https://molly.im/)<br>
-PlayStore Alternative (Aurora Store)[https://github.com/whyorean/AuroraStore]
+PlayStore Alternative [Aurora Store](https://github.com/whyorean/AuroraStore)
 Modifying your Router Firmware use of course [OpenWRT](https://openwrt.org/)<br>
 
 
