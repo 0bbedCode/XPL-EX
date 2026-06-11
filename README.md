@@ -1,4 +1,4 @@
-# XPL-EX
+# XPL-EX   d
 Hooking + Privacy Framework For Android 6.0 +<br>
 
 ![photo_2025-04-18_17-47-14](https://github.com/user-attachments/assets/a8ba4b6d-7ba0-4371-9f27-578ae5a16234)
